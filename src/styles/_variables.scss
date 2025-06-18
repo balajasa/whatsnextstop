@@ -1,0 +1,57 @@
+// 主要品牌色
+$coral-red: #EF767A;    // 用於強調、警告或重要元素
+$deep-blue: #456990;    // 用於主要文字、標題
+$teal-green: #49BEAA;   // 用於次要元素、背景
+$mint-green: #49DCB1;   // 用於成功狀態、確認按鈕
+$golden-yellow: #EEB868; // 用於提示、高亮
+
+// bootstrap 系統色
+$blue: #0d6efd;
+$indigo: #6610f2;
+$purple: #6f42c1;
+$pink: #d63384;
+$red: #dc3545;
+$orange: #fd7e14;
+$yellow: #ffc107;
+$green: #198754;
+$teal: #20c997;
+$cyan: #0dcaf0;
+
+// bootstrap 灰度
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+// 語意化顏色
+$primary: $blue;
+$secondary: $gray-600;
+$success: $green;
+$info: $cyan;
+$warning: $yellow;
+$danger: $red;
+$light: $gray-100;
+$dark: $gray-900;
+
+// 顏色使用說明
+// 品牌色：
+// - coral-red: 用於強調、警告或重要元素
+// - deep-blue: 用於主要文字、標題
+// - teal-green: 用於次要元素、背景
+// - mint-green: 用於成功狀態、確認按鈕
+// - golden-yellow: 用於提示、高亮
+
+// 語意化顏色：
+// - primary: 主要操作、重要元素
+// - secondary: 次要操作、輔助元素
+// - success: 成功狀態、確認信息
+// - info: 提示信息、說明文字
+// - warning: 警告信息、需要注意的內容
+// - danger: 錯誤信息、危險操作
+// - light: 淺色背景、次要文字
+// - dark: 深色背景、主要文字

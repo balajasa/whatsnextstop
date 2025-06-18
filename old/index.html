@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食轉輪</title>
+    <style>
+      body {
+        font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #F8FFFE 0%, #E8F5E8 25%, #F0F8FF 75%, #F8FFFE 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+          radial-gradient(circle at 25% 25%, rgba(72, 187, 120, 0.05) 0%, transparent 40%),
+          radial-gradient(circle at 75% 75%, rgba(56, 178, 172, 0.05) 0%, transparent 40%),
+          radial-gradient(circle at 50% 50%, rgba(99, 179, 237, 0.03) 0%, transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .main-container {
+        max-width: 1150px;
+        width: 95%;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 50px;
+        border-radius: 16px;
+        box-shadow:
+          0 25px 50px rgba(72, 187, 120, 0.08),
+          0 10px 25px rgba(56, 178, 172, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        display: flex;
+        gap: 70px;
+        align-items: flex-start;
+        position: relative;
+        z-index: 1;
+      }
+
+      .wheel-container {
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .settings-container {
+        flex: 0.8;
+        min-width: 330px;
+        padding: 35px;
+        background: rgba(248, 255, 254, 0.7);
+        border-radius: 12px;
+        border: 1px solid rgba(72, 187, 120, 0.15);
+        backdrop-filter: blur(10px);
+      }
+
+      h1 {
+        color: #2D5A4F;
+        text-align: center;
+        margin-bottom: 45px;
+        font-size: 32px;
+        font-weight: 300;
+        letter-spacing: 3px;
+        position: relative;
+      }
+
+      h1::after {
+        content: '🌿';
+        position: absolute;
+        right: -45px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 26px;
+        animation: sway 4s ease-in-out infinite;
+      }
+
+      @keyframes sway {
+        0%, 100% { transform: translateY(-50%) rotate(-3deg); }
+        50% { transform: translateY(-55%) rotate(3deg); }
+      }
+
+      h2 {
+        color: #2D5A4F;
+        margin-bottom: 28px;
+        font-size: 20px;
+        font-weight: 300;
+        letter-spacing: 1px;
+      }
+
+      .wheel-wrapper {
+        position: relative;
+        width: 400px;
+        height: 400px;
+        margin: 0 auto 45px;
+        filter: drop-shadow(0 20px 40px rgba(72, 187, 120, 0.15));
+      }
+
+      .wheel {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        position: relative;
+        overflow: hidden;
+        border: 4px solid rgba(72, 187, 120, 0.2);
+        transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        transform: rotate(0deg);
+        background: #FFFFFF;
+        box-shadow:
+          0 0 0 8px rgba(255, 255, 255, 0.8),
+          0 0 0 16px rgba(72, 187, 120, 0.08),
+          inset 0 0 40px rgba(72, 187, 120, 0.03);
+      }
+
+      .wheel::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, #48BB78, #38B2AC);
+        border-radius: 50%;
+        border: 4px solid #FFFFFF;
+        box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        z-index: 10;
+      }
+
+      .wheel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 400;
+        color: #2D5A4F;
+      }
+
+      .wheel-item span {
+        position: absolute;
+        width: 95px;
+        text-align: center;
+        transform-origin: center;
+        color: #2D5A4F;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.4;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+      }
+
+      .wheel-pointer {
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 18px solid transparent;
+        border-right: 18px solid transparent;
+        border-top: 36px solid #48BB78;
+        z-index: 15;
+        filter: drop-shadow(0 4px 10px rgba(72, 187, 120, 0.4));
+      }
+
+      .wheel-pointer::after {
+        content: '🎯';
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+      }
+
+      .spin-button {
+        padding: 18px 40px;
+        font-size: 17px;
+        font-weight: 400;
+        background: linear-gradient(135deg, #48BB78, #38B2AC);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+        box-shadow:
+          0 10px 30px rgba(72, 187, 120, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .spin-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      .spin-button:hover::before {
+        left: 100%;
+      }
+
+      .spin-button:hover {
+        background: linear-gradient(135deg, #38B2AC, #48BB78);
+        transform: translateY(-3px);
+        box-shadow:
+          0 15px 35px rgba(72, 187, 120, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      }
+
+      .spin-button:active {
+        transform: translateY(-1px);
+      }
+
+      .spin-button:disabled {
+        background: linear-gradient(135deg, #A0C4A7, #B8D4BB);
+        color: #FFFFFF;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .result {
+        margin-top: 35px;
+        font-size: 22px;
+        font-weight: 400;
+        color: #2D5A4F;
+        min-height: 35px;
+        text-align: center;
+        padding: 18px 30px;
+        background: linear-gradient(135deg, rgba(72, 187, 120, 0.08), rgba(56, 178, 172, 0.08));
+        border-radius: 12px;
+        border: 1px solid rgba(72, 187, 120, 0.2);
+        letter-spacing: 1px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(72, 187, 120, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 28px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 400;
+        font-size: 15px;
+        color: #2D5A4F;
+        letter-spacing: 0.5px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid rgba(72, 187, 120, 0.2);
+        border-radius: 8px;
+        font-size: 15px;
+        background: rgba(248, 255, 254, 0.8);
+        color: #2D5A4F;
+        transition: all 0.3s ease;
+        font-weight: 400;
+        backdrop-filter: blur(5px);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #48BB78;
+        background: rgba(248, 255, 254, 0.95);
+        box-shadow:
+          0 0 0 3px rgba(72, 187, 120, 0.1),
+          0 4px 15px rgba(72, 187, 120, 0.15);
+      }
+
+      .form-group input::placeholder {
+        color: #7FA085;
+      }
+
+      .item-list {
+        margin-top: 25px;
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 8px;
+      }
+
+      .item-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .item-list::-webkit-scrollbar-track {
+        background: rgba(72, 187, 120, 0.08);
+        border-radius: 3px;
+      }
+
+      .item-list::-webkit-scrollbar-thumb {
+        background: rgba(72, 187, 120, 0.3);
+        border-radius: 3px;
+      }
+
+      .item-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(72, 187, 120, 0.5);
+      }
+
+      .item-list-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 14px 18px;
+        background: rgba(248, 255, 254, 0.6);
+        border-radius: 10px;
+        border: 1px solid rgba(72, 187, 120, 0.15);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+      }
+
+      .item-list-item:hover {
+        transform: translateY(-2px);
+        background: rgba(248, 255, 254, 0.85);
+        box-shadow: 0 6px 20px rgba(72, 187, 120, 0.15);
+        border-color: rgba(72, 187, 120, 0.25);
+      }
+
+      .item-list-input {
+        flex: 1;
+        margin-right: 16px;
+        padding: 10px 14px;
+        border: 1px solid rgba(72, 187, 120, 0.2);
+        border-radius: 6px;
+        font-size: 14px;
+        background: rgba(248, 255, 254, 0.8);
+        color: #2D5A4F;
+        font-weight: 400;
+        transition: all 0.3s ease;
+      }
+
+      .item-list-input:focus {
+        outline: none;
+        border-color: #48BB78;
+        background: rgba(248, 255, 254, 0.95);
+        box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.1);
+      }
+
+      .delete-button {
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #FED7D7, #FEB2B2);
+        color: #C53030;
+        border: 1px solid rgba(197, 48, 48, 0.2);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 400;
+        transition: all 0.3s ease;
+      }
+
+      .delete-button:hover {
+        background: linear-gradient(135deg, #FEB2B2, #FC8181);
+        color: #FFFFFF;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(197, 48, 48, 0.25);
+      }
+
+      .add-button {
+        padding: 14px 28px;
+        background: linear-gradient(135deg, rgba(56, 178, 172, 0.1), rgba(72, 187, 120, 0.1));
+        color: #2D5A4F;
+        border: 2px solid rgba(56, 178, 172, 0.3);
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 18px;
+        font-size: 15px;
+        font-weight: 400;
+        width: 100%;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(5px);
+      }
+
+      .add-button:hover {
+        background: linear-gradient(135deg, rgba(56, 178, 172, 0.15), rgba(72, 187, 120, 0.15));
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(56, 178, 172, 0.2);
+        border-color: rgba(56, 178, 172, 0.4);
+      }
+
+      .save-button {
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #48BB78, #38B2AC);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 28px;
+        font-size: 16px;
+        font-weight: 400;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+        box-shadow: 0 8px 25px rgba(72, 187, 120, 0.25);
+      }
+
+      .save-button:hover {
+        background: linear-gradient(135deg, #38B2AC, #2C7A7B);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(72, 187, 120, 0.35);
+      }
+
+      /* 響應式設計 */
+      @media (max-width: 992px) {
+        .main-container {
+          flex-direction: column;
+          gap: 50px;
+          padding: 35px;
+        }
+        .settings-container {
+          min-width: auto;
+          width: 100%;
+        }
+        .wheel-wrapper {
+          width: 350px;
+          height: 350px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .main-container {
+          padding: 25px;
+        }
+        .wheel-wrapper {
+          width: 300px;
+          height: 300px;
+        }
+        h1 {
+          font-size: 26px;
+          letter-spacing: 2px;
+        }
+        h1::after {
+          right: -35px;
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="wheel-container">
+        <h1>美食轉輪</h1>
+        <div class="wheel-wrapper">
+          <div class="wheel-pointer"></div>
+          <div class="wheel" id="wheel"></div>
+        </div>
+        <button class="spin-button" id="spinButton">開始轉動</button>
+        <div class="result" id="result"></div>
+      </div>
+
+      <div class="settings-container">
+        <h2>設定選項</h2>
+        <div class="form-group">
+          <label>新增美食類型</label>
+          <input type="text" id="newItem" placeholder="例如：北歐料理、地中海美食">
+          <button class="add-button" id="addItem">新增項目</button>
+        </div>
+        <div class="item-list" id="itemList"></div>
+        <button class="save-button" id="saveSettings">更新轉輪</button>
+      </div>
+    </div>
+
+    <script>
+      let items = ['中式料理', '日式料理', '韓式料理', '義式料理', '美式料理', '泰式料理'];
+      const colors = [
+        '#E6F7F1', // 淡薄荷綠
+        '#E1F5FE', // 淡天藍
+        '#F1F8E9', // 淡草綠
+        '#E8F5E8', // 淡森林綠
+        '#F0F9FF', // 極淡藍
+        '#E0F2F1', // 淡青綠
+        '#F3E5F5', // 極淡紫
+        '#FFF8E1', // 淡暖黃
+        '#E8F6F3', // 淡海綠
+        '#F5F5F5'  // 淡灰白
+      ];
+      let currentRotation = 0;
+
+      function createWheel() {
+        const wheel = document.getElementById('wheel');
+        wheel.innerHTML = '';
+        const sectionAngle = 360 / items.length;
+
+        items.forEach((item, index) => {
+          const section = document.createElement('div');
+          section.className = 'wheel-item';
+          section.dataset.index = index;
+
+          const startAngle = sectionAngle * index;
+          const endAngle = sectionAngle * (index + 1);
+          const middleAngle = (startAngle + endAngle) / 2;
+
+          const points = ['50% 50%'];
+          const steps = Math.max(2, Math.ceil(sectionAngle / 2));
+          for (let i = 0; i <= steps; i++) {
+            const angle = startAngle + (sectionAngle * i / steps);
+            const radian = (angle - 90) * Math.PI / 180;
+            const x = 50 + 50 * Math.cos(radian);
+            const y = 50 + 50 * Math.sin(radian);
+            points.push(`${x}% ${y}%`);
+          }
+
+          section.style.clipPath = `polygon(${points.join(', ')})`;
+          section.style.backgroundColor = colors[index % colors.length];
+
+          const textSpan = document.createElement('span');
+          textSpan.textContent = item;
+
+          const textRadian = (middleAngle - 90) * Math.PI / 180;
+          const textRadius = 38;
+          const textX = 50 + textRadius * Math.cos(textRadian);
+          const textY = 50 + textRadius * Math.sin(textRadian);
+
+          textSpan.style.left = `${textX}%`;
+          textSpan.style.top = `${textY}%`;
+          textSpan.style.transform = `translate(-50%, -50%) rotate(${middleAngle}deg)`;
+
+          section.appendChild(textSpan);
+          wheel.appendChild(section);
+        });
+      }
+
+      function spinWheel() {
+        const wheel = document.getElementById('wheel');
+        const button = document.getElementById('spinButton');
+        const result = document.getElementById('result');
+
+        button.disabled = true;
+        result.textContent = '';
+
+        const spinAngle = 1800 + Math.random() * 360;
+        currentRotation += spinAngle;
+
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+        setTimeout(() => {
+          const finalRotation = currentRotation % 360;
+          const sectionAngle = 360 / items.length;
+          const relativeAngle = (360 - finalRotation) % 360;
+          let selectedIndex = Math.floor(relativeAngle / sectionAngle);
+
+          if (selectedIndex >= items.length) {
+            selectedIndex = items.length - 1;
+          } else if (selectedIndex < 0) {
+            selectedIndex = 0;
+          }
+
+          result.textContent = `今天就吃：${items[selectedIndex]} 🌿`;
+          button.disabled = false;
+        }, 4000);
+      }
+
+      function updateItemList() {
+        const itemList = document.getElementById('itemList');
+        itemList.innerHTML = '';
+
+        items.forEach((item, index) => {
+          const div = document.createElement('div');
+          div.className = 'item-list-item';
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'item-list-input';
+          input.value = item;
+          input.addEventListener('change', (e) => {
+            items[index] = e.target.value;
+          });
+
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'delete-button';
+          deleteButton.textContent = '刪除';
+          deleteButton.addEventListener('click', () => {
+            items.splice(index, 1);
+            updateItemList();
+          });
+
+          div.appendChild(input);
+          div.appendChild(deleteButton);
+          itemList.appendChild(div);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        createWheel();
+        updateItemList();
+
+        document.getElementById('spinButton').addEventListener('click', spinWheel);
+
+        document.getElementById('addItem').addEventListener('click', () => {
+          const input = document.getElementById('newItem');
+          if (input.value.trim()) {
+            items.push(input.value.trim());
+            input.value = '';
+            updateItemList();
+          }
+        });
+
+        document.getElementById('newItem').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            document.getElementById('addItem').click();
+          }
+        });
+
+        document.getElementById('saveSettings').addEventListener('click', () => {
+          createWheel();
+          alert('轉輪已更新！🌿');
+        });
+      });
+    </script>
+  </body>
+</html>
