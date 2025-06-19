@@ -6,18 +6,13 @@
         <div class="wheel-wrapper">
           <div class="wheel-pointer"></div>
           <div class="wheel" ref="wheelRef">
-            <div v-for="(item, index) in wheelItems"
-                 :key="index"
-                 class="wheel-item"
-                 :style="getWheelItemStyle(index)">
+            <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item" :style="getWheelItemStyle(index)">
               <span>{{ item }}</span>
             </div>
             <div class="wheel-center"></div>
           </div>
         </div>
-        <button class="spin-button"
-                @click="spinWheel"
-                :disabled="isSpinning">
+        <button class="spin-button" @click="spinWheel" :disabled="isSpinning">
           {{ isSpinning ? '轉動中...' : '開始轉動' }}
         </button>
         <div v-if="result" class="result">
@@ -29,19 +24,12 @@
         <h2>設定選項</h2>
         <div class="form-group">
           <label>新增美食類型</label>
-          <input type="text"
-                 v-model="newItem"
-                 placeholder="例如：北歐料理、地中海美食"
-                 @keyup.enter="addItem">
+          <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem">
           <button class="add-button" @click="addItem">新增項目</button>
         </div>
         <div class="item-list">
-          <div v-for="(item, index) in wheelItems"
-               :key="index"
-               class="item-list-item">
-            <input type="text"
-                   class="item-list-input"
-                   v-model="wheelItems[index]">
+          <div v-for="(item, index) in wheelItems" :key="index" class="item-list-item">
+            <input type="text" class="item-list-input" v-model="wheelItems[index]">
             <button class="delete-button" @click="removeItem(index)">刪除</button>
           </div>
         </div>
@@ -165,7 +153,7 @@ export default {
 
           result.value = wheelItems.value[selectedIndex]
 
-          console.log(`轉了 ${(totalRotation/360).toFixed(1)} 圈，最終位置: ${finalPosition.toFixed(1)}°，停在: ${result.value}`)
+          console.log(`轉了 ${(totalRotation / 360).toFixed(1)} 圈，最終位置: ${finalPosition.toFixed(1)}°，停在: ${result.value}`)
         }
       })
     }
@@ -207,8 +195,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use "sass:color";
-@use '../styles/variables' as *;
+@use 'sass:color';
+@use '@/styles/variables' as *;
 
 .app {
   font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -302,9 +290,12 @@ h1 {
 }
 
 @keyframes sway {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(-50%) rotate(-5deg);
   }
+
   50% {
     transform: translateY(-55%) rotate(5deg);
   }
@@ -407,10 +398,13 @@ h2 {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: translateX(-50%) scale(1.1);
@@ -492,6 +486,7 @@ h2 {
     opacity: 0;
     transform: translateY(-15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -669,6 +664,7 @@ h2 {
     box-shadow: 0 15px 35px rgba($deep-blue, 0.4);
   }
 }
+
 /* 響應式設計 */
 @media (max-width: 1200px) {
   .main-container {

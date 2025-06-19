@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>響應式側邊欄佈局</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* 手機版漢堡按鈕 */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background-color: #2c3e50;
+            z-index: 1001;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .mobile-toggle:hover {
+            background-color: #34495e;
+        }
+
+        /* 側邊欄樣式 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 60px;
+            background-color: #2c3e50;
+            transition: width 0.3s ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .sidebar.expanded {
+            width: 250px;
+        }
+
+        .sidebar-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            background-color: #34495e;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-toggle:hover {
+            background-color: #3a536b;
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: white;
+            border-radius: 1px;
+            transition: 0.3s;
+        }
+
+        .hamburger span:nth-child(1) { top: 4px; }
+        .hamburger span:nth-child(2) { top: 11px; }
+        .hamburger span:nth-child(3) { top: 18px; }
+
+        .sidebar.expanded .hamburger span:nth-child(1) {
+            transform: rotate(-45deg);
+            top: 11px;
+        }
+
+        .sidebar.expanded .hamburger span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .sidebar.expanded .hamburger span:nth-child(3) {
+            transform: rotate(45deg);
+            top: 11px;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.expanded .sidebar-content {
+            opacity: 1;
+        }
+
+        /* 主內容區域 */
+        .main-container {
+            margin-left: 60px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-container.sidebar-expanded {
+            margin-left: 250px;
+        }
+
+        .main-content {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .main-content h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+
+        .main-content p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        /* 覆蓋層 */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* 手機版樣式 */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .sidebar {
+                width: 0;
+                background-color: rgba(44, 62, 80, 0.95);
+                backdrop-filter: blur(10px);
+            }
+
+            .sidebar.expanded {
+                width: 250px;
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .sidebar-content {
+                padding-top: 80px;
+                text-align: center;
+            }
+
+            .main-container {
+                margin-left: 0;
+                padding: 80px 20px 20px;
+            }
+
+            .main-container.sidebar-expanded {
+                margin-left: 0;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .main-content h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* 平板樣式 */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .main-content {
+                max-width: 700px;
+                padding: 35px;
+            }
+        }
+
+        /* 大螢幕樣式 */
+        @media (min-width: 1400px) {
+            .main-content {
+                max-width: 900px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 手機版漢堡按鈕 -->
+    <div class="mobile-toggle" onclick="toggleSidebar()">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- 側邊欄 -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-toggle" onclick="toggleSidebar()">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="sidebar-content">
+            <h3>側邊欄內容</h3>
+            <p>這裡可以放置導航選單、工具列或其他功能</p>
+        </div>
+    </div>
+
+    <!-- 覆蓋層 (僅手機版) -->
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <!-- 主內容 -->
+    <div class="main-container" id="mainContainer">
+        <div class="main-content">
+            <h1>響應式佈局</h1>
+            <p>這是主內容區域，會根據螢幕尺寸和側邊欄狀態自動調整位置。</p>
+            <p>在桌面版，點擊左側按鈕展開側邊欄。在手機版，會顯示漢堡選單並使用覆蓋式側邊欄。</p>
+            <p>主內容始終保持置中，並會根據可用空間自動調整。</p>
+        </div>
+    </div>
+
+    <script>
+        let sidebarExpanded = false;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContainer = document.getElementById('mainContainer');
+            const overlay = document.getElementById('overlay');
+
+            sidebarExpanded = !sidebarExpanded;
+
+            if (sidebarExpanded) {
+                sidebar.classList.add('expanded');
+                if (window.innerWidth > 768) {
+                    mainContainer.classList.add('sidebar-expanded');
+                } else {
+                    overlay.classList.add('active');
+                }
+            } else {
+                sidebar.classList.remove('expanded');
+                mainContainer.classList.remove('sidebar-expanded');
+                overlay.classList.remove('active');
+            }
+        }
+
+        function closeSidebar() {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('overlay');
+
+                sidebar.classList.remove('expanded');
+                overlay.classList.remove('active');
+                sidebarExpanded = false;
+            }
+        }
+
+        // 響應式處理
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContainer = document.getElementById('mainContainer');
+            const overlay = document.getElementById('overlay');
+
+            if (window.innerWidth > 768) {
+                overlay.classList.remove('active');
+                if (sidebarExpanded) {
+                    mainContainer.classList.add('sidebar-expanded');
+                }
+            } else {
+                mainContainer.classList.remove('sidebar-expanded');
+                if (sidebarExpanded) {
+                    overlay.classList.add('active');
+                }
+            }
+        });
+
+        // 鍵盤支援 (ESC 關閉側邊欄)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebarExpanded) {
+                closeSidebar();
+                if (window.innerWidth > 768) {
+                    toggleSidebar();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

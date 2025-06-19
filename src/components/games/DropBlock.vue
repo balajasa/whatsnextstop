@@ -4,18 +4,14 @@
 
     <div class="game-container">
       <!-- A區小方塊 -->
-      <div
-        v-if="gameState.taskA"
+      <div v-if="gameState.taskA"
         :class="['cube', 'cube-a', { dropping: gameState.aDropping, expanded: gameState.aExpanded }]"
-        :style="{ background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)' }"
-      />
+        :style="{ background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)' }" />
 
       <!-- B區小方塊 -->
-      <div
-        v-if="gameState.taskB"
+      <div v-if="gameState.taskB"
         :class="['cube', 'cube-b', { dropping: gameState.bDropping, expanded: gameState.bExpanded }]"
-        :style="{ background: 'linear-gradient(45deg, #4ecdc4, #6fd8d2)' }"
-      />
+        :style="{ background: 'linear-gradient(45deg, #4ecdc4, #6fd8d2)' }" />
 
       <!-- A區展開骰子 -->
       <div v-if="gameState.aExpanded" :class="['dice-expanded', 'dice-a', { show: gameState.aShowDice }]">
@@ -49,27 +45,15 @@
     </div>
 
     <div class="controls">
-      <button
-        @click="dropCube('A')"
-        :disabled="gameState.aExpanded"
-        class="btn btn-primary"
-      >
+      <button @click="dropCube('A')" :disabled="gameState.aExpanded" class="btn btn-primary">
         {{ gameState.aExpanded ? '已完成 A 區' : '掉落 A 區方塊' }}
       </button>
 
-      <button
-        @click="dropCube('B')"
-        :disabled="!gameState.aExpanded || gameState.bExpanded"
-        class="btn btn-primary"
-      >
+      <button @click="dropCube('B')" :disabled="!gameState.aExpanded || gameState.bExpanded" class="btn btn-primary">
         {{ gameState.bExpanded ? '已完成 B 區' : '掉落 B 區方塊' }}
       </button>
 
-      <button
-        @click="showScrollResult"
-        :disabled="!gameState.bExpanded"
-        class="btn btn-primary"
-      >
+      <button @click="showScrollResult" :disabled="!gameState.bExpanded" class="btn btn-primary">
         📜 查看任務結果
       </button>
 
@@ -81,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, nextTick, defineExpose } from 'vue'
+import { reactive, nextTick } from 'vue'
 
 interface GameState {
   aExpanded: boolean
@@ -222,7 +206,8 @@ defineExpose({
     transition: top 0.3s cubic-bezier(0.8, 0, 1, 1);
     border: 2px solid #fff;
 
-    &.cube-a, &.cube-b {
+    &.cube-a,
+    &.cube-b {
       left: 50%;
       margin-left: -25px;
     }
@@ -341,7 +326,8 @@ defineExpose({
       transform: translateX(-50%) scaleX(1);
     }
 
-    &::before, &::after {
+    &::before,
+    &::after {
       content: '';
       position: absolute;
       width: 25px;
