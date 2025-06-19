@@ -169,10 +169,8 @@ defineExpose({
 
 <style lang="scss" scoped>
 .game-wrapper {
-  min-height: 100vh;
   padding: 20px;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -143,25 +143,7 @@ onUnmounted(() => {
 @use '@/styles/variables' as *;
 
 .itinerary-container {
-  min-height: 100vh;
-  background: $warm-bg-base; // 使用統一的暖米白背景
   position: relative;
-
-  // 添加溫暖的背景漸變效果
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-      radial-gradient(circle at 25% 30%, rgba(238, 184, 104, 0.08) 0%, transparent 55%),
-      radial-gradient(circle at 70% 20%, rgba(239, 118, 122, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 60% 80%, rgba(69, 105, 144, 0.04) 0%, transparent 45%);
-    pointer-events: none;
-    z-index: 0;
-  }
 }
 
 /* 返回首頁按鈕 */

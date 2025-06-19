@@ -202,28 +202,10 @@ export default {
   font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   padding: 20px;
-  background: #F8F9FA;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-
-  &::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba($coral-red, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba($golden-yellow, 0.06) 0%, transparent 45%),
-      radial-gradient(circle at 60% 80%, rgba($teal-green, 0.07) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba($mint-green, 0.05) 0%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
-  }
 }
 
 .main-container {

@@ -1,71 +1,56 @@
 <template>
-  <main class="main-container" :class="{ 'sidebar-expanded': sidebarOpen && !isMobile }">
-    <div class="main-content">
-      <!-- 世界地圖 -->
-      <!-- <div class="world-map-section">
-        <router-link to="/worldmap" class="nav-link">
-          <div class="link-card">
-            <div class="card-icon">🎯</div>
-            <h3>🗺️ 世界地圖</h3>
-            <p class="world-map-subtitle">探索世界各地的風景</p>
-            <div class="card-decoration"></div>
-          </div>
-        </router-link>
-      </div> -->
+  <div class="schedule-section">
+    <div class="schedule-header">
+      <h2>🗓️</h2>
+      <p class="schedule-subtitle">精心規劃的6天完美旅程</p>
+    </div>
 
-      <!-- 行程表主區域 -->
-      <div class="schedule-section">
-        <div class="schedule-header">
-          <h2>🗓️</h2>
-          <p class="schedule-subtitle">精心規劃的6天完美旅程</p>
+    <!-- 封面圖片區域 -->
+    <div class="cover-image-area">
+      <div class="cover-placeholder">
+        <span class="cover-text">[封面圖片區域]</span>
+      </div>
+    </div>
+
+    <!-- 主要功能區域 -->
+    <div class="schedule-main-grid">
+      <a href="itinerary#overview" class="schedule-card overview-card">
+        <div class="schedule-icon">📋</div>
+        <h3>行程總覽</h3>
+      </a>
+      <a href="itinerary#flight" class="schedule-card flight-card">
+        <div class="schedule-icon">✈️</div>
+        <h3>航班資訊</h3>
+      </a>
+      <a href="itinerary#map" class="schedule-card map-card">
+        <div class="schedule-icon">🗺️</div>
+        <h3>路線地圖</h3>
+      </a>
+      <a href="itinerary#packing" class="schedule-card packing-card">
+        <div class="schedule-icon">🎒</div>
+        <h3>必帶物品</h3>
+      </a>
+    </div>
+
+    <!-- 每日行程區域 -->
+    <div class="daily-schedule-section">
+      <h3 class="daily-title">📅 每日詳細行程</h3>
+      <div class="daily-grid">
+        <!-- 上排：Day1-Day4 -->
+        <div class="daily-block daily-block-top">
+          <a href="itinerary#day1" class="daily-card">Day1</a>
+          <a href="itinerary#day2" class="daily-card">Day2</a>
+          <a href="itinerary#day3" class="daily-card">Day3</a>
+          <a href="itinerary#day4" class="daily-card">Day4</a>
         </div>
-
-        <!-- 封面圖片區域 -->
-        <div class="cover-image-area">
-          <div class="cover-placeholder">
-            <span class="cover-text">[封面圖片區域]</span>
-          </div>
-        </div>
-
-        <!-- 主要功能區域 -->
-        <div class="schedule-main-grid">
-          <a href="itinerary#overview" class="schedule-card overview-card">
-            <div class="schedule-icon">📋</div>
-            <h3>行程總覽</h3>
-          </a>
-          <a href="itinerary#flight" class="schedule-card flight-card">
-            <div class="schedule-icon">✈️</div>
-            <h3>航班資訊</h3>
-          </a>
-          <a href="itinerary#map" class="schedule-card map-card">
-            <div class="schedule-icon">🗺️</div>
-            <h3>路線地圖</h3>
-          </a>
-          <a href="itinerary#packing" class="schedule-card packing-card">
-            <div class="schedule-icon">🎒</div>
-            <h3>必帶物品</h3>
-          </a>
-        </div>
-
-        <!-- 每日行程區域 -->
-        <div class="daily-schedule-section">
-          <h3 class="daily-title">📅 每日詳細行程</h3>
-          <div class="daily-grid">
-            <div class="daily-block">
-              <a href="itinerary#day1" class="daily-card">Day1</a>
-              <a href="itinerary#day2" class="daily-card">Day2</a>
-              <a href="itinerary#day3" class="daily-card">Day3</a>
-              <a href="itinerary#day4" class="daily-card">Day4</a>
-            </div>
-            <div class="daily-block">
-              <a href="itinerary#day5" class="daily-card">Day5</a>
-              <a href="itinerary#day6" class="daily-card">Day6</a>
-            </div>
-          </div>
+        <!-- 下排：Day5-Day6 -->
+        <div class="daily-block daily-block-bottom">
+          <a href="itinerary#day5" class="daily-card">Day5</a>
+          <a href="itinerary#day6" class="daily-card">Day6</a>
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>
@@ -82,56 +67,51 @@ defineProps({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @use '@/styles/variables' as *;
 
-/* 主內容容器 */
-.main-container {
-  margin-left: 60px;
-  min-height: 100vh;
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  background: $warm-gradient-bg;
+/* 行程表主區域 */
+.schedule-section {
+  width: 100%;
+}
 
-  &.sidebar-expanded {
-    margin-left: 250px;
+.schedule-header {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h2 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 2px 4px rgba($primary-warm, 0.3));
   }
 }
 
-.main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+.schedule-subtitle {
+  color: $text-secondary-warm;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-/* 世界地圖區域 */
-.world-map-section {
-  margin-bottom: 40px;
+/* 封面圖片區域 */
+.cover-image-area {
+  margin-bottom: 30px;
 }
 
-.nav-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.link-card {
+.cover-placeholder {
+  height: 200px;
   background: $warm-gradient-primary;
-  border-radius: 20px;
-  padding: 35px;
-  text-align: center;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
+  font-size: 18px;
+  font-weight: 600;
   box-shadow: $warm-shadow-medium;
-  transition: all 0.4s ease;
+  border: $warm-border-light;
   position: relative;
   overflow: hidden;
-  border: $warm-border-light;
-
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: $warm-shadow-hover;
-    background: linear-gradient(135deg, lighten($golden-yellow, 5%), lighten($coral-red, 5%));
-  }
-
+  
   &::before {
     content: '';
     position: absolute;
@@ -139,110 +119,33 @@ defineProps({
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-  }
-}
-
-.card-icon {
-  font-size: 52px;
-  margin-bottom: 18px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-}
-
-.link-card h3 {
-  font-size: 32px;
-  margin-bottom: 10px;
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.world-map-subtitle {
-  font-size: 18px;
-  opacity: 0.95;
-  margin: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.card-decoration {
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 120px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 行程表區域 */
-.schedule-section {
-  background: $warm-bg-card;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: $warm-shadow-light;
-  border: $warm-border-light;
-  backdrop-filter: blur(10px);
-}
-
-.schedule-header {
-  text-align: center;
-  margin-bottom: 35px;
-
-  h2 {
-    font-size: 56px;
-    margin-bottom: 12px;
-    filter: drop-shadow(0 2px 4px rgba(238, 184, 104, 0.3));
-  }
-}
-
-.schedule-subtitle {
-  font-size: 20px;
-  color: $text-secondary-warm;
-  margin: 0;
-  font-weight: 500;
-}
-
-/* 封面圖片區域 */
-.cover-image-area {
-  margin-bottom: 35px;
-}
-
-.cover-placeholder {
-  height: 220px;
-  background: $warm-gradient-bg;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed rgba(238, 184, 104, 0.3);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: $warm-gradient-hover;
-    border-color: rgba(238, 184, 104, 0.5);
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.15)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    opacity: 0.3;
   }
 }
 
 .cover-text {
-  color: $text-secondary-warm;
-  font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  position: relative;
 }
 
-/* 主要功能網格 */
+/* 主要功能區域 */
 .schedule-main-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
   gap: 20px;
-  margin-bottom: 45px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
 }
 
 .schedule-card {
-  background: $warm-bg-card-hover;
+  background: $warm-bg-card;
+  backdrop-filter: blur(8px);
   border: $warm-border-light;
-  border-radius: 16px;
-  padding: 28px;
+  border-radius: 12px;
+  padding: 24px 20px;
   text-align: center;
   text-decoration: none;
   color: $text-primary-warm;
@@ -250,67 +153,73 @@ defineProps({
   box-shadow: $warm-shadow-light;
   position: relative;
   overflow: hidden;
-
-  &:hover {
-    border: $warm-border-accent;
-    transform: translateY(-5px);
-    box-shadow: $warm-shadow-hover;
-    background: $warm-bg-card;
-
-    .schedule-icon {
-      transform: scale(1.1);
-    }
-  }
-
-  &::after {
+  flex: 1;
+  
+  &::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: $warm-gradient-primary;
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
+    bottom: 0;
+    background: $warm-gradient-bg;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
   }
-
-  &:hover::after {
-    transform: scaleX(1);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $warm-shadow-hover;
+    border-color: rgba($primary-warm, 0.3);
+    
+    &::before {
+      opacity: 1;
+    }
+    
+    .schedule-icon {
+      transform: scale(1.1);
+    }
+    
+    h3 {
+      color: $primary-warm;
+    }
   }
 }
 
 .schedule-icon {
-  font-size: 36px;
-  margin-bottom: 15px;
+  font-size: 2.2rem;
+  margin-bottom: 12px;
   transition: transform 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(238, 184, 104, 0.2));
+  filter: drop-shadow(0 2px 4px rgba($primary-warm, 0.2));
 }
 
 .schedule-card h3 {
-  font-size: 18px;
   margin: 0;
-  color: $text-primary-warm;
+  font-size: 1.1rem;
   font-weight: 600;
+  color: $text-primary-warm;
+  transition: color 0.3s ease;
 }
 
 /* 每日行程區域 */
 .daily-schedule-section {
-  border-top: $warm-border-light;
-  padding-top: 35px;
+  margin-bottom: 30px;
 }
 
 .daily-title {
-  font-size: 24px;
-  margin-bottom: 25px;
-  color: $text-primary-warm;
   text-align: center;
+  margin-bottom: 20px;
+  color: $text-primary-warm;
+  font-size: 1.3rem;
   font-weight: 600;
 }
 
 .daily-grid {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+  align-items: center;
 }
 
 .daily-block {
@@ -323,181 +232,144 @@ defineProps({
 .daily-card {
   background: $warm-gradient-primary;
   color: white;
-  padding: 18px 28px;
+  padding: 24px 20px;
   border-radius: 12px;
+  text-align: center;
   text-decoration: none;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
-  box-shadow: $warm-shadow-light;
+  min-width: 80px;
+  box-shadow: $warm-shadow-medium;
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: $warm-shadow-hover;
-    background: linear-gradient(135deg, lighten($golden-yellow, 3%), lighten($coral-red, 3%));
-  }
-
+  overflow: hidden;
+  
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: $warm-shadow-hover;
+    
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
-/* 手機版樣式 */
+/* 響應式設計 */
 @media (max-width: 768px) {
-  .main-container {
-    margin-left: 0;
-    padding: 80px 15px 20px;
-
-    &.sidebar-expanded {
-      margin-left: 0;
-    }
-  }
-
-  .main-content {
-    padding: 10px;
-  }
-
-  .link-card {
-    padding: 28px;
-    border-radius: 16px;
-
-    h3 {
-      font-size: 28px;
-    }
-  }
-
-  .card-icon {
-    font-size: 44px;
-  }
-
-  .world-map-subtitle {
-    font-size: 16px;
-  }
-
-  .schedule-section {
-    padding: 28px 20px;
-    border-radius: 16px;
-
-    .schedule-header h2 {
-      font-size: 48px;
-    }
-
-    .schedule-subtitle {
-      font-size: 18px;
-    }
-  }
-
-  .cover-placeholder {
-    height: 180px;
-  }
-
-  .cover-text {
-    font-size: 16px;
+  .schedule-header h2 {
+    font-size: 2.5rem;
   }
 
   .schedule-main-grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: 15px;
   }
 
   .schedule-card {
-    padding: 24px 16px;
-
-    .schedule-icon {
-      font-size: 32px;
-    }
-
-    h3 {
-      font-size: 16px;
-    }
+    padding: 18px 15px;
+    border-radius: 10px;
+    min-width: unset;
+    max-width: unset;
+    flex: unset;
   }
 
-  .daily-title {
-    font-size: 22px;
+  .daily-grid {
+    gap: 15px;
   }
 
   .daily-block {
-    gap: 10px;
+    gap: 12px;
+  }
+  
+  .daily-card {
+    padding: 20px 16px;
+    border-radius: 10px;
+    min-width: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .schedule-header h2 {
+    font-size: 2rem;
   }
 
-  .daily-card {
-    padding: 14px 20px;
-    font-size: 15px;
+  .schedule-subtitle {
+    font-size: 1rem;
+  }
+
+  .cover-placeholder {
+    height: 150px;
+    font-size: 16px;
     border-radius: 10px;
   }
-}
-
-/* 平板樣式 */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .main-content {
-    max-width: 900px;
-  }
 
   .schedule-main-grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-  }
-
-  .link-card {
-    padding: 32px;
-
-    h3 {
-      font-size: 30px;
-    }
-  }
-
-  .schedule-section {
-    padding: 35px;
-  }
-}
-
-/* 大螢幕樣式 */
-@media (min-width: 1400px) {
-  .main-content {
-    max-width: 1400px;
-  }
-
-  .link-card {
-    padding: 40px;
-
-    .card-icon {
-      font-size: 58px;
-    }
-
-    h3 {
-      font-size: 36px;
-    }
-
-    .world-map-subtitle {
-      font-size: 20px;
-    }
-  }
-
-  .schedule-section {
-    padding: 45px;
-  }
-
-  .schedule-main-grid {
-    gap: 25px;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .schedule-card {
-    padding: 32px;
+    border-radius: 8px;
+    padding: 16px 12px;
+    min-width: unset;
+  }
 
-    .schedule-icon {
-      font-size: 40px;
-    }
+  .schedule-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  
+  .schedule-card h3 {
+    font-size: 1rem;
+  }
 
-    h3 {
-      font-size: 20px;
-    }
+  .daily-block {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .daily-block-top {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .daily-block-bottom {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .daily-card {
+    border-radius: 8px;
+    padding: 18px 12px;
+    min-width: 60px;
+  }
+
+  .content-placeholder {
+    height: 100px;
+    font-size: 14px;
+    border-radius: 8px;
   }
 }
 </style>

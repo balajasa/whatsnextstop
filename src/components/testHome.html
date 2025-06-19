@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>響應式側邊欄佈局</title>
+    <title>響應式佈局</title>
     <style>
         * {
             margin: 0;
@@ -14,43 +14,63 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f8f9fa;
-            color: #333;
             overflow-x: hidden;
         }
 
-        /* 手機版漢堡按鈕 */
-        .mobile-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            background-color: #2c3e50;
-            z-index: 1001;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-        }
-
-        .mobile-toggle:hover {
-            background-color: #34495e;
-        }
-
-        /* 側邊欄樣式 */
-        .sidebar {
+        /* Header */
+        .header {
             position: fixed;
             top: 0;
             left: 0;
-            height: 100vh;
-            width: 60px;
-            background-color: #2c3e50;
-            transition: width 0.3s ease;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
             z-index: 1000;
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 2px;
+            background-color: #374151;
+            margin: 2px 0;
+            transition: 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-4px, 4px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-4px, -4px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            width: 60px;
+            height: calc(100vh - 50px);
+            background-color: #fff;
+            border-right: 1px solid #e1e5e9;
+            transition: width 0.3s ease;
             overflow: hidden;
+            z-index: 900;
         }
 
         .sidebar.expanded {
@@ -58,275 +78,318 @@
         }
 
         .sidebar-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 60px;
-            background-color: #34495e;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .sidebar-toggle:hover {
-            background-color: #3a536b;
-        }
-
-        .hamburger {
-            width: 24px;
-            height: 24px;
-            position: relative;
-        }
-
-        .hamburger span {
-            display: block;
-            position: absolute;
-            height: 2px;
-            width: 100%;
-            background: white;
-            border-radius: 1px;
-            transition: 0.3s;
-        }
-
-        .hamburger span:nth-child(1) { top: 4px; }
-        .hamburger span:nth-child(2) { top: 11px; }
-        .hamburger span:nth-child(3) { top: 18px; }
-
-        .sidebar.expanded .hamburger span:nth-child(1) {
-            transform: rotate(-45deg);
-            top: 11px;
-        }
-
-        .sidebar.expanded .hamburger span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .sidebar.expanded .hamburger span:nth-child(3) {
-            transform: rotate(45deg);
-            top: 11px;
+            display: none;
         }
 
         .sidebar-content {
-            padding: 20px;
-            color: white;
-            opacity: 0;
+            padding: 0;
+            width: 250px;
+        }
+
+        /* 側邊欄選單項目 */
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            margin: 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            color: #6b7280;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .sidebar-item.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            box-shadow: inset -2px 0 0 #2563eb;
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .sidebar-text {
+            opacity: 1;
             transition: opacity 0.3s ease;
         }
 
-        .sidebar.expanded .sidebar-content {
-            opacity: 1;
+        /* 收起狀態：隱藏文字 */
+        .sidebar:not(.expanded) .sidebar-text {
+            opacity: 0;
         }
 
-        /* 主內容區域 */
+        /* 收起狀態：調整項目居中 */
+        .sidebar:not(.expanded) .sidebar-item {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar:not(.expanded) .sidebar-icon {
+            margin-right: 0;
+        }
+
+        /* Main Content */
         .main-container {
-            margin-left: 60px;
-            min-height: 100vh;
+            margin-top: 50px;
+            min-height: calc(100vh - 50px);
+            transition: all 0.3s ease;
             display: flex;
             justify-content: center;
-            align-items: center;
             padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-container.sidebar-expanded {
-            margin-left: 250px;
         }
 
         .main-content {
-            max-width: 800px;
             width: 100%;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            text-align: center;
+            transition: all 0.3s ease;
         }
 
-        .main-content h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 2.5rem;
+        /* Desktop: 當側邊欄展開時，主內容調整位置 */
+        .main-container {
+            margin-left: 60px;
         }
 
-        .main-content p {
-            color: #666;
-            line-height: 1.6;
-            font-size: 1.1rem;
+        .main-container.sidebar-open {
+            margin-left: 250px;
         }
 
-        /* 覆蓋層 */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
+        /* 當螢幕寬度不足以置中時，內容貼齊側邊欄 */
 
-        .overlay.active {
-            display: block;
-        }
-
-        /* 手機版樣式 */
+        /* Tablet */
         @media (max-width: 768px) {
-            .mobile-toggle {
-                display: flex;
-            }
-
             .sidebar {
                 width: 0;
-                background-color: rgba(44, 62, 80, 0.95);
-                backdrop-filter: blur(10px);
+                z-index: 2000;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             }
 
-            .sidebar.expanded {
+            .sidebar.mobile-open {
                 width: 250px;
             }
 
-            .sidebar-toggle {
-                display: none;
+            .main-container {
+                margin-left: 0 !important;
+                padding: 15px;
             }
 
-            .sidebar-content {
-                padding-top: 80px;
-                text-align: center;
+            .main-content {
+                padding: 20px;
+            }
+
+            /* 手機版顯示完整內容 */
+            .sidebar-item {
+                justify-content: flex-start !important;
+                padding: 12px 18px !important;
+            }
+
+            .sidebar-icon {
+                margin-right: 12px !important;
+            }
+
+            .sidebar-text {
+                opacity: 1 !important;
+            }
+
+            /* 遮罩層 */
+            .overlay {
+                position: fixed;
+                top: 50px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1500;
+            }
+
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 15px;
             }
 
             .main-container {
-                margin-left: 0;
-                padding: 80px 20px 20px;
-            }
-
-            .main-container.sidebar-expanded {
-                margin-left: 0;
+                padding: 10px;
             }
 
             .main-content {
-                padding: 30px 20px;
-            }
-
-            .main-content h1 {
-                font-size: 2rem;
+                padding: 15px;
             }
         }
 
-        /* 平板樣式 */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .main-content {
-                max-width: 700px;
-                padding: 35px;
-            }
-        }
-
-        /* 大螢幕樣式 */
-        @media (min-width: 1400px) {
-            .main-content {
-                max-width: 900px;
-            }
+        /* 示例內容樣式 */
+        .content-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <!-- 手機版漢堡按鈕 -->
-    <div class="mobile-toggle" onclick="toggleSidebar()">
-        <div class="hamburger">
+    <!-- Header -->
+    <header class="header">
+        <div class="hamburger" onclick="toggleSidebar()">
             <span></span>
             <span></span>
             <span></span>
         </div>
-    </div>
+        <h1 style="margin-left: 15px; font-size: 18px; color: #374151;">Header (50px)</h1>
+    </header>
 
-    <!-- 側邊欄 -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-toggle" onclick="toggleSidebar()">
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="sidebar-item">
+                        <div class="sidebar-icon">💬</div>
+                        <span class="sidebar-text">新對話</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-item">
+                        <div class="sidebar-icon">📚</div>
+                        <span class="sidebar-text">歷史記錄</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-item">
+                        <div class="sidebar-icon">⭐</div>
+                        <span class="sidebar-text">我的最愛</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-item">
+                        <div class="sidebar-icon">📄</div>
+                        <span class="sidebar-text">文件庫</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-item">
+                        <div class="sidebar-icon">🔧</div>
+                        <span class="sidebar-text">設定</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-item">
+                        <div class="sidebar-icon">❓</div>
+                        <span class="sidebar-text">幫助</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="main-container" id="mainContainer">
+        <div class="main-content">
+            <div class="content-placeholder">
+                主內容區域 - 保持置中
+            </div>
+            <div class="content-placeholder">
+                當螢幕縮小時會與側邊欄貼齊
+            </div>
+            <div class="content-placeholder">
+                手機版使用覆蓋式側邊欄
             </div>
         </div>
-        <div class="sidebar-content">
-            <h3>側邊欄內容</h3>
-            <p>這裡可以放置導航選單、工具列或其他功能</p>
-        </div>
-    </div>
-
-    <!-- 覆蓋層 (僅手機版) -->
-    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
-    <!-- 主內容 -->
-    <div class="main-container" id="mainContainer">
-        <div class="main-content">
-            <h1>響應式佈局</h1>
-            <p>這是主內容區域，會根據螢幕尺寸和側邊欄狀態自動調整位置。</p>
-            <p>在桌面版，點擊左側按鈕展開側邊欄。在手機版，會顯示漢堡選單並使用覆蓋式側邊欄。</p>
-            <p>主內容始終保持置中，並會根據可用空間自動調整。</p>
-        </div>
-    </div>
+    </main>
 
     <script>
-        let sidebarExpanded = false;
+        const sidebar = document.getElementById('sidebar');
+        const mainContainer = document.getElementById('mainContainer');
+        const overlay = document.getElementById('overlay');
+        const hamburger = document.querySelector('.hamburger');
 
+        // 側邊欄切換（桌面版和手機版通用）
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContainer = document.getElementById('mainContainer');
-            const overlay = document.getElementById('overlay');
-
-            sidebarExpanded = !sidebarExpanded;
-
-            if (sidebarExpanded) {
-                sidebar.classList.add('expanded');
-                if (window.innerWidth > 768) {
-                    mainContainer.classList.add('sidebar-expanded');
-                } else {
-                    overlay.classList.add('active');
-                }
-            } else {
-                sidebar.classList.remove('expanded');
-                mainContainer.classList.remove('sidebar-expanded');
-                overlay.classList.remove('active');
-            }
-        }
-
-        function closeSidebar() {
             if (window.innerWidth <= 768) {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('overlay');
-
-                sidebar.classList.remove('expanded');
-                overlay.classList.remove('active');
-                sidebarExpanded = false;
+                // 手機版：覆蓋式
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+                hamburger.classList.toggle('active');
+            } else {
+                // 桌面版：推擠式
+                sidebar.classList.toggle('expanded');
+                mainContainer.classList.toggle('sidebar-open');
+                hamburger.classList.toggle('active');
             }
         }
 
-        // 響應式處理
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContainer = document.getElementById('mainContainer');
-            const overlay = document.getElementById('overlay');
-
-            if (window.innerWidth > 768) {
-                overlay.classList.remove('active');
-                if (sidebarExpanded) {
-                    mainContainer.classList.add('sidebar-expanded');
-                }
-            } else {
-                mainContainer.classList.remove('sidebar-expanded');
-                if (sidebarExpanded) {
-                    overlay.classList.add('active');
-                }
+        // 手機版側邊欄切換（保留用於其他功能）
+        function toggleMobileSidebar() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+                hamburger.classList.toggle('active');
             }
+        }
+
+        // 關閉手機版側邊欄
+        function closeMobileSidebar() {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            hamburger.classList.remove('active');
+        }
+
+        // 視窗大小改變時重置狀態
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                // 切換到桌面版時，清除手機版狀態
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            } else {
+                // 切換到手機版時，清除桌面版狀態
+                sidebar.classList.remove('expanded');
+                mainContainer.classList.remove('sidebar-open');
+            }
+            // 重置漢堡按鈕狀態
+            hamburger.classList.remove('active');
         });
 
-        // 鍵盤支援 (ESC 關閉側邊欄)
+        // ESC 鍵關閉手機版側邊欄
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && sidebarExpanded) {
-                closeSidebar();
-                if (window.innerWidth > 768) {
-                    toggleSidebar();
-                }
+            if (e.key === 'Escape') {
+                closeMobileSidebar();
             }
         });
     </script>
