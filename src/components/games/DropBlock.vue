@@ -170,7 +170,6 @@ defineExpose({
 <style lang="scss" scoped>
 .game-wrapper {
   padding: 20px;
-  font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -317,7 +316,6 @@ defineExpose({
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: 'Georgia', serif;
     overflow: hidden;
 
     &.show {

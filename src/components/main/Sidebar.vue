@@ -2,12 +2,29 @@
   <aside class="sidebar" :class="sidebarClasses">
     <div class="sidebar-content">
       <ul class="sidebar-menu">
-        <li v-for="item in sidebarList" :key="item.path">
-          <router-link :to="item.path" class="sidebar-item" :class="{ active: isActive(item.path) }">
-            <div class="sidebar-icon">{{ item.icon }}</div>
-            <span class="sidebar-text">{{ item.name }}</span>
+        <!-- 首頁 - 始終顯示 -->
+        <li>
+          <router-link to="/" class="sidebar-item home-item" :class="{ active: isActive('/') }">
+            <div class="sidebar-icon">🏠</div>
+            <span class="sidebar-text">首頁</span>
           </router-link>
         </li>
+
+        <!-- 按分類顯示 - 只在展開時顯示 -->
+        <template v-for="category in sidebarCategory" :key="category">
+          <li class="sidebar-category">
+            <div class="category-title">
+              <span class="category-icon">📍</span>
+              <span class="category-text">{{ category }}</span>
+            </div>
+          </li>
+          <li v-for="item in getItemsByCategory(category)" :key="item.path">
+            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }">
+              <div class="sidebar-icon">{{ item.icon }}</div>
+              <span class="sidebar-text">{{ item.name }}</span>
+            </router-link>
+          </li>
+        </template>
       </ul>
     </div>
   </aside>
@@ -35,39 +52,46 @@ const route = useRoute()
 // 側邊欄開關狀態
 const isSidebarOpen = ref(false)
 
+// 側邊欄分類
+const sidebarCategory = ['要去哪裡', '踏踏腳印', '小小樂趣']
+
 // 側邊欄列表
 const sidebarList = [
   {
-    name: '新對話',
-    icon: '💬',
+    name: '首頁',
+    icon: '🏠',
     path: '/'
   },
   {
-    name: '歷史記錄',
-    icon: '📚',
-    path: '/history'
+    category: '要去哪裡',
+    name: '行程表',
+    icon: '🗓️',
+    path: '/schedule'
   },
   {
-    name: '我的最愛',
-    icon: '⭐',
-    path: '/favorites'
+    category: '踏踏腳印',
+    name: '世界地圖',
+    icon: '🗺️',
+    path: '/worldmap'
   },
   {
-    name: '文件庫',
-    icon: '📄',
-    path: '/documents'
+    category: '踏踏腳印',
+    name: '我的足跡',
+    icon: '👣',
+    path: '/footprint'
   },
   {
-    name: '設定',
-    icon: '🔧',
-    path: '/settings'
-  },
-  {
-    name: '幫助',
-    icon: '❓',
-    path: '/help'
+    category: '小小樂趣',
+    name: '小遊戲',
+    icon: '🎮',
+    path: '/tools'
   }
 ]
+
+// 根據分類獲取項目
+const getItemsByCategory = (category) => {
+  return sidebarList.filter(item => item.category === category)
+}
 
 // 計算側邊欄的CSS類別
 const sidebarClasses = computed(() => {
@@ -123,7 +147,7 @@ defineExpose({
   overflow: hidden;
   z-index: 900;
   box-shadow: $warm-shadow-light;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -155,6 +179,49 @@ defineExpose({
   margin: 0;
 }
 
+/* 分類標題 */
+.sidebar-category {
+  margin: 20px 0 8px 0;
+
+  &:first-child {
+    margin-top: 10px;
+  }
+}
+
+.category-title {
+  padding: 8px 18px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.category-icon {
+  font-size: 12px;
+  margin-right: 8px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.category-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba($text-secondary-warm, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* 收起狀態：隱藏分類容器和分類下的項目，但保留首頁 */
+.sidebar:not(.expanded) .sidebar-category {
+  display: none;
+}
+
+.sidebar:not(.expanded) .category-item {
+  display: none;
+}
+
+/* 側邊欄項目 */
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -167,7 +234,7 @@ defineExpose({
   border-radius: 0 8px 8px 0;
   margin: 2px 0;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -179,34 +246,47 @@ defineExpose({
     transition: width 0.3s ease;
     border-radius: 0 4px 4px 0;
   }
-  
+
   &:hover {
     background-color: $hover-primary;
     color: $text-primary-warm;
     transform: translateX(2px);
-    
+
     &::before {
       width: 3px;
     }
   }
-  
+
   &.active {
     background-color: $active-primary;
     color: $primary-warm;
     font-weight: 600;
     box-shadow: inset -3px 0 0 $primary-warm,
-                $warm-shadow-light;
-    
+      $warm-shadow-light;
+
     &::before {
       width: 4px;
       background: $primary-warm;
     }
-    
+
     .sidebar-icon {
       color: $primary-warm;
       transform: scale(1.1);
     }
   }
+}
+
+/* 首頁項目特殊樣式 */
+.home-item {
+  /* 確保首頁項目始終可見且樣式正確 */
+  margin: 8px 6px;
+  border-radius: 8px;
+}
+
+/* 分類下的項目縮排 */
+.category-item {
+  padding-left: 30px;
+  margin-left: 8px;
 }
 
 .sidebar-icon {
@@ -228,25 +308,60 @@ defineExpose({
   font-weight: 500;
 }
 
-/* 收起狀態：隱藏文字 */
+/* 收起狀態：隱藏文字但保持首頁圖示可見 */
 .sidebar:not(.expanded) .sidebar-text {
   opacity: 0;
 }
 
-/* 收起狀態：調整項目居中 */
+/* 收起狀態：調整項目居中，特別處理首頁項目 */
 .sidebar:not(.expanded) .sidebar-item {
   justify-content: center;
   padding: 14px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 3px 6px;
-  
+
   &::before {
     display: none;
   }
-  
-  &:hover, &.active {
+
+  &:hover,
+  &.active {
     transform: translateX(0);
     box-shadow: $warm-shadow-light;
+  }
+}
+
+/* 收起狀態下的首頁項目 */
+.sidebar:not(.expanded) .home-item {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 16px 12px !important;
+  margin: 8px 6px !important;
+  border-radius: 8px !important;
+
+  .sidebar-icon {
+    margin-right: 0 !important;
+    font-size: 18px;
+  }
+
+  .sidebar-text {
+    display: none;
+  }
+
+  &:hover {
+    background-color: $hover-primary;
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    background-color: $active-primary;
+    color: $primary-warm;
+
+    .sidebar-icon {
+      color: $primary-warm;
+      transform: scale(1.15);
+    }
   }
 }
 
@@ -273,18 +388,43 @@ defineExpose({
     padding: 14px 18px !important;
     margin: 2px 8px !important;
     border-radius: 8px !important;
-    
+
     &::before {
       display: block !important;
     }
+  }
+
+  .home-item {
+    justify-content: flex-start !important;
+    padding: 14px 18px !important;
+
+    .sidebar-text {
+      display: inline !important;
+      opacity: 1 !important;
+    }
+
+    .sidebar-icon {
+      margin-right: 12px !important;
+      font-size: 16px !important;
+    }
+  }
+
+  .category-item {
+    padding-left: 30px !important;
   }
 
   .sidebar-icon {
     margin-right: 12px !important;
   }
 
-  .sidebar-text {
+  .sidebar-text,
+  .category-text,
+  .category-icon {
     opacity: 1 !important;
+  }
+
+  .sidebar-category {
+    display: block !important;
   }
 }
 </style>

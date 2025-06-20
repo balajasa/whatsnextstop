@@ -7,17 +7,14 @@
         <span></span>
         <span></span>
       </div>
-      <h1 class="header-title">Header (50px)</h1>
+      <div class="header-title">
+        <div class="header-logo"></div>
+      </div>
     </header>
 
     <!-- 側邊欄 -->
-    <Sidebar 
-      ref="sidebarRef"
-      :isMobile="isMobile"
-      :headerHeight="50"
-      @keydown-escape="handleEscapeKey"
-    />
-    
+    <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
+
     <!-- 覆蓋層 (僅手機版) -->
     <div class="overlay" :class="{ active: sidebarOpen && isMobile }" @click="closeMobileSidebar"></div>
 
@@ -50,7 +47,7 @@ const checkMobile = () => {
 const handleResize = () => {
   const wasMobile = isMobile.value
   checkMobile()
-  
+
   // 視窗大小改變時重置狀態
   if (wasMobile !== isMobile.value && sidebarRef.value) {
     sidebarRef.value.resetSidebarState()
@@ -101,13 +98,12 @@ onUnmounted(() => {
 }
 
 .home {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: $warm-bg-base;
   color: $text-primary-warm;
   overflow-x: hidden;
   min-height: 100vh;
   position: relative;
-  
+
   // 溫暖背景漸變效果
   &::before {
     content: '';
@@ -149,7 +145,7 @@ onUnmounted(() => {
   padding: 4px;
   border-radius: 6px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     background-color: $hover-primary;
   }
@@ -166,16 +162,16 @@ onUnmounted(() => {
 
 .hamburger.active {
   background-color: $active-primary;
-  
+
   span:nth-child(1) {
     transform: rotate(-45deg) translate(-4px, 4px);
     background-color: $primary-warm;
   }
-  
+
   span:nth-child(2) {
     opacity: 0;
   }
-  
+
   span:nth-child(3) {
     transform: rotate(45deg) translate(-4px, -4px);
     background-color: $primary-warm;
@@ -183,10 +179,22 @@ onUnmounted(() => {
 }
 
 .header-title {
-  margin-left: 15px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 18px;
   color: $text-primary-warm;
   font-weight: 600;
+}
+
+.header-logo {
+  width: 40px;
+  height: 40px;
+  background: url('@/assets/img/logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* Main Content */
@@ -217,7 +225,7 @@ onUnmounted(() => {
   padding: 40px;
   transition: all 0.3s ease;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;

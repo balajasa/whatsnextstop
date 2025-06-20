@@ -1,34 +1,20 @@
 <template>
   <div class="schedule-section">
     <div class="schedule-header">
-      <h2>🗓️</h2>
       <p class="schedule-subtitle">精心規劃的6天完美旅程</p>
     </div>
 
     <!-- 封面圖片區域 -->
     <div class="cover-image-area">
-      <div class="cover-placeholder">
-        <span class="cover-text">[封面圖片區域]</span>
+      <div class="cover-image">
       </div>
     </div>
 
     <!-- 主要功能區域 -->
     <div class="schedule-main-grid">
-      <a href="itinerary#overview" class="schedule-card overview-card">
-        <div class="schedule-icon">📋</div>
-        <h3>行程總覽</h3>
-      </a>
-      <a href="itinerary#flight" class="schedule-card flight-card">
-        <div class="schedule-icon">✈️</div>
-        <h3>航班資訊</h3>
-      </a>
-      <a href="itinerary#map" class="schedule-card map-card">
-        <div class="schedule-icon">🗺️</div>
-        <h3>路線地圖</h3>
-      </a>
-      <a href="itinerary#packing" class="schedule-card packing-card">
-        <div class="schedule-icon">🎒</div>
-        <h3>必帶物品</h3>
+      <a v-for="card in mainCards" :key="card.id" :href="card.href" :class="['schedule-card', card.class]">
+        <div class="schedule-icon">{{ card.icon }}</div>
+        <h3>{{ card.title }}</h3>
       </a>
     </div>
 
@@ -36,17 +22,11 @@
     <div class="daily-schedule-section">
       <h3 class="daily-title">📅 每日詳細行程</h3>
       <div class="daily-grid">
-        <!-- 上排：Day1-Day4 -->
-        <div class="daily-block daily-block-top">
-          <a href="itinerary#day1" class="daily-card">Day1</a>
-          <a href="itinerary#day2" class="daily-card">Day2</a>
-          <a href="itinerary#day3" class="daily-card">Day3</a>
-          <a href="itinerary#day4" class="daily-card">Day4</a>
-        </div>
-        <!-- 下排：Day5-Day6 -->
-        <div class="daily-block daily-block-bottom">
-          <a href="itinerary#day5" class="daily-card">Day5</a>
-          <a href="itinerary#day6" class="daily-card">Day6</a>
+        <!-- 使用 v-for 生成每日行程 -->
+        <div class="daily-block">
+          <a v-for="day in totalDaysArr" :key="day.id" :href="day.href" class="daily-card">
+            {{ day.label }}
+          </a>
         </div>
       </div>
     </div>
@@ -54,6 +34,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 // 接收側邊欄狀態和手機版狀態
 defineProps({
   sidebarOpen: {
@@ -64,6 +46,48 @@ defineProps({
     type: Boolean,
     default: false
   }
+})
+
+// 主要功能卡片数据
+const mainCards = [
+  {
+    id: 'overview',
+    href: 'itinerary#overview',
+    class: 'overview-card',
+    icon: '📋',
+    title: '行程總覽'
+  },
+  {
+    id: 'flight',
+    href: 'itinerary#flight',
+    class: 'flight-card',
+    icon: '✈️',
+    title: '航班資訊'
+  },
+  {
+    id: 'map',
+    href: 'itinerary#map',
+    class: 'map-card',
+    icon: '🗺️',
+    title: '路線地圖'
+  },
+  {
+    id: 'packing',
+    href: 'itinerary#packing',
+    class: 'packing-card',
+    icon: '🎒',
+    title: '必帶物品'
+  }
+]
+
+// 每日行程天數
+const totalDays = 6;
+const totalDaysArr = computed(() => {
+  return Array.from({ length: 6 }, (_, index) => ({
+    id: `day${index + 1}`,
+    href: `itinerary#day${index + 1}`,
+    label: `Day${index + 1}`
+  }))
 })
 </script>
 
@@ -78,7 +102,7 @@ defineProps({
 .schedule-header {
   text-align: center;
   margin-bottom: 30px;
-  
+
   h2 {
     font-size: 3rem;
     margin-bottom: 10px;
@@ -94,34 +118,20 @@ defineProps({
 
 /* 封面圖片區域 */
 .cover-image-area {
+  width: 100%;
+  height: 250px;
   margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: $warm-shadow-medium;
 }
 
-.cover-placeholder {
-  height: 200px;
-  background: $warm-gradient-primary;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 18px;
-  font-weight: 600;
-  box-shadow: $warm-shadow-medium;
-  border: $warm-border-light;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.15)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
-    opacity: 0.3;
-  }
+.cover-image {
+  width: 100%;
+  height: 250px;
+  background: url('@/assets/img/bg/polar_bear.jpg');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .cover-text {
@@ -154,7 +164,7 @@ defineProps({
   position: relative;
   overflow: hidden;
   flex: 1;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -167,20 +177,20 @@ defineProps({
     transition: opacity 0.3s ease;
     z-index: -1;
   }
-  
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: $warm-shadow-hover;
     border-color: rgba($primary-warm, 0.3);
-    
+
     &::before {
       opacity: 1;
     }
-    
+
     .schedule-icon {
       transform: scale(1.1);
     }
-    
+
     h3 {
       color: $primary-warm;
     }
@@ -244,7 +254,7 @@ defineProps({
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -256,11 +266,11 @@ defineProps({
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  
+
   &:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: $warm-shadow-hover;
-    
+
     &::before {
       opacity: 1;
     }
@@ -295,7 +305,7 @@ defineProps({
   .daily-block {
     gap: 12px;
   }
-  
+
   .daily-card {
     padding: 20px 16px;
     border-radius: 10px;
@@ -312,10 +322,13 @@ defineProps({
     font-size: 1rem;
   }
 
-  .cover-placeholder {
+  .cover-image-area {
     height: 150px;
-    font-size: 16px;
     border-radius: 10px;
+  }
+
+  .cover-image {
+    height: 150px;
   }
 
   .schedule-main-grid {
@@ -335,7 +348,7 @@ defineProps({
     font-size: 2rem;
     margin-bottom: 8px;
   }
-  
+
   .schedule-card h3 {
     font-size: 1rem;
   }
@@ -345,7 +358,7 @@ defineProps({
     align-items: center;
     gap: 10px;
   }
-  
+
   .daily-block-top {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -353,23 +366,17 @@ defineProps({
     width: 100%;
     max-width: 300px;
   }
-  
+
   .daily-block-bottom {
     display: flex;
     flex-direction: row;
     gap: 10px;
   }
-  
+
   .daily-card {
     border-radius: 8px;
     padding: 18px 12px;
     min-width: 60px;
-  }
-
-  .content-placeholder {
-    height: 100px;
-    font-size: 14px;
-    border-radius: 8px;
   }
 }
 </style>

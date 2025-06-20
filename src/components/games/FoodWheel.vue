@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { gsap } from 'gsap'
 import _ from 'lodash'
 
@@ -199,7 +199,6 @@ export default {
 @use '@/styles/variables' as *;
 
 .app {
-  font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, sans-serif;
   margin: 0;
   padding: 20px;
   display: flex;
