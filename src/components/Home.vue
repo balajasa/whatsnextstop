@@ -13,38 +13,51 @@
     </header>
 
     <!-- 側邊欄 -->
-    <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
+    <Sidebar
+      ref="sidebarRef"
+      :isMobile="isMobile"
+      :headerHeight="50"
+      @keydown-escape="handleEscapeKey"
+    />
 
     <!-- 覆蓋層 (僅手機版) -->
-    <div class="overlay" :class="{ active: sidebarOpen && isMobile }" @click="closeMobileSidebar"></div>
+    <div
+      class="overlay"
+      :class="{ active: sidebarOpen && isMobile }"
+      @click="closeMobileSidebar"
+    ></div>
 
-    <!-- 主內容區域 -->
+    <!-- 主內容區域 - 移除寬度限制 -->
     <main class="main-container" :class="{ 'sidebar-open': sidebarOpen && !isMobile }">
-      <div class="main-content">
-        <router-view />
-      </div>
+      <router-view />
     </main>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
-import Sidebar from '@/components/main/Sidebar.vue'
+import type { Ref } from 'vue'
+import Sidebar from '@/components/layout/Sidebar.vue'
 
-const route = useRoute()
-const sidebarRef = ref(null)
-const isMobile = ref(false)
+interface SidebarRef {
+  isSidebarOpen: boolean
+  toggleSidebar: () => void
+  closeSidebar: () => void
+  resetSidebarState: () => void
+}
 
-const sidebarOpen = computed(() => {
+const sidebarRef: Ref<SidebarRef | null> = ref(null)
+const isMobile: Ref<boolean> = ref(false)
+
+const sidebarOpen = computed((): boolean => {
   return sidebarRef.value?.isSidebarOpen ?? false
 })
 
-const checkMobile = () => {
+const checkMobile = (): void => {
   isMobile.value = window.innerWidth <= 768
 }
 
-const handleResize = () => {
+const handleResize = (): void => {
   const wasMobile = isMobile.value
   checkMobile()
 
@@ -54,23 +67,23 @@ const handleResize = () => {
   }
 }
 
-const handleToggleSidebar = () => {
+const handleToggleSidebar = (): void => {
   if (sidebarRef.value) {
     sidebarRef.value.toggleSidebar()
   }
 }
 
-const closeMobileSidebar = () => {
+const closeMobileSidebar = (): void => {
   if (isMobile.value && sidebarRef.value) {
     sidebarRef.value.closeSidebar()
   }
 }
 
-const handleEscapeKey = () => {
+const handleEscapeKey = (): void => {
   closeMobileSidebar()
 }
 
-const handleKeydown = (e) => {
+const handleKeydown = (e: KeyboardEvent): void => {
   if (e.key === 'Escape') {
     handleEscapeKey()
   }
@@ -197,48 +210,20 @@ onUnmounted(() => {
   background-position: center;
 }
 
-/* Main Content */
+/* Main Content - 移除所有寬度限制 */
 .main-container {
   margin-top: 50px;
   margin-left: 60px;
   min-height: calc(100vh - 50px);
   transition: all 0.3s ease;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
+  width: calc(100% - 60px); // 動態計算寬度
   position: relative;
   z-index: 1;
 }
 
 .main-container.sidebar-open {
   margin-left: 250px;
-}
-
-.main-content {
-  width: 100%;
-  max-width: 800px;
-  background-color: $warm-bg-content;
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  box-shadow: $warm-shadow-medium;
-  border: $warm-border-light;
-  padding: 40px;
-  transition: all 0.3s ease;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: $warm-gradient-bg;
-    border-radius: 12px;
-    opacity: 0.5;
-    pointer-events: none;
-    z-index: -1;
-  }
+  width: calc(100% - 250px); // 側邊欄打開時的寬度
 }
 
 /* 遮罩層 */
@@ -265,12 +250,8 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .main-container {
     margin-left: 0 !important;
+    width: 100% !important;
     padding: 15px;
-  }
-
-  .main-content {
-    padding: 20px;
-    border-radius: 8px;
   }
 }
 
@@ -282,11 +263,6 @@ onUnmounted(() => {
 
   .main-container {
     padding: 10px;
-  }
-
-  .main-content {
-    padding: 15px;
-    border-radius: 6px;
   }
 }
 </style>

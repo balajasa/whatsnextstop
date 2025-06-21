@@ -19,7 +19,11 @@
             </div>
           </li>
           <li v-for="item in getItemsByCategory(category)" :key="item.path">
-            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }">
+            <router-link
+              :to="item.path"
+              class="sidebar-item category-item"
+              :class="{ active: isActive(item.path) }"
+            >
               <div class="sidebar-icon">{{ item.icon }}</div>
               <span class="sidebar-text">{{ item.name }}</span>
             </router-link>
@@ -30,33 +34,42 @@
   </aside>
 </template>
 
-<script setup>
-import { ref, computed, defineProps, defineEmits } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import type { Ref } from 'vue'
 
-const props = defineProps({
-  isMobile: {
-    type: Boolean,
-    default: false
-  },
-  headerHeight: {
-    type: Number,
-    default: 50
-  }
+interface Props {
+  isMobile?: boolean
+  headerHeight?: number
+}
+
+interface SidebarItem {
+  name: string
+  icon: string
+  path: string
+  category?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isMobile: false,
+  headerHeight: 50
 })
 
-const emit = defineEmits(['keydown-escape'])
+defineEmits<{
+  'keydown-escape': []
+}>()
 
 const route = useRoute()
 
 // 側邊欄開關狀態
-const isSidebarOpen = ref(false)
+const isSidebarOpen: Ref<boolean> = ref(false)
 
 // 側邊欄分類
-const sidebarCategory = ['要去哪裡', '踏踏腳印', '小小樂趣']
+const sidebarCategory: string[] = ['要去哪裡', '踏踏腳印', '小小樂趣']
 
 // 側邊欄列表
-const sidebarList = [
+const sidebarList: SidebarItem[] = [
   {
     name: '首頁',
     icon: '🏠',
@@ -66,19 +79,19 @@ const sidebarList = [
     category: '要去哪裡',
     name: '行程表',
     icon: '🗓️',
-    path: '/schedule'
+    path: '/itinerary'
   },
   {
     category: '踏踏腳印',
-    name: '世界地圖',
+    name: '旅行地圖',
     icon: '🗺️',
-    path: '/worldmap'
+    path: '/travelmap'
   },
   {
     category: '踏踏腳印',
     name: '我的足跡',
     icon: '👣',
-    path: '/footprint'
+    path: '/history'
   },
   {
     category: '小小樂趣',
@@ -89,7 +102,7 @@ const sidebarList = [
 ]
 
 // 根據分類獲取項目
-const getItemsByCategory = (category) => {
+const getItemsByCategory = (category: string): SidebarItem[] => {
   return sidebarList.filter(item => item.category === category)
 }
 
@@ -102,22 +115,22 @@ const sidebarClasses = computed(() => {
 })
 
 // 判斷是否為當前路由
-const isActive = (path) => {
+const isActive = (path: string): boolean => {
   return route.path === path
 }
 
 // 切換側邊欄
-const toggleSidebar = () => {
+const toggleSidebar = (): void => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 
 // 關閉側邊欄
-const closeSidebar = () => {
+const closeSidebar = (): void => {
   isSidebarOpen.value = false
 }
 
 // 重置側邊欄狀態（當螢幕尺寸改變時使用）
-const resetSidebarState = () => {
+const resetSidebarState = (): void => {
   isSidebarOpen.value = false
 }
 
@@ -261,7 +274,8 @@ defineExpose({
     background-color: $active-primary;
     color: $primary-warm;
     font-weight: 600;
-    box-shadow: inset -3px 0 0 $primary-warm,
+    box-shadow:
+      inset -3px 0 0 $primary-warm,
       $warm-shadow-light;
 
     &::before {

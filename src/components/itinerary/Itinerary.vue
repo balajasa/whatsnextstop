@@ -1,23 +1,27 @@
 <template>
   <div class="itinerary-container">
-    <!-- 返回首頁按鈕 -->
-    <div class="back-to-home">
-      <router-link to="/home" class="back-btn">
-        <span class="back-icon">←</span>
-        返回首頁
-      </router-link>
-    </div>
+    <!-- 麵包屑 -->
+    <BreadcrumbNav />
 
     <!-- 浮動導航目錄 -->
     <nav class="floating-nav" :class="{ 'nav-hidden': !showNav }">
+      <!-- 返回首頁按鈕 -->
+      <router-link to="/home" class="home-float-btn" title="返回首頁">
+        <span class="home-icon">🏠</span>
+      </router-link>
+
       <div class="nav-toggle" @click="toggleNav">
         <span class="nav-icon">📋</span>
       </div>
       <div class="nav-menu" v-show="navOpen">
         <div class="nav-section">
           <h4>📋 行程資訊</h4>
-          <a href="#itinerary" @click="scrollToSection('itinerary')"
-            :class="{ active: activeSection === 'itinerary' }">行程內容</a>
+          <a
+            href="#itinerary"
+            @click="scrollToSection('itinerary')"
+            :class="{ active: activeSection === 'itinerary' }"
+            >行程內容</a
+          >
         </div>
       </div>
     </nav>
@@ -28,50 +32,70 @@
       <section id="itinerary" class="schedule-section itinerary-section">
         <div class="section-container">
           <div class="iframe-container">
-            <div style="position: relative; width: 100%; height: 0; padding-top: 141.4286%;
-              padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
-              border-radius: 8px; will-change: transform;">
-              <iframe loading="lazy"
-                style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
+            <div
+              style="
+                position: relative;
+                width: 100%;
+                height: 0;
+                padding-top: 141.4286%;
+                padding-bottom: 0;
+                box-shadow: 0 2px 8px 0 rgba(63, 69, 81, 0.16);
+                margin-top: 1.6em;
+                margin-bottom: 0.9em;
+                overflow: hidden;
+                border-radius: 8px;
+                will-change: transform;
+              "
+            >
+              <iframe
+                loading="lazy"
+                style="
+                  position: absolute;
+                  width: 100%;
+                  height: 100%;
+                  top: 0;
+                  left: 0;
+                  border: none;
+                  padding: 0;
+                  margin: 0;
+                "
                 src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed"
-                allowfullscreen="allowfullscreen" allow="fullscreen">
+                allowfullscreen
+                allow="fullscreen"
+              >
               </iframe>
             </div>
-            <!-- <div class="iframe-attribution">
-              <a href="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?utm_content=DAGo__QAg-I&utm_campaign=designshare&utm_medium=embeds&utm_source=link"
-                target="_blank" rel="noopener"></a>
-            </div> -->
           </div>
         </div>
       </section>
     </div>
 
     <!-- 回到頂部按鈕 -->
-    <button class="back-to-top" @click="scrollToTop" v-show="showBackToTop">
-      ↑
-    </button>
+    <button class="back-to-top" @click="scrollToTop" v-show="showBackToTop">↑</button>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import type { Ref } from 'vue'
+import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 
 const route = useRoute()
 
 // 響應式數據
-const showNav = ref(true)
-const navOpen = ref(false)
-const showBackToTop = ref(false)
-const activeSection = ref('itinerary')
+const showNav: Ref<boolean> = ref(true)
+const navOpen: Ref<boolean> = ref(false)
+const showBackToTop: Ref<boolean> = ref(false)
+const activeSection: Ref<string> = ref('itinerary')
 
 // 切換導航顯示
-const toggleNav = () => {
+const toggleNav = (): void => {
   navOpen.value = !navOpen.value
 }
 
 // 滾動到指定區域
-const scrollToSection = (sectionId) => {
+const scrollToSection = (sectionId: string): void => {
   const element = document.getElementById(sectionId)
   if (element) {
     element.scrollIntoView({
@@ -83,7 +107,7 @@ const scrollToSection = (sectionId) => {
 }
 
 // 滾動到頂部
-const scrollToTop = () => {
+const scrollToTop = (): void => {
   window.scrollTo({
     top: 0,
     behavior: 'smooth'
@@ -91,7 +115,7 @@ const scrollToTop = () => {
 }
 
 // 處理滾動事件
-const handleScroll = () => {
+const handleScroll = (): void => {
   const scrollY = window.scrollY
 
   // 控制返回頂部按鈕顯示
@@ -105,7 +129,7 @@ const handleScroll = () => {
 }
 
 // 更新當前活動區域
-const updateActiveSection = () => {
+const updateActiveSection = (): void => {
   const sections = ['itinerary']
   const scrollPos = window.scrollY + 100
 
@@ -119,7 +143,7 @@ const updateActiveSection = () => {
 }
 
 // 處理路由中的錨點
-const handleRouteHash = () => {
+const handleRouteHash = (): void => {
   if (route.hash) {
     const sectionId = route.hash.substring(1) // 移除 # 符號
     setTimeout(() => {
@@ -144,43 +168,12 @@ onUnmounted(() => {
 
 .itinerary-container {
   position: relative;
-}
-
-/* 返回首頁按鈕 */
-.back-to-home {
-  position: fixed;
-  top: 2rem;
-  left: 2rem;
-  z-index: 1000;
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.2rem;
-  background: $warm-bg-card;
-  border-radius: 25px;
-  text-decoration: none;
-  color: $text-primary-warm;
-  font-weight: 600;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: $warm-bg-content;
+  border-radius: 12px;
   box-shadow: $warm-shadow-medium;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  border: $warm-border-light;
-
-  &:hover {
-    background: $warm-bg-card-hover;
-    transform: translateY(-2px);
-    box-shadow: $warm-shadow-hover;
-    color: $coral-red;
-    border-color: rgba(239, 118, 122, 0.3);
-  }
-}
-
-.back-icon {
-  font-size: 1.2rem;
-  color: $golden-yellow;
 }
 
 /* 浮動導航 */
@@ -191,10 +184,39 @@ onUnmounted(() => {
   transform: translateY(-50%);
   z-index: 999;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 
   &.nav-hidden {
     transform: translateY(-50%) translateX(calc(100% + 1rem));
   }
+}
+
+/* 返回首頁浮動按鈕 */
+.home-float-btn {
+  background: $secondary-warm; // 珊瑚紅
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: $warm-shadow-medium;
+  transition: all 0.3s ease;
+  order: -1; // 確保在導航按鈕上方
+
+  &:hover {
+    transform: scale(1.1);
+    background: $primary-warm; // hover時變金黃色
+    box-shadow: $warm-shadow-hover;
+  }
+}
+
+.home-icon {
+  font-size: 1.2rem;
 }
 
 .nav-toggle {
@@ -321,26 +343,8 @@ onUnmounted(() => {
   z-index: 1;
 
   // 覆蓋內聯樣式的陰影，使用溫暖色調
-  div[style*="box-shadow"] {
+  div[style*='box-shadow'] {
     box-shadow: $warm-shadow-medium !important;
-  }
-}
-
-.iframe-attribution {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: $text-secondary-warm;
-
-  a {
-    color: $primary-warm;
-    text-decoration: none;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: $coral-red;
-      text-decoration: underline;
-    }
   }
 }
 
@@ -371,23 +375,20 @@ onUnmounted(() => {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .back-to-home {
-    top: 1rem;
-    left: 1rem;
-  }
-
-  .back-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-  }
-
   .floating-nav {
     right: 1rem;
+    gap: 0.8rem;
   }
 
+  .home-float-btn,
   .nav-toggle {
     width: 45px;
     height: 45px;
+  }
+
+  .home-icon,
+  .nav-icon {
+    font-size: 1.1rem;
   }
 
   .nav-menu {
@@ -414,6 +415,10 @@ onUnmounted(() => {
 }
 
 @media (max-width: 480px) {
+  .floating-nav {
+    gap: 0.6rem;
+  }
+
   .schedule-section {
     margin-bottom: 1rem;
   }

@@ -1,15 +1,15 @@
 <template>
-  <div class="tools">
-    <div class="tools-container">
+  <div class="main-game">
+    <div class="main-game-container">
       <!-- 當沒有子路由時顯示選擇功能 -->
-      <template v-if="!$route.path.includes('/tools/')">
+      <template v-if="!$route.path.includes('/main-game/')">
         <h1>選擇功能</h1>
 
         <!-- 小遊戲區域 -->
         <div class="games-section">
           <h2 class="games-title">🎮 休閒小遊戲</h2>
           <div class="nav-links">
-            <router-link to="/tools/dropblock" class="nav-link">
+            <router-link to="/main-game/dropblock" class="nav-link">
               <div class="link-card dropblock-card mini-card">
                 <div class="card-icon">🎯</div>
                 <h3>跳格子</h3>
@@ -17,7 +17,7 @@
                 <div class="card-decoration"></div>
               </div>
             </router-link>
-            <router-link to="/tools/foodwheel" class="nav-link">
+            <router-link to="/main-game/foodwheel" class="nav-link">
               <div class="link-card foodwheel-card mini-card">
                 <div class="card-icon">🎪</div>
                 <h3>美食轉輪</h3>
@@ -39,15 +39,14 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
 
-.tools {
+.main-game {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #f8f9fa;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,7 +71,7 @@
   }
 }
 
-.tools-container {
+.main-game-container {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 24px;
   padding: 3rem 2.5rem;
@@ -122,7 +121,6 @@ h1 {
 }
 
 @keyframes sparkle {
-
   0%,
   100% {
     opacity: 1;
@@ -252,7 +250,6 @@ h1 {
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0px);
@@ -285,11 +282,11 @@ p {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-  .tools {
+  .main-game {
     padding: 1rem;
   }
 
-  .tools-container {
+  .main-game-container {
     padding: 2rem 1.5rem;
   }
 
@@ -316,7 +313,7 @@ p {
 }
 
 @media (max-width: 480px) {
-  .tools-container {
+  .main-game-container {
     padding: 1.5rem 1rem;
     border-radius: 16px;
   }

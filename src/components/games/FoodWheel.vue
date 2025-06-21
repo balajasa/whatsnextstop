@@ -1,196 +1,204 @@
 <template>
-  <div class="app">
-    <div class="main-container">
-      <div class="wheel-container">
-        <h1>美食轉輪</h1>
-        <div class="wheel-wrapper">
-          <div class="wheel-pointer"></div>
-          <div class="wheel" ref="wheelRef">
-            <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item" :style="getWheelItemStyle(index)">
-              <span>{{ item }}</span>
-            </div>
-            <div class="wheel-center"></div>
-          </div>
-        </div>
-        <button class="spin-button" @click="spinWheel" :disabled="isSpinning">
-          {{ isSpinning ? '轉動中...' : '開始轉動' }}
-        </button>
-        <div v-if="result" class="result">
-          今天就吃：{{ result }} 🌿
-        </div>
+  <div class="foodwheel-page">
+    <div class="foodwheel-container">
+      <!-- 麵包屑 -->
+      <div class="nav-area">
+        <BreadcrumbNav />
       </div>
-
-      <div class="settings-container">
-        <h2>設定選項</h2>
-        <div class="form-group">
-          <label>新增美食類型</label>
-          <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem">
-          <button class="add-button" @click="addItem">新增項目</button>
-        </div>
-        <div class="item-list">
-          <div v-for="(item, index) in wheelItems" :key="index" class="item-list-item">
-            <input type="text" class="item-list-input" v-model="wheelItems[index]">
-            <button class="delete-button" @click="removeItem(index)">刪除</button>
+      <!-- 遊戲區域 -->
+      <h1>美食轉輪</h1>
+      <div class="game-content">
+        <div class="game-area">
+          <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div class="wheel" ref="wheelRef">
+              <div
+                v-for="(item, index) in wheelItems"
+                :key="index"
+                class="wheel-item"
+                :style="getWheelItemStyle(index)"
+              >
+                <span>{{ item }}</span>
+              </div>
+              <div class="wheel-center"></div>
+            </div>
           </div>
+          <button class="spin-button" @click="spinWheel" :disabled="isSpinning">
+            {{ isSpinning ? '轉動中...' : '開始轉動' }}
+          </button>
+          <div v-if="result" class="result-display">今天就吃：{{ result }} 🌿</div>
         </div>
-        <button class="save-button" @click="updateWheel">更新轉輪</button>
+
+        <div class="control-panel">
+          <h2>設定選項</h2>
+          <div class="input-group">
+            <label>新增美食類型</label>
+            <input
+              type="text"
+              v-model="newItem"
+              placeholder="例如：北歐料理、地中海美食"
+              @keyup.enter="addItem"
+            />
+            <button class="add-button" @click="addItem">新增項目</button>
+          </div>
+          <div class="items-list">
+            <div v-for="(_item, index) in wheelItems" :key="index" class="list-item">
+              <input type="text" class="item-input" v-model="wheelItems[index]" />
+              <button class="delete-button" @click="removeItem(index)">刪除</button>
+            </div>
+          </div>
+          <button class="update-button" @click="updateWheel">更新轉輪</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref } from 'vue'
 import { gsap } from 'gsap'
 import _ from 'lodash'
+import type { Ref } from 'vue'
+import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 
-export default {
-  name: 'NordicFoodWheel',
-  setup() {
-    const wheelRef = ref<HTMLElement | null>(null)
-    const wheelItems = ref<string[]>(['中式料理', '日式料理', '韓式料理', '義式料理', '美式料理', '泰式料理'])
-    const wheelRotation = ref(0)
-    const isSpinning = ref(false)
-    const newItem = ref('')
-    const result = ref('')
+const wheelRef: Ref<HTMLElement | null> = ref(null)
+const wheelItems: Ref<string[]> = ref([
+  '中式料理',
+  '日式料理',
+  '韓式料理',
+  '義式料理',
+  '美式料理',
+  '泰式料理'
+])
+const wheelRotation: Ref<number> = ref(0)
+const isSpinning: Ref<boolean> = ref(false)
+const newItem: Ref<string> = ref('')
+const result: Ref<string> = ref('')
 
-    const colors = [
-      '#E6F7F1', // 淡薄荷綠
-      '#E1F5FE', // 淡天藍
-      '#F1F8E9', // 淡草綠
-      '#E8F5E8', // 淡森林綠
-      '#F0F9FF', // 極淡藍
-      '#E0F2F1', // 淡青綠
-      '#F3E5F5', // 極淡紫
-      '#FFF8E1', // 淡暖黃
-      '#E8F6F3', // 淡海綠
-      '#F5F5F5'  // 淡灰白
-    ]
+const colors: string[] = [
+  '#FF6B6B', // 活潑珊瑚紅
+  '#4ECDC4', // 鮮豔青綠
+  '#45B7D1', // 明亮天藍
+  '#96CEB4', // 清新薄荷綠
+  '#FECA57', // 鮮豔金黃
+  '#FF9FF3', // 粉嫩紫紅
+  '#54A0FF', // 鮮豔藍色
+  '#5F27CD', // 深紫羅蘭
+  '#00D2D3', // 亮青色
+  '#FF9F43' // 活潑橙色
+]
 
-    const getWheelItemStyle = (index: number) => {
-      const sectionAngle = 360 / wheelItems.value.length
-      const startAngle = sectionAngle * index
-      const endAngle = sectionAngle * (index + 1)
-      const middleAngle = (startAngle + endAngle) / 2
+const getWheelItemStyle = (index: number): Record<string, any> => {
+  const sectionAngle = 360 / wheelItems.value.length
+  const startAngle = sectionAngle * index
+  const endAngle = sectionAngle * (index + 1)
+  const middleAngle = (startAngle + endAngle) / 2
 
-      // 創建扇形的 clip-path
-      const points = ['50% 50%']
-      const steps = Math.max(2, Math.ceil(sectionAngle / 2))
-      for (let i = 0; i <= steps; i++) {
-        const angle = startAngle + (sectionAngle * i / steps)
-        const radian = (angle - 90) * Math.PI / 180
-        const x = 50 + 50 * Math.cos(radian)
-        const y = 50 + 50 * Math.sin(radian)
-        points.push(`${x}% ${y}%`)
-      }
-
-      // 計算文字位置
-      const textRadian = (middleAngle - 90) * Math.PI / 180
-      const textRadius = 38
-      const textX = 50 + textRadius * Math.cos(textRadian)
-      const textY = 50 + textRadius * Math.sin(textRadian)
-
-      return {
-        position: 'absolute' as const,
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        backgroundColor: colors[index % colors.length],
-        clipPath: `polygon(${points.join(', ')})`,
-        '--text-x': `${textX}%`,
-        '--text-y': `${textY}%`,
-        '--text-rotation': `${middleAngle}deg`
-      } as any
-    }
-
-    const spinWheel = () => {
-      if (isSpinning.value || !wheelRef.value) return
-
-      isSpinning.value = true
-
-      // 確保順時針旋轉：至少5圈 + 隨機額外圈數
-      const minRotation = 1800 // 5圈 (360° × 5)
-      const randomExtra = _.random(0, 1080) // 0-3圈的隨機額外旋轉
-      const totalRotation = minRotation + randomExtra // 總共5-8圈
-
-      // 獲取當前位置（0-360度範圍）
-      const currentPosition = wheelRotation.value % 360
-
-      // 計算目標角度：當前位置 + 旋轉圈數
-      const targetRotation = currentPosition + totalRotation
-
-      result.value = ''
-
-      gsap.to(wheelRef.value, {
-        // 使用 rotationZ 確保順時針旋轉到目標角度
-        rotationZ: targetRotation,
-        duration: 4.5,
-        ease: 'power2.out',
-        onComplete: () => {
-          isSpinning.value = false
-
-          // 計算最終停止的位置（0-360度範圍）
-          const finalPosition = targetRotation % 360
-
-          // 重置角度：只保留最終位置，清除累積圈數
-          wheelRotation.value = finalPosition
-
-          // 同步更新 DOM 元素的實際角度（避免下次動畫出現跳躍）
-          gsap.set(wheelRef.value, { rotationZ: finalPosition })
-
-          const sectionAngle = 360 / wheelItems.value.length
-
-          // 因為指針在上方（0度），計算指針指向的區域
-          const pointerAngle = (360 - finalPosition + 360) % 360
-          let selectedIndex = Math.floor(pointerAngle / sectionAngle)
-
-          // 確保索引在有效範圍內
-          selectedIndex = selectedIndex % wheelItems.value.length
-          if (selectedIndex < 0) {
-            selectedIndex = wheelItems.value.length + selectedIndex
-          }
-
-          result.value = wheelItems.value[selectedIndex]
-
-          console.log(`轉了 ${(totalRotation / 360).toFixed(1)} 圈，最終位置: ${finalPosition.toFixed(1)}°，停在: ${result.value}`)
-        }
-      })
-    }
-
-    const addItem = () => {
-      const trimmedItem = newItem.value.trim()
-      if (trimmedItem && !wheelItems.value.includes(trimmedItem)) {
-        wheelItems.value.push(trimmedItem)
-        newItem.value = ''
-      }
-    }
-
-    const removeItem = (index: number) => {
-      if (wheelItems.value.length > 2) {
-        wheelItems.value.splice(index, 1)
-      }
-    }
-
-    const updateWheel = () => {
-      // 強制重新渲染轉輪
-      wheelItems.value = [...wheelItems.value]
-      alert('轉輪已更新！🌿')
-    }
-
-    return {
-      wheelRef,
-      wheelItems,
-      isSpinning,
-      newItem,
-      result,
-      getWheelItemStyle,
-      spinWheel,
-      addItem,
-      removeItem,
-      updateWheel
-    }
+  // 創建扇形的 clip-path
+  const points = ['50% 50%']
+  const steps = Math.max(2, Math.ceil(sectionAngle / 2))
+  for (let i = 0; i <= steps; i++) {
+    const angle = startAngle + (sectionAngle * i) / steps
+    const radian = ((angle - 90) * Math.PI) / 180
+    const x = 50 + 50 * Math.cos(radian)
+    const y = 50 + 50 * Math.sin(radian)
+    points.push(`${x}% ${y}%`)
   }
+
+  // 計算文字位置
+  const textRadian = ((middleAngle - 90) * Math.PI) / 180
+  const textRadius = 38
+  const textX = 50 + textRadius * Math.cos(textRadian)
+  const textY = 50 + textRadius * Math.sin(textRadian)
+
+  return {
+    position: 'absolute' as const,
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors[index % colors.length],
+    clipPath: `polygon(${points.join(', ')})`,
+    '--text-x': `${textX}%`,
+    '--text-y': `${textY}%`,
+    '--text-rotation': `${middleAngle}deg`
+  }
+}
+
+const spinWheel = (): void => {
+  if (isSpinning.value || !wheelRef.value) return
+
+  isSpinning.value = true
+
+  // 確保順時針旋轉：至少5圈 + 隨機額外圈數
+  const minRotation = 1800 // 5圈 (360° × 5)
+  const randomExtra = _.random(0, 1080) // 0-3圈的隨機額外旋轉
+  const totalRotation = minRotation + randomExtra // 總共5-8圈
+
+  // 獲取當前位置（0-360度範圍）
+  const currentPosition = wheelRotation.value % 360
+
+  // 計算目標角度：當前位置 + 旋轉圈數
+  const targetRotation = currentPosition + totalRotation
+
+  result.value = ''
+
+  gsap.to(wheelRef.value, {
+    // 使用 rotationZ 確保順時針旋轉到目標角度
+    rotationZ: targetRotation,
+    duration: 4.5,
+    ease: 'power2.out',
+    onComplete: () => {
+      isSpinning.value = false
+
+      // 計算最終停止的位置（0-360度範圍）
+      const finalPosition = targetRotation % 360
+
+      // 重置角度：只保留最終位置，清除累積圈數
+      wheelRotation.value = finalPosition
+
+      // 同步更新 DOM 元素的實際角度（避免下次動畫出現跳躍）
+      gsap.set(wheelRef.value, { rotationZ: finalPosition })
+
+      const sectionAngle = 360 / wheelItems.value.length
+
+      // 因為指針在上方（0度），計算指針指向的區域
+      const pointerAngle = (360 - finalPosition + 360) % 360
+      let selectedIndex = Math.floor(pointerAngle / sectionAngle)
+
+      // 確保索引在有效範圍內
+      selectedIndex = selectedIndex % wheelItems.value.length
+      if (selectedIndex < 0) {
+        selectedIndex = wheelItems.value.length + selectedIndex
+      }
+
+      result.value = wheelItems.value[selectedIndex]
+
+      console.log(
+        `轉了 ${(totalRotation / 360).toFixed(1)} 圈，最終位置: ${finalPosition.toFixed(1)}°，停在: ${result.value}`
+      )
+    }
+  })
+}
+
+const addItem = (): void => {
+  const trimmedItem = newItem.value.trim()
+  if (trimmedItem && !wheelItems.value.includes(trimmedItem)) {
+    wheelItems.value.push(trimmedItem)
+    newItem.value = ''
+  }
+}
+
+const removeItem = (index: number): void => {
+  if (wheelItems.value.length > 2) {
+    wheelItems.value.splice(index, 1)
+  }
+}
+
+const updateWheel = (): void => {
+  // 強制重新渲染轉輪
+  wheelItems.value = [...wheelItems.value]
+  alert('轉輪已更新！🌿')
 }
 </script>
 
@@ -198,18 +206,17 @@ export default {
 @use 'sass:color';
 @use '@/styles/variables' as *;
 
-.app {
+.foodwheel-page {
   margin: 0;
   padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
-.main-container {
-  max-width: 1150px;
-  width: 95%;
+.foodwheel-container {
+  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   padding: 50px;
@@ -219,30 +226,40 @@ export default {
     0 10px 25px rgba($teal-green, 0.1);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.6);
-  display: flex;
-  gap: 70px;
-  align-items: flex-start;
-  position: relative;
-  z-index: 1;
 }
 
-.wheel-container {
-  flex: 1.2;
+.nav-area {
+}
+
+.game-content {
   display: flex;
+  margin-top: 12px;
+  background: #2e4057;
+  border-radius: 20px;
+}
+
+.game-area {
+  display: flex;
+  flex: 1.2;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
+  padding: 40px;
+  // background: #2e4057;
+  // border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(46, 64, 87, 0.3);
+  margin-right: 40px;
 }
 
-.settings-container {
+.control-panel {
   flex: 0.8;
   min-width: 330px;
   max-width: 400px;
   padding: 35px;
-  background: linear-gradient(135deg, rgba($mint-green, 0.1), rgba($teal-green, 0.1));
+  background: linear-gradient(135deg, rgba(69, 105, 144, 0.08), rgba(73, 190, 170, 0.08));
   border-radius: 16px;
-  border: 1px solid rgba($teal-green, 0.3);
+  border: 1px solid rgba(69, 105, 144, 0.2);
   backdrop-filter: blur(10px);
   overflow: hidden;
 }
@@ -271,12 +288,10 @@ h1 {
 }
 
 @keyframes sway {
-
   0%,
   100% {
     transform: translateY(-50%) rotate(-5deg);
   }
-
   50% {
     transform: translateY(-55%) rotate(5deg);
   }
@@ -308,7 +323,7 @@ h2 {
   position: relative;
   overflow: hidden;
   border: 6px solid $deep-blue;
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow:
     0 0 0 8px rgba(255, 255, 255, 0.9),
     0 0 0 16px rgba($teal-green, 0.2),
@@ -325,7 +340,7 @@ h2 {
   height: 30px;
   background: $coral-red;
   border-radius: 50%;
-  border: 4px solid #FFFFFF;
+  border: 4px solid #ffffff;
   box-shadow: 0 6px 20px rgba($coral-red, 0.4);
   z-index: 10;
 }
@@ -379,13 +394,11 @@ h2 {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }
-
   50% {
     opacity: 0.7;
     transform: translateX(-50%) scale(1.1);
@@ -397,7 +410,7 @@ h2 {
   font-size: 18px;
   font-weight: 600;
   background: $coral-red;
-  color: #FFFFFF;
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -437,15 +450,15 @@ h2 {
   }
 
   &:disabled {
-    background: #A8A8A8;
-    color: #FFFFFF;
+    background: #a8a8a8;
+    color: #ffffff;
     cursor: not-allowed;
     transform: none;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   }
 }
 
-.result {
+.result-display {
   margin-top: 35px;
   font-size: 24px;
   font-weight: 600;
@@ -467,14 +480,13 @@ h2 {
     opacity: 0;
     transform: translateY(-15px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.form-group {
+.input-group {
   margin-bottom: 28px;
 
   label {
@@ -482,18 +494,18 @@ h2 {
     margin-bottom: 12px;
     font-weight: 500;
     font-size: 16px;
-    color: $deep-blue;
+    color: #456990;
     letter-spacing: 0.5px;
   }
 
   input {
     width: calc(100% - 4px);
     padding: 16px 20px;
-    border: 2px solid rgba($teal-green, 0.3);
+    border: 2px solid rgba(69, 105, 144, 0.3);
     border-radius: 10px;
     font-size: 15px;
     background: rgba(255, 255, 255, 0.9);
-    color: $deep-blue;
+    color: #456990;
     transition: all 0.3s ease;
     font-weight: 400;
     backdrop-filter: blur(5px);
@@ -502,20 +514,20 @@ h2 {
 
     &:focus {
       outline: none;
-      border-color: $teal-green;
+      border-color: #eeb868;
       background: rgba(255, 255, 255, 0.95);
       box-shadow:
-        0 0 0 3px rgba($teal-green, 0.15),
-        0 4px 15px rgba($teal-green, 0.2);
+        0 0 0 3px rgba(238, 184, 104, 0.15),
+        0 4px 15px rgba(238, 184, 104, 0.2);
     }
 
     &::placeholder {
-      color: rgba($deep-blue, 0.6);
+      color: rgba(69, 105, 144, 0.6);
     }
   }
 }
 
-.item-list {
+.items-list {
   margin-top: 25px;
   max-height: 320px;
   overflow-y: auto;
@@ -526,49 +538,48 @@ h2 {
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba($teal-green, 0.1);
+    background: rgba(69, 105, 144, 0.1);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba($teal-green, 0.4);
+    background: rgba(238, 184, 104, 0.4);
     border-radius: 4px;
 
     &:hover {
-      background: rgba($teal-green, 0.6);
+      background: rgba(238, 184, 104, 0.6);
     }
   }
 }
 
-.item-list-item {
+.list-item {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
   padding: 16px 20px;
   background: rgba(255, 255, 255, 0.8);
   border-radius: 12px;
-  border: 2px solid rgba($mint-green, 0.2);
+  border: 2px solid rgba(238, 184, 104, 0.2);
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);
-  gap: 15px;
 
   &:hover {
     transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 25px rgba($teal-green, 0.2);
-    border-color: rgba($mint-green, 0.4);
+    box-shadow: 0 8px 25px rgba(238, 184, 104, 0.2);
+    border-color: rgba(238, 184, 104, 0.4);
   }
 }
 
-.item-list-input {
+.item-input {
   flex: 1;
   margin-right: 16px;
   padding: 12px 16px;
-  border: 1px solid rgba($teal-green, 0.3);
+  border: 1px solid rgba(69, 105, 144, 0.3);
   border-radius: 8px;
   font-size: 15px;
   background: rgba(255, 255, 255, 0.9);
-  color: $deep-blue;
+  color: #456990;
   font-weight: 400;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -576,16 +587,16 @@ h2 {
 
   &:focus {
     outline: none;
-    border-color: $teal-green;
+    border-color: #eeb868;
     background: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 2px rgba($teal-green, 0.15);
+    box-shadow: 0 0 0 2px rgba(238, 184, 104, 0.15);
   }
 }
 
 .delete-button {
   padding: 10px 16px;
-  background: $coral-red;
-  color: #FFFFFF;
+  background: #ef767a;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -596,17 +607,17 @@ h2 {
   flex-shrink: 0;
 
   &:hover {
-    background: color.adjust($coral-red, $lightness: -8%);
+    background: #e6636a;
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba($coral-red, 0.3);
+    box-shadow: 0 6px 15px rgba(239, 118, 122, 0.3);
   }
 }
 
 .add-button {
   padding: 16px 32px;
-  background: rgba($teal-green, 0.15);
-  color: $deep-blue;
-  border: 2px solid rgba($teal-green, 0.4);
+  background: rgba(238, 184, 104, 0.15);
+  color: #456990;
+  border: 2px solid rgba(238, 184, 104, 0.4);
   border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
@@ -617,17 +628,17 @@ h2 {
   backdrop-filter: blur(5px);
 
   &:hover {
-    background: rgba($teal-green, 0.25);
+    background: rgba(238, 184, 104, 0.25);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba($teal-green, 0.25);
-    border-color: rgba($teal-green, 0.6);
+    box-shadow: 0 8px 25px rgba(238, 184, 104, 0.25);
+    border-color: rgba(238, 184, 104, 0.6);
   }
 }
 
-.save-button {
+.update-button {
   padding: 18px 36px;
-  background: $deep-blue;
-  color: #FFFFFF;
+  background: #456990;
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -637,19 +648,18 @@ h2 {
   font-weight: 600;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
-  box-shadow: 0 10px 30px rgba($deep-blue, 0.3);
+  box-shadow: 0 10px 30px rgba(69, 105, 144, 0.3);
 
   &:hover {
-    background: color.adjust($deep-blue, $lightness: -8%);
+    background: #3a5a7a;
     transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba($deep-blue, 0.4);
+    box-shadow: 0 15px 35px rgba(69, 105, 144, 0.4);
   }
 }
 
 /* 響應式設計 */
 @media (max-width: 1200px) {
-  .main-container {
-    gap: 50px;
+  .foodwheel-container {
     padding: 40px;
   }
 
@@ -660,20 +670,19 @@ h2 {
 }
 
 @media (max-width: 992px) {
-  .main-container {
+  .foodwheel-container {
     flex-direction: column;
-    gap: 40px;
     padding: 30px;
     max-width: 600px;
     align-items: center;
   }
 
-  .wheel-container {
+  .game-area {
     width: 100%;
     align-items: center;
   }
 
-  .settings-container {
+  .control-panel {
     min-width: auto;
     max-width: none;
     width: 100%;
@@ -694,17 +703,16 @@ h2 {
 }
 
 @media (max-width: 768px) {
-  .app {
+  .foodwheel-page {
     padding: 15px;
   }
 
-  .main-container {
+  .foodwheel-container {
     padding: 25px;
-    gap: 35px;
     align-items: center;
   }
 
-  .wheel-container {
+  .game-area {
     width: 100%;
     max-width: 100%;
   }
@@ -715,7 +723,7 @@ h2 {
     margin: 0 auto 35px;
   }
 
-  .settings-container {
+  .control-panel {
     padding: 25px;
     max-width: 400px;
   }
@@ -742,7 +750,7 @@ h2 {
     font-size: 16px;
   }
 
-  .result {
+  .result-display {
     font-size: 20px;
     padding: 16px 25px;
     margin-top: 30px;
@@ -750,18 +758,17 @@ h2 {
 }
 
 @media (max-width: 480px) {
-  .app {
+  .foodwheel-page {
     padding: 10px;
   }
 
-  .main-container {
+  .foodwheel-container {
     padding: 20px;
-    gap: 30px;
     border-radius: 12px;
     align-items: center;
   }
 
-  .wheel-container {
+  .game-area {
     width: 100%;
   }
 
@@ -782,7 +789,7 @@ h2 {
   .wheel-center {
     width: 20px;
     height: 20px;
-    border: 3px solid #FFFFFF;
+    border: 3px solid #ffffff;
   }
 
   .wheel-pointer {
@@ -797,7 +804,7 @@ h2 {
     width: 80px;
   }
 
-  .settings-container {
+  .control-panel {
     padding: 20px;
     border-radius: 10px;
     width: 100%;
@@ -827,14 +834,14 @@ h2 {
     border-radius: 6px;
   }
 
-  .result {
+  .result-display {
     font-size: 18px;
     padding: 14px 20px;
     margin-top: 25px;
     border-radius: 10px;
   }
 
-  .form-group {
+  .input-group {
     label {
       font-size: 14px;
       margin-bottom: 10px;
@@ -848,14 +855,13 @@ h2 {
     }
   }
 
-  .item-list-item {
+  .list-item {
     padding: 12px 15px;
     margin-bottom: 12px;
     border-radius: 8px;
-    gap: 10px;
   }
 
-  .item-list-input {
+  .item-input {
     padding: 8px 12px;
     font-size: 13px;
     border-radius: 5px;
@@ -873,7 +879,7 @@ h2 {
     border-radius: 6px;
   }
 
-  .save-button {
+  .update-button {
     padding: 14px 25px;
     font-size: 15px;
     border-radius: 6px;
@@ -882,9 +888,8 @@ h2 {
 }
 
 @media (max-width: 375px) {
-  .main-container {
+  .foodwheel-container {
     padding: 15px;
-    gap: 25px;
     align-items: center;
   }
 
@@ -899,7 +904,7 @@ h2 {
     width: 70px;
   }
 
-  .settings-container {
+  .control-panel {
     max-width: 320px;
   }
 
@@ -919,14 +924,14 @@ h2 {
     font-size: 14px;
   }
 
-  .result {
+  .result-display {
     font-size: 16px;
     padding: 12px 18px;
   }
 }
 
 @media (max-width: 320px) {
-  .main-container {
+  .foodwheel-container {
     align-items: center;
   }
 
@@ -941,7 +946,7 @@ h2 {
     width: 65px;
   }
 
-  .settings-container {
+  .control-panel {
     max-width: 280px;
     padding: 15px;
   }

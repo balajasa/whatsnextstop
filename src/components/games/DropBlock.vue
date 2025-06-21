@@ -1,33 +1,53 @@
 <template>
   <div class="game-wrapper">
+    <!-- 麵包屑 -->
+    <BreadcrumbNav />
     <div class="info">點擊按鈕看骰子掉落展開效果</div>
 
     <div class="game-container">
       <!-- A區小方塊 -->
-      <div v-if="gameState.taskA"
-        :class="['cube', 'cube-a', { dropping: gameState.aDropping, expanded: gameState.aExpanded }]"
-        :style="{ background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)' }" />
+      <div
+        v-if="gameState.taskA"
+        :class="[
+          'cube',
+          'cube-a',
+          { dropping: gameState.aDropping, expanded: gameState.aExpanded }
+        ]"
+        :style="{ background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)' }"
+      />
 
       <!-- B區小方塊 -->
-      <div v-if="gameState.taskB"
-        :class="['cube', 'cube-b', { dropping: gameState.bDropping, expanded: gameState.bExpanded }]"
-        :style="{ background: 'linear-gradient(45deg, #4ecdc4, #6fd8d2)' }" />
+      <div
+        v-if="gameState.taskB"
+        :class="[
+          'cube',
+          'cube-b',
+          { dropping: gameState.bDropping, expanded: gameState.bExpanded }
+        ]"
+        :style="{ background: 'linear-gradient(45deg, #4ecdc4, #6fd8d2)' }"
+      />
 
       <!-- A區展開骰子 -->
-      <div v-if="gameState.aExpanded" :class="['dice-expanded', 'dice-a', { show: gameState.aShowDice }]">
+      <div
+        v-if="gameState.aExpanded"
+        :class="['dice-expanded', 'dice-a', { show: gameState.aShowDice }]"
+      >
         <div class="dice-face top">向前走</div>
         <div class="dice-face left">轉左</div>
-        <div class="dice-face center">🎯<br>A區</div>
+        <div class="dice-face center">🎯<br />A區</div>
         <div class="dice-face right">轉右</div>
         <div class="dice-face bottom">{{ gameState.taskA }}</div>
         <div class="dice-face back">任務A</div>
       </div>
 
       <!-- B區展開骰子 -->
-      <div v-if="gameState.bExpanded" :class="['dice-expanded', 'dice-b', { show: gameState.bShowDice }]">
+      <div
+        v-if="gameState.bExpanded"
+        :class="['dice-expanded', 'dice-b', { show: gameState.bShowDice }]"
+      >
         <div class="dice-face top">紅招牌</div>
         <div class="dice-face left">排隊店</div>
-        <div class="dice-face center">🍜<br>B區</div>
+        <div class="dice-face center">🍜<br />B區</div>
         <div class="dice-face right">有椅子</div>
         <div class="dice-face bottom">{{ gameState.taskB }}</div>
         <div class="dice-face back">任務B</div>
@@ -49,7 +69,11 @@
         {{ gameState.aExpanded ? '已完成 A 區' : '掉落 A 區方塊' }}
       </button>
 
-      <button @click="dropCube('B')" :disabled="!gameState.aExpanded || gameState.bExpanded" class="btn btn-primary">
+      <button
+        @click="dropCube('B')"
+        :disabled="!gameState.aExpanded || gameState.bExpanded"
+        class="btn btn-primary"
+      >
         {{ gameState.bExpanded ? '已完成 B 區' : '掉落 B 區方塊' }}
       </button>
 
@@ -57,15 +81,14 @@
         📜 查看任務結果
       </button>
 
-      <button @click="reset" class="btn btn-primary">
-        重新開始
-      </button>
+      <button @click="reset" class="btn btn-primary">重新開始</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, nextTick } from 'vue'
+import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 
 interface GameState {
   aExpanded: boolean
@@ -97,9 +120,10 @@ const aTasks: string[] = ['向前走200公尺', '轉左到路口', '找第2間�
 const bTasks: string[] = ['紅色招牌店', '有排隊的店', '門口有椅子', '店名有數字']
 
 const dropCube = async (type: 'A' | 'B'): Promise<void> => {
-  const randomTask = type === 'A'
-    ? aTasks[Math.floor(Math.random() * aTasks.length)]
-    : bTasks[Math.floor(Math.random() * bTasks.length)]
+  const randomTask =
+    type === 'A'
+      ? aTasks[Math.floor(Math.random() * aTasks.length)]
+      : bTasks[Math.floor(Math.random() * bTasks.length)]
 
   if (type === 'A') {
     gameState.taskA = randomTask

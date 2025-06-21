@@ -1,7 +1,8 @@
 <template>
-  <div class="schedule-section">
+  <div class="main-content-wrapper">
+    <div class="schedule-section">
     <div class="schedule-header">
-      <p class="schedule-subtitle">精心規劃的6天完美旅程</p>
+      <p class="schedule-subtitle">精心規劃的{{ totalDays }}天完美旅程</p>
     </div>
 
     <!-- 封面圖片區域 -->
@@ -24,17 +25,24 @@
       <div class="daily-grid">
         <!-- 使用 v-for 生成每日行程 -->
         <div class="daily-block">
-          <a v-for="day in totalDaysArr" :key="day.id" :href="day.href" class="daily-card">
-            {{ day.label }}
+          <a
+            v-for="day in totalDays"
+            :key="day"
+            :href="`itinerary-detail#day${day}`"
+            class="daily-card"
+          >
+            Day{{ day }}
           </a>
         </div>
       </div>
     </div>
   </div>
+  </div>
+
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref } from 'vue'
 
 // 接收側邊欄狀態和手機版狀態
 defineProps({
@@ -48,51 +56,54 @@ defineProps({
   }
 })
 
-// 主要功能卡片数据
-const mainCards = [
+// 總天數配置 - 改回6天與原始設計保持一致
+const totalDays = ref(6)
+
+// 主要功能卡片數據 - 全部改為 itinerary-detail 路徑
+const mainCards = ref([
   {
     id: 'overview',
-    href: 'itinerary#overview',
+    href: 'itinerary-detail#overview',
     class: 'overview-card',
     icon: '📋',
     title: '行程總覽'
   },
   {
     id: 'flight',
-    href: 'itinerary#flight',
+    href: 'itinerary-detail#flight',
     class: 'flight-card',
     icon: '✈️',
     title: '航班資訊'
   },
   {
     id: 'map',
-    href: 'itinerary#map',
+    href: 'itinerary-detail#map',
     class: 'map-card',
     icon: '🗺️',
     title: '路線地圖'
   },
   {
     id: 'packing',
-    href: 'itinerary#packing',
+    href: 'itinerary-detail#packing',
     class: 'packing-card',
     icon: '🎒',
     title: '必帶物品'
   }
-]
-
-// 每日行程天數
-const totalDays = 6;
-const totalDaysArr = computed(() => {
-  return Array.from({ length: 6 }, (_, index) => ({
-    id: `day${index + 1}`,
-    href: `itinerary#day${index + 1}`,
-    label: `Day${index + 1}`
-  }))
-})
+])
 </script>
 
 <style scoped lang="scss">
 @use '@/styles/variables' as *;
+
+.main-content-wrapper {
+  max-width: 800px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: $warm-bg-content;
+  border-radius: 12px;
+  box-shadow: $warm-shadow-medium;
+}
 
 /* 行程表主區域 */
 .schedule-section {
