@@ -102,27 +102,27 @@ const routes = [
         }
       },
       {
-        path: 'games/foodwheel',
+        path: 'minigame/foodwheel',
         name: 'FoodWheel',
         component: FoodWheel,
         meta: {
           title: '美食輪盤',
           showBreadcrumb: true,
           breadcrumb: [
-            { text: '小遊戲', icon: '🎮', path: '/games' },
+            { text: '小遊戲', icon: '🎮', path: '/minigame' },
             { text: '美食輪盤', icon: '🍽️' }
           ]
         }
       },
       {
-        path: 'games/dropblock',
+        path: 'minigame/dropblock',
         name: 'DropBlock',
         component: DropBlock,
         meta: {
           title: '方塊遊戲',
           showBreadcrumb: true,
           breadcrumb: [
-            { text: '小遊戲', icon: '🎮', path: '/games' },
+            { text: '小遊戲', icon: '🎮', path: '/minigame' },
             { text: '方塊遊戲', icon: '🧩' }
           ]
         }

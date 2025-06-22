@@ -1,15 +1,15 @@
-// types/travel.ts
+// types/Itravel.ts
 
 /**
  * 旅遊行程資料介面
  */
-export interface TravelTrip {
+export interface TravelData {
   year: string
   startDate: string
   endDate: string
   country: string
   city: string
-  city_tw?: string  // 城市中文翻譯（可選）
+  city_tw?: string
   photo: string[]
 }
 
@@ -40,18 +40,6 @@ export interface ProcessedPin {
  * 旅遊圖釘元件的 Props 介面（自己獲取資料版本）
  */
 export interface MapPinProps {
-  projection: any  // D3 投影函數
-  worldData: any   // GeoJSON 世界地圖資料
-  currentTransform: Transform
-  currentScale: number
-}
-
-/**
- * 旅遊地圖元件的 Props 介面（已棄用，保留用於向後相容）
- * @deprecated 請使用 MapPinProps
- */
-export interface TravelMapProps {
-  travelData: TravelTrip[]
   projection: any  // D3 投影函數
   worldData: any   // GeoJSON 世界地圖資料
   currentTransform: Transform

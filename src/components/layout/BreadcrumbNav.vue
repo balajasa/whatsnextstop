@@ -12,16 +12,13 @@
         <span class="breadcrumb-separator">{{ separator }}</span>
 
         <!-- 如果是最後一項且不是鏈接，顯示為當前頁面 -->
-        <span v-if="index === breadcrumbItems.length - 1 && !item.path"
-              class="breadcrumb-current">
+        <span v-if="index === breadcrumbItems.length - 1 && !item.path" class="breadcrumb-current">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
         </span>
 
         <!-- 如果有路徑，顯示為鏈接 -->
-        <router-link v-else-if="item.path"
-                     :to="item.path"
-                     class="breadcrumb-link">
+        <router-link v-else-if="item.path" :to="item.path" class="breadcrumb-link">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
         </router-link>
@@ -39,25 +36,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { BreadcrumbItem, BreadcrumbProps } from '../types/ILayout'
 
 const route = useRoute()
 
 // 定義 props 介面
-interface BreadcrumbItem {
-  text: string
-  icon?: string
-  path?: string
-}
-
-interface Props {
-  homeText?: string
-  separator?: string
-  manualItems?: BreadcrumbItem[] | null
-  manualShow?: boolean | null
-}
 
 // 簡化的 props，移除不需要的配置
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<BreadcrumbProps>(), {
   homeText: '首頁',
   separator: '›',
   manualItems: null,
@@ -86,7 +72,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 
 /* 麵包屑導航 */
 .breadcrumb-nav {
-  padding: 0.5rem 2rem 0.3rem 2rem; // 縮小 padding，往上移
+  padding: 0.5rem 2rem 0.3rem 2rem;
 }
 
 .breadcrumb-container {
@@ -94,7 +80,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  font-size: 0.75rem; // 從 0.9rem 縮小到 0.75rem
+  font-size: 0.75rem;
   flex-wrap: wrap;
   gap: 0.2rem; // 縮小間距
 }
@@ -103,22 +89,22 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 .breadcrumb-link {
   display: flex;
   align-items: center;
-  color: rgba($text-secondary-warm, 0.7); // 降低透明度，更低調
+  color: rgba($text-secondary-warm, 0.7);
   text-decoration: none;
-  padding: 0.2rem 0.4rem; // 縮小 padding
+  padding: 0.2rem 0.4rem;
   border-radius: 4px;
   transition: all 0.2s ease;
 
   &:hover {
     color: $primary-warm;
-    background: rgba($primary-warm, 0.08); // 更淡的背景
+    background: rgba($primary-warm, 0.08);
   }
 }
 
 .breadcrumb-icon {
-  margin-right: 0.3rem; // 縮小間距
-  font-size: 0.8rem; // 縮小圖標
-  opacity: 0.6; // 更低調
+  margin-right: 0.3rem;
+  font-size: 0.8rem;
+  opacity: 0.6;
 
   .breadcrumb-home:hover &,
   .breadcrumb-link:hover & {
@@ -131,16 +117,16 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 }
 
 .breadcrumb-separator {
-  margin: 0 0.3rem; // 縮小間距
+  margin: 0 0.3rem;
   color: $text-secondary-warm;
-  opacity: 0.3; // 更低調的分隔符
-  font-size: 0.8rem; // 縮小分隔符
+  opacity: 0.3;
+  font-size: 0.8rem;
   user-select: none;
 }
 
 .breadcrumb-current {
-  color: rgba($text-primary-warm, 0.8); // 稍微降低當前頁面的突出度
-  font-weight: 500; // 從 600 降到 500
+  color: rgba($text-primary-warm, 0.8);
+  font-weight: 500;
   display: flex;
   align-items: center;
   padding: 0.2rem 0.4rem;
@@ -167,7 +153,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   }
 
   .breadcrumb-container {
-    font-size: 0.7rem; // 手機版更小
+    font-size: 0.7rem;
   }
 
   .breadcrumb-icon {
@@ -181,7 +167,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   }
 
   .breadcrumb-container {
-    font-size: 0.65rem; // 更小的手機版
+    font-size: 0.65rem;
   }
 
   .breadcrumb-icon {

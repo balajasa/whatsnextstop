@@ -2,14 +2,14 @@
   <div class="main-game">
     <div class="main-game-container">
       <!-- 當沒有子路由時顯示選擇功能 -->
-      <template v-if="!$route.path.includes('/main-game/')">
+      <template v-if="!$route.path.includes('/minigame/')">
         <h1>選擇功能</h1>
 
         <!-- 小遊戲區域 -->
         <div class="games-section">
           <h2 class="games-title">🎮 休閒小遊戲</h2>
           <div class="nav-links">
-            <router-link to="/main-game/dropblock" class="nav-link">
+            <router-link to="/minigame/dropblock" class="nav-link">
               <div class="link-card dropblock-card mini-card">
                 <div class="card-icon">🎯</div>
                 <h3>跳格子</h3>
@@ -17,7 +17,7 @@
                 <div class="card-decoration"></div>
               </div>
             </router-link>
-            <router-link to="/main-game/foodwheel" class="nav-link">
+            <router-link to="/minigame/foodwheel" class="nav-link">
               <div class="link-card foodwheel-card mini-card">
                 <div class="card-icon">🎪</div>
                 <h3>美食轉輪</h3>

@@ -2,10 +2,9 @@
   <div class="game-wrapper">
     <!-- 麵包屑 -->
     <BreadcrumbNav />
-    <div class="info">點擊按鈕看骰子掉落展開效果</div>
 
     <div class="game-container">
-      <!-- A區小方塊 -->
+      <!-- A區小方塊 (body石頭) -->
       <div
         v-if="gameState.taskA"
         :class="[
@@ -13,10 +12,15 @@
           'cube-a',
           { dropping: gameState.aDropping, expanded: gameState.aExpanded }
         ]"
-        :style="{ background: 'linear-gradient(45deg, #ff6b6b, #ff8e8e)' }"
+        :style="{
+          backgroundImage: `url(${getStoneImage('body')})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }"
       />
 
-      <!-- B區小方塊 -->
+      <!-- B區小方塊 (head石頭) -->
       <div
         v-if="gameState.taskB"
         :class="[
@@ -24,42 +28,19 @@
           'cube-b',
           { dropping: gameState.bDropping, expanded: gameState.bExpanded }
         ]"
-        :style="{ background: 'linear-gradient(45deg, #4ecdc4, #6fd8d2)' }"
+        :style="{
+          backgroundImage: `url(${getStoneImage('head')})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }"
       />
 
-      <!-- A區展開骰子 -->
-      <div
-        v-if="gameState.aExpanded"
-        :class="['dice-expanded', 'dice-a', { show: gameState.aShowDice }]"
-      >
-        <div class="dice-face top">向前走</div>
-        <div class="dice-face left">轉左</div>
-        <div class="dice-face center">🎯<br />A區</div>
-        <div class="dice-face right">轉右</div>
-        <div class="dice-face bottom">{{ gameState.taskA }}</div>
-        <div class="dice-face back">任務A</div>
-      </div>
-
-      <!-- B區展開骰子 -->
-      <div
-        v-if="gameState.bExpanded"
-        :class="['dice-expanded', 'dice-b', { show: gameState.bShowDice }]"
-      >
-        <div class="dice-face top">紅招牌</div>
-        <div class="dice-face left">排隊店</div>
-        <div class="dice-face center">🍜<br />B區</div>
-        <div class="dice-face right">有椅子</div>
-        <div class="dice-face bottom">{{ gameState.taskB }}</div>
-        <div class="dice-face back">任務B</div>
-      </div>
-
-      <!-- 捲軸 -->
-      <div v-if="gameState.showScroll" :class="['scroll', { show: gameState.scrollShow }]">
-        <div class="scroll-content">
-          <div class="scroll-title">🎯 你的美食冒險任務</div>
-          <div class="scroll-task"><strong>步驟A：</strong>{{ gameState.taskA }}</div>
-          <div class="scroll-task"><strong>步驟B：</strong>{{ gameState.taskB }}</div>
-          <div class="scroll-footer">🍽️ 開始探險！</div>
+      <!-- 任務結果圖片 -->
+      <div v-if="gameState.showResult" :class="['result-image', { show: gameState.resultShow }]">
+        <div class="task-text">
+          <div class="task-item"><strong>步驟A：</strong>{{ gameState.taskA }}</div>
+          <div class="task-item"><strong>步驟B：</strong>{{ gameState.taskB }}</div>
         </div>
       </div>
     </div>
@@ -77,53 +58,71 @@
         {{ gameState.bExpanded ? '已完成 B 區' : '掉落 B 區方塊' }}
       </button>
 
-      <button @click="showScrollResult" :disabled="!gameState.bExpanded" class="btn btn-primary">
-        📜 查看任務結果
-      </button>
-
       <button @click="reset" class="btn btn-primary">重新開始</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, nextTick } from 'vue'
+import { reactive, ref, nextTick, onMounted } from 'vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
-
-interface GameState {
-  aExpanded: boolean
-  bExpanded: boolean
-  aDropping: boolean
-  bDropping: boolean
-  aShowDice: boolean
-  bShowDice: boolean
-  taskA: string
-  taskB: string
-  showScroll: boolean
-  scrollShow: boolean
-}
+import { GameState } from '../types/IMinigame'
+import taskConfig from './taskConfig.json'
 
 const gameState = reactive<GameState>({
   aExpanded: false,
   bExpanded: false,
   aDropping: false,
   bDropping: false,
-  aShowDice: false,
-  bShowDice: false,
   taskA: '',
   taskB: '',
-  showScroll: false,
-  scrollShow: false
+  showResult: false,
+  resultShow: false
 })
 
-const aTasks: string[] = ['向前走200公尺', '轉左到路口', '找第2間店', '往熱鬧方向走']
-const bTasks: string[] = ['紅色招牌店', '有排隊的店', '門口有椅子', '店名有數字']
+// 石頭圖片隨機索引 (1-6)
+const stoneIndex = ref<number>(Math.floor(Math.random() * 6) + 1)
+
+// 從 JSON 配置載入任務
+const aTasks = ref<string[]>([])
+const bTasks = ref<string[]>([])
+
+onMounted(() => {
+  // A區使用 bobyTasks，B區使用 headTasks
+  aTasks.value = taskConfig.bobyTasks
+  bTasks.value = taskConfig.headTasks
+})
+
+// 預先引入所有石頭圖片
+import body01 from '@/assets/img/stone/body_01.png'
+import body02 from '@/assets/img/stone/body_02.png'
+import body03 from '@/assets/img/stone/body_03.png'
+import body04 from '@/assets/img/stone/body_04.png'
+import body05 from '@/assets/img/stone/body_05.png'
+import body06 from '@/assets/img/stone/body_06.png'
+import head01 from '@/assets/img/stone/head_01.png'
+import head02 from '@/assets/img/stone/head_02.png'
+import head03 from '@/assets/img/stone/head_03.png'
+import head04 from '@/assets/img/stone/head_04.png'
+import head05 from '@/assets/img/stone/head_05.png'
+import head06 from '@/assets/img/stone/head_06.png'
+
+// 石頭圖片對應表
+const stoneImages = {
+  body: [body01, body02, body03, body04, body05, body06],
+  head: [head01, head02, head03, head04, head05, head06]
+}
+
+// 獲取石頭圖片路徑
+const getStoneImage = (type: 'body' | 'head'): string => {
+  return stoneImages[type][stoneIndex.value - 1]
+}
 
 const dropCube = async (type: 'A' | 'B'): Promise<void> => {
   const randomTask =
     type === 'A'
-      ? aTasks[Math.floor(Math.random() * aTasks.length)]
-      : bTasks[Math.floor(Math.random() * bTasks.length)]
+      ? aTasks.value[Math.floor(Math.random() * aTasks.value.length)]
+      : bTasks.value[Math.floor(Math.random() * bTasks.value.length)]
 
   if (type === 'A') {
     gameState.taskA = randomTask
@@ -137,9 +136,8 @@ const dropCube = async (type: 'A' | 'B'): Promise<void> => {
     // 掉落完成後展開
     setTimeout(() => {
       gameState.aExpanded = true
-      setTimeout(() => {
-        gameState.aShowDice = true
-      }, 100)
+      // 檢查是否兩個都完成，顯示結果
+      checkBothCompleted()
     }, 1500)
   } else {
     gameState.taskB = randomTask
@@ -153,259 +151,188 @@ const dropCube = async (type: 'A' | 'B'): Promise<void> => {
     // 掉落完成後展開
     setTimeout(() => {
       gameState.bExpanded = true
-      setTimeout(() => {
-        gameState.bShowDice = true
-      }, 100)
+      // 檢查是否兩個都完成，顯示結果
+      checkBothCompleted()
     }, 1500)
   }
 }
 
-const showScrollResult = async (): Promise<void> => {
-  gameState.showScroll = true
-  await nextTick()
+const checkBothCompleted = async (): Promise<void> => {
+  if (gameState.aExpanded && gameState.bExpanded) {
+    gameState.showResult = true
+    await nextTick()
 
-  setTimeout(() => {
-    gameState.scrollShow = true
-  }, 100)
+    setTimeout(() => {
+      gameState.resultShow = true
+    }, 100)
+  }
 }
 
 const reset = (): void => {
+  // 重新隨機石頭圖片組合
+  stoneIndex.value = Math.floor(Math.random() * 6) + 1
+
+  // 重置遊戲狀態
   Object.assign(gameState, {
     aExpanded: false,
     bExpanded: false,
     aDropping: false,
     bDropping: false,
-    aShowDice: false,
-    bShowDice: false,
     taskA: '',
     taskB: '',
-    showScroll: false,
-    scrollShow: false
+    showResult: false,
+    resultShow: false
   })
 }
 
 defineExpose({
   dropCube,
-  showScrollResult,
   reset
 })
 </script>
 
 <style lang="scss" scoped>
 .game-wrapper {
-  padding: 20px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  .info {
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 16px;
-  }
+  min-height: 100vh;
+  box-sizing: border-box;
 
   .game-container {
-    width: 800px;
-    height: 600px;
-    background: rgba(255, 255, 255, 0.1);
+    width: min(800px, 95vw);
+    height: min(600px, 70vh);
+    background-image: url('@/assets/img/bg/game_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 15px;
     position: relative;
     overflow: visible;
     border: 2px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
   }
 
   // 小方塊樣式
   .cube {
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 100px;
     position: absolute;
-    top: -60px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    left: 50%;
+    margin-left: -50px;
     transition: top 0.3s cubic-bezier(0.8, 0, 1, 1);
-    border: 2px solid #fff;
 
-    &.cube-a,
-    &.cube-b {
-      left: 50%;
-      margin-left: -25px;
+    &.cube-a {
+      top: -120px;
     }
 
-    &.dropping {
-      top: 540px;
+    &.cube-b {
+      top: -240px;
+    }
+
+    &.cube-a.dropping {
+      top: calc(100% - 120px);
     }
 
     &.cube-b.dropping {
-      top: 480px;
+      top: calc(100% - 220px);
     }
 
     &.expanded {
       opacity: 1;
     }
-  }
 
-  // 骰子展開樣式
-  .dice-expanded {
-    position: absolute;
-    transform: translateX(-50%) scaleY(0);
-    transform-origin: 83px 166px;
-    transition: all 1s ease;
+    // 手機版尺寸
+    @media (max-width: 480px) {
+      width: 80px;
+      height: 80px;
+      margin-left: -40px;
 
-    &.show {
-      transform: translateX(-50%) scaleY(1);
-    }
+      &.cube-a {
+        top: -96px;
+      }
 
-    &.dice-a {
-      top: 25%;
-      left: 5%;
-      z-index: 5;
-    }
+      &.cube-b {
+        top: -192px;
+      }
 
-    &.dice-b {
-      top: 25%;
-      left: 55%;
-      z-index: 10;
-    }
-  }
+      &.cube-a.dropping {
+        top: calc(100% - 96px);
+      }
 
-  .dice-face {
-    width: 80px;
-    height: 80px;
-    background: white;
-    border: 3px solid #333;
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-
-    &.top {
-      top: -83px;
-      left: 83px;
-      background: #ffeb3b;
-    }
-
-    &.left {
-      top: 0;
-      left: 0;
-      background: #ff5722;
-    }
-
-    &.center {
-      top: 0;
-      left: 83px;
-      background: #4caf50;
-    }
-
-    &.right {
-      top: 0;
-      left: 166px;
-      background: #2196f3;
-    }
-
-    &.bottom {
-      top: 83px;
-      left: 83px;
-      background: #9c27b0;
-    }
-
-    &.back {
-      top: 166px;
-      left: 83px;
-      background: #795548;
+      &.cube-b.dropping {
+        top: calc(100% - 176px);
+      }
     }
   }
 
-  // 捲軸樣式
-  .scroll {
+  // 任務結果圖片樣式
+  .result-image {
     position: absolute;
-    top: 20%;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%) scaleX(0);
-    width: 500px;
-    height: 250px;
-    background: linear-gradient(145deg, #f4e4bc, #e8d5a3);
-    border: 8px solid #8b4513;
+    transform: translate(-50%, -50%);
+    width: 450px;
+    height: auto;
+    aspect-ratio: 3/2;
+    background-image: url('@/assets/img/mini/reel_map.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    transform-origin: left center;
-    transition: all 1.2s ease;
-    z-index: 100;
+    opacity: 0;
+    transition: opacity 1s ease;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    z-index: 50;
 
     &.show {
-      transform: translateX(-50%) scaleX(1);
-    }
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      width: 25px;
-      height: 120%;
-      background: linear-gradient(180deg, #654321, #8b4513, #654321);
-      border-radius: 12px;
-      top: -10%;
-    }
-
-    &::before {
-      left: -20px;
-      box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.3);
-    }
-
-    &::after {
-      right: -20px;
-      box-shadow: inset -3px 0 5px rgba(0, 0, 0, 0.3);
+      opacity: 1;
     }
   }
 
-  .scroll-content {
+  .task-text {
     text-align: center;
-    color: #2c1810;
+    color: black;
+    background: rgba(255, 255, 255, 0.8);
     padding: 20px;
+    border-radius: 10px;
+    max-width: 80%;
   }
 
-  .scroll-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #8b4513;
-  }
-
-  .scroll-task {
-    font-size: 16px;
-    line-height: 1.4;
-    margin: 8px 0;
-  }
-
-  .scroll-footer {
-    margin-top: 15px;
-    font-size: 24px;
+  .task-item {
+    font-size: clamp(14px, 2.5vw, 18px);
+    line-height: 1.6;
+    margin: 10px 0;
+    font-weight: 500;
   }
 
   // 按鈕樣式
   .controls {
-    margin-top: 30px;
     text-align: center;
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 0 10px;
+    box-sizing: border-box;
   }
 
   .btn {
-    padding: 15px 30px;
+    padding: min(15px, 2vh) min(20px, 3vw);
     border: none;
     border-radius: 25px;
-    font-size: 16px;
+    font-size: clamp(12px, 2vw, 16px);
     cursor: pointer;
-    margin: 0 10px;
     transition: all 0.3s ease;
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
 
     &.btn-primary {
       background: #ff6b6b;
@@ -421,6 +348,35 @@ defineExpose({
         cursor: not-allowed;
         transform: none;
       }
+    }
+
+    // 手機版調整
+    @media (max-width: 480px) {
+      flex: 1 1 100%;
+      max-width: none;
+      margin: 5px 0;
+    }
+  }
+
+  // 平板版調整
+  @media (max-width: 768px) {
+    padding: 15px 10px;
+
+    .game-container {
+      height: min(500px, 60vh);
+    }
+  }
+
+  // 手機版調整
+  @media (max-width: 480px) {
+    padding: 10px 5px;
+
+    .game-container {
+      height: min(400px, 50vh);
+    }
+
+    .result-image {
+      width: 300px;
     }
   }
 }

@@ -38,20 +38,9 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
+import { SidebarItem, SidebarProps } from '../types/ILayout'
 
-interface Props {
-  isMobile?: boolean
-  headerHeight?: number
-}
-
-interface SidebarItem {
-  name: string
-  icon: string
-  path: string
-  category?: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<SidebarProps>(), {
   isMobile: false,
   headerHeight: 50
 })
@@ -97,7 +86,7 @@ const sidebarList: SidebarItem[] = [
     category: '小小樂趣',
     name: '小遊戲',
     icon: '🎮',
-    path: '/tools'
+    path: '/minigame'
   }
 ]
 

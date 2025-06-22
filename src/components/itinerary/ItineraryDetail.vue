@@ -89,16 +89,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
-
-interface InfoSection {
-  id: string
-  name: string
-  class: string
-  images: Array<{
-    src: string
-    alt: string
-  }>
-}
+import { InfoSection } from '../types/IItinerary'
 
 const route = useRoute()
 

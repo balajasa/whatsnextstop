@@ -48,7 +48,7 @@ import { ref, computed, watch } from 'vue'
 import * as d3 from 'd3'
 import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
-import type { TravelTrip, ProcessedPin, MapPinProps } from '../types/Itravel'
+import type { TravelData, ProcessedPin, MapPinProps } from '../types/Itravel'
 
 // 使用國家翻譯 Composable
 const { getCountryChineseName, getCountryFlag } = countryTranslation()
@@ -58,10 +58,10 @@ const props = defineProps<MapPinProps>()
 // State
 const selectedPin: Ref<ProcessedPin | null> = ref(null)
 const infoPanelPosition: Ref<{ x: number; y: number }> = ref({ x: 0, y: 0 })
-const travelData: Ref<TravelTrip[]> = ref([])
+const travelData: Ref<TravelData[]> = ref([])
 
 // API 相關函數
-const fetchTravelData = async (): Promise<TravelTrip[]> => {
+const fetchTravelData = async (): Promise<TravelData[]> => {
   try {
     const response = await fetch('/api/usagi/data/travels.json')
 
@@ -87,7 +87,7 @@ const processedPins = computed(() => {
   }
 
   // 按國家分組
-  const countryGroups: Record<string, TravelTrip[]> = {}
+  const countryGroups: Record<string, TravelData[]> = {}
   travelData.value.forEach(trip => {
     const country = trip.country.toLowerCase()
     if (!countryGroups[country]) {

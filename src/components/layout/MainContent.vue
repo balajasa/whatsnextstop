@@ -1,44 +1,47 @@
 <template>
   <div class="main-content-wrapper">
     <div class="schedule-section">
-    <div class="schedule-header">
-      <p class="schedule-subtitle">精心規劃的{{ totalDays }}天完美旅程</p>
-    </div>
-
-    <!-- 封面圖片區域 -->
-    <div class="cover-image-area">
-      <div class="cover-image">
+      <div class="schedule-header">
+        <p class="schedule-subtitle">精心規劃的{{ totalDays }}天完美旅程</p>
       </div>
-    </div>
 
-    <!-- 主要功能區域 -->
-    <div class="schedule-main-grid">
-      <a v-for="card in mainCards" :key="card.id" :href="card.href" :class="['schedule-card', card.class]">
-        <div class="schedule-icon">{{ card.icon }}</div>
-        <h3>{{ card.title }}</h3>
-      </a>
-    </div>
+      <!-- 封面圖片區域 -->
+      <div class="cover-image-area">
+        <div class="cover-image"></div>
+      </div>
 
-    <!-- 每日行程區域 -->
-    <div class="daily-schedule-section">
-      <h3 class="daily-title">📅 每日詳細行程</h3>
-      <div class="daily-grid">
-        <!-- 使用 v-for 生成每日行程 -->
-        <div class="daily-block">
-          <a
-            v-for="day in totalDays"
-            :key="day"
-            :href="`itinerary-detail#day${day}`"
-            class="daily-card"
-          >
-            Day{{ day }}
-          </a>
+      <!-- 主要功能區域 -->
+      <div class="schedule-main-grid">
+        <a
+          v-for="card in mainCards"
+          :key="card.id"
+          :href="card.href"
+          :class="['schedule-card', card.class]"
+        >
+          <div class="schedule-icon">{{ card.icon }}</div>
+          <h3>{{ card.title }}</h3>
+        </a>
+      </div>
+
+      <!-- 每日行程區域 -->
+      <div class="daily-schedule-section">
+        <h3 class="daily-title">📅 每日詳細行程</h3>
+        <div class="daily-grid">
+          <!-- 使用 v-for 生成每日行程 -->
+          <div class="daily-block">
+            <a
+              v-for="day in totalDays"
+              :key="day"
+              :href="`itinerary-detail#day${day}`"
+              class="daily-card"
+            >
+              Day{{ day }}
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  </div>
-
 </template>
 
 <script setup>
@@ -96,13 +99,19 @@ const mainCards = ref([
 @use '@/styles/variables' as *;
 
 .main-content-wrapper {
-  max-width: 800px;
+  width: 1200px; /* 固定寬度 1200px */
   height: 100vh;
   margin: 0 auto;
   padding: 20px;
   background-color: $warm-bg-content;
   border-radius: 12px;
   box-shadow: $warm-shadow-medium;
+
+  /* 確保在小螢幕上不會超出視窗 */
+  @media (max-width: 1240px) {
+    width: calc(100vw - 40px);
+    max-width: 1200px;
+  }
 }
 
 /* 行程表主區域 */
@@ -130,7 +139,7 @@ const mainCards = ref([
 /* 封面圖片區域 */
 .cover-image-area {
   width: 100%;
-  height: 250px;
+  height: 400px;
   margin-bottom: 30px;
   border-radius: 12px;
   box-shadow: $warm-shadow-medium;
@@ -138,7 +147,7 @@ const mainCards = ref([
 
 .cover-image {
   width: 100%;
-  height: 250px;
+  height: 400px;
   background: url('@/assets/img/bg/polar_bear.jpg');
   background-size: contain;
   background-position: center;
@@ -152,13 +161,14 @@ const mainCards = ref([
   position: relative;
 }
 
-/* 主要功能區域 */
+/* 主要功能區域 - 針對 1200px 寬度優化 */
 .schedule-main-grid {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 個等寬欄位 */
+  gap: 24px; /* 增加間距以充分利用 1200px 寬度 */
   margin-bottom: 40px;
+
+  /* 在 1200px 寬度下每個卡片約 270px 寬 */
 }
 
 .schedule-card {
@@ -166,7 +176,7 @@ const mainCards = ref([
   backdrop-filter: blur(8px);
   border: $warm-border-light;
   border-radius: 12px;
-  padding: 24px 20px;
+  padding: 28px 24px; /* 增加內距 */
   text-align: center;
   text-decoration: none;
   color: $text-primary-warm;
@@ -174,7 +184,6 @@ const mainCards = ref([
   box-shadow: $warm-shadow-light;
   position: relative;
   overflow: hidden;
-  flex: 1;
 
   &::before {
     content: '';
@@ -209,15 +218,15 @@ const mainCards = ref([
 }
 
 .schedule-icon {
-  font-size: 2.2rem;
-  margin-bottom: 12px;
+  font-size: 2.4rem; /* 稍微增大圖標 */
+  margin-bottom: 16px;
   transition: transform 0.3s ease;
   filter: drop-shadow(0 2px 4px rgba($primary-warm, 0.2));
 }
 
 .schedule-card h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.2rem; /* 稍微增大文字 */
   font-weight: 600;
   color: $text-primary-warm;
   transition: color 0.3s ease;
@@ -230,9 +239,9 @@ const mainCards = ref([
 
 .daily-title {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   color: $text-primary-warm;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-weight: 600;
 }
 
@@ -244,23 +253,23 @@ const mainCards = ref([
 }
 
 .daily-block {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 天排成一排 */
+  gap: 20px; /* 在 1200px 寬度下每個按鈕約 180px 寬 */
+  width: 100%;
+  max-width: 1160px; /* 扣除外邊距後的最大寬度 */
 }
 
 .daily-card {
   background: $warm-gradient-primary;
   color: white;
-  padding: 24px 20px;
+  padding: 28px 20px; /* 增加垂直內距 */
   border-radius: 12px;
   text-align: center;
   text-decoration: none;
   font-weight: 600;
   font-size: 1.1rem;
   transition: all 0.3s ease;
-  min-width: 80px;
   box-shadow: $warm-shadow-medium;
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
@@ -289,24 +298,31 @@ const mainCards = ref([
 }
 
 /* 響應式設計 */
+@media (max-width: 1024px) {
+  .schedule-main-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .daily-block {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .schedule-header h2 {
     font-size: 2.5rem;
   }
 
   .schedule-main-grid {
-    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
     gap: 15px;
   }
 
   .schedule-card {
     padding: 18px 15px;
     border-radius: 10px;
-    min-width: unset;
-    max-width: unset;
-    flex: unset;
   }
 
   .daily-grid {
@@ -314,13 +330,13 @@ const mainCards = ref([
   }
 
   .daily-block {
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
   .daily-card {
     padding: 20px 16px;
     border-radius: 10px;
-    min-width: 70px;
   }
 }
 
@@ -343,16 +359,13 @@ const mainCards = ref([
   }
 
   .schedule-main-grid {
-    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
     gap: 12px;
   }
 
   .schedule-card {
     border-radius: 8px;
     padding: 16px 12px;
-    min-width: unset;
   }
 
   .schedule-icon {
@@ -365,29 +378,13 @@ const mainCards = ref([
   }
 
   .daily-block {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .daily-block-top {
-    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    width: 100%;
-    max-width: 300px;
-  }
-
-  .daily-block-bottom {
-    display: flex;
-    flex-direction: row;
     gap: 10px;
   }
 
   .daily-card {
     border-radius: 8px;
     padding: 18px 12px;
-    min-width: 60px;
   }
 }
 </style>

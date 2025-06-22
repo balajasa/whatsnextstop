@@ -8,7 +8,9 @@
         <span></span>
       </div>
       <div class="header-title">
-        <div class="header-logo"></div>
+        <router-link to="/">
+          <div class="header-logo"></div>
+        </router-link>
       </div>
     </header>
 
@@ -38,13 +40,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import Sidebar from '@/components/layout/Sidebar.vue'
-
-interface SidebarRef {
-  isSidebarOpen: boolean
-  toggleSidebar: () => void
-  closeSidebar: () => void
-  resetSidebarState: () => void
-}
+import { SidebarRef } from './types/ILayout'
 
 const sidebarRef: Ref<SidebarRef | null> = ref(null)
 const isMobile: Ref<boolean> = ref(false)

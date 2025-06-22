@@ -1,25 +1,5 @@
-import { ref, type Ref } from 'vue'
-
-// 定義型別
-interface TravelData {
-  year: string
-  startDate: string
-  endDate: string
-  country: string
-  city: string[]
-  photo: string[]
-}
-
-interface TravelsResponse {
-  data: TravelData[]
-}
-
-interface UsePhotosReturn {
-  travels: Ref<TravelData[]>
-  loading: Ref<boolean>
-  loadTravels: () => Promise<void>
-  getImageUrl: (folderPath: string, filename: string) => string
-}
+import { ref } from "vue"
+import { TravelData, TravelsResponse, UsePhotosReturn } from "../components/types/IResponse"
 
 export function usePhotos(): UsePhotosReturn {
   const travels = ref<TravelData[]>([])
