@@ -1,28 +1,34 @@
 import { ref } from "vue"
-import { TravelData, TravelsResponse, UsePhotosReturn } from "../components/types/IResponse"
+import { TravelData, TravelsResponse, GetTravels } from "../components/types/IResponse"
 
-export function usePhotos(): UsePhotosReturn {
+export function getTravelsData(): GetTravels {
   const travels = ref<TravelData[]>([])
   const loading = ref<boolean>(false)
 
-  // 開發環境用 proxy，生產環境用 GitHub Pages
-  const isUseHub = false  // true = GitHub, false = 本地
+  // 🎯 只需要改這一個開關！
+  const isDev = true  // true = 本地API, false = 線上API
 
-  const isDev = import.meta.env.DEV
-  const baseUrl = (isDev && !isUseHub)
-    ? '/api/usagi'
-    : 'https://balajasa.github.io/coffeeisadog'
+  // 簡化的邏輯：只根據 isDev 決定
+  const baseUrl = isDev
+    ? '/api/usagi'                               // 本地API
+    : 'https://raw.githubusercontent.com/balajasa/coffeeisadog/main'  // 線上API
 
   async function loadTravels(): Promise<void> {
     loading.value = true
+
     try {
       const response = await fetch(`${baseUrl}/data/travels.json`)
-      if (!response.ok) throw new Error('載入失敗')
+      if (!response.ok) throw new Error(`HTTP ${response.status}: 載入失敗`)
 
       const data: TravelsResponse = await response.json()
       travels.value = data.data
+
+      console.log(`成功讀取 ${data.data.length} 筆旅遊資料`)
     } catch (error) {
-      console.error('載入資料失敗:', error)
+      console.error(`載入失敗:`, error)
+      if (isDev) {  // 修正：本地API錯誤提示
+        console.log('💡 本地API需要確保 Vite proxy 設定正確')
+      }
     } finally {
       loading.value = false
     }
@@ -32,10 +38,18 @@ export function usePhotos(): UsePhotosReturn {
     return `${baseUrl}/images/photo/${folderPath}/${filename}.jpg`
   }
 
+  function getConfig() {
+    return {
+      isDev,
+      baseUrl
+    }
+  }
+
   return {
     travels,
     loading,
     loadTravels,
-    getImageUrl
+    getImageUrl,
+    getConfig
   }
 }

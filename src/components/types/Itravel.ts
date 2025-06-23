@@ -8,8 +8,8 @@ export interface TravelData {
   startDate: string
   endDate: string
   country: string
-  city: string
-  city_tw?: string
+  city: string[]
+  city_tw?: string[]
   photo: string[]
 }
 

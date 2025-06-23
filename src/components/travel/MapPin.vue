@@ -1,22 +1,12 @@
 <template>
   <div class="travel-pins-overlay">
     <!-- 圖釘們 -->
-    <div
-      v-for="pin in processedPins"
-      :key="pin.country"
-      class="travel-pin"
-      :class="`visits-${Math.min(pin.visitCount, 3)}`"
-      :style="pinStyle(pin)"
-      @click="handlePinClick(pin)"
-    >
+    <div v-for="pin in processedPins" :key="pin.country" class="travel-pin"
+      :class="`visits-${Math.min(pin.visitCount, 3)}`" :style="pinStyle(pin)" @click="handlePinClick(pin)">
       <!-- SVG 圖釘 -->
       <svg viewBox="0 0 30 40" class="pin-svg">
-        <path
-          d="M15 5 C8 5, 3 10, 3 16 C3 22, 15 35, 15 35 S27 22, 27 16 C27 10, 22 5, 15 5 Z"
-          :fill="getPinColor(pin.visitCount)"
-          stroke="#fff"
-          stroke-width="2"
-        />
+        <path d="M15 5 C8 5, 3 10, 3 16 C3 22, 15 35, 15 35 S27 22, 27 16 C27 10, 22 5, 15 5 Z"
+          :fill="getPinColor(pin.visitCount)" stroke="#fff" stroke-width="2" />
         <circle cx="15" cy="16" r="6" :fill="getPinHighlight(pin.visitCount)" opacity="0.3" />
       </svg>
 
@@ -44,51 +34,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import * as d3 from 'd3'
 import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
+import { getTravelsData } from '../../composables/usagi'
 import type { TravelData, ProcessedPin, MapPinProps } from '../types/Itravel'
 
-// 使用國家翻譯 Composable
+
 const { getCountryChineseName, getCountryFlag } = countryTranslation()
+const { travels, loadTravels } = getTravelsData()
 
 const props = defineProps<MapPinProps>()
 
 // State
 const selectedPin: Ref<ProcessedPin | null> = ref(null)
 const infoPanelPosition: Ref<{ x: number; y: number }> = ref({ x: 0, y: 0 })
-const travelData: Ref<TravelData[]> = ref([])
-
-// API 相關函數
-const fetchTravelData = async (): Promise<TravelData[]> => {
-  try {
-    const response = await fetch('/api/usagi/data/travels.json')
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
-
-    const result = await response.json()
-    return result.data
-  } catch (error) {
-    return []
-  }
-}
-
-const loadTravelData = async () => {
-  travelData.value = await fetchTravelData()
-}
 
 // 處理旅遊數據，聚合每個國家的信息
 const processedPins = computed(() => {
-  if (!travelData.value.length || !props.projection || !props.worldData) {
+  if (!travels.value.length || !props.projection || !props.worldData) {
     return []
   }
 
   // 按國家分組
   const countryGroups: Record<string, TravelData[]> = {}
-  travelData.value.forEach(trip => {
+  travels.value.forEach(trip => {
     const country = trip.country.toLowerCase()
     if (!countryGroups[country]) {
       countryGroups[country] = []
@@ -214,8 +185,10 @@ watch(
   { deep: true }
 )
 
-// 載入旅遊資料（在組件創建時執行）
-loadTravelData()
+// 組件掛載&載入旅遊資料
+onMounted(() => {
+  loadTravels()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -279,6 +252,7 @@ loadTravelData()
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

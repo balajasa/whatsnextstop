@@ -14,21 +14,15 @@ export interface TravelsResponse {
   data: TravelData[]
 }
 
-export interface UsePhotosReturn {
+export interface GetTravels {
   travels: Ref<TravelData[]>
   loading: Ref<boolean>
   loadTravels: () => Promise<void>
   getImageUrl: (folderPath: string, filename: string) => string
+  getConfig: () => ConfigInfo
 }
 
-// 如果需要，可以加入其他相關的型別
-export interface PhotoConfig {
+export interface ConfigInfo {
+  isDev: boolean
   baseUrl: string
-  isUseHub: boolean
-}
-
-export interface ApiResponse<T> {
-  data: T
-  status?: number
-  message?: string
 }

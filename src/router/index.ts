@@ -7,7 +7,6 @@ import Itinerary from '../components/itinerary/Itinerary.vue'
 import ItineraryDetail from '../components/itinerary/ItineraryDetail.vue'
 import TravelMap from '../components/travel/TravelMap.vue'
 import TravelTrace from '../components/travel/TravelTrace.vue'
-import VisitHistory from '../components/travel/VisitHistory.vue'
 import MiniGame from '../components/games/MiniGame.vue'
 
 const routes = [
@@ -45,11 +44,11 @@ const routes = [
         name: 'ItineraryDetail',
         component: ItineraryDetail,
         meta: {
-          title: '行程詳細',
+          title: '詳細行程',
           showBreadcrumb: true,
           breadcrumb: [
             { text: '行程規劃', icon: '🗓️', path: '/itinerary' },
-            { text: '行程詳細', icon: '📋' }
+            { text: '詳細行程', icon: '📋' }
           ]
         }
       },
@@ -71,18 +70,6 @@ const routes = [
         component: TravelTrace,
         meta: {
           title: '我的足跡',
-          showBreadcrumb: true,
-          breadcrumb: [
-            { text: '我的足跡', icon: '👣' }
-          ]
-        }
-      },
-      {
-        path: 'history',
-        name: 'VisitHistory',
-        component: VisitHistory,
-        meta: {
-          title: '我的足跡2',
           showBreadcrumb: true,
           breadcrumb: [
             { text: '我的足跡', icon: '👣' }
@@ -123,7 +110,7 @@ const routes = [
           showBreadcrumb: true,
           breadcrumb: [
             { text: '小遊戲', icon: '🎮', path: '/minigame' },
-            { text: '方塊遊戲', icon: '🧩' }
+            { text: '方塊遊戲', icon: '🧊' }
           ]
         }
       }
@@ -140,7 +127,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   // 滾動行為設定
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to, _from, savedPosition) {
     if (savedPosition) {
       return savedPosition
     }
@@ -158,7 +145,7 @@ const router = createRouter({
 })
 
 // 全域路由守衛 - 設定頁面標題
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const title = to.meta?.title || '旅行規劃助手'
   document.title = `${title} | 溫暖旅程`
 
