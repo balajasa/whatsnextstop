@@ -12,12 +12,7 @@
 
       <!-- 主要功能區域 -->
       <div class="schedule-main-grid">
-        <a
-          v-for="card in mainCards"
-          :key="card.id"
-          :href="card.href"
-          :class="['schedule-card', card.class]"
-        >
+        <a v-for="card in mainCards" :key="card.id" :href="card.href" :class="['schedule-card', card.class]">
           <div class="schedule-icon">{{ card.icon }}</div>
           <h3>{{ card.title }}</h3>
         </a>
@@ -29,12 +24,7 @@
         <div class="daily-grid">
           <!-- 使用 v-for 生成每日行程 -->
           <div class="daily-block">
-            <a
-              v-for="day in totalDays"
-              :key="day"
-              :href="`itinerary-detail#day${day}`"
-              class="daily-card"
-            >
+            <a v-for="day in totalDays" :key="day" :href="`itinerary-detail#day${day}`" class="daily-card">
               Day{{ day }}
             </a>
           </div>
@@ -59,10 +49,10 @@ defineProps({
   }
 })
 
-// 總天數配置 - 改回6天與原始設計保持一致
+// 總天數配置
 const totalDays = ref(6)
 
-// 主要功能卡片數據 - 全部改為 itinerary-detail 路徑
+// 主要功能卡片數據
 const mainCards = ref([
   {
     id: 'overview',
@@ -91,6 +81,13 @@ const mainCards = ref([
     class: 'packing-card',
     icon: '🎒',
     title: '必帶物品'
+  },
+  {
+    id: 'notice',
+    href: 'itinerary-detail#notice',
+    class: 'notice-card',
+    icon: '⚠️',
+    title: '注意事項'
   }
 ])
 </script>
@@ -99,7 +96,7 @@ const mainCards = ref([
 @use '@/styles/variables' as *;
 
 .main-content-wrapper {
-  width: 1200px; /* 固定寬度 1200px */
+  width: 1200px;
   height: 100vh;
   margin: 0 auto;
   padding: 20px;
@@ -164,11 +161,11 @@ const mainCards = ref([
 /* 主要功能區域 - 針對 1200px 寬度優化 */
 .schedule-main-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 個等寬欄位 */
-  gap: 24px; /* 增加間距以充分利用 1200px 寬度 */
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 個等寬欄位 */
+  gap: 24px;
+  /* 增加間距以充分利用 1200px 寬度 */
   margin-bottom: 40px;
-
-  /* 在 1200px 寬度下每個卡片約 270px 寬 */
 }
 
 .schedule-card {
@@ -176,7 +173,8 @@ const mainCards = ref([
   backdrop-filter: blur(8px);
   border: $warm-border-light;
   border-radius: 12px;
-  padding: 28px 24px; /* 增加內距 */
+  padding: 28px 24px;
+  /* 增加內距 */
   text-align: center;
   text-decoration: none;
   color: $text-primary-warm;
@@ -218,7 +216,8 @@ const mainCards = ref([
 }
 
 .schedule-icon {
-  font-size: 2.4rem; /* 稍微增大圖標 */
+  font-size: 2.4rem;
+  /* 稍微增大圖標 */
   margin-bottom: 16px;
   transition: transform 0.3s ease;
   filter: drop-shadow(0 2px 4px rgba($primary-warm, 0.2));
@@ -226,7 +225,8 @@ const mainCards = ref([
 
 .schedule-card h3 {
   margin: 0;
-  font-size: 1.2rem; /* 稍微增大文字 */
+  font-size: 1.2rem;
+  /* 稍微增大文字 */
   font-weight: 600;
   color: $text-primary-warm;
   transition: color 0.3s ease;
@@ -254,16 +254,16 @@ const mainCards = ref([
 
 .daily-block {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 6 天排成一排 */
-  gap: 20px; /* 在 1200px 寬度下每個按鈕約 180px 寬 */
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
   width: 100%;
-  max-width: 1160px; /* 扣除外邊距後的最大寬度 */
+  max-width: 1160px;
 }
 
 .daily-card {
   background: $warm-gradient-primary;
   color: white;
-  padding: 28px 20px; /* 增加垂直內距 */
+  padding: 28px 20px;
   border-radius: 12px;
   text-align: center;
   text-decoration: none;

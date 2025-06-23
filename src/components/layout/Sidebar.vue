@@ -19,11 +19,7 @@
             </div>
           </li>
           <li v-for="item in getItemsByCategory(category)" :key="item.path">
-            <router-link
-              :to="item.path"
-              class="sidebar-item category-item"
-              :class="{ active: isActive(item.path) }"
-            >
+            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }">
               <div class="sidebar-icon">{{ item.icon }}</div>
               <span class="sidebar-text">{{ item.name }}</span>
             </router-link>
@@ -80,7 +76,7 @@ const sidebarList: SidebarItem[] = [
     category: '踏踏腳印',
     name: '我的足跡',
     icon: '👣',
-    path: '/history'
+    path: '/travel-trace'
   },
   {
     category: '小小樂趣',

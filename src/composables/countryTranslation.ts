@@ -14,7 +14,7 @@ const initializeLocale = () => {
 }
 
 /**
- * 國家翻譯 Composable - 專注於國家翻譯
+ * 國家翻譯 Composable
  * 城市翻譯由 API 資料提供，不在此處理
  */
 export const countryTranslation = () => {

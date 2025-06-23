@@ -27,32 +27,18 @@
         </div>
 
         <!-- 地圖組件 -->
-        <WorldMap
-          ref="worldMapRef"
-          :width="width"
-          :height="height"
-          :min-scale="minScale"
-          :max-scale="maxScale"
-          @map-ready="onMapReady"
-          @view-change="onViewChange"
-          @country-hover="onCountryHover"
-          @country-click="onCountryClick"
-          @status-change="onStatusChange"
-        />
+        <WorldMap ref="worldMapRef" :width="width" :height="height" :min-scale="minScale" :max-scale="maxScale"
+          @map-ready="onMapReady" @view-change="onViewChange" @country-hover="onCountryHover"
+          @country-click="onCountryClick" @status-change="onStatusChange" />
 
         <!-- 旅遊圖釘組件 -->
-        <MapPin
-          v-if="mapProjection && mapWorldData"
-          :projection="mapProjection"
-          :world-data="mapWorldData"
-          :current-transform="currentTransform"
-          :current-scale="currentScale"
-        />
+        <MapPin v-if="mapProjection && mapWorldData" :projection="mapProjection" :world-data="mapWorldData"
+          :current-transform="currentTransform" :current-scale="currentScale" />
       </div>
 
       <!-- 國家資訊顯示 -->
-      <div class="country-info" v-if="hoveredCountry">目前懸停: {{ hoveredCountry }}</div>
-      <div class="country-info" v-if="clickedCountry">最後點擊: {{ clickedCountry }}</div>
+      <div class="country-info" v-if="hoveredCountry">目前懸停: {{ getDisplayCountryName(hoveredCountry) }}</div>
+      <div class="country-info" v-if="clickedCountry">最後點擊: {{ getDisplayCountryName(clickedCountry) }}</div>
     </div>
   </div>
 </template>
@@ -64,10 +50,13 @@ import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import WorldMap from './WorldMap.vue'
 import MapPin from './MapPin.vue'
 import type { Transform } from '../types/Itravel'
+import { countryTranslation } from '../../composables/countryTranslation'
 
 // Refs
 const container: Ref<HTMLElement | null> = ref(null)
 const worldMapRef: Ref<InstanceType<typeof WorldMap> | null> = ref(null)
+
+const { getCountryChineseName, getCountryFlag } = countryTranslation()
 
 // State
 const status: Ref<string> = ref('載入中...')
@@ -83,6 +72,16 @@ const maxScale: Ref<number> = ref(3)
 const mapProjection: Ref<any> = ref(null)
 const mapWorldData: Ref<any> = ref(null)
 const currentTransform: Ref<Transform> = ref({ x: 0, y: 0, scale: 1 })
+
+// 獲取顯示用的國家名稱（中文名稱 + 國旗）
+const getDisplayCountryName = (countryName: string): string => {
+  if (!countryName) return ''
+
+  const chineseName = getCountryChineseName(countryName)
+  const flag = getCountryFlag(countryName)
+
+  return `${flag} ${chineseName}`
+}
 
 // 響應式尺寸計算
 const updateSize = (): void => {
