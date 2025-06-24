@@ -13,108 +13,66 @@
       <!-- 訪問次數數字 -->
       <div class="pin-number">{{ pin.visitCount }}</div>
     </div>
-
-    <!-- 重新設計的資訊面板 -->
-    <div v-if="selectedPin" class="info-panel" :style="infoPanelStyle" @click.stop>
-      <!-- 背景裝飾 -->
-      <div class="panel-bg-decoration"></div>
-
-      <!-- 頭部區域 -->
-      <div class="panel-header">
-        <div class="country-header">
-          <div class="country-flag-large">{{ getCountryFlag(selectedPin.country) }}</div>
-          <div class="country-info">
-            <h3 class="country-name">{{ selectedPin.displayName }}</h3>
-            <div class="country-subtitle">旅遊足跡</div>
-          </div>
-        </div>
-        <button class="close-btn" @click="closePanel">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <!-- 統計區域 -->
-      <div class="stats-section">
-        <div class="stat-card">
-          <span class="stat-number">{{ selectedPin.visitCount }}</span>
-          <span class="stat-label">次訪問</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-number">{{ getVisitYears(selectedPin) }}</span>
-          <span class="stat-label">年份</span>
-        </div>
-      </div>
-
-      <!-- 詳細資訊區域 -->
-      <div class="details-section">
-        <div class="detail-item">
-          <div class="detail-header">
-            <span class="detail-icon">🏙️</span>
-            <span class="detail-title">造訪城市</span>
-          </div>
-          <div class="detail-content city-tags">
-            <span v-for="city in getCityList(selectedPin.cities)" :key="city" class="city-tag">
-              {{ city }}
-            </span>
-          </div>
-        </div>
-
-        <div class="detail-item">
-          <div class="detail-header">
-            <span class="detail-icon">⏰</span>
-            <span class="detail-title">最近訪問</span>
-          </div>
-          <div class="detail-content recent-visit">
-            {{ selectedPin.latestVisit }}
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import * as d3 from 'd3'
 import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
 import { getTravelsData } from '../../composables/usagi'
 import type { TravelData, ProcessedPin, MapPinProps } from '../types/Itravel'
 
-const { getCountryChineseName, getCountryFlag } = countryTranslation()
+const { getCountryChineseName } = countryTranslation()
 const { travels, loadTravels } = getTravelsData()
 
 const props = defineProps<MapPinProps>()
 
-// State
-const selectedPin: Ref<ProcessedPin | null> = ref(null)
-const infoPanelPosition: Ref<{ x: number; y: number }> = ref({ x: 0, y: 0 })
+// Emits - 發出事件給父組件
+const emit = defineEmits<{
+  'pin-selected': [pin: ProcessedPin]
+  'panel-close': []
+  'pins-updated': [pins: ProcessedPin[]]
+}>()
 
-// 獲取訪問年份跨度
-const getVisitYears = (pin: ProcessedPin): string => {
-  if (!travels.value.length) return '1'
+// 容器縮放比例計算
+const containerScale: Ref<{ x: number; y: number }> = ref({ x: 1, y: 1 })
 
-  const countryTrips = travels.value.filter(trip =>
-    trip.country.toLowerCase() === pin.country.toLowerCase()
-  )
+// SVG 偏移計算
+const svgOffset: Ref<{ x: number; y: number }> = ref({ x: 0, y: 0 })
 
-  const years = [...new Set(countryTrips.map(trip => trip.year))].sort()
+// 計算容器實際縮放比例和 SVG 偏移
+const calculateContainerScale = () => {
+  nextTick(() => {
+    // 尋找地圖容器和 SVG 元素
+    const mapContainer = document.querySelector('.map-container')
+    const svgElement = document.querySelector('.world-map-svg')
 
-  if (years.length === 1) return '1'
-  if (years.length === 2) return '2'
-  return `${years.length}`
-}
+    if (mapContainer && svgElement) {
+      const containerRect = mapContainer.getBoundingClientRect()
+      const svgRect = svgElement.getBoundingClientRect()
 
-// 獲取城市列表
-const getCityList = (cities: string): string[] => {
-  return cities.split('、').filter(city => city.trim())
+      // 計算實際渲染尺寸與設定尺寸的比例
+      const svgWidth = parseFloat(svgElement.getAttribute('width') || '1000')
+      const svgHeight = parseFloat(svgElement.getAttribute('height') || '600')
+
+      containerScale.value = {
+        x: svgRect.width / svgWidth,
+        y: svgRect.height / svgHeight
+      }
+
+      // 計算 SVG 在容器中的偏移量（居中對齊造成的偏移）
+      svgOffset.value = {
+        x: svgRect.left - containerRect.left,
+        y: svgRect.top - containerRect.top
+      }
+    }
+  })
 }
 
 // 處理旅遊數據，聚合每個國家的信息
-const processedPins = computed(() => {
+const processedPins = computed((): ProcessedPin[] => {
   if (!travels.value.length || !props.projection || !props.worldData) {
     return []
   }
@@ -161,7 +119,8 @@ const processedPins = computed(() => {
         cities,
         x,
         y,
-        centroid
+        centroid,
+        trips // 保存完整的旅遊數據供面板使用
       })
     }
   })
@@ -169,19 +128,32 @@ const processedPins = computed(() => {
   return pins
 })
 
-// 計算圖釘樣式
-const pinStyle = (pin: ProcessedPin): any => {
-  // 應用地圖變換
-  const transformedX = pin.x * props.currentScale + props.currentTransform.x
-  const transformedY = pin.y * props.currentScale + props.currentTransform.y
+// 監聽 processedPins 變化，通知父組件
+watch(processedPins, (newPins) => {
+  emit('pins-updated', newPins)
+}, { deep: true })
 
-  // 圖釘固定大小（反向縮放）
-  const pinScale = 1 / props.currentScale
+// 圖釘樣式計算
+const pinStyle = (pin: ProcessedPin): any => {
+  // 應用地圖內部變換
+  const mapTransformedX = pin.x * props.currentScale + props.currentTransform.x
+  const mapTransformedY = pin.y * props.currentScale + props.currentTransform.y
+
+  // 應用容器縮放比例
+  const scaledX = mapTransformedX * containerScale.value.x
+  const scaledY = mapTransformedY * containerScale.value.y
+
+  // 加上 SVG 在容器中的偏移量
+  const finalX = scaledX + svgOffset.value.x
+  const finalY = scaledY + svgOffset.value.y
+
+  // 圖釘固定大小（考慮所有縮放因子）
+  const pinScale = 1 / (props.currentScale * Math.min(containerScale.value.x, containerScale.value.y))
 
   return {
     position: 'absolute' as const,
-    left: `${transformedX}px`,
-    top: `${transformedY}px`,
+    left: `${finalX}px`,
+    top: `${finalY}px`,
     transform: `translate(-50%, -100%) scale(${pinScale})`,
     transformOrigin: 'bottom center'
   }
@@ -201,47 +173,23 @@ const getPinHighlight = (visitCount: number): string => {
   return '#66CC66'
 }
 
-// 處理圖釘點擊
+// 圖釘點擊處理 - 發出事件給父組件
 const handlePinClick = (pin: ProcessedPin) => {
-  selectedPin.value = pin
-
-  // 計算資訊面板位置
-  const transformedX = pin.x * props.currentScale + props.currentTransform.x
-  const transformedY = pin.y * props.currentScale + props.currentTransform.y
-
-  infoPanelPosition.value = {
-    x: Math.max(20, Math.min(transformedX - 150, window.innerWidth - 320)),
-    y: Math.max(20, transformedY - 250)
-  }
+  emit('pin-selected', pin)
+  console.log('選中圖釘:', pin.displayName, '訪問次數:', pin.visitCount)
 }
 
-// 關閉面板
-const closePanel = () => {
-  selectedPin.value = null
+// 處理視窗大小變化
+const handleResize = () => {
+  calculateContainerScale()
 }
 
-// 資訊面板樣式
-const infoPanelStyle = computed((): any => ({
-  position: 'absolute' as const,
-  left: `${infoPanelPosition.value.x}px`,
-  top: `${infoPanelPosition.value.y}px`,
-  zIndex: 1000
-}))
-
-// 監聽地圖變化，重新計算面板位置
+// 監聽容器縮放變化
 watch(
-  () => [props.currentScale, props.currentTransform],
+  () => [props.projection, props.worldData],
   () => {
-    if (selectedPin.value) {
-      // 重新計算面板位置
-      const pin = selectedPin.value
-      const transformedX = pin.x * props.currentScale + props.currentTransform.x
-      const transformedY = pin.y * props.currentScale + props.currentTransform.y
-
-      infoPanelPosition.value = {
-        x: Math.max(20, Math.min(transformedX - 150, window.innerWidth - 320)),
-        y: Math.max(20, transformedY - 250)
-      }
+    if (props.projection && props.worldData) {
+      calculateContainerScale()
     }
   },
   { deep: true }
@@ -250,6 +198,20 @@ watch(
 // 組件掛載&載入旅遊資料
 onMounted(() => {
   loadTravels()
+  calculateContainerScale()
+
+  // 監聽視窗大小變化
+  window.addEventListener('resize', handleResize)
+
+  // 監聽方向變化（手機版）
+  window.addEventListener('orientationchange', () => {
+    setTimeout(handleResize, 100)
+  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  window.removeEventListener('orientationchange', handleResize)
 })
 </script>
 
@@ -258,18 +220,18 @@ onMounted(() => {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 5;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 5;
 }
 
 .travel-pin {
   width: 30px;
   height: 40px;
   cursor: pointer;
-  pointer-events: auto;
   transition: all 0.3s ease;
+  pointer-events: auto;
 
   &:hover {
     transform: translate(-50%, -100%) scale(1.2) !important;
@@ -291,234 +253,11 @@ onMounted(() => {
   position: absolute;
   top: 8px;
   left: 50%;
-  transform: translateX(-50%);
   color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
   font-weight: bold;
   font-size: 11px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  transform: translateX(-50%);
   pointer-events: none;
-}
-
-// 重新設計的資訊面板樣式
-.info-panel {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 20px;
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 8px 20px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.8);
-  width: 260px;
-  pointer-events: auto;
-  animation: slideInPanel 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  overflow: hidden;
-  position: relative;
-  backdrop-filter: blur(20px);
-}
-
-.panel-bg-decoration {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 80px;
-  height: 80px;
-  background: rgba(99, 102, 241, 0.05);
-  border-radius: 50%;
-  transform: translate(40px, -40px);
-  pointer-events: none;
-}
-
-@keyframes slideInPanel {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.panel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 20px 20px 12px;
-  position: relative;
-  z-index: 2;
-}
-
-.country-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-}
-
-.country-flag-large {
-  font-size: 28px;
-  padding: 6px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.country-info {
-  flex: 1;
-}
-
-.country-name {
-  margin: 0 0 4px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  letter-spacing: -0.025em;
-}
-
-.country-subtitle {
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.close-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: rgba(248, 250, 252, 0.8);
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #64748b;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-  }
-}
-
-.stats-section {
-  padding: 0 24px 16px;
-  border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 16px;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid #f8fafc;
-  }
-}
-
-.stat-label {
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.stat-value {
-  color: #1e293b;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.details-section {
-  padding: 0 24px 16px;
-}
-
-.detail-item {
-  margin-bottom: 16px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.detail-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.detail-icon {
-  font-size: 16px;
-}
-
-.detail-title {
-  font-weight: 600;
-  color: #374151;
-  font-size: 14px;
-}
-
-.detail-content {
-  color: #6b7280;
-  line-height: 1.5;
-}
-
-.city-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.city-tag {
-  display: inline-block;
-  padding: 4px 10px;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
-  color: #4338ca;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  border: 1px solid rgba(67, 56, 202, 0.1);
-}
-
-.recent-visit {
-  font-weight: 500;
-  color: #059669;
-  background: rgba(5, 150, 105, 0.1);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
-// 響應式設計
-@media (max-width: 768px) {
-  .info-panel {
-    width: 280px;
-  }
-
-  .panel-header {
-    padding: 20px 20px 12px;
-  }
-
-  .country-flag-large {
-    font-size: 28px;
-    padding: 6px;
-  }
-
-  .country-name {
-    font-size: 18px;
-  }
-
-  .stats-section {
-    padding: 0 20px 12px;
-    margin-bottom: 12px;
-  }
-
-  .stat-item {
-    padding: 6px 0;
-  }
-
-  .details-section {
-    padding: 0 20px 12px;
-  }
 }
 </style>

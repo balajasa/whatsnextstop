@@ -1,5 +1,4 @@
-// types/Itravel.ts
-
+// types/ITravel.ts
 /**
  * 旅遊行程資料介面
  */
@@ -8,6 +7,7 @@ export interface TravelData {
   startDate: string
   endDate: string
   country: string
+  state_tw: string[]
   city: string[]
   city_tw?: string[]
   photo: string[]
@@ -33,11 +33,12 @@ export interface ProcessedPin {
   cities: string
   x: number
   y: number
-  centroid: [number, number]
+  centroid: [number, number],
+  trips?: TravelData[]
 }
 
 /**
- * 旅遊圖釘元件的 Props 介面（自己獲取資料版本）
+ * 旅遊圖釘元件的 Props 介面
  */
 export interface MapPinProps {
   projection: any  // D3 投影函數
@@ -75,4 +76,11 @@ export interface WorldMapProps {
   height?: number
   minScale?: number
   maxScale?: number
+}
+
+/**
+ * 地圖資訊面板的 Props 介面
+ */
+export interface InfoPanelProps {
+  selectedPin: ProcessedPin | null
 }

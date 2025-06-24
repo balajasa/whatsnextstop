@@ -33,7 +33,14 @@
 
         <!-- 旅遊圖釘組件 -->
         <MapPin v-if="mapProjection && mapWorldData" :projection="mapProjection" :world-data="mapWorldData"
-          :current-transform="currentTransform" :current-scale="currentScale" />
+          :current-transform="currentTransform" :current-scale="currentScale" @pin-selected="handlePinSelected"
+          @panel-close="handlePanelClose" />
+
+        <!-- 背景遮罩 -->
+        <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
+
+        <!-- InfoPanel 組件 -->
+        <InfoPanel v-if="selectedPin" :selected-pin="selectedPin" @close="handlePanelClose" />
       </div>
 
       <!-- 國家資訊顯示 -->
@@ -49,12 +56,13 @@ import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import WorldMap from './WorldMap.vue'
 import MapPin from './MapPin.vue'
-import type { Transform } from '../types/Itravel'
+import InfoPanel from './InfoPanel.vue'
+import type { Transform, ProcessedPin } from '../types/Itravel'
 import { countryTranslation } from '../../composables/countryTranslation'
 
 // Refs
 const container: Ref<HTMLElement | null> = ref(null)
-const worldMapRef: Ref<InstanceType<typeof WorldMap> | null> = ref(null)
+const worldMapRef: Ref<any> = ref(null)
 
 const { getCountryChineseName, getCountryFlag } = countryTranslation()
 
@@ -67,6 +75,9 @@ const height: Ref<number> = ref(600)
 const currentScale: Ref<number> = ref(1)
 const minScale: Ref<number> = ref(1)
 const maxScale: Ref<number> = ref(3)
+
+// InfoPanel 狀態管理
+const selectedPin: Ref<ProcessedPin | null> = ref(null)
 
 // 地圖數據
 const mapProjection: Ref<any> = ref(null)
@@ -83,16 +94,32 @@ const getDisplayCountryName = (countryName: string): string => {
   return `${flag} ${chineseName}`
 }
 
-// 響應式尺寸計算
+// 響應式尺寸計算 - 修正手機版邏輯
 const updateSize = (): void => {
   if (container.value) {
     const containerWidth = container.value.clientWidth - 40
     const isMobile = window.innerWidth <= 768
 
     if (isMobile) {
-      width.value = Math.min(containerWidth, 400)
-      height.value = Math.round((width.value * 9) / 16)
+      // 手機版：充分利用容器寬度，按地圖原始比例計算高度
+      width.value = Math.min(containerWidth, containerWidth) // 使用可用寬度
+
+      // 地圖原始比例約為 1000:600 = 5:3
+      // 但要考慮留一些邊距，所以使用稍微緊湊的比例
+      const mapAspectRatio = 600 / 1000 // 0.6
+      height.value = Math.round(width.value * mapAspectRatio)
+
+      // 設定最小高度，確保地圖夠大
+      height.value = Math.max(height.value, 350)
+
+      console.log('手機版尺寸計算:', {
+        containerWidth,
+        calculatedWidth: width.value,
+        calculatedHeight: height.value,
+        aspectRatio: mapAspectRatio
+      })
     } else {
+      // 桌面版：保持原邏輯
       width.value = Math.min(containerWidth, 1000)
       height.value = 600
     }
@@ -120,6 +147,17 @@ const onCountryClick = (countryName: string) => {
 
 const onStatusChange = (newStatus: string) => {
   status.value = newStatus
+}
+
+// InfoPanel 事件處理
+const handlePinSelected = (pin: ProcessedPin) => {
+  selectedPin.value = pin
+  console.log('容器接收到圖釘選擇:', pin.displayName)
+}
+
+const handlePanelClose = () => {
+  selectedPin.value = null
+  console.log('面板已關閉')
 }
 
 // 控制方法
@@ -173,6 +211,7 @@ defineExpose({
   padding: 20px;
   max-width: 100%;
   font-family: Arial, sans-serif;
+  position: relative;
 
   @media (max-width: 768px) {
     padding: 15px;
@@ -232,6 +271,7 @@ defineExpose({
     display: flex;
     justify-content: center;
     align-items: center;
+    /* 手機版容器高度會自動調整為較大值 */
   }
 }
 
@@ -309,5 +349,17 @@ defineExpose({
   padding: 10px;
   border-radius: 5px;
   background: #e8f5e8;
+}
+
+/* InfoPanel 相關樣式 */
+.panel-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 998;
+  pointer-events: auto;
 }
 </style>

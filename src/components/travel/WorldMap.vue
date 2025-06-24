@@ -349,6 +349,7 @@ onMounted(async () => {
 :deep(.country) {
   cursor: pointer;
   transition: fill 0.3s ease;
+
   fill: #e6c619;
   stroke: #ffffff;
   stroke-width: 1;

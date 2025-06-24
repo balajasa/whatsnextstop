@@ -6,7 +6,9 @@ export interface TravelData {
   startDate: string
   endDate: string
   country: string
+  state_tw: string[]
   city: string[]
+  city_tw?: string[]
   photo: string[]
 }
 
