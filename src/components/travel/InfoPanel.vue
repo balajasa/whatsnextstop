@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProcessedPin } from '../types/Itravel'
+import type { ProcessedPin } from '../types/ITravel'
 import { countryTranslation } from '../../composables/countryTranslation'
 
 const { getCountryFlag } = countryTranslation()

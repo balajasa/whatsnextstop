@@ -5,8 +5,11 @@ export interface GameState {
   bExpanded: boolean
   aDropping: boolean
   bDropping: boolean
+  aShowMap: boolean
+  bShowMap: boolean
   taskA: string
   taskB: string
-  showResult: boolean
-  resultShow: boolean
+  merging: boolean
+  showFinalMap: boolean
+  finalMapShow: boolean
 }

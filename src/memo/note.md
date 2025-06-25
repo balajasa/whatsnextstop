@@ -61,7 +61,7 @@ Google Map 評價 3.8 分以下限定
 
 NOTE:
 - [] 響應式版型(手機check)
-- [] drop block (差地圖、按鈕位置調整)
+- [] drop block: 地圖移入位置、按鈕觸發邏輯
 - [] 行程表: 新增注意事項卡片&內容
 - [] 首頁增加"注意事項"卡片
 - [] 地圖元件: 組合的主頁面(TravelMap) -> 世界地圖(WorldMap) + hover出現資訊(MapPin) -> 點擊資訊下方會出現卡片資訊(抽元件 TraceCard)

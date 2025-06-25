@@ -11,25 +11,15 @@
       <div class="itinerary-detail-nav-menu" v-show="navOpen">
         <div class="itinerary-detail-nav-section">
           <h4>📋 行程資訊</h4>
-          <a
-            v-for="section in infoSections"
-            :key="section.id"
-            :href="`#${section.id}`"
-            @click="scrollToSection(section.id)"
-            :class="{ 'itinerary-detail-active': activeSection === section.id }"
-          >
+          <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`"
+            @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
             {{ section.name }}
           </a>
         </div>
         <div class="itinerary-detail-nav-section">
           <h4>📅 每日行程</h4>
-          <a
-            v-for="day in totalDays"
-            :key="day"
-            :href="`#day${day}`"
-            @click="scrollToSection(`day${day}`)"
-            :class="{ 'itinerary-detail-active': activeSection === `day${day}` }"
-          >
+          <a v-for="day in totalDays" :key="day" :href="`#day${day}`" @click="scrollToSection(`day${day}`)"
+            :class="{ 'itinerary-detail-active': activeSection === `day${day}` }">
             第{{ day }}天
           </a>
         </div>
@@ -41,37 +31,36 @@
     <!-- 主要內容區域 -->
     <div class="itinerary-detail-schedule-content">
       <!-- 行程資訊區域 -->
-      <section
-        v-for="section in infoSections"
-        :key="section.id"
-        :id="section.id"
-        :class="`itinerary-detail-schedule-section ${section.class}`"
-      >
+      <section v-for="section in infoSections" :key="section.id" :id="section.id"
+        :class="`itinerary-detail-schedule-section ${section.class}`">
         <div class="itinerary-detail-section-container">
-          <div
-            v-for="(image, index) in section.images"
-            :key="index"
-            class="itinerary-detail-image-container"
-          >
+          <!-- 顯示圖片 -->
+          <div v-for="(image, index) in section.images" :key="index" class="itinerary-detail-image-container">
             <img :src="image.src" :alt="image.alt" class="itinerary-detail-schedule-image" />
           </div>
         </div>
       </section>
 
       <!-- 每日詳細行程 -->
-      <section
-        v-for="day in totalDays"
-        :key="day"
-        :id="`day${day}`"
-        class="itinerary-detail-schedule-section itinerary-detail-daily-section"
-      >
+      <section v-for="day in totalDays" :key="day" :id="`day${day}`"
+        class="itinerary-detail-schedule-section itinerary-detail-daily-section">
         <div class="itinerary-detail-section-container">
           <div class="itinerary-detail-image-container">
-            <img
-              :src="`/src/assets/img/itinerary/page${day + 6}.jpg`"
-              :alt="`第${day}天詳細行程`"
-              class="itinerary-detail-schedule-image"
-            />
+            <img :src="`/src/assets/img/itinerary/page${day + 6}.jpg`" :alt="`第${day}天詳細行程`"
+              class="itinerary-detail-schedule-image" />
+          </div>
+        </div>
+      </section>
+
+      <!-- 顯示所有的 iframe，放在最後 -->
+      <section v-for="section in infoSections.filter(s => s.iframe)" :key="`${section.id}-iframe`"
+        :id="`${section.id}-iframe`" class="itinerary-detail-schedule-section itinerary-detail-iframe-section">
+        <div class="itinerary-detail-section-container">
+          <div v-if="section.iframe" class="itinerary-detail-iframe-container">
+            <iframe :src="section.iframe.src" :title="section.iframe.title || section.name"
+              :width="section.iframe.width || '100%'" :height="section.iframe.height || '600px'"
+              :frameborder="section.iframe.frameborder || '0'"
+              :allowfullscreen="section.iframe.allowfullscreen || false" class="itinerary-detail-iframe"></iframe>
           </div>
         </div>
       </section>
@@ -136,6 +125,19 @@ const infoSections: Ref<InfoSection[]> = ref([
     name: '行程總覽',
     class: 'overview-section',
     images: [{ src: '/src/assets/img/itinerary/page6.jpg', alt: '行程總覽' }]
+  },
+  {
+    id: 'notice',
+    name: '注意事項',
+    class: 'notice-section',
+    images: [],
+    iframe: {
+      src: 'https://docs.google.com/document/d/e/2PACX-1vTK7btGRH5N2Cc5HM3HV12U5jcWTZLBXy4Z3viVb_CKprY8Qh8QHMoe2PSSYydGQc41qC350fzbiV_i/pub?embedded=true',
+      width: '100%',
+      height: '800px',
+      frameborder: '0',
+      allowfullscreen: false
+    }
   }
 ])
 
@@ -224,12 +226,12 @@ onUnmounted(() => {
 
 .itinerary-detail-container {
   position: relative;
-  background: #f8f9fa;
-  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background-color: $warm-bg-content;
+  max-width: 800px;
   border-radius: 12px;
+  background: #f8f9fa;
+  background-color: $warm-bg-content;
   box-shadow: $warm-shadow-medium;
 }
 
@@ -355,9 +357,9 @@ onUnmounted(() => {
 }
 
 .itinerary-detail-image-container {
+  overflow: hidden;
   margin-bottom: 2rem;
   border-radius: 15px;
-  overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
@@ -377,6 +379,33 @@ onUnmounted(() => {
   border-radius: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+}
+
+/* iframe 容器樣式 */
+.itinerary-detail-iframe-container {
+  overflow: hidden;
+  margin-bottom: 2rem;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.itinerary-detail-iframe-container:last-child {
+  margin-bottom: 0;
+}
+
+.itinerary-detail-iframe-container:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.itinerary-detail-iframe {
+  min-height: 600px;
+  width: 100%;
+  border: none;
+  border-radius: 15px;
+  background: white;
 }
 
 /* 回到頂部按鈕 */
@@ -448,6 +477,10 @@ onUnmounted(() => {
   .itinerary-detail-title {
     font-size: 2rem;
   }
+
+  .itinerary-detail-iframe {
+    min-height: 400px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -457,6 +490,10 @@ onUnmounted(() => {
 
   .itinerary-detail-title {
     font-size: 1.8rem;
+  }
+
+  .itinerary-detail-iframe {
+    min-height: 300px;
   }
 }
 </style>

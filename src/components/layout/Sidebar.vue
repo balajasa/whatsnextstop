@@ -4,7 +4,8 @@
       <ul class="sidebar-menu">
         <!-- 首頁 - 始終顯示 -->
         <li>
-          <router-link to="/" class="sidebar-item home-item" :class="{ active: isActive('/') }">
+          <router-link to="/" class="sidebar-item home-item" :class="{ active: isActive('/') }"
+            @click="handleItemClick">
             <div class="sidebar-icon">🏠</div>
             <span class="sidebar-text">首頁</span>
           </router-link>
@@ -19,7 +20,8 @@
             </div>
           </li>
           <li v-for="item in getItemsByCategory(category)" :key="item.path">
-            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }">
+            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }"
+              @click="handleItemClick">
               <div class="sidebar-icon">{{ item.icon }}</div>
               <span class="sidebar-text">{{ item.name }}</span>
             </router-link>
@@ -95,13 +97,20 @@ const getItemsByCategory = (category: string): SidebarItem[] => {
 const sidebarClasses = computed(() => {
   return {
     expanded: isSidebarOpen.value && !props.isMobile,
-    'mobile-open': isSidebarOpen.value && props.isMobile
+    'mobile-open': isSidebarOpen.value && props.isMobile,
+    'mobile-version': props.isMobile
   }
 })
 
 // 判斷是否為當前路由
 const isActive = (path: string): boolean => {
   return route.path === path
+}
+
+// 處理側邊欄項目點擊
+const handleItemClick = (): void => {
+  // 點擊任何連結都關閉側邊欄
+  closeSidebar()
 }
 
 // 切換側邊欄
@@ -158,11 +167,25 @@ defineExpose({
     pointer-events: none;
     z-index: -1;
   }
-}
 
-.sidebar.expanded {
-  width: 250px;
-  box-shadow: $warm-shadow-medium;
+  /* 桌面版展開狀態 */
+  &.expanded {
+    width: 250px;
+    box-shadow: $warm-shadow-medium;
+  }
+
+  /* 手機版基本狀態 */
+  &.mobile-version {
+    width: 0;
+    z-index: 2000;
+    box-shadow: $warm-shadow-heavy;
+    border-right: $warm-border-medium;
+  }
+
+  /* 手機版打開狀態 */
+  &.mobile-open {
+    width: 250px;
+  }
 }
 
 .sidebar-content {
@@ -211,11 +234,11 @@ defineExpose({
 }
 
 /* 收起狀態：隱藏分類容器和分類下的項目，但保留首頁 */
-.sidebar:not(.expanded) .sidebar-category {
+.sidebar:not(.expanded):not(.mobile-version) .sidebar-category {
   display: none;
 }
 
-.sidebar:not(.expanded) .category-item {
+.sidebar:not(.expanded):not(.mobile-version) .category-item {
   display: none;
 }
 
@@ -308,12 +331,12 @@ defineExpose({
 }
 
 /* 收起狀態：隱藏文字但保持首頁圖示可見 */
-.sidebar:not(.expanded) .sidebar-text {
+.sidebar:not(.expanded):not(.mobile-version) .sidebar-text {
   opacity: 0;
 }
 
 /* 收起狀態：調整項目居中，特別處理首頁項目 */
-.sidebar:not(.expanded) .sidebar-item {
+.sidebar:not(.expanded):not(.mobile-version) .sidebar-item {
   justify-content: center;
   padding: 14px 12px;
   border-radius: 8px;
@@ -331,16 +354,16 @@ defineExpose({
 }
 
 /* 收起狀態下的首頁項目 */
-.sidebar:not(.expanded) .home-item {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 16px 12px !important;
-  margin: 8px 6px !important;
-  border-radius: 8px !important;
+.sidebar:not(.expanded):not(.mobile-version) .home-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 12px;
+  margin: 8px 6px;
+  border-radius: 8px;
 
   .sidebar-icon {
-    margin-right: 0 !important;
+    margin-right: 0;
     font-size: 18px;
   }
 
@@ -364,7 +387,7 @@ defineExpose({
   }
 }
 
-.sidebar:not(.expanded) .sidebar-icon {
+.sidebar:not(.expanded):not(.mobile-version) .sidebar-icon {
   margin-right: 0;
 }
 
@@ -375,55 +398,60 @@ defineExpose({
     z-index: 2000;
     box-shadow: $warm-shadow-heavy;
     border-right: $warm-border-medium;
-  }
 
-  .sidebar.mobile-open {
-    width: 250px;
-  }
+    &.mobile-open {
+      width: 250px;
 
-  /* 手機版顯示完整內容 */
-  .sidebar-item {
-    justify-content: flex-start !important;
-    padding: 14px 18px !important;
-    margin: 2px 8px !important;
-    border-radius: 8px !important;
+      /* 手機版打開時，覆蓋所有收起狀態的樣式 */
+      .sidebar-item {
+        justify-content: flex-start;
+        padding: 14px 18px;
+        margin: 2px 8px;
+        border-radius: 8px;
 
-    &::before {
-      display: block !important;
+        &::before {
+          display: block;
+        }
+      }
+
+      /* 手機版首頁項目樣式 */
+      .home-item {
+        justify-content: flex-start;
+        padding: 14px 18px;
+        margin: 2px 8px;
+
+        .sidebar-text {
+          display: inline;
+          opacity: 1;
+        }
+
+        .sidebar-icon {
+          margin-right: 12px;
+          font-size: 16px;
+        }
+      }
+
+      /* 手機版分類項目 */
+      .category-item {
+        padding-left: 30px;
+      }
+
+      /* 手機版圖示間距 */
+      .sidebar-icon {
+        margin-right: 12px;
+      }
+
+      /* 手機版顯示所有文字和分類 */
+      .sidebar-text,
+      .category-text,
+      .category-icon {
+        opacity: 1;
+      }
+
+      .sidebar-category {
+        display: block;
+      }
     }
-  }
-
-  .home-item {
-    justify-content: flex-start !important;
-    padding: 14px 18px !important;
-
-    .sidebar-text {
-      display: inline !important;
-      opacity: 1 !important;
-    }
-
-    .sidebar-icon {
-      margin-right: 12px !important;
-      font-size: 16px !important;
-    }
-  }
-
-  .category-item {
-    padding-left: 30px !important;
-  }
-
-  .sidebar-icon {
-    margin-right: 12px !important;
-  }
-
-  .sidebar-text,
-  .category-text,
-  .category-icon {
-    opacity: 1 !important;
-  }
-
-  .sidebar-category {
-    display: block !important;
   }
 }
 </style>

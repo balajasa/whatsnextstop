@@ -16,12 +16,8 @@
       <div class="nav-menu" v-show="navOpen">
         <div class="nav-section">
           <h4>📋 行程資訊</h4>
-          <a
-            href="#itinerary"
-            @click="scrollToSection('itinerary')"
-            :class="{ active: activeSection === 'itinerary' }"
-            >行程內容</a
-          >
+          <a href="#itinerary" @click="scrollToSection('itinerary')"
+            :class="{ active: activeSection === 'itinerary' }">行程內容</a>
         </div>
       </div>
     </nav>
@@ -32,8 +28,7 @@
       <section id="itinerary" class="schedule-section itinerary-section">
         <div class="section-container">
           <div class="iframe-container">
-            <div
-              style="
+            <div style="
                 position: relative;
                 width: 100%;
                 height: 0;
@@ -45,11 +40,8 @@
                 overflow: hidden;
                 border-radius: 8px;
                 will-change: transform;
-              "
-            >
-              <iframe
-                loading="lazy"
-                style="
+              ">
+              <iframe loading="lazy" style="
                   position: absolute;
                   width: 100%;
                   height: 100%;
@@ -58,11 +50,8 @@
                   border: none;
                   padding: 0;
                   margin: 0;
-                "
-                src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed"
-                allowfullscreen
-                allow="fullscreen"
-              >
+                " src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed" allowfullscreen
+                allow="fullscreen">
               </iframe>
             </div>
           </div>
@@ -344,7 +333,7 @@ onUnmounted(() => {
 
   // 覆蓋內聯樣式的陰影，使用溫暖色調
   div[style*='box-shadow'] {
-    box-shadow: $warm-shadow-medium !important;
+    box-shadow: $warm-shadow-medium;
   }
 }
 
@@ -355,7 +344,7 @@ onUnmounted(() => {
   right: 2rem;
   width: 50px;
   height: 50px;
-  background: $secondary-warm; // 珊瑚紅
+  background: $secondary-warm;
   color: white;
   border: none;
   border-radius: 50%;
@@ -367,7 +356,7 @@ onUnmounted(() => {
   z-index: 998;
 
   &:hover {
-    background: $primary-warm; // hover時變金黃色
+    background: $primary-warm;
     transform: translateY(-3px);
     box-shadow: $warm-shadow-hover;
   }

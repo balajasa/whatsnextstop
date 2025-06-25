@@ -12,12 +12,8 @@
           <div class="wheel-wrapper">
             <div class="wheel-pointer"></div>
             <div class="wheel" ref="wheelRef">
-              <div
-                v-for="(item, index) in wheelItems"
-                :key="index"
-                class="wheel-item"
-                :style="getWheelItemStyle(index)"
-              >
+              <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item"
+                :style="getWheelItemStyle(index)">
                 <span>{{ item }}</span>
               </div>
               <div class="wheel-center"></div>
@@ -33,12 +29,7 @@
           <h2>設定選項</h2>
           <div class="input-group">
             <label>新增美食類型</label>
-            <input
-              type="text"
-              v-model="newItem"
-              placeholder="例如：北歐料理、地中海美食"
-              @keyup.enter="addItem"
-            />
+            <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem" />
             <button class="add-button" @click="addItem">新增項目</button>
           </div>
           <div class="items-list">
@@ -207,122 +198,124 @@ const updateWheel = (): void => {
 @use '@/styles/variables' as *;
 
 .foodwheel-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0;
   padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .foodwheel-container {
+  margin: 0 auto;
+  padding: 50px;
   max-width: 1100px;
   width: 100%;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
   box-shadow:
     0 25px 50px rgba($deep-blue, 0.15),
     0 10px 25px rgba($teal-green, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-}
 
-.nav-area {
+  backdrop-filter: blur(20px);
 }
 
 .game-content {
   display: flex;
   margin-top: 12px;
-  background: #2e4057;
   border-radius: 20px;
+  background: #2e4057;
 }
 
 .game-area {
   display: flex;
+  align-items: center;
   flex: 1.2;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  width: 100%;
+  margin-right: 40px;
   padding: 40px;
+  width: 100%;
   // background: #2e4057;
   // border-radius: 20px;
   box-shadow: 0 10px 30px rgba(46, 64, 87, 0.3);
-  margin-right: 40px;
 }
 
 .control-panel {
+  overflow: hidden;
   flex: 0.8;
+  padding: 35px;
   min-width: 330px;
   max-width: 400px;
-  padding: 35px;
-  background: linear-gradient(135deg, rgba(69, 105, 144, 0.08), rgba(73, 190, 170, 0.08));
-  border-radius: 16px;
   border: 1px solid rgba(69, 105, 144, 0.2);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(69, 105, 144, 0.08), rgba(73, 190, 170, 0.08));
+
   backdrop-filter: blur(10px);
-  overflow: hidden;
 }
 
 h1 {
+  position: relative;
+  margin-bottom: 45px;
   background: color.adjust($coral-red, $lightness: -5%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
   text-align: center;
-  margin-bottom: 45px;
-  font-size: 36px;
-  font-weight: 600;
   letter-spacing: 3px;
-  position: relative;
+  font-weight: 600;
+  font-size: 36px;
+
+  -webkit-text-fill-color: transparent;
 
   &::after {
-    content: '🎯';
     position: absolute;
-    right: -45px;
     top: 50%;
-    transform: translateY(-50%);
+    right: -45px;
+    content: '🎯';
     font-size: 28px;
+    transform: translateY(-50%);
     animation: sway 4s ease-in-out infinite;
   }
 }
 
 @keyframes sway {
+
   0%,
   100% {
     transform: translateY(-50%) rotate(-5deg);
   }
+
   50% {
     transform: translateY(-55%) rotate(5deg);
   }
 }
 
 h2 {
-  color: $deep-blue;
   margin-bottom: 28px;
-  font-size: 22px;
-  font-weight: 500;
+  color: $deep-blue;
   letter-spacing: 1px;
+  font-weight: 500;
+  font-size: 22px;
 }
 
 .wheel-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 45px;
   width: 400px;
   height: 400px;
-  margin: 0 auto 45px;
   filter: drop-shadow(0 20px 40px rgba($deep-blue, 0.2));
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .wheel {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
   border: 6px solid $deep-blue;
+  border-radius: 50%;
   background: #ffffff;
   box-shadow:
     0 0 0 8px rgba(255, 255, 255, 0.9),
@@ -335,37 +328,37 @@ h2 {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  z-index: 10;
   width: 30px;
   height: 30px;
-  background: $coral-red;
-  border-radius: 50%;
   border: 4px solid #ffffff;
+  border-radius: 50%;
+  background: $coral-red;
   box-shadow: 0 6px 20px rgba($coral-red, 0.4);
-  z-index: 10;
+  transform: translate(-50%, -50%);
 }
 
 .wheel-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 500;
   color: $deep-blue;
+  font-weight: 500;
+  font-size: 16px;
 
   span {
     position: absolute;
-    left: var(--text-x);
     top: var(--text-y);
+    left: var(--text-x);
     width: 100px;
-    text-align: center;
-    transform: translate(-50%, -50%) rotate(var(--text-rotation));
     color: $deep-blue;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.5px;
     font-weight: 600;
     font-size: 16px;
     line-height: 1.4;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%) rotate(var(--text-rotation));
   }
 }
 
@@ -373,32 +366,34 @@ h2 {
   position: absolute;
   top: -28px;
   left: 50%;
-  transform: translateX(-50%);
+  z-index: 15;
   width: 0;
   height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
   border-top: 40px solid $coral-red;
-  z-index: 15;
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
   filter: drop-shadow(0 4px 10px rgba($coral-red, 0.5));
+  transform: translateX(-50%);
 
   &::after {
-    content: '⭐';
     position: absolute;
     top: -35px;
     left: 50%;
-    transform: translateX(-50%);
+    content: '⭐';
     font-size: 18px;
+    transform: translateX(-50%);
     animation: pulse 2s ease-in-out infinite;
   }
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: translateX(-50%) scale(1.1);
@@ -406,30 +401,30 @@ h2 {
 }
 
 .spin-button {
+  position: relative;
+  overflow: hidden;
   padding: 20px 50px;
-  font-size: 18px;
-  font-weight: 600;
-  background: $coral-red;
-  color: #ffffff;
   border: none;
   border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 1px;
+  background: $coral-red;
   box-shadow:
     0 12px 35px rgba($coral-red, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
+  color: #ffffff;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   &::before {
-    content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    content: '';
     transition: left 0.6s;
   }
 
@@ -439,10 +434,10 @@ h2 {
 
   &:hover:not(:disabled) {
     background: color.adjust($coral-red, $lightness: -5%);
-    transform: translateY(-3px);
     box-shadow:
       0 18px 40px rgba($coral-red, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
   }
 
   &:active {
@@ -451,28 +446,29 @@ h2 {
 
   &:disabled {
     background: #a8a8a8;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     color: #ffffff;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   }
 }
 
 .result-display {
   margin-top: 35px;
-  font-size: 24px;
-  font-weight: 600;
-  color: $deep-blue;
-  min-height: 40px;
-  text-align: center;
   padding: 20px 35px;
-  background: linear-gradient(135deg, rgba($mint-green, 0.15), rgba($teal-green, 0.15));
-  border-radius: 16px;
+  min-height: 40px;
   border: 2px solid rgba($teal-green, 0.3);
-  letter-spacing: 1px;
-  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba($mint-green, 0.15), rgba($teal-green, 0.15));
   box-shadow: 0 6px 20px rgba($teal-green, 0.2);
+  color: $deep-blue;
+  text-align: center;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 24px;
   animation: fadeIn 0.6s ease-out;
+
+  backdrop-filter: blur(10px);
 }
 
 @keyframes fadeIn {
@@ -480,6 +476,7 @@ h2 {
     opacity: 0;
     transform: translateY(-15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -492,25 +489,26 @@ h2 {
   label {
     display: block;
     margin-bottom: 12px;
-    font-weight: 500;
-    font-size: 16px;
     color: #456990;
     letter-spacing: 0.5px;
+    font-weight: 500;
+    font-size: 16px;
   }
 
   input {
-    width: calc(100% - 4px);
+    box-sizing: border-box;
+    margin-bottom: 18px;
     padding: 16px 20px;
+    width: calc(100% - 4px);
     border: 2px solid rgba(69, 105, 144, 0.3);
     border-radius: 10px;
-    font-size: 15px;
     background: rgba(255, 255, 255, 0.9);
     color: #456990;
-    transition: all 0.3s ease;
     font-weight: 400;
+    font-size: 15px;
+    transition: all 0.3s ease;
+
     backdrop-filter: blur(5px);
-    margin-bottom: 18px;
-    box-sizing: border-box;
 
     &:focus {
       outline: none;
@@ -528,28 +526,10 @@ h2 {
 }
 
 .items-list {
-  margin-top: 25px;
-  max-height: 320px;
   overflow-y: auto;
+  margin-top: 25px;
   padding-right: 8px;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(69, 105, 144, 0.1);
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(238, 184, 104, 0.4);
-    border-radius: 4px;
-
-    &:hover {
-      background: rgba(238, 184, 104, 0.6);
-    }
-  }
+  max-height: 320px;
 }
 
 .list-item {
@@ -557,33 +537,34 @@ h2 {
   align-items: center;
   margin-bottom: 16px;
   padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 12px;
   border: 2px solid rgba(238, 184, 104, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
+
   backdrop-filter: blur(5px);
 
   &:hover {
-    transform: translateY(-2px);
+    border-color: rgba(238, 184, 104, 0.4);
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 8px 25px rgba(238, 184, 104, 0.2);
-    border-color: rgba(238, 184, 104, 0.4);
+    transform: translateY(-2px);
   }
 }
 
 .item-input {
   flex: 1;
+  box-sizing: border-box;
   margin-right: 16px;
   padding: 12px 16px;
+  min-width: 0;
   border: 1px solid rgba(69, 105, 144, 0.3);
   border-radius: 8px;
-  font-size: 15px;
   background: rgba(255, 255, 255, 0.9);
   color: #456990;
   font-weight: 400;
+  font-size: 15px;
   transition: all 0.3s ease;
-  box-sizing: border-box;
-  min-width: 0;
 
   &:focus {
     outline: none;
@@ -594,66 +575,67 @@ h2 {
 }
 
 .delete-button {
+  flex-shrink: 0;
   padding: 10px 16px;
-  background: #ef767a;
-  color: #ffffff;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  background: #ef767a;
+  color: #ffffff;
   white-space: nowrap;
-  flex-shrink: 0;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   &:hover {
     background: #e6636a;
-    transform: translateY(-1px);
     box-shadow: 0 6px 15px rgba(239, 118, 122, 0.3);
+    transform: translateY(-1px);
   }
 }
 
 .add-button {
   padding: 16px 32px;
-  background: rgba(238, 184, 104, 0.15);
-  color: #456990;
+  width: 100%;
   border: 2px solid rgba(238, 184, 104, 0.4);
   border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  width: 100%;
-  transition: all 0.3s ease;
+  background: rgba(238, 184, 104, 0.15);
+  color: #456990;
   letter-spacing: 0.5px;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
   backdrop-filter: blur(5px);
 
   &:hover {
-    background: rgba(238, 184, 104, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(238, 184, 104, 0.25);
     border-color: rgba(238, 184, 104, 0.6);
+    background: rgba(238, 184, 104, 0.25);
+    box-shadow: 0 8px 25px rgba(238, 184, 104, 0.25);
+    transform: translateY(-2px);
   }
 }
 
 .update-button {
+  margin-top: 28px;
   padding: 18px 36px;
-  background: #456990;
-  color: #ffffff;
+  width: 100%;
   border: none;
   border-radius: 12px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 28px;
-  font-size: 17px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
+  background: #456990;
   box-shadow: 0 10px 30px rgba(69, 105, 144, 0.3);
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  font-size: 17px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
   &:hover {
     background: #3a5a7a;
-    transform: translateY(-3px);
     box-shadow: 0 15px 35px rgba(69, 105, 144, 0.4);
+    transform: translateY(-3px);
   }
 }
 
@@ -671,34 +653,34 @@ h2 {
 
 @media (max-width: 992px) {
   .foodwheel-container {
+    align-items: center;
     flex-direction: column;
     padding: 30px;
     max-width: 600px;
-    align-items: center;
   }
 
   .game-area {
-    width: 100%;
     align-items: center;
+    width: 100%;
   }
 
   .control-panel {
     min-width: auto;
     max-width: none;
-    width: 100%;
     max-width: 500px;
+    width: 100%;
   }
 
   .wheel-wrapper {
+    margin: 0 auto 35px;
     width: 340px;
     height: 340px;
-    margin: 0 auto 35px;
   }
 
   h1 {
-    font-size: 28px;
     margin-bottom: 35px;
     text-align: center;
+    font-size: 28px;
   }
 }
 
@@ -708,19 +690,19 @@ h2 {
   }
 
   .foodwheel-container {
-    padding: 25px;
     align-items: center;
+    padding: 25px;
   }
 
   .game-area {
-    width: 100%;
     max-width: 100%;
+    width: 100%;
   }
 
   .wheel-wrapper {
+    margin: 0 auto 35px;
     width: 300px;
     height: 300px;
-    margin: 0 auto 35px;
   }
 
   .control-panel {
@@ -729,10 +711,10 @@ h2 {
   }
 
   h1 {
-    font-size: 26px;
-    letter-spacing: 2px;
     margin-bottom: 30px;
     text-align: center;
+    letter-spacing: 2px;
+    font-size: 26px;
 
     &::after {
       right: -35px;
@@ -741,8 +723,8 @@ h2 {
   }
 
   h2 {
-    font-size: 18px;
     margin-bottom: 24px;
+    font-size: 18px;
   }
 
   .spin-button {
@@ -751,9 +733,9 @@ h2 {
   }
 
   .result-display {
-    font-size: 20px;
-    padding: 16px 25px;
     margin-top: 30px;
+    padding: 16px 25px;
+    font-size: 20px;
   }
 }
 
@@ -763,9 +745,9 @@ h2 {
   }
 
   .foodwheel-container {
+    align-items: center;
     padding: 20px;
     border-radius: 12px;
-    align-items: center;
   }
 
   .game-area {
@@ -773,9 +755,9 @@ h2 {
   }
 
   .wheel-wrapper {
+    margin: 0 auto 30px;
     width: 260px;
     height: 260px;
-    margin: 0 auto 30px;
   }
 
   .wheel {
@@ -794,28 +776,28 @@ h2 {
 
   .wheel-pointer {
     top: -18px;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
     border-top: 30px solid $coral-red;
+    border-right: 15px solid transparent;
+    border-left: 15px solid transparent;
   }
 
   .wheel-item span {
-    font-size: 13px;
     width: 80px;
+    font-size: 13px;
   }
 
   .control-panel {
     padding: 20px;
-    border-radius: 10px;
-    width: 100%;
     max-width: 350px;
+    width: 100%;
+    border-radius: 10px;
   }
 
   h1 {
-    font-size: 22px;
-    letter-spacing: 1.5px;
     margin-bottom: 25px;
     text-align: center;
+    letter-spacing: 1.5px;
+    font-size: 22px;
 
     &::after {
       right: -30px;
@@ -824,84 +806,84 @@ h2 {
   }
 
   h2 {
-    font-size: 16px;
     margin-bottom: 20px;
+    font-size: 16px;
   }
 
   .spin-button {
     padding: 14px 30px;
-    font-size: 15px;
     border-radius: 6px;
+    font-size: 15px;
   }
 
   .result-display {
-    font-size: 18px;
-    padding: 14px 20px;
     margin-top: 25px;
+    padding: 14px 20px;
     border-radius: 10px;
+    font-size: 18px;
   }
 
   .input-group {
     label {
-      font-size: 14px;
       margin-bottom: 10px;
+      font-size: 14px;
     }
 
     input {
-      padding: 12px 15px;
-      font-size: 14px;
-      border-radius: 6px;
       margin-bottom: 15px;
+      padding: 12px 15px;
+      border-radius: 6px;
+      font-size: 14px;
     }
   }
 
   .list-item {
-    padding: 12px 15px;
     margin-bottom: 12px;
+    padding: 12px 15px;
     border-radius: 8px;
   }
 
   .item-input {
     padding: 8px 12px;
-    font-size: 13px;
     border-radius: 5px;
+    font-size: 13px;
   }
 
   .delete-button {
     padding: 6px 12px;
-    font-size: 12px;
     border-radius: 5px;
+    font-size: 12px;
   }
 
   .add-button {
     padding: 12px 20px;
-    font-size: 14px;
     border-radius: 6px;
+    font-size: 14px;
   }
 
   .update-button {
-    padding: 14px 25px;
-    font-size: 15px;
-    border-radius: 6px;
     margin-top: 24px;
+    padding: 14px 25px;
+    border-radius: 6px;
+    font-size: 15px;
   }
 }
 
 @media (max-width: 375px) {
   .foodwheel-container {
-    padding: 15px;
     align-items: center;
+    padding: 15px;
   }
 
   .wheel-wrapper {
+    margin: 0 auto 25px;
     width: 240px;
     height: 240px;
-    margin: 0 auto 25px;
   }
 
   .wheel-item span {
-    font-size: 12px;
     width: 70px;
+    font-size: 12px;
   }
 
   .control-panel {
@@ -909,9 +891,9 @@ h2 {
   }
 
   h1 {
-    font-size: 20px;
     margin-bottom: 20px;
     text-align: center;
+    font-size: 20px;
 
     &::after {
       right: -25px;
@@ -925,8 +907,8 @@ h2 {
   }
 
   .result-display {
-    font-size: 16px;
     padding: 12px 18px;
+    font-size: 16px;
   }
 }
 
@@ -936,24 +918,24 @@ h2 {
   }
 
   .wheel-wrapper {
+    margin: 0 auto 20px;
     width: 220px;
     height: 220px;
-    margin: 0 auto 20px;
   }
 
   .wheel-item span {
-    font-size: 11px;
     width: 65px;
+    font-size: 11px;
   }
 
   .control-panel {
-    max-width: 280px;
     padding: 15px;
+    max-width: 280px;
   }
 
   h1 {
-    font-size: 18px;
     text-align: center;
+    font-size: 18px;
   }
 }
 </style>

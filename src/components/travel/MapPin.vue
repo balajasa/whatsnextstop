@@ -22,7 +22,7 @@ import * as d3 from 'd3'
 import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
 import { getTravelsData } from '../../composables/usagi'
-import type { TravelData, ProcessedPin, MapPinProps } from '../types/Itravel'
+import type { TravelData, ProcessedPin, MapPinProps } from '../types/ITravel'
 
 const { getCountryChineseName } = countryTranslation()
 const { travels, loadTravels } = getTravelsData()
@@ -79,12 +79,22 @@ const processedPins = computed((): ProcessedPin[] => {
 
   // 按國家分組
   const countryGroups: Record<string, TravelData[]> = {}
+
   travels.value.forEach(trip => {
-    const country = trip.country.toLowerCase()
-    if (!countryGroups[country]) {
-      countryGroups[country] = []
-    }
-    countryGroups[country].push(trip)
+    // 處理 country 陣列
+    const countryList = Array.isArray(trip.country) ? trip.country : [trip.country]
+
+    countryList.forEach(country => {
+      const countryKey = country.toLowerCase()
+      if (!countryGroups[countryKey]) {
+        countryGroups[countryKey] = []
+      }
+      // 為每個國家建立獨立的 trip 記錄
+      countryGroups[countryKey].push({
+        ...trip,
+        country: [country]
+      })
+    })
   })
 
   const pins: ProcessedPin[] = []
@@ -234,7 +244,7 @@ onUnmounted(() => {
   pointer-events: auto;
 
   &:hover {
-    transform: translate(-50%, -100%) scale(1.2) !important;
+    transform: translate(-50%, -100%) scale(1.2);
 
     .pin-svg {
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));

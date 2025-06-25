@@ -15,19 +15,10 @@
     </header>
 
     <!-- 側邊欄 -->
-    <Sidebar
-      ref="sidebarRef"
-      :isMobile="isMobile"
-      :headerHeight="50"
-      @keydown-escape="handleEscapeKey"
-    />
+    <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
 
     <!-- 覆蓋層 (僅手機版) -->
-    <div
-      class="overlay"
-      :class="{ active: sidebarOpen && isMobile }"
-      @click="closeMobileSidebar"
-    ></div>
+    <div class="overlay" :class="{ active: sidebarOpen && isMobile }" @click="closeMobileSidebar"></div>
 
     <!-- 主內容區域 - 移除寬度限制 -->
     <main class="main-container" :class="{ 'sidebar-open': sidebarOpen && !isMobile }">
@@ -245,8 +236,8 @@ onUnmounted(() => {
 /* Tablet */
 @media (max-width: 768px) {
   .main-container {
-    margin-left: 0 !important;
-    width: 100% !important;
+    margin-left: 0;
+    width: 100%;
     padding: 15px;
   }
 }

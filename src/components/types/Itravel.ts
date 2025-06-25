@@ -6,7 +6,7 @@ export interface TravelData {
   year: string
   startDate: string
   endDate: string
-  country: string
+  country: string[]
   state_tw: string[]
   city: string[]
   city_tw?: string[]
