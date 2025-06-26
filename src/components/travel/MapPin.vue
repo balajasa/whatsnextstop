@@ -119,7 +119,7 @@ const processedPins = computed((): ProcessedPin[] => {
       )
 
       const latestTrip = sortedTrips[sortedTrips.length - 1]
-      const cities = [...new Set(trips.map(trip => trip.city_tw || trip.city))].join('、')
+      const cities = [...new Set(trips.map(trip => trip.cityTW || trip.city))].join('、')
 
       pins.push({
         country,

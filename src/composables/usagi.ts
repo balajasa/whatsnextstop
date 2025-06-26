@@ -33,8 +33,11 @@ export function getTravelsData(): GetTravels {
     }
   }
 
-  function getImageUrl(folderPath: string, filename: string): string {
-    return `${baseUrl}/images/photo/${folderPath}/${filename}.jpg`
+  function getImageUrl(travel: TravelData, photoName: string): string {
+    // 路徑格式：images/photo/{year}/{country}/{photoName}.jpg
+    // 如果有多個國家，使用第一個國家
+    const country = travel.country[0]
+    return `${baseUrl}/images/photo/${travel.year}/${country}/${photoName}.jpg`
   }
 
   function getConfig() {

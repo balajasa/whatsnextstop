@@ -94,7 +94,7 @@ const getCityList = (pin: ProcessedPin): string[] => {
   if (!pin.trips) return []
 
   // 從所有旅程中收集城市名稱
-  const allCities = pin.trips.flatMap(trip => trip.city_tw || [])
+  const allCities = pin.trips.flatMap(trip => trip.cityTW || [])
 
   // 去重並返回
   return [...new Set(allCities)]
@@ -104,7 +104,7 @@ const getCityList = (pin: ProcessedPin): string[] => {
 const getStateList = (pin: ProcessedPin): string => {
   if (!pin.trips) return '資料不詳'
 
-  const states = [...new Set(pin.trips.flatMap(trip => trip.state_tw || []))].join('、')
+  const states = [...new Set(pin.trips.flatMap(trip => trip.stateTW || []))].join('、')
   return states || '資料不詳'
 }
 

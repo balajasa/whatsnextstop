@@ -6,9 +6,10 @@ export interface TravelData {
   startDate: string
   endDate: string
   country: string[]
-  state_tw: string[]
+  stateTW: string[]
   city: string[]
-  city_tw?: string[]
+  cityTW?: string[]
+  folderName: string
   photo: string[]
 }
 
@@ -20,7 +21,7 @@ export interface GetTravels {
   travels: Ref<TravelData[]>
   loading: Ref<boolean>
   loadTravels: () => Promise<void>
-  getImageUrl: (folderPath: string, filename: string) => string
+  getImageUrl: (travel: TravelData, photoName: string) => string
   getConfig: () => ConfigInfo
 }
 
