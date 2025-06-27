@@ -195,10 +195,10 @@ defineExpose({
 @use '@/styles/variables' as *;
 
 .world-map-container {
-  max-width: 1000px;
   margin: 0 auto;
-  background-color: $warm-bg-content;
+  max-width: 1000px;
   border-radius: 12px;
+  background-color: $warm-bg-content;
   box-shadow: $warm-shadow-medium;
 
   @media (max-width: 768px) {
@@ -208,10 +208,9 @@ defineExpose({
 }
 
 .world-map {
+  position: relative;
   padding: 20px;
   max-width: 100%;
-  font-family: Arial, sans-serif;
-  position: relative;
 
   @media (max-width: 768px) {
     padding: 15px;
@@ -221,14 +220,16 @@ defineExpose({
 .controls {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   margin-bottom: 15px;
-  flex-wrap: wrap;
+
   gap: 10px;
 
   @media (max-width: 768px) {
-    flex-direction: column;
     align-items: stretch;
+    flex-direction: column;
+
     gap: 8px;
   }
 }
@@ -250,8 +251,8 @@ defineExpose({
 
 .instructions {
   color: #666;
-  font-size: 14px;
   text-align: center;
+  font-size: 14px;
 
   @media (max-width: 768px) {
     font-size: 12px;
@@ -261,16 +262,16 @@ defineExpose({
 .map-container {
   position: relative;
   overflow: hidden;
+  margin: 0 auto;
   height: v-bind(height + 'px');
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #f8f9fa;
-  margin: 0 auto;
 
   @media (max-width: 768px) {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     /* 手機版容器高度會自動調整為較大值 */
   }
 }
@@ -286,6 +287,7 @@ defineExpose({
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
   gap: 5px;
 
   @media (max-width: 768px) {
@@ -356,10 +358,10 @@ defineExpose({
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 998;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.1);
-  z-index: 998;
   pointer-events: auto;
 }
 </style>

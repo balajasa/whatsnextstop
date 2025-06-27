@@ -158,25 +158,24 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .travel-trace {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
   padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
   .container {
-    max-width: 1200px;
     margin: 0 auto;
+    max-width: 1200px;
   }
 
   .header {
-    text-align: center;
     margin-bottom: 40px;
     color: white;
+    text-align: center;
 
     h1 {
-      font-size: 2.5rem;
       margin-bottom: 10px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-size: 2.5rem;
     }
 
     p {
@@ -186,55 +185,58 @@ onMounted(async () => {
   }
 
   .loading-container {
-    text-align: center;
-    color: white;
-    font-size: 1.2rem;
     padding: 40px;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
   }
 
   .travel-list {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
     padding: 30px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+
     backdrop-filter: blur(10px);
   }
 
   .list-header {
     display: grid;
-    grid-template-columns: 80px 140px 80px 120px 1fr 50px;
-    gap: 20px;
+    margin-bottom: 15px;
     padding: 15px 20px;
+    border-radius: 15px;
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
     color: white;
     font-weight: 600;
-    border-radius: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+
+    grid-template-columns: 80px 140px 80px 120px 1fr 50px;
+    gap: 20px;
   }
 
   .travel-item {
+    overflow: hidden;
     margin-bottom: 12px;
     border-radius: 15px;
-    overflow: hidden;
+    background: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    background: white;
 
     &:hover {
-      transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
     }
   }
 
   .item-header {
     display: grid;
-    grid-template-columns: 80px 140px 80px 120px 1fr 50px;
-    gap: 20px;
+    align-items: center;
     padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    align-items: center;
+
+    grid-template-columns: 80px 140px 80px 120px 1fr 50px;
+    gap: 20px;
 
     &:hover {
       background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
@@ -242,9 +244,9 @@ onMounted(async () => {
   }
 
   .year {
+    color: #2d3748;
     font-weight: 700;
     font-size: 1.1rem;
-    color: #2d3748;
   }
 
   .date {
@@ -254,8 +256,8 @@ onMounted(async () => {
 
   .days {
     color: #e53e3e;
-    font-weight: 600;
     text-align: center;
+    font-weight: 600;
   }
 
   .country {
@@ -269,9 +271,9 @@ onMounted(async () => {
   }
 
   .expand-btn {
+    color: #718096;
     text-align: center;
     font-size: 1.2rem;
-    color: #718096;
     transition: transform 0.3s ease;
 
     &.rotated {
@@ -280,10 +282,10 @@ onMounted(async () => {
   }
 
   .item-details {
-    max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s ease;
+    max-height: 0;
     background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    transition: max-height 0.5s ease;
 
     &.expanded {
       max-height: 800px;
@@ -295,28 +297,29 @@ onMounted(async () => {
     border-top: 2px solid rgba(0, 0, 0, 0.05);
 
     h3 {
-      color: #2d3748;
       margin-bottom: 15px;
+      color: #2d3748;
     }
 
     p {
+      margin-bottom: 15px;
       color: #4a5568;
       line-height: 1.6;
-      margin-bottom: 15px;
     }
   }
 
   .photo-gallery {
     display: grid;
+    margin-top: 15px;
+
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
-    margin-top: 15px;
   }
 
   .photo-container {
     position: relative;
-    border-radius: 12px;
     overflow: hidden;
+    border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 
@@ -326,17 +329,17 @@ onMounted(async () => {
   }
 
   .photo-placeholder {
-    width: 240px;
-    height: 180px;
-    background: linear-gradient(45deg, #667eea, #764ba2);
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 240px;
+    height: 180px;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
     color: white;
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    border-radius: 8px;
 
     &:hover {
       background: linear-gradient(45deg, #764ba2, #667eea);
@@ -345,20 +348,20 @@ onMounted(async () => {
     &.loading {
       background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
       background-size: 200% 100%;
-      animation: loading 1.5s infinite;
       color: #666;
+      animation: loading 1.5s infinite;
     }
   }
 
   .photo-img {
     width: 240px;
     height: 180px;
-    background-size: cover;
+    border-radius: 8px;
     background-position: center;
+    background-size: cover;
     background-repeat: no-repeat;
     cursor: pointer;
     transition: opacity 0.3s ease;
-    border-radius: 8px;
 
     &:hover {
       opacity: 0.9;
@@ -368,16 +371,17 @@ onMounted(async () => {
   @media (max-width: 768px) {
     .item-header {
       display: flex;
+      align-items: center;
       flex-wrap: wrap;
       justify-content: space-between;
-      align-items: center;
+
       grid-template-columns: none;
     }
 
     .expand-btn {
+      margin-bottom: 10px;
       width: 100%;
       text-align: right;
-      margin-bottom: 10px;
     }
 
     .photo-gallery {

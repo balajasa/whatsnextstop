@@ -30,6 +30,11 @@
           </div>
         </div>
       </div>
+      <div class="test">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium praesentium aperiam vel corporis numquam,
+        quibusdam aliquid officia nobis ipsum, excepturi illo. Velit doloremque quis laborum nemo, similique inventore
+        nostrum sequi.
+      </div>
     </div>
   </div>
 </template>
@@ -92,204 +97,203 @@ const mainCards = ref([
 ])
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/styles/variables' as *;
 
 .main-content-wrapper {
-  width: 1200px;
-  height: 100vh;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: $warm-bg-content;
-  border-radius: 12px;
-  box-shadow: $warm-shadow-medium;
-
-  /* 確保在小螢幕上不會超出視窗 */
-  @media (max-width: 1240px) {
-    width: calc(100vw - 40px);
-    max-width: 1200px;
-  }
+  min-height: 100%;
+  background: $bg-primary;
 }
 
-/* 行程表主區域 */
 .schedule-section {
-  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1200px;
 }
 
+/* 頁面標題區域 */
 .schedule-header {
-  text-align: center;
-  margin-bottom: 30px;
-
-  h2 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 2px 4px rgba($primary-warm, 0.3));
-  }
+  margin-bottom: 32px;
 }
 
 .schedule-subtitle {
-  color: $text-secondary-warm;
-  font-size: 1.1rem;
-  font-weight: 500;
+  position: relative;
+  margin: 0;
+  padding: 24px 0;
+  border-bottom: 2px solid $border-light;
+  color: $text-secondary;
+  text-align: center;
+  font-weight: 600;
+  font-size: 20px;
+
+  &::before {
+    margin-right: 8px;
+    content: '✈️';
+  }
 }
 
 /* 封面圖片區域 */
 .cover-image-area {
+  margin-bottom: 30px;
   width: 100%;
   height: 400px;
-  margin-bottom: 30px;
   border-radius: 12px;
-  box-shadow: $warm-shadow-medium;
+  box-shadow: 0 4px 15px rgba(238, 184, 104, 0.15);
 }
 
 .cover-image {
   width: 100%;
   height: 400px;
-  background: url('@/assets/img/bg/polar_bear.jpg');
-  background-size: contain;
   background-position: center;
+  // background: url('@/assets/img/bg/polar_bear.jpg');
+  background-size: contain;
   background-repeat: no-repeat;
+
 }
 
-.cover-text {
-  font-weight: 600;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  z-index: 1;
-  position: relative;
-}
-
-/* 主要功能區域 - 針對 1200px 寬度優化 */
+/* 主要功能卡片網格 */
 .schedule-main-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  /* 4 個等寬欄位 */
-  gap: 24px;
-  /* 增加間距以充分利用 1200px 寬度 */
   margin-bottom: 40px;
+
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
 }
 
 .schedule-card {
-  background: $warm-bg-card;
-  backdrop-filter: blur(8px);
-  border: $warm-border-light;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid $border-light;
   border-radius: 12px;
-  padding: 28px 24px;
-  /* 增加內距 */
+  background: $bg-card;
+  box-shadow: 0 4px 12px $shadow-light;
+  color: $text-primary;
   text-align: center;
   text-decoration: none;
-  color: $text-primary-warm;
   transition: all 0.3s ease;
-  box-shadow: $warm-shadow-light;
-  position: relative;
-  overflow: hidden;
 
   &::before {
-    content: '';
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
-    bottom: 0;
-    background: $warm-gradient-bg;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
+    left: 0;
+    height: 4px;
+    // background: linear-gradient(90deg, $accent-color-1, $accent-color-2);
+    content: '';
+    transition: transform 0.3s ease;
+    transform: scaleX(0);
   }
 
   &:hover {
+    border-color: $accent-color-1;
+    box-shadow: 0 12px 32px $shadow-strong;
     transform: translateY(-4px);
-    box-shadow: $warm-shadow-hover;
-    border-color: rgba($primary-warm, 0.3);
 
     &::before {
-      opacity: 1;
+      transform: scaleX(1);
     }
 
     .schedule-icon {
       transform: scale(1.1);
     }
+  }
 
-    h3 {
-      color: $primary-warm;
-    }
+  h3 {
+    margin: 16px 0 0 0;
+    color: $text-secondary;
+    font-weight: 600;
+    font-size: 16px;
   }
 }
 
 .schedule-icon {
-  font-size: 2.4rem;
-  /* 稍微增大圖標 */
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  font-size: 32px;
   transition: transform 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba($primary-warm, 0.2));
-}
-
-.schedule-card h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  /* 稍微增大文字 */
-  font-weight: 600;
-  color: $text-primary-warm;
-  transition: color 0.3s ease;
 }
 
 /* 每日行程區域 */
 .daily-schedule-section {
-  margin-bottom: 30px;
+  margin-top: 40px;
 }
 
 .daily-title {
-  text-align: center;
+  position: relative;
   margin-bottom: 24px;
-  color: $text-primary-warm;
-  font-size: 1.4rem;
-  font-weight: 600;
+  padding-bottom: 16px;
+  color: $primary-color;
+  text-align: center;
+  font-weight: 700;
+  font-size: 24px;
+
+  &::after {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 80px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, $accent-color-1, $accent-color-2);
+    content: '';
+    transform: translateX(-50%);
+  }
 }
 
 .daily-grid {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
+  justify-content: center;
 }
 
 .daily-block {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
+  max-width: 800px;
   width: 100%;
-  max-width: 1160px;
+
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
 }
 
 .daily-card {
-  background: $warm-gradient-primary;
-  color: white;
-  padding: 28px 20px;
+  position: relative;
+  overflow: hidden;
+  padding: 24px 16px;
+  border: 2px solid $border-light;
   border-radius: 12px;
+  background: $bg-card;
+  color: $text-secondary;
   text-align: center;
   text-decoration: none;
   font-weight: 600;
-  font-size: 1.1rem;
   transition: all 0.3s ease;
-  box-shadow: $warm-shadow-medium;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
 
   &::before {
-    content: '';
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    left: 0;
+    // background: linear-gradient(135deg, $accent-color-1, $accent-color-2);
+    content: '';
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
+  &::after {
+    position: relative;
+    z-index: 1;
+    display: none;
+    content: attr(href);
+  }
+
   &:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: $warm-shadow-hover;
+    border-color: $accent-color-1;
+    box-shadow: 0 8px 24px $shadow-city;
+    // color: white;
+    transform: translateY(-2px);
 
     &::before {
       opacity: 1;
@@ -298,93 +302,98 @@ const mainCards = ref([
 }
 
 /* 響應式設計 */
-@media (max-width: 1024px) {
+@media (max-width: 968px) {
   .schedule-main-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .cover-image {
+    height: 200px;
+
+    &::after {
+      font-size: 20px;
+    }
   }
 
   .daily-block {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
   }
 }
 
 @media (max-width: 768px) {
-  .schedule-header h2 {
-    font-size: 2.5rem;
+  .schedule-section {
+    padding: 0 16px;
+  }
+
+  .schedule-subtitle {
+    padding: 16px 0;
+    font-size: 18px;
   }
 
   .schedule-main-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 16px;
   }
 
   .schedule-card {
-    padding: 18px 15px;
-    border-radius: 10px;
+    padding: 16px;
+
+    h3 {
+      font-size: 14px;
+    }
   }
 
-  .daily-grid {
-    gap: 15px;
+  .schedule-icon {
+    font-size: 28px;
+  }
+
+  .cover-image {
+    height: 160px;
+    border-radius: 8px;
+
+    &::after {
+      font-size: 16px;
+    }
+  }
+
+  .daily-title {
+    font-size: 20px;
   }
 
   .daily-block {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 
   .daily-card {
-    padding: 20px 16px;
-    border-radius: 10px;
+    padding: 16px 8px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .schedule-header h2 {
-    font-size: 2rem;
-  }
-
-  .schedule-subtitle {
-    font-size: 1rem;
-  }
-
-  .cover-image-area {
-    height: 150px;
-    border-radius: 10px;
-  }
-
-  .cover-image {
-    height: 150px;
-  }
-
   .schedule-main-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .schedule-card {
-    border-radius: 8px;
-    padding: 16px 12px;
-  }
-
-  .schedule-icon {
-    font-size: 2rem;
-    margin-bottom: 8px;
-  }
-
-  .schedule-card h3 {
-    font-size: 1rem;
+    padding: 24px 16px;
   }
 
   .daily-block {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
   }
 
-  .daily-card {
-    border-radius: 8px;
-    padding: 18px 12px;
+  .cover-image {
+    height: 140px;
+
+    &::after {
+      padding: 0 16px;
+      font-size: 14px;
+    }
   }
 }
 </style>

@@ -70,114 +70,227 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
 
-/* 麵包屑導航 */
 .breadcrumb-nav {
-  padding: 0.5rem 2rem 0.3rem 2rem;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $border-light;
+  background: $bg-card;
+  box-shadow: 0 2px 4px rgba($primary-color, 0.05);
 }
 
 .breadcrumb-container {
-  max-width: 1200px;
-  margin: 0 auto;
   display: flex;
   align-items: center;
-  font-size: 0.75rem;
   flex-wrap: wrap;
-  gap: 0.2rem; // 縮小間距
+  margin: 0 auto;
+  max-width: 1200px;
+  font-size: 14px;
+
+  gap: $spacing-xs;
 }
 
-.breadcrumb-home,
-.breadcrumb-link {
+/* 首頁鏈接 */
+.breadcrumb-home {
   display: flex;
   align-items: center;
-  color: rgba($text-secondary-warm, 0.7);
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  color: $accent-color-1;
   text-decoration: none;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  gap: $spacing-xs;
 
   &:hover {
-    color: $primary-warm;
-    background: rgba($primary-warm, 0.08);
+    background: rgba($accent-color-1, 0.1);
+    color: darken($accent-color-1, 10%);
+    transform: translateY(-1px);
+  }
+
+  .breadcrumb-icon {
+    font-size: 16px;
+  }
+
+  .breadcrumb-text {
+    font-size: 14px;
   }
 }
 
-.breadcrumb-icon {
-  margin-right: 0.3rem;
-  font-size: 0.8rem;
-  opacity: 0.6;
-
-  .breadcrumb-home:hover &,
-  .breadcrumb-link:hover & {
-    opacity: 0.9;
-  }
-}
-
-.breadcrumb-text {
-  font-weight: 400;
-}
-
+/* 分隔符 */
 .breadcrumb-separator {
-  margin: 0 0.3rem;
-  color: $text-secondary-warm;
-  opacity: 0.3;
-  font-size: 0.8rem;
+  margin: 0 $spacing-xs;
+  color: $text-muted;
+  font-weight: 400;
+  font-size: 16px;
+
   user-select: none;
 }
 
-.breadcrumb-current {
-  color: rgba($text-primary-warm, 0.8);
-  font-weight: 500;
+/* 麵包屑鏈接 */
+.breadcrumb-link {
   display: flex;
   align-items: center;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  gap: $spacing-xs;
+
+  &:hover {
+    background: rgba($primary-color, 0.08);
+    color: $primary-color;
+    transform: translateY(-1px);
+  }
 
   .breadcrumb-icon {
+    font-size: 14px;
     opacity: 0.8;
-    color: $primary-warm;
   }
 }
 
+/* 純文字項目 */
 .breadcrumb-item {
-  color: rgba($text-secondary-warm, 0.7);
-  font-weight: 400;
   display: flex;
   align-items: center;
-  padding: 0.2rem 0.4rem;
+  padding: $spacing-xs $spacing-sm;
+  color: $text-muted;
+  font-weight: 500;
+
+  gap: $spacing-xs;
+
+  .breadcrumb-icon {
+    font-size: 14px;
+    opacity: 0.7;
+  }
+}
+
+/* 當前頁面項目 */
+.breadcrumb-current {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  background: rgba($primary-color, 0.08);
+  color: $primary-color;
+  font-weight: 600;
+
+  gap: $spacing-xs;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: $accent-color-2;
+    content: '';
+  }
+
+  .breadcrumb-icon {
+    color: $accent-color-2;
+    font-size: 14px;
+  }
 }
 
 /* 響應式設計 */
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-mobile) {
   .breadcrumb-nav {
-    padding: 0.4rem 1rem 0.2rem 1rem;
+    margin-bottom: $spacing-md;
+    padding: $spacing-sm $spacing-md;
   }
 
   .breadcrumb-container {
-    font-size: 0.7rem;
+    font-size: 13px;
+
+    gap: $spacing-xs;
   }
 
-  .breadcrumb-icon {
-    font-size: 0.75rem;
+  .breadcrumb-home,
+  .breadcrumb-link,
+  .breadcrumb-item,
+  .breadcrumb-current {
+    padding: $spacing-xs;
+  }
+
+  .breadcrumb-home .breadcrumb-icon {
+    font-size: 14px;
+  }
+
+  .breadcrumb-home .breadcrumb-text,
+  .breadcrumb-link,
+  .breadcrumb-item,
+  .breadcrumb-current {
+    font-size: 13px;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 2px;
+    font-size: 14px;
+  }
+
+  /* 超長路徑處理 */
+  .breadcrumb-container {
+    overflow-x: auto;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 
 @media (max-width: 480px) {
   .breadcrumb-nav {
-    padding: 0.3rem 0.8rem 0.1rem 0.8rem;
+    padding: $spacing-xs $spacing-sm;
   }
 
   .breadcrumb-container {
-    font-size: 0.65rem;
+    font-size: 12px;
   }
 
-  .breadcrumb-icon {
-    margin-right: 0.2rem;
-    font-size: 0.7rem;
+  .breadcrumb-home .breadcrumb-text {
+    /* 極小螢幕隱藏文字，只顯示圖標 */
+    display: none;
   }
 
-  .breadcrumb-separator {
-    margin: 0 0.2rem;
-    font-size: 0.7rem;
+  .breadcrumb-link,
+  .breadcrumb-item,
+  .breadcrumb-current {
+    overflow: hidden;
+    max-width: 80px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
   }
+}
+
+/* 深色模式支援（可選） */
+@media (prefers-color-scheme: dark) {
+  .breadcrumb-nav {
+    border-bottom-color: darken($border-light, 10%);
+    background: darken($bg-card, 5%);
+  }
+}
+
+/* 自定義滾動條（手機版） */
+.breadcrumb-container::-webkit-scrollbar {
+  height: 2px;
+}
+
+.breadcrumb-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.breadcrumb-container::-webkit-scrollbar-thumb {
+  border-radius: 1px;
+  background: rgba($primary-color, 0.3);
 }
 </style>

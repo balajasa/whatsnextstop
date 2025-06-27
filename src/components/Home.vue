@@ -10,20 +10,32 @@
       <div class="header-title">
         <router-link to="/">
           <div class="header-logo"></div>
+          <div class="header-text">123456</div>
         </router-link>
       </div>
     </header>
 
-    <!-- 側邊欄 -->
-    <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
+    <div class="home-content">
+      <div class="sidebar" :class="{ active: sidebarOpen && isMobile }">
+        <!-- 側邊欄 -->
+        <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
+      </div>
+      <!-- 覆蓋層 (僅手機版) -->
+      <div class="sidebar-overlay" :class="{ active: sidebarOpen && isMobile }" @click="closeMobileSidebar"></div>
 
-    <!-- 覆蓋層 (僅手機版) -->
-    <div class="overlay" :class="{ active: sidebarOpen && isMobile }" @click="closeMobileSidebar"></div>
 
-    <!-- 主內容區域 - 移除寬度限制 -->
-    <main class="main-container" :class="{ 'sidebar-open': sidebarOpen && !isMobile }">
-      <router-view />
-    </main>
+      <!-- 主內容區域 -->
+      <main class="main-container" :class="{ 'sidebar-open': sidebarOpen && !isMobile }">
+        <router-view />
+      </main>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+      <Footer />
+    </footer>
+
   </div>
 </template>
 
@@ -31,6 +43,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import Sidebar from '@/components/layout/Sidebar.vue'
+import Footer from '@/components/layout/Footer.vue'
 import { SidebarRef } from './types/ILayout'
 
 const sidebarRef: Ref<SidebarRef | null> = ref(null)
@@ -88,168 +101,225 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/styles/variables' as *;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .home {
-  background-color: $warm-bg-base;
-  color: $text-primary-warm;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  position: relative;
-
-  // 溫暖背景漸變效果
-  &::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-      radial-gradient(circle at 25% 30%, rgba(238, 184, 104, 0.08) 0%, transparent 55%),
-      radial-gradient(circle at 70% 20%, rgba(239, 118, 122, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 60% 80%, rgba(69, 105, 144, 0.04) 0%, transparent 45%);
-    pointer-events: none;
-    z-index: -1;
-  }
+  background: $bg-primary
 }
 
 /* Header */
 .header {
-  position: fixed;
+  position: relative;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 50px;
-  background-color: $warm-bg-card;
-  backdrop-filter: blur(10px);
-  border-bottom: $warm-border-light;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  z-index: 1000;
-  box-shadow: $warm-shadow-light;
+  justify-content: center;
+  padding: 8px 30px;
+  border-bottom: 3px solid $accent-color-2;
+  background: $primary-color;
+  box-shadow: 0 2px 12px $shadow-light;
+  color: $text-white;
 }
 
 .hamburger {
+  position: absolute;
+  left: 28px;
   display: flex;
   flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 18px;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
 
-  &:hover {
-    background-color: $hover-primary;
-  }
-}
-
-.hamburger span {
-  width: 20px;
-  height: 2px;
-  background-color: $text-primary-warm;
-  margin: 2px 0;
-  transition: all 0.3s ease;
-  border-radius: 1px;
-}
-
-.hamburger.active {
-  background-color: $active-primary;
-
-  span:nth-child(1) {
-    transform: rotate(-45deg) translate(-4px, 4px);
-    background-color: $primary-warm;
+  span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    border-radius: 1px;
+    background: $text-white;
+    transition: all 0.3s ease;
   }
 
-  span:nth-child(2) {
-    opacity: 0;
-  }
+  &.active {
+    span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
 
-  span:nth-child(3) {
-    transform: rotate(45deg) translate(-4px, -4px);
-    background-color: $primary-warm;
+    span:nth-child(2) {
+      opacity: 0;
+    }
+
+    span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
   }
 }
 
 .header-title {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  color: $text-primary-warm;
-  font-weight: 600;
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+
+    gap: 8px; // logo 和 text 之間的間距
+
+    // 確保整個區域都可以點擊
+    &:hover {
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+  }
 }
 
 .header-logo {
   width: 40px;
   height: 40px;
   background: url('@/assets/img/logo.png');
+  background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
 }
 
-/* Main Content - 移除所有寬度限制 */
-.main-container {
-  margin-top: 50px;
-  margin-left: 60px;
-  min-height: calc(100vh - 50px);
-  transition: all 0.3s ease;
-  width: calc(100% - 60px); // 動態計算寬度
+.home-content {
   position: relative;
-  z-index: 1;
+  display: flex;
+  flex: 1;
 }
 
-.main-container.sidebar-open {
-  margin-left: 250px;
-  width: calc(100% - 250px); // 側邊欄打開時的寬度
-}
-
-/* 遮罩層 */
-.overlay {
-  position: fixed;
-  top: 50px;
+/* sidebar 覆蓋層 */
+.sidebar {
+  position: absolute;
+  top: 0;
   left: 0;
+  z-index: 999;
+  height: calc(100vh - 50px);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 46px;
   right: 0;
   bottom: 0;
-  background-color: rgba(69, 105, 144, 0.4);
-  backdrop-filter: blur(4px);
+  left: 0;
+  z-index: 900;
+  display: none;
+  background: rgba(0, 0, 0, 0.5);
   opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  z-index: 1500;
-}
+  transition: opacity 0.3s ease;
 
-.overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-  .main-container {
-    margin-left: 0;
-    width: 100%;
-    padding: 15px;
+  &.active {
+    display: block;
+    opacity: 1;
   }
 }
 
-/* Mobile */
+/* 主內容區域 */
+.main-container {
+  flex: 1;
+  margin-left: 0; // 預設值，sidebar 開啟時會動態調整
+  transition: margin-left 0.3s ease;
+
+  &.sidebar-open {
+    margin-left: 20px;
+    // margin-left: 50px; // sidebar 寬度
+  }
+}
+
+.footer {
+  width: 100%;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .header {
+    padding: 8px 16px; // 減少左右 padding
+  }
+
+  .home-content {
+    position: static; // 手機版改回 static
+  }
+
+  .sidebar {
+    position: fixed; // 手機版使用 fixed 定位
+    top: 0;
+    left: 0;
+    z-index: 1000; // 提高層級確保在最上層
+    width: 280px; // 設定固定寬度，可依需求調整
+    height: 100vh; // 手機版佔滿整個視窗高度
+    transition: transform 0.3s ease;
+    transform: translateX(-100%); // 預設隱藏在左側
+
+    // 當 sidebar 開啟時
+    &.active {
+      transform: translateX(0); // 滑入視窗
+    }
+  }
+
+  .sidebar-overlay {
+    position: fixed; // 覆蓋整個視窗
+    top: 0; // 從視窗頂部開始
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999; // 在 sidebar 下方
+    display: none;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.active {
+      display: block;
+      opacity: 1;
+    }
+  }
+
+  .main-container {
+    margin-left: 0; // 手機版不需要 margin-left
+    padding: 16px; // 減少 padding
+
+    // 手機版不需要 sidebar-open 的 margin 調整
+    &.sidebar-open {
+      margin-left: 0;
+    }
+  }
+}
+
 @media (max-width: 480px) {
   .header {
-    padding: 0 15px;
+    padding: 6px 12px; // 更小螢幕進一步減少 padding
+  }
+
+  .header-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hamburger {
+    width: 20px;
+    height: 16px;
+  }
+
+  .sidebar {
+    width: 260px; // 小螢幕稍微縮小 sidebar 寬度
   }
 
   .main-container {
-    padding: 10px;
+    padding: 8px; // 最小螢幕最少 padding
+  }
+}
+
+/* 平板尺寸調整 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-container {
+    padding: 24px; // 平板用中等 padding
+
+    &.sidebar-open {
+      margin-left: 280px; // 平板的 sidebar 寬度調整
+    }
   }
 }
 </style>

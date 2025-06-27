@@ -1,117 +1,96 @@
-// ========================================
+// ===================================
 // _variables.scss
-// 溫暖旅行風主題配色系統
-// ========================================
+// 旅遊足跡網站配色主題
+// ===================================
 
-// === 主要品牌色 ===
-$coral-red: #EF767A; // 珊瑚紅 - 用於強調、警告或重要元素
-$deep-blue: #456990; // 深藍色 - 用於主要文字、標題
-$teal-green: #49BEAA; // 青綠色 - 用於次要元素、背景 (降級使用)
-$mint-green: #49DCB1; // 薄荷綠 - 用於成功狀態、確認按鈕 (降級使用)
-$golden-yellow: #EEB868; // 金黃色 - 主導色，用於提示、高亮
+// -----------------------------------
+// 主要配色
+// -----------------------------------
+$primary-color: #4A5568; // 主色：藍灰色（Header、Footer、國家名稱）
+$accent-color-1: #38B2AC; // 輔助色1：青綠色（城市標籤）
+$accent-color-2: #E6A86B; // 輔助色2：溫暖橘色（造訪次數、裝飾）
 
-// === 溫暖旅行風背景色系統 ===
-$warm-bg-base: #FDF9F3; // 基礎暖米白色
-$warm-bg-sidebar: rgba(253, 249, 243, 0.95); // 側邊欄背景
-$warm-bg-content: rgba(255, 252, 248, 0.88); // 主內容背景
-$warm-bg-card: rgba(255, 254, 252, 0.95); // 卡片背景
-$warm-bg-card-hover: rgba(255, 253, 250, 0.98); // 卡片hover背景
-$warm-bg-section: rgba(255, 253, 250, 0.92); // 區塊背景
+// -----------------------------------
+// 背景色系
+// -----------------------------------
+$bg-primary: #F5F7FA; // 主背景：淺藍白
+$bg-sidebar: #E8F2F1; // 側邊欄背景：淺青綠
+$bg-card: #FFFFFF; // 卡片背景：純白
+$bg-stats: #FFFFFF; // 統計卡片背景：純白
 
-// === 溫暖旅行風陰影系統 ===
-$warm-shadow-light: 0 2px 8px rgba(238, 184, 104, 0.1); // 輕微陰影
-$warm-shadow-medium: 0 4px 15px rgba(238, 184, 104, 0.15); // 中等陰影
-$warm-shadow-heavy: 0 8px 25px rgba(238, 184, 104, 0.2); // 重陰影
-$warm-shadow-hover: 0 6px 20px rgba(239, 118, 122, 0.25); // hover陰影
+// -----------------------------------
+// 文字色系
+// -----------------------------------
+$text-primary: #2D3748; // 主文字：深灰
+$text-secondary: #4A5568; // 次要文字：藍灰
+$text-muted: #718096; // 淡化文字：中灰
+$text-light: #A0AEC0; // 淺色文字：淺灰
+$text-white: #FFFFFF; // 白色文字
 
-// === 溫暖旅行風邊框系統 ===
-$warm-border-light: 1px solid rgba(238, 184, 104, 0.15); // 輕微邊框
-$warm-border-medium: 1px solid rgba(238, 184, 104, 0.25); // 中等邊框
-$warm-border-accent: 2px solid rgba(239, 118, 122, 0.3); // 強調邊框
+// -----------------------------------
+// 邊框色系
+// -----------------------------------
+$border-primary: #C1D4D2; // 主邊框：淺青綠
+$border-light: #E2E8F0; // 淺色邊框：淺灰
+$border-muted: #F1F5F9; // 極淺邊框：極淺灰
 
-// === 溫暖旅行風漸變系統 ===
-$warm-gradient-primary: linear-gradient(135deg, $golden-yellow, $coral-red);
-$warm-gradient-bg: linear-gradient(135deg, rgba(238, 184, 104, 0.08), rgba(239, 118, 122, 0.06));
-$warm-gradient-hover: linear-gradient(135deg, rgba(238, 184, 104, 0.12), rgba(239, 118, 122, 0.08));
+// -----------------------------------
+// 狀態色系
+// -----------------------------------
+$state-muted: #E2E8F0; // 淡化狀態：淺灰（造訪次數背景）
+$state-muted-text: #718096; // 淡化文字：中灰
 
-// === 主題色彩優先級 (溫暖旅行風) ===
-$primary-warm: $golden-yellow; // 主要色：金黃色
-$secondary-warm: $coral-red; // 次要色：珊瑚紅
-$tertiary-warm: $deep-blue; // 第三色：深藍色
-$accent-warm: $mint-green; // 點綴色：薄荷綠 (小面積使用)
+// -----------------------------------
+// 時間線色系
+// -----------------------------------
+$timeline-recent: #E6A86B; // 最新：溫暖橘色
+$timeline-medium: #38B2AC; // 中期：青綠色
+$timeline-old: #CBD5E0; // 較舊：淺灰色
 
-// === 功能色彩 (保留 bootstrap 系統色) ===
-$blue: #0d6efd;
-$indigo: #6610f2;
-$purple: #6f42c1;
-$pink: #d63384;
-$red: #dc3545;
-$orange: #fd7e14;
-$yellow: #ffc107;
-$green: #198754;
-$teal: #20c997;
-$cyan: #0dcaf0;
+// -----------------------------------
+// 城市標籤漸層（樣式2特有）
+// -----------------------------------
+$city-gradient-start: #38B2AC; // 漸層起始：青綠色
+$city-gradient-end: #319795; // 漸層結束：深青綠色
 
-// === 灰度系統 ===
-$gray-100: #f8f9fa;
-$gray-200: #e9ecef;
-$gray-300: #dee2e6;
-$gray-400: #ced4da;
-$gray-500: #adb5bd;
-$gray-600: #6c757d;
-$gray-700: #495057;
-$gray-800: #343a40;
-$gray-900: #212529;
+// -----------------------------------
+// 陰影色系
+// -----------------------------------
+$shadow-light: rgba(74, 85, 104, 0.08); // 淺陰影
+$shadow-medium: rgba(74, 85, 104, 0.12); // 中陰影
+$shadow-strong: rgba(74, 85, 104, 0.15); // 深陰影
+$shadow-city: rgba(56, 178, 172, 0.3); // 城市標籤陰影
+$shadow-city-hover: rgba(56, 178, 172, 0.4); // 城市標籤hover陰影
 
-// === 語意化顏色 (溫暖旅行風版本) ===
-$primary: $golden-yellow; // 主要操作 - 金黃色
-$secondary: $deep-blue; // 次要操作 - 深藍色
-$success: $mint-green; // 成功狀態 - 薄荷綠
-$info: $deep-blue; // 提示信息 - 深藍色
-$warning: $golden-yellow; // 警告信息 - 金黃色
-$danger: $coral-red; // 錯誤信息 - 珊瑚紅
-$light: $gray-100; // 淺色背景
-$dark: $gray-900; // 深色背景
+// -----------------------------------
+// 透明度變化
+// -----------------------------------
+$opacity-overlay: rgba(230, 168, 107, 0.2); // Header nav hover
+$opacity-social: rgba(230, 168, 107, 0.2); // 社群圖示背景
 
-// === 文字顏色系統 ===
-$text-primary-warm: $deep-blue; // 主要文字
-$text-secondary-warm: rgba(69, 105, 144, 0.8); // 次要文字
-$text-accent-warm: $golden-yellow; // 強調文字
-$text-danger-warm: $coral-red; // 危險/錯誤文字
+// // -----------------------------------
+// // 響應式斷點（額外）
+// // -----------------------------------
+// $breakpoint-mobile: 768px;
+// $breakpoint-tablet: 968px;
+// $breakpoint-desktop: 1200px;
 
-// === 互動狀態顏色 ===
-$hover-primary: rgba(238, 184, 104, 0.1); // 主要hover背景
-$hover-secondary: rgba(239, 118, 122, 0.1); // 次要hover背景
-$active-primary: rgba(238, 184, 104, 0.2); // 主要active背景
-$active-secondary: rgba(239, 118, 122, 0.2); // 次要active背景
+// // -----------------------------------
+// // 間距系統（額外）
+// // -----------------------------------
+// $spacing-xs: 4px;
+// $spacing-sm: 8px;
+// $spacing-md: 16px;
+// $spacing-lg: 24px;
+// $spacing-xl: 32px;
+// $spacing-xxl: 40px;
 
-// === 使用說明註釋 ===
-/*
-溫暖旅行風主題使用指南：
-
-1. 背景色優先級：
-  - 主背景：$warm-bg-base
-  - 容器背景：$warm-bg-content / $warm-bg-section
-  - 卡片背景：$warm-bg-card
-  - 側邊欄背景：$warm-bg-sidebar
-
-2. 主色調使用：
-  - 主導色：$golden-yellow (按鈕、強調元素)
-  - 輔助色：$coral-red (hover、次要強調)
-  - 平衡色：$deep-blue (文字、邊框)
-  - 點綴色：$mint-green (成功狀態，小面積使用)
-
-3. 陰影和邊框：
-  - 使用 $warm-shadow-* 系列
-  - 使用 $warm-border-* 系列
-  - 避免使用純黑或純灰陰影
-
-4. 漸變效果：
-  - 主要漸變：$warm-gradient-primary
-  - 背景漸變：$warm-gradient-bg
-  - hover漸變：$warm-gradient-hover
-
-5. 綠色使用限制：
-  - $teal-green 和 $mint-green 僅用於小面積點綴
-  - 主要以金黃和珊瑚色為主導
-*/
+// // -----------------------------------
+// // 圓角系統（額外）
+// // -----------------------------------
+// $radius-sm: 8px;
+// $radius-md: 12px;
+// $radius-lg: 16px;
+// $radius-xl: 20px;
+// $radius-pill: 20px; // 徽章圓角
+// $radius-full: 50%; // 圓形

@@ -1,34 +1,3 @@
 // index.scss - 主題全域樣式
+@use '@/styles/reset'as *;
 @use '@/styles/variables'as *;
-
-// ============================================
-// 主題基礎樣式
-// ============================================
-body {
-  overflow-x: hidden;
-  min-height: 100vh;
-  background-color: $warm-bg-base;
-  color: $text-primary-warm;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-  // 統一的溫暖背景漸變效果
-  &::before {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    background-image:
-      radial-gradient(circle at 25% 30%, rgba(238, 184, 104, 0.08) 0%, transparent 55%),
-      radial-gradient(circle at 70% 20%, rgba(239, 118, 122, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 60% 80%, rgba(69, 105, 144, 0.04) 0%, transparent 45%);
-    content: '';
-    pointer-events: none;
-  }
-}
-
-// #app {
-  //   position: relative;
-  //   z-index: 1;
-  // }
