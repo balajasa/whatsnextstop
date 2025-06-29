@@ -1,14 +1,14 @@
 <template>
   <div class="travel-trace">
-    <div class="container">
-      <div class="header">
+    <!-- 麵包屑 -->
+    <BreadcrumbNav />
+    <div class="travel-container">
+      <div class="travel-header">
         <!-- <h1>✈️ 我的旅行記錄</h1>
         <p>點擊展開查看更多照片和詳細資訊</p> -->
       </div>
 
-      <div v-if="loading" class="loading-container">
-        載入中...
-      </div>
+      <div v-if="loading" class="loading-container">載入中...</div>
 
       <div v-else class="travel-list">
         <div class="list-header">
@@ -20,30 +20,40 @@
           <div></div>
         </div>
 
-        <div v-for="(travel, index) in travels" :key="`${travel.year}-${travel.startDate}-${index}`"
-          class="travel-item">
+        <div
+          v-for="(travel, index) in travels"
+          :key="`${travel.year}-${travel.startDate}-${index}`"
+          class="travel-item"
+        >
           <div class="item-header" @click="toggleDetails(index)">
             <div class="year">{{ travel.year }}</div>
             <div class="date">{{ formatDateRange(travel.startDate, travel.endDate) }}</div>
             <div class="days">{{ calculateDays(travel.startDate, travel.endDate) }}天</div>
             <div class="country">{{ formatCountries(travel.country) }}</div>
             <div class="location">{{ formatLocations(travel) }}</div>
-            <div class="expand-btn" :class="{ rotated: expandedItems.has(index) }">
-              ▼
-            </div>
+            <div class="expand-btn" :class="{ rotated: expandedItems.has(index) }">▼</div>
           </div>
 
           <div class="item-details" :class="{ expanded: expandedItems.has(index) }">
             <div class="details-content">
               <div v-if="travel.photo.length > 0" class="photo-gallery">
-                <div v-for="(photoName, photoIndex) in travel.photo" :key="photoIndex" class="photo-container">
-                  <div v-if="!loadedPhotos.has(getPhotoUrl(travel, photoName))" class="photo-placeholder"
+                <div
+                  v-for="(photoName, photoIndex) in travel.photo"
+                  :key="photoIndex"
+                  class="photo-container"
+                >
+                  <div
+                    v-if="!loadedPhotos.has(getPhotoUrl(travel, photoName))"
+                    class="photo-placeholder"
                     :class="{ loading: loadingPhotos.has(getPhotoUrl(travel, photoName)) }"
-                    @click="loadPhoto(travel, photoName)">
-                    📸 載入中...
-                  </div>
-                  <div v-else class="photo-img" :style="{ backgroundImage: `url(${getPhotoUrl(travel, photoName)})` }"
-                    @click="openPhoto(getPhotoUrl(travel, photoName))"></div>
+                    @click="loadPhoto(travel, photoName)"
+                  ></div>
+                  <div
+                    v-else
+                    class="photo-img"
+                    :style="{ backgroundImage: `url(${getPhotoUrl(travel, photoName)})` }"
+                    @click="openPhoto(getPhotoUrl(travel, photoName))"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -58,6 +68,7 @@
 import { ref, onMounted } from 'vue'
 import { getTravelsData } from '../../composables/usagi'
 import { countryTranslation } from '../../composables/countryTranslation'
+import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import type { TravelData } from '../types/IResponse'
 
 // Composables
@@ -157,250 +168,557 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// ===================================
+// 主容器 (Mobile First)
+// ===================================
 .travel-trace {
-  padding: 20px;
+  width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: $bg-primary;
+  padding: 0 $spacing-md;
 
-  .container {
-    margin: 0 auto;
-    max-width: 1200px;
+  @include tablet {
+    padding: 0 $spacing-lg;
   }
 
-  .header {
-    margin-bottom: 40px;
-    color: white;
-    text-align: center;
+  @include desktop {
+    padding: 0 $spacing-xl;
+  }
+}
 
-    h1 {
-      margin-bottom: 10px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      font-size: 2.5rem;
-    }
+.travel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: $bg-card;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-medium;
+  overflow: hidden;
 
-    p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
+  @include desktop {
+    border-radius: $border-radius-xl;
+    box-shadow: $shadow-strong;
   }
 
-  .loading-container {
-    padding: 40px;
-    color: white;
-    text-align: center;
-    font-size: 1.2rem;
+  @include large-desktop {
+    max-width: 1400px;
+  }
+}
+
+// ===================================
+// 標題區域
+// ===================================
+.travel-header {
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, $accent-color-1, rgba(49, 151, 149, 1));
+  color: $text-white;
+  text-align: center;
+
+  @include tablet {
+    padding: $spacing-xl;
   }
 
-  .travel-list {
-    padding: 30px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-
-    backdrop-filter: blur(10px);
-  }
-
-  .list-header {
-    display: grid;
-    margin-bottom: 15px;
-    padding: 15px 20px;
-    border-radius: 15px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
-    color: white;
-    font-weight: 600;
-
-    grid-template-columns: 80px 140px 80px 120px 1fr 50px;
-    gap: 20px;
-  }
-
-  .travel-item {
-    overflow: hidden;
-    margin-bottom: 12px;
-    border-radius: 15px;
-    background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-
-    &:hover {
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      transform: translateY(-2px);
-    }
-  }
-
-  .item-header {
-    display: grid;
-    align-items: center;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    grid-template-columns: 80px 140px 80px 120px 1fr 50px;
-    gap: 20px;
-
-    &:hover {
-      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-    }
-  }
-
-  .year {
-    color: #2d3748;
+  h1 {
+    margin: 0 0 $spacing-sm;
+    font-size: 24px;
     font-weight: 700;
-    font-size: 1.1rem;
-  }
 
-  .date {
-    color: #4a5568;
-    font-weight: 500;
-  }
+    @include tablet {
+      font-size: 28px;
+    }
 
-  .days {
-    color: #e53e3e;
-    text-align: center;
-    font-weight: 600;
-  }
-
-  .country {
-    color: #3182ce;
-    font-weight: 600;
-  }
-
-  .location {
-    color: #38a169;
-    font-weight: 500;
-  }
-
-  .expand-btn {
-    color: #718096;
-    text-align: center;
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
-
-    &.rotated {
-      transform: rotate(180deg);
+    @include desktop {
+      font-size: 32px;
     }
   }
 
-  .item-details {
-    overflow: hidden;
-    max-height: 0;
-    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-    transition: max-height 0.5s ease;
+  p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
 
-    &.expanded {
-      max-height: 800px;
-    }
-  }
-
-  .details-content {
-    padding: 25px;
-    border-top: 2px solid rgba(0, 0, 0, 0.05);
-
-    h3 {
-      margin-bottom: 15px;
-      color: #2d3748;
-    }
-
-    p {
-      margin-bottom: 15px;
-      color: #4a5568;
-      line-height: 1.6;
-    }
-  }
-
-  .photo-gallery {
-    display: grid;
-    margin-top: 15px;
-
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-  }
-
-  .photo-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-
-  .photo-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 240px;
-    height: 180px;
-    border-radius: 8px;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: linear-gradient(45deg, #764ba2, #667eea);
-    }
-
-    &.loading {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      color: #666;
-      animation: loading 1.5s infinite;
-    }
-  }
-
-  .photo-img {
-    width: 240px;
-    height: 180px;
-    border-radius: 8px;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-
-    &:hover {
-      opacity: 0.9;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .item-header {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: space-between;
-
-      grid-template-columns: none;
-    }
-
-    .expand-btn {
-      margin-bottom: 10px;
-      width: 100%;
-      text-align: right;
-    }
-
-    .photo-gallery {
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    }
-
-    .header h1 {
-      font-size: 2rem;
+    @include tablet {
+      font-size: 16px;
     }
   }
 }
 
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
+// ===================================
+// 載入狀態
+// ===================================
+.loading-container {
+  @include flex-center;
+  height: 200px;
+  color: $text-muted;
+  font-size: 16px;
+
+  @include tablet {
+    height: 300px;
+    font-size: 18px;
+  }
+}
+
+// ===================================
+// 旅行列表容器
+// ===================================
+.travel-list {
+  padding: $spacing-md;
+
+  @include tablet {
+    padding: $spacing-lg;
   }
 
+  @include desktop {
+    padding: $spacing-xl;
+  }
+}
+
+// ===================================
+// 列表標題 (僅桌面版顯示)
+// ===================================
+.list-header {
+  display: none;
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: 80px 160px 60px 1fr 1fr 40px;
+    gap: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    background: rgba(56, 178, 172, 0.08);
+    border-radius: $border-radius-md;
+    font-weight: 600;
+    color: $text-primary;
+    font-size: 14px;
+    margin-bottom: $spacing-lg;
+    border: 1px solid rgba(56, 178, 172, 0.15);
+  }
+
+  @include large-desktop {
+    grid-template-columns: 100px 180px 80px 1fr 1fr 50px;
+    font-size: 15px;
+  }
+}
+
+// ===================================
+// 旅行項目 (Mobile First - 卡片式)
+// ===================================
+.travel-item {
+  margin-bottom: $spacing-md;
+  background: $bg-card;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-light;
+  border: 1px solid $border-light;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+
+  @include tablet {
+    margin-bottom: $spacing-lg;
+    border-radius: $border-radius-lg;
+  }
+
+  @include desktop {
+    margin-bottom: $spacing-md;
+    box-shadow: none;
+    border: 1px solid $border-muted;
+    border-radius: $border-radius-sm;
+  }
+
+  &:hover {
+    box-shadow: $shadow-medium;
+    transform: translateY(-2px);
+    border-color: $accent-color-1;
+
+    @include desktop {
+      box-shadow: $shadow-light;
+      transform: translateY(-1px);
+    }
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ===================================
+// 項目標題 (Mobile: 卡片式, Desktop: 表格式)
+// ===================================
+.item-header {
+  padding: $spacing-md;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  @include tablet {
+    padding: $spacing-lg;
+  }
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: 80px 160px 60px 1fr 1fr 40px;
+    gap: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    align-items: center;
+  }
+
+  @include large-desktop {
+    grid-template-columns: 100px 180px 80px 1fr 1fr 50px;
+  }
+
+  &:hover {
+    background: rgba(56, 178, 172, 0.05);
+
+    @include desktop {
+      background: rgba(56, 178, 172, 0.03);
+    }
+  }
+
+  // 手機版和平板版的堆疊佈局
+  @include mobile-tablet {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    position: relative;
+  }
+}
+
+// ===================================
+// 項目內容樣式
+// ===================================
+.year {
+  font-weight: 700;
+  color: $accent-color-1;
+  font-size: 18px;
+
+  @include tablet {
+    font-size: 20px;
+  }
+
+  @include desktop {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  // 手機/平板版標籤式顯示
+  @include mobile-tablet {
+    background: rgba(56, 178, 172, 0.1);
+    color: $accent-color-1;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-md;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+
+    &::before {
+      content: '📅 ';
+    }
+  }
+}
+
+.date {
+  color: $text-secondary;
+  font-weight: 500;
+  font-size: 14px;
+
+  @include tablet {
+    font-size: 15px;
+  }
+
+  @include desktop {
+    font-size: 14px;
+  }
+
+  @include mobile-tablet {
+    &::before {
+      content: '🗓️ ';
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+.days {
+  color: $accent-color-2;
+  font-weight: 600;
+  font-size: 14px;
+
+  @include tablet {
+    font-size: 15px;
+  }
+
+  @include desktop {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  @include mobile-tablet {
+    background: rgba(230, 168, 107, 0.1);
+    color: $accent-color-2;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-md;
+    display: inline-block;
+    font-size: 13px;
+
+    &::before {
+      content: '⏱️ ';
+    }
+  }
+}
+
+.country {
+  font-weight: 600;
+  color: $text-primary;
+  font-size: 15px;
+
+  @include tablet {
+    font-size: 16px;
+  }
+
+  @include desktop {
+    font-size: 15px;
+  }
+
+  @include mobile-tablet {
+    font-size: 16px;
+    margin: $spacing-xs 0;
+  }
+}
+
+.location {
+  color: $text-secondary;
+  font-size: 14px;
+
+  @include tablet {
+    font-size: 15px;
+  }
+
+  @include desktop {
+    font-size: 14px;
+  }
+
+  @include mobile-tablet {
+    &::before {
+      content: '📍 ';
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+.expand-btn {
+  color: $accent-color-1;
+  font-size: 16px;
+  transition: transform 0.3s ease;
+  user-select: none;
+
+  @include desktop {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  @include mobile-tablet {
+    position: absolute;
+    top: $spacing-md;
+    right: $spacing-md;
+    background: rgba(56, 178, 172, 0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    @include flex-center;
+    font-size: 14px;
+
+    @include tablet {
+      top: $spacing-lg;
+      right: $spacing-lg;
+    }
+  }
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+// ===================================
+// 詳細內容區域
+// ===================================
+.item-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+  background: rgba(56, 178, 172, 0.02);
+
+  &.expanded {
+    max-height: 2000px;
+  }
+}
+
+.details-content {
+  padding: $spacing-md;
+
+  @include tablet {
+    padding: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-lg $spacing-xl;
+  }
+}
+
+// ===================================
+// 照片畫廊 (響應式網格)
+// ===================================
+.photo-gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $spacing-sm;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+  }
+
+  @include desktop {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-lg;
+  }
+
+  @include large-desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.photo-container {
+  aspect-ratio: 16/12;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-light;
+  transition: all 0.3s ease-in-out;
+
+  @include desktop {
+    border-radius: $border-radius-lg;
+  }
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: $shadow-medium;
+  }
+}
+
+.photo-placeholder {
+  @include flex-center;
+  width: 100%;
+  height: 100%;
+  background: rgba(193, 212, 210, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-image: url('@/assets/img/sym/cat_error.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &:hover {
+    background-color: rgba(193, 212, 210, 0.3);
+    transform: scale(1.02);
+  }
+
+  &.loading {
+    background-color: rgba(193, 212, 210, 0.5);
+    background-image: url('@/assets/img/sym/cat_error.png');
+    animation: pulse 1.5s infinite;
+  }
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// ===================================
+// 動畫定義
+// ===================================
+@keyframes pulse {
+  0%,
   100% {
-    background-position: -200% 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// ===================================
+// 響應式優化
+// ===================================
+
+// 手機版特殊處理
+@include mobile-only {
+  .travel-trace {
+    padding: $spacing-sm;
+  }
+
+  .travel-container {
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-light;
+  }
+
+  .travel-header {
+    padding: $spacing-md;
+
+    h1 {
+      font-size: 20px;
+    }
+
+    p {
+      font-size: 13px;
+    }
+  }
+
+  .travel-list {
+    padding: $spacing-sm;
+  }
+
+  .item-header {
+    padding: $spacing-sm;
+  }
+
+  .expand-btn {
+    top: $spacing-sm;
+    right: $spacing-sm;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .details-content {
+    padding: $spacing-sm;
+  }
+
+  .photo-gallery {
+    gap: $spacing-xs;
+  }
+}
+
+// 大桌面版優化
+@include large-desktop {
+  .travel-container {
+    max-width: 1600px;
+  }
+
+  .travel-header {
+    h1 {
+      font-size: 36px;
+    }
+
+    p {
+      font-size: 18px;
+    }
   }
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <div class="main-game">
     <div class="main-game-container">
+      <!-- 麵包屑 -->
+      <BreadcrumbNav />
       <!-- 當沒有子路由時顯示選擇功能 -->
       <template v-if="!$route.path.includes('/minigame/')">
         <!-- 小遊戲區域 -->
@@ -51,445 +53,312 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
+</script>
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
+// ===================================
+// 主容器
+// ===================================
 .main-game {
-  position: relative;
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
   min-height: 100vh;
-  background: #f8f9fa;
-
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba($coral-red, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba($golden-yellow, 0.06) 0%, transparent 45%),
-      radial-gradient(circle at 60% 80%, rgba($teal-green, 0.07) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba($mint-green, 0.05) 0%, transparent 40%);
-    content: '';
-    pointer-events: none;
-  }
+  background: $bg-primary;
 }
 
 .main-game-container {
-  position: relative;
-  z-index: 1;
-  padding: 3rem 2.5rem;
-  max-width: 1200px;
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow:
-    0 25px 50px rgba($deep-blue, 0.15),
-    0 10px 25px rgba($teal-green, 0.1);
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
 
-  backdrop-filter: blur(20px);
-}
+  @include tablet {
+    padding: 0l $spacing-lg;
+  }
 
-/* 過渡動畫 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
+  @include desktop {
+    padding: 0l $spacing-xl;
+  }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-h1 {
-  position: relative;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, $coral-red, $deep-blue);
-  -webkit-background-clip: text;
-  background-clip: text;
-  text-align: center;
-  letter-spacing: 2px;
-  font-weight: 700;
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-
-  -webkit-text-fill-color: transparent;
-
-  &::after {
-    position: absolute;
-    top: 50%;
-    right: -40px;
-    content: '✨';
-    font-size: clamp(1.3rem, 3vw, 2rem);
-    transform: translateY(-50%);
-    animation: sparkle 3s ease-in-out infinite;
+  @include large-desktop {
+    max-width: 1000px;
   }
 }
 
-@keyframes sparkle {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: translateY(-50%) rotate(0deg) scale(1);
-  }
-
-  50% {
-    opacity: 0.7;
-    transform: translateY(-60%) rotate(10deg) scale(1.1);
-  }
-}
-
-/* 小遊戲區域 */
+// ===================================
+// 遊戲區域
+// ===================================
 .games-section {
-  .games-title {
-    margin-bottom: 2rem;
-    background: linear-gradient(135deg, $coral-red, $golden-yellow);
-    -webkit-background-clip: text;
-    background-clip: text;
-    text-align: center;
-    font-weight: 600;
-    font-size: clamp(1.4rem, 3vw, 1.8rem);
+  text-align: center;
+  padding-top: $spacing-md;
+}
 
-    -webkit-text-fill-color: transparent;
+.games-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: $spacing-2xl;
+  display: inline-block;
+  position: relative;
+
+  @include tablet {
+    font-size: 32px;
+  }
+
+  @include desktop {
+    font-size: 36px;
+  }
+
+  // 裝飾效果
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, $accent-color-1, $accent-color-2);
+    border-radius: 2px;
   }
 }
 
 .game-link {
   display: grid;
-  align-items: stretch;
+  grid-template-columns: 1fr;
+  gap: $spacing-lg;
+  max-width: 800px;
   margin: 0 auto;
-  max-width: 1000px;
 
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  justify-items: center;
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-xl;
+  }
+
+  @include desktop {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
+// ===================================
+// 導航鏈接
+// ===================================
 .nav-links {
-  max-width: 320px;
   width: 100%;
 }
 
 .nav-link {
   display: block;
-  color: inherit;
   text-decoration: none;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-  }
+  width: 100%;
 }
 
+// ===================================
+// 遊戲卡片
+// ===================================
 .link-card {
+  @include card-hover;
   position: relative;
-  display: flex;
+  background: $bg-card;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  text-align: center;
+  box-shadow: 0 8px 32px $shadow-medium;
+  border: 1px solid $border-light;
   overflow: hidden;
-  align-items: center;
+  min-height: 240px;
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem 1.5rem;
-  width: 100%;
-  height: 200px;
-  border: 2px solid transparent;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 25px rgba($deep-blue, 0.12);
-  text-align: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  align-items: center;
 
-  backdrop-filter: blur(15px);
-
+  // Hover 時的特殊效果
   &:hover {
-    box-shadow: 0 15px 40px rgba($deep-blue, 0.2);
-    transform: translateY(-4px) scale(1.02);
-  }
+    .card-decoration {
+      transform: scale(1.2) rotate(180deg);
+      opacity: 0.8;
+    }
 
-  .card-decoration {
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    opacity: 0.08;
-    transition: all 0.4s ease;
-  }
-
-  &:hover .card-decoration {
-    opacity: 0.15;
-    transform: scale(1.3) rotate(45deg);
+    .card-icon {
+      transform: scale(1.1) rotate(-5deg);
+    }
   }
 }
 
-.dropblock-card {
-  border-color: rgba($coral-red, 0.3);
-
-  .card-decoration {
-    background: linear-gradient(135deg, $coral-red, $golden-yellow);
-  }
-
-  &:hover {
-    border-color: rgba($coral-red, 0.6);
-  }
-
-  .card-title {
-    color: $coral-red;
-  }
-}
-
-.foodwheel-card {
-  border-color: rgba($teal-green, 0.3);
-
-  .card-decoration {
-    background: linear-gradient(135deg, $teal-green, $mint-green);
-  }
-
-  &:hover {
-    border-color: rgba($teal-green, 0.6);
-  }
-
-  .card-title {
-    color: $teal-green;
-  }
-}
-
-.takemetravel-card {
-  border-color: rgba($golden-yellow, 0.3);
-
-  .card-decoration {
-    background: linear-gradient(135deg, $golden-yellow, $mint-green);
-  }
-
-  &:hover {
-    border-color: rgba($golden-yellow, 0.6);
-  }
-
-  .card-title {
-    color: $golden-yellow;
-  }
-}
-
+// 卡片圖標
 .card-icon {
-  margin-bottom: 1rem;
-  font-size: clamp(2rem, 4vw, 2.5rem);
-  animation: float 3s ease-in-out infinite;
-}
+  font-size: 48px;
+  margin-bottom: $spacing-md;
+  transition: all 0.3s ease;
+  display: block;
 
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-8px);
+  @include tablet {
+    font-size: 56px;
+    margin-bottom: $spacing-lg;
   }
 }
 
+// 卡片標題
 .card-title {
-  position: relative;
-  z-index: 2;
-  margin-bottom: 0.8rem;
-  letter-spacing: 0.8px;
-  font-weight: 700;
-  font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+  font-size: 20px;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: $spacing-sm;
+
+  @include tablet {
+    font-size: 22px;
+  }
+
+  @include desktop {
+    font-size: 24px;
+  }
 }
 
-p {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  color: $deep-blue;
-  font-weight: 400;
-  font-size: clamp(0.85rem, 2vw, 0.95rem);
+// 卡片描述
+.link-card p {
+  color: $text-muted;
+  font-size: 14px;
   line-height: 1.5;
-  opacity: 0.8;
-}
+  margin: 0;
 
-/* 平板響應式 (1024px 以下) */
-@media (max-width: 1024px) {
-  .main-game-container {
-    padding: 2.5rem 2rem;
-    max-width: 900px;
+  @include tablet {
+    font-size: 15px;
   }
 
-  .game-link {
-    gap: 1.8rem;
-  }
-
-  .link-card {
-    padding: 1.8rem 1.3rem;
-    height: 180px;
+  @include desktop {
+    font-size: 16px;
   }
 }
 
-/* 手機橫屏和小平板 (768px 以下) */
-@media (max-width: 768px) {
-  .main-game {
-    padding: 1.5rem 1rem;
-  }
-
-  .main-game-container {
-    padding: 2rem 1.5rem;
-    border-radius: 20px;
-  }
-
-  .games-section .games-title {
-    margin-bottom: 1.8rem;
-  }
-
-  .game-link {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .nav-links {
-    max-width: 100%;
-  }
-
-  .link-card {
-    padding: 1.5rem 1.2rem;
-    height: 160px;
-    border-radius: 16px;
-  }
-
-  h1::after {
-    right: -30px;
-  }
+// 卡片裝飾
+.card-decoration {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  opacity: 0.1;
+  transition: all 0.4s ease;
+  pointer-events: none;
 }
 
-/* 手機直屏 (480px 以下) */
-@media (max-width: 480px) {
-  .main-game {
-    padding: 1rem 0.8rem;
-  }
+// ===================================
+// 各遊戲主題色彩
+// ===================================
 
-  .main-game-container {
-    padding: 1.8rem 1.2rem;
-    border-radius: 16px;
-  }
-
-  .games-section .games-title {
-    margin-bottom: 1.5rem;
-  }
-
-  .game-link {
-    max-width: 100%;
-
-    grid-template-columns: 1fr;
-    gap: 1.2rem;
-  }
-
-  .nav-links {
-    max-width: 100%;
-  }
-
-  .link-card {
-    padding: 1.2rem 1rem;
-    height: 140px;
-    border-radius: 14px;
-  }
+// 從天而降卡片
+.dropblock-card {
+  border-left: 4px solid $accent-color-1;
 
   .card-icon {
-    margin-bottom: 0.8rem;
+    color: $accent-color-1;
   }
 
-  .card-title {
-    margin-bottom: 0.6rem;
+  .card-decoration {
+    background: $accent-color-1;
   }
 
-  h1::after {
-    right: -25px;
+  &:hover {
+    box-shadow: 0 12px 40px rgba(56, 178, 172, 0.2);
   }
 }
 
-/* 極小螢幕 (360px 以下) */
-@media (max-width: 360px) {
-  .main-game {
-    padding: 0.8rem 0.5rem;
+// 美食轉輪卡片
+.foodwheel-card {
+  border-left: 4px solid $accent-color-2;
+
+  .card-icon {
+    color: $accent-color-2;
   }
 
-  .main-game-container {
-    padding: 1.5rem 1rem;
+  .card-decoration {
+    background: $accent-color-2;
+  }
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(230, 168, 107, 0.2);
+  }
+}
+
+// 放空自己卡片
+.takemetravel-card {
+  border-left: 4px solid $primary-color;
+
+  .card-icon {
+    color: $primary-color;
+  }
+
+  .card-decoration {
+    background: $primary-color;
+  }
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(74, 85, 104, 0.2);
+  }
+}
+
+// ===================================
+// 路由過渡動畫
+// ===================================
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+// ===================================
+// 響應式調整
+// ===================================
+
+// 手機版特殊處理
+@include mobile-only {
+  .games-title {
+    font-size: 24px;
+    margin-bottom: $spacing-xl;
   }
 
   .game-link {
-    gap: 1rem;
+    gap: $spacing-md;
   }
 
   .link-card {
-    padding: 1rem 0.8rem;
-    height: 130px;
-  }
+    padding: $spacing-lg;
+    min-height: 220px;
 
-  .card-title {
-    margin-bottom: 0.5rem;
-  }
+    .card-icon {
+      font-size: 40px;
+    }
 
-  h1::after {
-    right: -20px;
+    .card-title {
+      font-size: 18px;
+    }
+
+    p {
+      font-size: 13px;
+    }
   }
 }
 
-/* 高解析度螢幕優化 */
-@media (min-width: 1400px) {
-  .main-game-container {
-    padding: 3.5rem 3rem;
-    max-width: 1300px;
-  }
-
-  .game-link {
-    max-width: 1100px;
-
-    gap: 2.5rem;
-  }
-
+// 大桌面版優化
+@include large-desktop {
   .link-card {
-    padding: 2.2rem 1.8rem;
-    height: 220px;
-  }
-}
+    min-height: 320px;
 
-/* 觸控設備優化 */
-@media (hover: none) and (pointer: coarse) {
-  .nav-link:hover {
-    transform: none;
-  }
-
-  .link-card:hover {
-    box-shadow: 0 8px 25px rgba($deep-blue, 0.12);
-    transform: none;
-  }
-
-  .link-card:active {
-    transform: scale(0.98);
-  }
-}
-
-/* 減少動畫偏好設定 */
-@media (prefers-reduced-motion: reduce) {
-
-  .card-icon,
-  h1::after {
-    animation: none;
-  }
-
-  .fade-enter-active,
-  .fade-leave-active,
-  .nav-link,
-  .link-card {
-    transition: none;
+    .card-icon {
+      font-size: 64px;
+    }
   }
 }
 </style>

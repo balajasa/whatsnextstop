@@ -2,40 +2,41 @@
   <div class="home">
     <!-- Header -->
     <header class="header">
-      <div class="hamburger" :class="{ active: sidebarOpen }" @click="handleToggleSidebar">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+      <div class="hamburger" :class="{ active: sidebarOpen }" @click="handleToggleSidebar"></div>
       <div class="header-title">
         <router-link to="/">
           <div class="header-logo"></div>
-          <div class="header-text">123456</div>
         </router-link>
       </div>
     </header>
 
     <div class="home-content">
-      <div class="sidebar" :class="{ active: sidebarOpen && isMobile }">
+      <div class="sidebar" :class="{ active: sidebarOpen }">
         <!-- 側邊欄 -->
-        <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
+        <Sidebar
+          ref="sidebarRef"
+          :isMobile="isMobile"
+          :headerHeight="50"
+          @keydown-escape="handleEscapeKey"
+        />
       </div>
       <!-- 覆蓋層 (僅手機版) -->
-      <div class="sidebar-overlay" :class="{ active: sidebarOpen && isMobile }" @click="closeMobileSidebar"></div>
-
+      <div
+        class="sidebar-overlay"
+        :class="{ active: sidebarOpen }"
+        @click="closeMobileSidebar"
+      ></div>
 
       <!-- 主內容區域 -->
-      <main class="main-container" :class="{ 'sidebar-open': sidebarOpen && !isMobile }">
+      <main class="main-container">
         <router-view />
       </main>
     </div>
 
-
     <!-- Footer -->
-    <footer class="footer">
+    <!-- <footer class="footer">
       <Footer />
-    </footer>
-
+    </footer> -->
   </div>
 </template>
 
@@ -43,7 +44,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import Sidebar from '@/components/layout/Sidebar.vue'
-import Footer from '@/components/layout/Footer.vue'
+// import Footer from '@/components/layout/Footer.vue'
 import { SidebarRef } from './types/ILayout'
 
 const sidebarRef: Ref<SidebarRef | null> = ref(null)
@@ -103,75 +104,82 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
 .home {
+  min-height: 100vh;
+  background: $bg-primary;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background: $bg-primary
 }
 
-/* Header */
+// ===================================
+// Header 樣式
+// ===================================
 .header {
-  position: relative;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  height: $header-height;
+  background: $primary-color;
+  color: $text-white;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 30px;
-  border-bottom: 3px solid $accent-color-2;
-  background: $primary-color;
-  box-shadow: 0 2px 12px $shadow-light;
-  color: $text-white;
+  padding: 0 $spacing-md;
+  z-index: $z-header;
+  box-shadow: 0 2px 4px $shadow-light;
+
+  @include tablet {
+    padding: 0 $spacing-lg;
+  }
 }
 
+// 漢堡選單按鈕
 .hamburger {
   position: absolute;
-  left: 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 24px;
-  height: 18px;
+  left: $spacing-md;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
+  background: url('@/assets/img/icon/dehaze.svg');
+  background-size: 24px 24px;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 
-  span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    border-radius: 1px;
-    background: $text-white;
-    transition: all 0.3s ease;
+  @include tablet {
+    left: $spacing-lg;
+    width: 44px;
+    height: 44px;
+    background-size: 28px 28px;
   }
 
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &:active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  // 當側邊欄展開時的效果
   &.active {
-    span:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    span:nth-child(2) {
-      opacity: 0;
-    }
-
-    span:nth-child(3) {
-      transform: rotate(-45deg) translate(7px, -6px);
-    }
+    transform: rotate(180deg);
   }
 }
 
+// Header 標題區域
 .header-title {
+  @include flex-center;
+
   a {
-    display: flex;
-    align-items: center;
+    @include flex-center;
     text-decoration: none;
-
-    gap: 8px; // logo 和 text 之間的間距
-
-    // 確保整個區域都可以點擊
-    &:hover {
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
-    }
+    color: inherit;
+    gap: $spacing-sm;
   }
 }
 
@@ -179,147 +187,108 @@ onUnmounted(() => {
   width: 40px;
   height: 40px;
   background: url('@/assets/img/logo.png');
-  background-position: center;
   background-size: contain;
+  background-position: center;
   background-repeat: no-repeat;
+
+  @include tablet {
+    width: 36px;
+    height: 36px;
+  }
+
+  @include desktop {
+    width: 40px;
+    height: 40px;
+  }
 }
 
+// ===================================
+// 主要內容區域
+// ===================================
 .home-content {
   position: relative;
-  display: flex;
-  flex: 1;
+  padding-top: $header-height;
+  min-height: 100vh;
 }
 
-/* sidebar 覆蓋層 */
+// 側邊欄容器
 .sidebar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 999;
-  height: calc(100vh - 50px);
-}
+  @include sidebar-base;
+  width: $sidebar-width-mobile;
+  background: $bg-sidebar;
 
-.sidebar-overlay {
-  position: fixed;
-  top: 46px;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 900;
-  display: none;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  @include desktop {
+    width: $sidebar-width-desktop;
+    background: $bg-sidebar-desktop;
+    backdrop-filter: blur(8px);
+  }
 
   &.active {
-    display: block;
+    transform: translateX(0);
+  }
+}
+
+// 覆蓋層
+.sidebar-overlay {
+  @include sidebar-overlay;
+
+  &.active {
     opacity: 1;
+    visibility: visible;
   }
 }
 
-/* 主內容區域 */
+// 主內容區域
 .main-container {
-  flex: 1;
-  margin-left: 0; // 預設值，sidebar 開啟時會動態調整
-  transition: margin-left 0.3s ease;
+  min-height: calc(100vh - #{$header-height});
+  padding: $spacing-md;
+  transition: all 0.3s ease-in-out;
 
-  &.sidebar-open {
-    margin-left: 20px;
-    // margin-left: 50px; // sidebar 寬度
+  @include tablet {
+    padding: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
   }
 }
 
-.footer {
-  width: 100%;
-}
+// ===================================
+// 響應式調整
+// ===================================
 
-/* 響應式設計 */
-@media (max-width: 768px) {
+// 手機版特殊處理
+@include mobile-only {
+  .main-container {
+    padding: $spacing-sm;
+  }
+
   .header {
-    padding: 8px 16px; // 減少左右 padding
-  }
-
-  .home-content {
-    position: static; // 手機版改回 static
-  }
-
-  .sidebar {
-    position: fixed; // 手機版使用 fixed 定位
-    top: 0;
-    left: 0;
-    z-index: 1000; // 提高層級確保在最上層
-    width: 280px; // 設定固定寬度，可依需求調整
-    height: 100vh; // 手機版佔滿整個視窗高度
-    transition: transform 0.3s ease;
-    transform: translateX(-100%); // 預設隱藏在左側
-
-    // 當 sidebar 開啟時
-    &.active {
-      transform: translateX(0); // 滑入視窗
-    }
-  }
-
-  .sidebar-overlay {
-    position: fixed; // 覆蓋整個視窗
-    top: 0; // 從視窗頂部開始
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 999; // 在 sidebar 下方
-    display: none;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-
-    &.active {
-      display: block;
-      opacity: 1;
-    }
-  }
-
-  .main-container {
-    margin-left: 0; // 手機版不需要 margin-left
-    padding: 16px; // 減少 padding
-
-    // 手機版不需要 sidebar-open 的 margin 調整
-    &.sidebar-open {
-      margin-left: 0;
-    }
+    padding: 0 $spacing-sm;
   }
 }
 
-@media (max-width: 480px) {
-  .header {
-    padding: 6px 12px; // 更小螢幕進一步減少 padding
-  }
-
-  .header-logo {
-    width: 32px;
-    height: 32px;
-  }
-
-  .hamburger {
-    width: 20px;
-    height: 16px;
-  }
-
-  .sidebar {
-    width: 260px; // 小螢幕稍微縮小 sidebar 寬度
-  }
-
+// 平板版調整
+@include tablet-only {
   .main-container {
-    padding: 8px; // 最小螢幕最少 padding
+    max-width: 100%;
+    margin: 0 auto;
   }
 }
 
-/* 平板尺寸調整 */
-@media (min-width: 769px) and (max-width: 1024px) {
+// 桌面版調整
+@include desktop {
   .main-container {
-    padding: 24px; // 平板用中等 padding
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
 
-    &.sidebar-open {
-      margin-left: 280px; // 平板的 sidebar 寬度調整
-    }
+// 大桌面版調整
+@include large-desktop {
+  .main-container {
+    max-width: 1200px;
+    padding: $spacing-2xl;
   }
 }
 </style>

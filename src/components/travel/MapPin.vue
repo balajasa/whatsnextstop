@@ -1,12 +1,22 @@
 <template>
   <div class="travel-pins-overlay">
     <!-- 圖釘們 -->
-    <div v-for="pin in processedPins" :key="pin.country" class="travel-pin"
-      :class="`visits-${Math.min(pin.visitCount, 3)}`" :style="pinStyle(pin)" @click="handlePinClick(pin)">
+    <div
+      v-for="pin in processedPins"
+      :key="pin.country"
+      class="travel-pin"
+      :class="`visits-${Math.min(pin.visitCount, 3)}`"
+      :style="pinStyle(pin)"
+      @click="handlePinClick(pin)"
+    >
       <!-- SVG 圖釘 -->
       <svg viewBox="0 0 30 40" class="pin-svg">
-        <path d="M15 5 C8 5, 3 10, 3 16 C3 22, 15 35, 15 35 S27 22, 27 16 C27 10, 22 5, 15 5 Z"
-          :fill="getPinColor(pin.visitCount)" stroke="#fff" stroke-width="2" />
+        <path
+          d="M15 5 C8 5, 3 10, 3 16 C3 22, 15 35, 15 35 S27 22, 27 16 C27 10, 22 5, 15 5 Z"
+          :fill="getPinColor(pin.visitCount)"
+          stroke="#fff"
+          stroke-width="2"
+        />
         <circle cx="15" cy="16" r="6" :fill="getPinHighlight(pin.visitCount)" opacity="0.3" />
       </svg>
 
@@ -22,7 +32,7 @@ import * as d3 from 'd3'
 import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
 import { getTravelsData } from '../../composables/usagi'
-import type { TravelData, ProcessedPin, MapPinProps } from '../types/ITravel'
+import type { TravelData, ProcessedPin, MapPinProps } from '../types/ITravelMap'
 
 const { getCountryChineseName } = countryTranslation()
 const { travels, loadTravels } = getTravelsData()
@@ -139,9 +149,13 @@ const processedPins = computed((): ProcessedPin[] => {
 })
 
 // 監聽 processedPins 變化，通知父組件
-watch(processedPins, (newPins) => {
-  emit('pins-updated', newPins)
-}, { deep: true })
+watch(
+  processedPins,
+  newPins => {
+    emit('pins-updated', newPins)
+  },
+  { deep: true }
+)
 
 // 圖釘樣式計算
 const pinStyle = (pin: ProcessedPin): any => {
@@ -158,7 +172,8 @@ const pinStyle = (pin: ProcessedPin): any => {
   const finalY = scaledY + svgOffset.value.y
 
   // 圖釘固定大小（考慮所有縮放因子）
-  const pinScale = 1 / (props.currentScale * Math.min(containerScale.value.x, containerScale.value.y))
+  const pinScale =
+    1 / (props.currentScale * Math.min(containerScale.value.x, containerScale.value.y))
 
   return {
     position: 'absolute' as const,
@@ -226,6 +241,12 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// ===================================
+// 圖釘覆蓋層 (Mobile First)
+// ===================================
 .travel-pins-overlay {
   position: absolute;
   top: 0;
@@ -236,38 +257,316 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
+// ===================================
+// 旅遊圖釘主體
+// ===================================
 .travel-pin {
-  width: 30px;
-  height: 40px;
+  width: 24px;
+  height: 32px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
   pointer-events: auto;
 
+  @include tablet {
+    width: 28px;
+    height: 36px;
+  }
+
+  @include desktop {
+    width: 30px;
+    height: 40px;
+  }
+
   &:hover {
-    transform: translate(-50%, -100%) scale(1.2);
+    transform: translate(-50%, -100%) scale(1.15);
+    z-index: 10;
+
+    @include tablet {
+      transform: translate(-50%, -100%) scale(1.2);
+    }
+
+    @include desktop {
+      transform: translate(-50%, -100%) scale(1.25);
+    }
 
     .pin-svg {
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+
+      @include desktop {
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+      }
+    }
+  }
+
+  &:active {
+    transform: translate(-50%, -100%) scale(1.05);
+
+    @include tablet {
+      transform: translate(-50%, -100%) scale(1.1);
+    }
+  }
+
+  // 根據訪問次數的不同樣式
+  &.visits-1 {
+    .pin-svg path {
+      fill: #ff4444;
+    }
+  }
+
+  &.visits-2 {
+    .pin-svg path {
+      fill: #ff8800;
+    }
+  }
+
+  &.visits-3 {
+    .pin-svg path {
+      fill: #44aa44;
     }
   }
 }
 
+// ===================================
+// SVG 圖釘樣式
+// ===================================
 .pin-svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  transition: filter 0.3s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+  transition: filter 0.3s ease-in-out;
+
+  @include tablet {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  @include desktop {
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
+  }
+
+  path {
+    stroke: $text-white;
+    stroke-width: 1.5;
+    transition: all 0.3s ease-in-out;
+
+    @include tablet {
+      stroke-width: 2;
+    }
+  }
+
+  circle {
+    transition: all 0.3s ease-in-out;
+  }
 }
 
+// ===================================
+// 圖釘數字顯示
+// ===================================
 .pin-number {
   position: absolute;
-  top: 8px;
+  top: 6px;
   left: 50%;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-  font-weight: bold;
-  font-size: 11px;
   transform: translateX(-50%);
+  color: $text-white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
+  font-size: 9px;
   pointer-events: none;
+  line-height: 1;
+
+  @include tablet {
+    top: 7px;
+    font-size: 10px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  }
+
+  @include desktop {
+    top: 8px;
+    font-size: 11px;
+    font-weight: 800;
+  }
+}
+
+// ===================================
+// 圖釘顏色方案
+// ===================================
+
+// 1次訪問 - 青綠色系
+.visits-1 {
+  .pin-svg {
+    path {
+      fill: #ff4444;
+    }
+
+    circle {
+      fill: rgba(#ff4444, 0.8);
+      opacity: 0.4;
+    }
+  }
+
+  &:hover {
+    .pin-svg {
+      path {
+        fill: #ff1744;
+      }
+
+      circle {
+        fill: rgba(#ff4444, 0.6);
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// 2次訪問 - 溫暖橘色系
+.visits-2 {
+  .pin-svg {
+    path {
+      fill: #ff8800;
+    }
+
+    circle {
+      fill: rgba(#ff8800, 0.8);
+      opacity: 0.4;
+    }
+  }
+
+  &:hover {
+    .pin-svg {
+      path {
+        fill: #ff6f00;
+      }
+
+      circle {
+        fill: rgba(#ff8800, 0.6);
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// 3次以上訪問 - 主青綠色系
+.visits-3 {
+  .pin-svg {
+    path {
+      fill: #44aa44;
+    }
+
+    circle {
+      fill: rgba(#44aa44, 0.8);
+      opacity: 0.4;
+    }
+  }
+
+  &:hover {
+    .pin-svg {
+      path {
+        fill: #388e3c;
+      }
+
+      circle {
+        fill: rgba(#44aa44, 0.6);
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// ===================================
+// 響應式動畫優化
+// ===================================
+
+// 手機版優化 - 更大的觸控區域和簡化動畫
+@include mobile-only {
+  .travel-pin {
+    width: 28px;
+    height: 36px;
+
+    &:hover {
+      transform: translate(-50%, -100%) scale(1.1);
+    }
+
+    &:active {
+      transform: translate(-50%, -100%) scale(1);
+    }
+  }
+
+  .pin-number {
+    top: 8px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .pin-svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+
+    path {
+      stroke-width: 1.5;
+    }
+  }
+}
+
+// 平板版優化
+@include tablet-only {
+  .travel-pin {
+    &:hover {
+      .pin-svg {
+        filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.45));
+      }
+    }
+  }
+}
+
+// 桌面版增強效果
+@include desktop {
+  .travel-pin {
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      transition: all 0.15s ease-out;
+
+      .pin-svg {
+        transition: filter 0.15s ease-out;
+      }
+    }
+
+    // 添加脈衝效果給高訪問次數的圖釘
+    &.visits-3 {
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+  }
+
+  .pin-number {
+    text-shadow:
+      0 1px 4px rgba(0, 0, 0, 0.9),
+      0 0 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// 大桌面版特殊效果
+@include large-desktop {
+  .travel-pin {
+    &:hover {
+      transform: translate(-50%, -100%) scale(1.3);
+
+      .pin-svg {
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6));
+      }
+    }
+  }
+}
+
+// ===================================
+// 動畫定義
+// ===================================
+
+// 脈衝發光動畫 (僅桌面版)
+@keyframes pulse-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 3px 15px rgba(56, 178, 172, 0.4));
+  }
 }
 </style>

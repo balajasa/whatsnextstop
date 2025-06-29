@@ -16,8 +16,12 @@
       <div class="nav-menu" v-show="navOpen">
         <div class="nav-section">
           <h4>📋 行程資訊</h4>
-          <a href="#itinerary" @click="scrollToSection('itinerary')"
-            :class="{ active: activeSection === 'itinerary' }">行程內容</a>
+          <a
+            href="#itinerary"
+            @click="scrollToSection('itinerary')"
+            :class="{ active: activeSection === 'itinerary' }"
+            >行程內容</a
+          >
         </div>
       </div>
     </nav>
@@ -28,20 +32,24 @@
       <section id="itinerary" class="schedule-section itinerary-section">
         <div class="section-container">
           <div class="iframe-container">
-            <div style="
+            <div
+              style="
                 position: relative;
                 width: 100%;
                 height: 0;
                 padding-top: 141.4286%;
                 padding-bottom: 0;
                 box-shadow: 0 2px 8px 0 rgba(63, 69, 81, 0.16);
-                margin-top: 1.6em;
+                margin-top: 1em;
                 margin-bottom: 0.9em;
                 overflow: hidden;
                 border-radius: 8px;
                 will-change: transform;
-              ">
-              <iframe loading="lazy" style="
+              "
+            >
+              <iframe
+                loading="lazy"
+                style="
                   position: absolute;
                   width: 100%;
                   height: 100%;
@@ -50,8 +58,11 @@
                   border: none;
                   padding: 0;
                   margin: 0;
-                " src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed" allowfullscreen
-                allow="fullscreen">
+                "
+                src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed"
+                allowfullscreen
+                allow="fullscreen"
+              >
               </iframe>
             </div>
           </div>
@@ -154,267 +165,336 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
+// ===================================
+// 主容器
+// ===================================
 .itinerary-container {
-  position: relative;
-  max-width: 800px;
+  width: 700px;
+  min-height: 100vh;
+  background: $bg-primary;
   margin: 0 auto;
-  padding: 20px;
-  background-color: $warm-bg-content;
-  border-radius: 12px;
-  box-shadow: $warm-shadow-medium;
 }
 
-/* 浮動導航 */
-.floating-nav {
-  position: fixed;
-  top: 50%;
-  right: 2rem;
-  transform: translateY(-50%);
-  z-index: 999;
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+// ===================================
+// 主要內容區域
+// ===================================
+.schedule-content {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
 
-  &.nav-hidden {
-    transform: translateY(-50%) translateX(calc(100% + 1rem));
+  @include tablet {
+    padding: 0 $spacing-lg;
+  }
+
+  @include desktop {
+    padding: 0 $spacing-xl;
   }
 }
 
-/* 返回首頁浮動按鈕 */
+.schedule-section {
+  margin-bottom: $spacing-2xl;
+}
+
+.section-container {
+  width: 100%;
+}
+
+// ===================================
+// 浮動導航
+// ===================================
+.floating-nav {
+  position: fixed;
+  top: 50%;
+  right: $spacing-md;
+  transform: translateY(-50%);
+  z-index: 100;
+  transition: all 0.3s ease-in-out;
+
+  @include tablet {
+    right: $spacing-lg;
+  }
+
+  @include desktop {
+    right: $spacing-xl;
+  }
+
+  // 隱藏狀態
+  &.nav-hidden {
+    opacity: 0;
+    transform: translateY(-50%) translateX(100px);
+    pointer-events: none;
+  }
+}
+
+// 返回首頁按鈕
 .home-float-btn {
-  background: $secondary-warm; // 珊瑚紅
-  color: white;
+  display: block;
+  width: 48px;
+  height: 48px;
+  background: $accent-color-1;
+  color: $text-white;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   text-decoration: none;
-  box-shadow: $warm-shadow-medium;
-  transition: all 0.3s ease;
-  order: -1; // 確保在導航按鈕上方
+  margin-bottom: $spacing-sm;
+  box-shadow: 0 4px 12px $shadow-city;
+  transition: all 0.2s ease;
 
   &:hover {
+    background: $city-gradient-end;
     transform: scale(1.1);
-    background: $primary-warm; // hover時變金黃色
-    box-shadow: $warm-shadow-hover;
+    box-shadow: 0 6px 20px $shadow-city-hover;
+  }
+
+  @include tablet {
+    width: 52px;
+    height: 52px;
   }
 }
 
 .home-icon {
-  font-size: 1.2rem;
+  font-size: 20px;
+
+  @include tablet {
+    font-size: 22px;
+  }
 }
 
+// 導航切換按鈕
 .nav-toggle {
-  background: $primary-warm; // 金黃色
-  color: white;
+  width: 48px;
+  height: 48px;
+  background: $primary-color;
+  color: $text-white;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   cursor: pointer;
-  box-shadow: $warm-shadow-medium;
-  transition: all 0.3s ease;
-  margin-left: auto;
+  box-shadow: 0 4px 12px $shadow-medium;
+  transition: all 0.2s ease;
 
   &:hover {
+    background: #2d3748;
     transform: scale(1.1);
-    background: $coral-red; // hover時變珊瑚紅
-    box-shadow: $warm-shadow-hover;
+    box-shadow: 0 6px 20px $shadow-strong;
+  }
+
+  @include tablet {
+    width: 52px;
+    height: 52px;
   }
 }
 
 .nav-icon {
-  font-size: 1.2rem;
+  font-size: 20px;
+
+  @include tablet {
+    font-size: 22px;
+  }
 }
 
+// 導航選單
 .nav-menu {
-  background: $warm-bg-card;
-  border-radius: 15px;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  box-shadow: $warm-shadow-heavy;
-  backdrop-filter: blur(10px);
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: $spacing-md;
+  background: $bg-card;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 32px $shadow-medium;
   min-width: 200px;
-  max-height: 60vh;
-  overflow-y: auto;
-  border: $warm-border-light;
+  padding: $spacing-md;
+  border: 1px solid $border-light;
+
+  @include tablet {
+    min-width: 220px;
+    padding: $spacing-lg;
+  }
+
+  // 小箭頭指向切換按鈕
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid $bg-card;
+  }
 }
 
 .nav-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: $spacing-md;
 
   &:last-child {
     margin-bottom: 0;
   }
 
   h4 {
-    color: $primary-warm; // 金黃色標題
-    font-size: 0.9rem;
+    color: $text-secondary;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 0.8rem;
-    border-bottom: 1px solid rgba(238, 184, 104, 0.2);
-    padding-bottom: 0.5rem;
+    margin-bottom: $spacing-sm;
+    padding-bottom: $spacing-xs;
+    border-bottom: 1px solid $border-light;
+
+    @include tablet {
+      font-size: 15px;
+    }
   }
 
   a {
     display: block;
-    color: $text-primary-warm;
+    color: $text-muted;
     text-decoration: none;
-    padding: 0.5rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    transition: all 0.2s ease;
 
     &:hover {
-      background: $hover-primary;
-      color: $coral-red;
+      background: rgba(56, 178, 172, 0.1);
+      color: $accent-color-1;
+      transform: translateX(4px);
     }
 
     &.active {
-      background: $primary-warm;
-      color: white;
-      font-weight: 600;
+      background: rgba(230, 168, 107, 0.1);
+      color: $accent-color-2;
+      font-weight: 500;
+    }
+
+    @include tablet {
+      font-size: 15px;
+      padding: $spacing-sm;
     }
   }
 }
 
-/* 主要內容區域 */
-.schedule-content {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-.schedule-section {
-  margin-bottom: 2rem;
-  scroll-margin-top: 100px;
-
-  &:last-child {
-    margin-bottom: 1rem;
-  }
-}
-
-.section-container {
-  background: $warm-bg-section;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: $warm-shadow-heavy;
-  backdrop-filter: blur(10px);
-  border: $warm-border-light;
-  position: relative;
-
-  // 添加溫暖的內部光暈效果
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: $warm-gradient-bg;
-    border-radius: 20px;
-    opacity: 0.3;
-    pointer-events: none;
-  }
-}
-
+// ===================================
+// iframe 容器
+// ===================================
 .iframe-container {
   width: 100%;
-  position: relative;
-  z-index: 1;
+  border-radius: $border-radius-lg;
+  // overflow: hidden;
+  box-shadow: 0 8px 32px $shadow-medium;
+  background: $bg-card;
 
-  // 覆蓋內聯樣式的陰影，使用溫暖色調
-  div[style*='box-shadow'] {
-    box-shadow: $warm-shadow-medium;
+  @include tablet {
+    border-radius: $border-radius-xl;
   }
 }
 
-/* 回到頂部按鈕 */
+// ===================================
+// 回到頂部按鈕
+// ===================================
 .back-to-top {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 50px;
-  height: 50px;
-  background: $secondary-warm;
-  color: white;
+  bottom: $spacing-lg;
+  right: $spacing-md;
+  width: 48px;
+  height: 48px;
+  background: $accent-color-2;
+  color: $text-white;
   border: none;
   border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: bold;
   cursor: pointer;
-  box-shadow: $warm-shadow-medium;
+  @include flex-center;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(230, 168, 107, 0.4);
   transition: all 0.3s ease;
-  z-index: 998;
+  z-index: 99;
 
   &:hover {
-    background: $primary-warm;
-    transform: translateY(-3px);
-    box-shadow: $warm-shadow-hover;
+    background: #d4941b;
+    transform: translateY(-4px) scale(1.1);
+    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.6);
+  }
+
+  &:active {
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  @include tablet {
+    bottom: $spacing-xl;
+    right: $spacing-lg;
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  @include desktop {
+    right: $spacing-xl;
   }
 }
 
-/* 響應式設計 */
-@media (max-width: 768px) {
+// ===================================
+// 響應式調整
+// ===================================
+// 平板版本 (≥ 768px)
+
+// .itinerary-container
+// 手機版特殊處理
+@include mobile-only {
+  .itinerary-container {
+    padding: $spacing-lg;
+  }
+
+  .schedule-content {
+    padding: $spacing-xs $spacing-lg;
+  }
+
   .floating-nav {
-    right: 1rem;
-    gap: 0.8rem;
-  }
-
-  .home-float-btn,
-  .nav-toggle {
-    width: 45px;
-    height: 45px;
-  }
-
-  .home-icon,
-  .nav-icon {
-    font-size: 1.1rem;
+    right: $spacing-sm;
   }
 
   .nav-menu {
     min-width: 180px;
-    padding: 1.2rem;
+    padding: $spacing-sm;
+    margin-bottom: $spacing-sm;
+
+    &::after {
+      right: 16px;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid $bg-card;
+    }
   }
 
-  .schedule-content {
-    padding: 1rem;
+  .home-float-btn,
+  .nav-toggle {
+    width: 44px;
+    height: 44px;
   }
 
-  .section-container {
-    padding: 1rem;
-    border-radius: 16px;
+  .home-icon,
+  .nav-icon {
+    font-size: 18px;
   }
 
   .back-to-top {
-    bottom: 1rem;
-    right: 1rem;
-    width: 45px;
-    height: 45px;
-    font-size: 1.3rem;
+    bottom: $spacing-md;
+    right: $spacing-sm;
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
   }
 }
 
-@media (max-width: 480px) {
+// 大桌面版優化
+@include large-desktop {
   .floating-nav {
-    gap: 0.6rem;
+    right: calc((100vw - 1400px) / 2 + #{$spacing-xl});
   }
 
-  .schedule-section {
-    margin-bottom: 1rem;
-  }
-
-  .section-container {
-    padding: 0.8rem;
-    border-radius: 12px;
+  .back-to-top {
+    right: calc((100vw - 1400px) / 2 + #{$spacing-xl});
   }
 }
 </style>

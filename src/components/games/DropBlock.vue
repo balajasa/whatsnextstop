@@ -2,43 +2,53 @@
   <div class="game-wrapper">
     <!-- 麵包屑 -->
     <BreadcrumbNav />
-    <div class="info">點擊按鈕看骰子掉落展開效果</div>
-
     <div class="game-container">
       <!-- A區小方塊 (body石頭) -->
-      <div v-if="gameState.taskA" :class="[
-        'cube',
-        'cube-a',
-        { dropping: gameState.aDropping, expanded: gameState.aExpanded }
-      ]" :style="{
-        backgroundImage: `url(${getStoneImage('body')})`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center'
-      }" />
+      <div
+        v-if="gameState.taskA"
+        :class="[
+          'cube',
+          'cube-a',
+          { dropping: gameState.aDropping, expanded: gameState.aExpanded }
+        ]"
+        :style="{
+          backgroundImage: `url(${getStoneImage('body')})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }"
+      />
 
       <!-- B區小方塊 (head石頭) -->
-      <div v-if="gameState.taskB" :class="[
-        'cube',
-        'cube-b',
-        { dropping: gameState.bDropping, expanded: gameState.bExpanded }
-      ]" :style="{
-        backgroundImage: `url(${getStoneImage('head')})`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center'
-      }" />
+      <div
+        v-if="gameState.taskB"
+        :class="[
+          'cube',
+          'cube-b',
+          { dropping: gameState.bDropping, expanded: gameState.bExpanded }
+        ]"
+        :style="{
+          backgroundImage: `url(${getStoneImage('head')})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }"
+      />
 
       <!-- A區地圖 -->
-      <div v-if="gameState.aExpanded"
-        :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]">
+      <div
+        v-if="gameState.aExpanded"
+        :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]"
+      >
         <img src="@/assets/img/mini/reel_map_a.png" alt="地圖A" />
         <div class="overlay-text">{{ gameState.taskA }}</div>
       </div>
 
       <!-- B區地圖 -->
-      <div v-if="gameState.bExpanded"
-        :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]">
+      <div
+        v-if="gameState.bExpanded"
+        :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]"
+      >
         <img src="@/assets/img/mini/reel_map_b.png" alt="地圖B" />
         <div class="overlay-text">{{ gameState.taskB }}</div>
       </div>
@@ -46,8 +56,9 @@
       <!-- 最終完整地圖 -->
       <div v-if="gameState.showFinalMap" :class="['final-map', { show: gameState.finalMapShow }]">
         <!-- 關閉按鈕放在最前面 -->
-        <button @click="closeFinalMap" class="close-btn">✕</button>
-        <img src="@/assets/img/mini/reel_map.png" alt="完整地圖" />
+        <div class="result-map">
+          <button @click="closeFinalMap" class="close-btn">✕</button>
+        </div>
         <div class="overlay-text">
           <div class="task-item">{{ gameState.taskA }}</div>
           <div class="task-item">＋</div>
@@ -61,7 +72,11 @@
         {{ gameState.aExpanded ? '已完成 A 區' : '掉落 A 區方塊' }}
       </button>
 
-      <button @click="dropCube('B')" :disabled="!gameState.aExpanded || gameState.bExpanded" class="btn btn-primary">
+      <button
+        @click="dropCube('B')"
+        :disabled="!gameState.aExpanded || gameState.bExpanded"
+        class="btn btn-primary"
+      >
         {{ gameState.bExpanded ? '已完成 B 區' : '掉落 B 區方塊' }}
       </button>
 
@@ -92,7 +107,6 @@ import head03 from '@/assets/img/stone/head_03.png'
 import head04 from '@/assets/img/stone/head_04.png'
 import head05 from '@/assets/img/stone/head_05.png'
 import head06 from '@/assets/img/stone/head_06.png'
-
 
 const gameState = reactive<GameState>({
   aExpanded: false,
@@ -214,186 +228,392 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// ===================================
+// 主容器
+// ===================================
 .game-wrapper {
-  padding: 20px;
+  min-height: 100vh;
+  background: $bg-primary;
+  padding-top: $header-height;
+  padding: $spacing-lg;
+
+  @include tablet {
+    padding-top: calc(#{$header-height} + #{$spacing-lg});
+    padding: $spacing-xl;
+  }
+
+  @include desktop {
+    padding: $spacing-2xl;
+  }
+}
+
+// ===================================
+// 提示訊息
+// ===================================
+.info {
+  color: $text-secondary;
+  text-align: center;
+  margin-bottom: $spacing-lg;
+  font-size: 16px;
+  font-weight: 500;
+  background: $bg-card;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $border-radius-md;
+  box-shadow: 0 4px 12px $shadow-light;
+
+  @include tablet {
+    font-size: 18px;
+    padding: $spacing-lg $spacing-xl;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+// ===================================
+// 遊戲容器響應式化
+// ===================================
+.game-container {
+  width: 90vw;
+  max-width: 800px;
+  aspect-ratio: 4/3;
+  margin: 0 auto $spacing-xl;
+  background-image: url('@/assets/img/bg/game_bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: $border-radius-lg;
+  position: relative;
+  border: 2px solid $border-primary;
+  box-shadow: 0 8px 32px $shadow-medium;
+  margin-top: $spacing-md;
+
+  @include tablet {
+    width: 80vw;
+    max-width: 700px;
+  }
+
+  @include desktop {
+    width: 70vw;
+    max-width: 800px;
+  }
+}
+
+// ===================================
+// 方塊樣式 (百分比定位)
+// ===================================
+.cube {
+  width: 12.5%; // 相對於容器寬度 (800px 的 100px)
+  aspect-ratio: 1;
+  position: absolute;
+  border-radius: $border-radius-sm;
+  transition: top 0.3s cubic-bezier(0.8, 0, 1, 1);
+  left: 50%;
+  margin-left: -6.25%; // 寬度的一半
+
+  &.cube-a {
+    top: -15%; // 相對於容器高度
+  }
+
+  &.cube-b {
+    top: -30%;
+  }
+
+  &.cube-a.dropping {
+    top: 80%;
+  }
+
+  &.cube-b.dropping {
+    top: 63%;
+  }
+
+  &.expanded {
+    opacity: 1;
+  }
+}
+
+// ===================================
+// 地圖結果樣式
+// ===================================
+.map-result {
+  position: absolute;
+  width: 35%;
+  height: 30%;
+  transition: all 1s ease;
+  top: 25%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: $border-radius-sm;
+    box-shadow: 0 4px 12px $shadow-medium;
+  }
+
+  .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-sm;
+    font-weight: 600;
+    text-align: center;
+    color: $text-primary;
+    max-width: 85%;
+    box-shadow: 0 2px 8px $shadow-light;
+    backdrop-filter: blur(5px);
+
+    @include mobile-only {
+      font-size: 12px;
+      padding: $spacing-xs $spacing-sm;
+    }
+  }
+
+  &.map-a {
+    left: 8%;
+
+    &.merging {
+      transform: translateX(50%) scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  &.map-b {
+    right: 8%;
+
+    &.merging {
+      transform: translateX(-50%) scale(0.8);
+      opacity: 0;
+    }
+  }
+}
+
+// ===================================
+// 最終地圖樣式
+// ===================================
+.final-map {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, 0) scale(0);
+  width: 50%;
+  height: 40%;
+  transition: all 1.2s ease;
+  z-index: 100;
+
+  .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: $spacing-md $spacing-lg;
+    border-radius: $border-radius-md;
+    text-align: center;
+    color: $text-primary;
+    max-width: 90%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 25px $shadow-medium;
+
+    .task-item {
+      font-size: 14px;
+      line-height: 1.6;
+      margin: $spacing-xs 0;
+      font-weight: 500;
+
+      @include tablet {
+        font-size: 16px;
+        margin: $spacing-sm 0;
+      }
+    }
+  }
+
+  &.show {
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.result-map {
+  width: 100%;
+  height: 100%;
+  background: url('@/assets/img/mini/reel_map.png') center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: $border-radius-md;
+  box-shadow: 0 8px 25px $shadow-strong;
+}
+
+.close-btn {
+  position: absolute;
+  top: 8%;
+  right: 8%;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: $accent-color-2;
+  color: $text-white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(230, 168, 107, 0.4);
+  @include flex-center;
+
+  &:hover {
+    background: #d4941b;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(230, 168, 107, 0.6);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// ===================================
+// 按鈕群組響應式
+// ===================================
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+
+  @include tablet {
+    grid-template-columns: repeat(4, 1fr);
+    gap: $spacing-lg;
+    max-width: 800px;
+  }
+
+  @include mobile-only {
+    grid-template-columns: 1fr;
+    gap: $spacing-sm;
+    max-width: 300px;
+  }
+}
+
+// ===================================
+// 按鈕樣式統一
+// ===================================
+.btn {
+  padding: $spacing-md $spacing-lg;
+  border: none;
+  border-radius: $border-radius-md;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  @include card-hover;
+  min-height: 50px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
 
-  .info {
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
+  @include tablet {
+    padding: $spacing-lg $spacing-xl;
     font-size: 16px;
+    min-height: 56px;
+  }
+
+  &.btn-primary {
+    background: $accent-color-2;
+    color: $text-white;
+    box-shadow: 0 4px 12px rgba(230, 168, 107, 0.3);
+
+    &:hover:not(:disabled) {
+      background: #d4941b;
+      box-shadow: 0 8px 25px rgba(230, 168, 107, 0.4);
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    &:active {
+      transform: translateY(0) scale(1);
+    }
+
+    &:disabled {
+      background: $state-muted;
+      color: $text-muted;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 2px 8px $shadow-light;
+
+      &:hover {
+        transform: none;
+        box-shadow: 0 2px 8px $shadow-light;
+      }
+    }
+  }
+}
+
+// ===================================
+// 響應式調整
+// ===================================
+
+// 手機版特殊處理
+@include mobile-only {
+  .game-wrapper {
+    padding: $spacing-md;
   }
 
   .game-container {
-    width: 800px;
-    height: 600px;
-    background-image: url('@/assets/img/bg/game_bg.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 15px;
-    position: relative;
-    overflow: visible;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    width: 95vw;
+    margin-bottom: $spacing-lg;
   }
 
-  // 小方塊樣式
   .cube {
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    top: -120px;
-    border-radius: 8px;
-    transition: top 0.3s cubic-bezier(0.8, 0, 1, 1);
-    left: 50%;
-    margin-left: -50px;
-
-    &.cube-a {
-      top: -120px;
-    }
-
-    &.cube-b {
-      top: -240px;
-    }
-
-    &.cube-a.dropping {
-      top: calc(100% - 120px);
-    }
-
-    &.cube-b.dropping {
-      top: calc(100% - 220px);
-    }
-
-    &.expanded {
-      opacity: 1;
-    }
+    width: 15%; // 手機版稍微大一點
+    margin-left: -7.5%;
   }
 
-  // 地圖結果樣式
   .map-result {
-    position: absolute;
-    width: 300px;
-    height: 200px;
-    transition: all 1s ease;
-    top: 30%;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 10px;
-    }
+    width: 40%;
+    height: 25%;
 
     .overlay-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      text-align: center;
-      color: #333;
-      max-width: 80%;
-    }
-
-    &.map-a {
-      left: 5%;
-
-      &.merging {
-        transform: translateX(150%); // 向中心移動
-        opacity: 0;
-      }
-    }
-
-    &.map-b {
-      right: 5%;
-
-      &.merging {
-        transform: translateX(-150%); // 向中心移動
-        opacity: 0;
-      }
+      font-size: 11px;
+      padding: 4px 8px;
     }
   }
 
-  // 最終地圖樣式
   .final-map {
-    position: absolute;
-    top: 30%; // 和 map-result 一樣的 top 位置
-    left: 50%;
-    transform: translate(-50%, 0) scale(0); // 移除 -50% 的 Y 軸偏移
-    width: 450px;
-    height: 300px;
-    transition: all 1.2s ease;
-    z-index: 100;
+    width: 65%;
+    height: 35%;
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 15px;
-    }
-
-    .overlay-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      color: #333;
-      max-width: 80%;
-
-      .task-item {
-        font-size: 16px;
-        line-height: 1.6;
-        margin: 8px 0;
-        font-weight: 500;
-      }
-    }
-
-    &.show {
-      transform: translate(-50%, 0) scale(1); // 保持一致的變換
+    .overlay-text .task-item {
+      font-size: 12px;
     }
   }
 
-  // 按鈕樣式
+  .close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}
+
+// 平板版調整
+@include tablet-only {
+  .cube {
+    width: 13%;
+    margin-left: -6.5%;
+  }
+}
+
+// 大桌面版優化
+@include large-desktop {
+  .game-container {
+    width: 60vw;
+  }
+
   .controls {
-    margin-top: 30px;
-    text-align: center;
-  }
-
-  .btn {
-    padding: 15px 30px;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    cursor: pointer;
-    margin: 0 10px;
-    transition: all 0.3s ease;
-
-    &.btn-primary {
-      background: #ff6b6b;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background: #ff5252;
-        transform: translateY(-2px);
-      }
-
-      &:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-        transform: none;
-      }
-    }
+    max-width: 900px;
   }
 }
 </style>

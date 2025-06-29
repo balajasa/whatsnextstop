@@ -1,6 +1,6 @@
 // ===================================
 // _variables.scss
-// 旅遊足跡網站配色主題
+// 旅遊足跡網站配色主題 + 佈局變數
 // ===================================
 
 // -----------------------------------
@@ -15,6 +15,7 @@ $accent-color-2: #E6A86B; // 輔助色2：溫暖橘色（造訪次數、裝飾�
 // -----------------------------------
 $bg-primary: #F5F7FA; // 主背景：淺藍白
 $bg-sidebar: #E8F2F1; // 側邊欄背景：淺青綠
+$bg-sidebar-desktop: rgba(232, 242, 241, 0.95); // 桌面版側邊欄（含透明度）
 $bg-card: #FFFFFF; // 卡片背景：純白
 $bg-stats: #FFFFFF; // 統計卡片背景：純白
 
@@ -48,7 +49,7 @@ $timeline-medium: #38B2AC; // 中期：青綠色
 $timeline-old: #CBD5E0; // 較舊：淺灰色
 
 // -----------------------------------
-// 城市標籤漸層（樣式2特有）
+// 城市標籤漸層
 // -----------------------------------
 $city-gradient-start: #38B2AC; // 漸層起始：青綠色
 $city-gradient-end: #319795; // 漸層結束：深青綠色
@@ -63,34 +64,40 @@ $shadow-city: rgba(56, 178, 172, 0.3); // 城市標籤陰影
 $shadow-city-hover: rgba(56, 178, 172, 0.4); // 城市標籤hover陰影
 
 // -----------------------------------
-// 透明度變化
+// 佈局變數
 // -----------------------------------
-$opacity-overlay: rgba(230, 168, 107, 0.2); // Header nav hover
-$opacity-social: rgba(230, 168, 107, 0.2); // 社群圖示背景
 
-// // -----------------------------------
-// // 響應式斷點（額外）
-// // -----------------------------------
-// $breakpoint-mobile: 768px;
-// $breakpoint-tablet: 968px;
-// $breakpoint-desktop: 1200px;
+// Header
+$header-height: 50px;
+$header-bg: $primary-color;
+$header-text-color: $text-white;
 
-// // -----------------------------------
-// // 間距系統（額外）
-// // -----------------------------------
-// $spacing-xs: 4px;
-// $spacing-sm: 8px;
-// $spacing-md: 16px;
-// $spacing-lg: 24px;
-// $spacing-xl: 32px;
-// $spacing-xxl: 40px;
+// 側邊欄
+$sidebar-width-mobile: 280px;
+$sidebar-width-desktop: 300px;
+$sidebar-bg-mobile: $bg-sidebar;
+$sidebar-bg-desktop: $bg-sidebar-desktop;
 
-// // -----------------------------------
-// // 圓角系統（額外）
-// // -----------------------------------
-// $radius-sm: 8px;
-// $radius-md: 12px;
-// $radius-lg: 16px;
-// $radius-xl: 20px;
-// $radius-pill: 20px; // 徽章圓角
-// $radius-full: 50%; // 圓形
+// 覆蓋層
+$overlay-bg: rgba(0, 0, 0, 0.3);
+
+// 圓角
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+
+// 間距系統
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// Z-index 層級
+$z-header: 100;
+$z-mapoverlay: 800;
+$z-overlay: 998;
+$z-modal: 990;
+$z-sidebar: 1000;

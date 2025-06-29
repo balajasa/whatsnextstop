@@ -11,15 +11,25 @@
       <div class="itinerary-detail-nav-menu" v-show="navOpen">
         <div class="itinerary-detail-nav-section">
           <h4>📋 行程資訊</h4>
-          <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`"
-            @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
+          <a
+            v-for="section in infoSections"
+            :key="section.id"
+            :href="`#${section.id}`"
+            @click="scrollToSection(section.id)"
+            :class="{ 'itinerary-detail-active': activeSection === section.id }"
+          >
             {{ section.name }}
           </a>
         </div>
         <div class="itinerary-detail-nav-section">
           <h4>📅 每日行程</h4>
-          <a v-for="day in totalDays" :key="day" :href="`#day${day}`" @click="scrollToSection(`day${day}`)"
-            :class="{ 'itinerary-detail-active': activeSection === `day${day}` }">
+          <a
+            v-for="day in totalDays"
+            :key="day"
+            :href="`#day${day}`"
+            @click="scrollToSection(`day${day}`)"
+            :class="{ 'itinerary-detail-active': activeSection === `day${day}` }"
+          >
             第{{ day }}天
           </a>
         </div>
@@ -31,36 +41,60 @@
     <!-- 主要內容區域 -->
     <div class="itinerary-detail-schedule-content">
       <!-- 行程資訊區域 -->
-      <section v-for="section in infoSections" :key="section.id" :id="section.id"
-        :class="`itinerary-detail-schedule-section ${section.class}`">
+      <section
+        v-for="section in infoSections"
+        :key="section.id"
+        :id="section.id"
+        :class="`itinerary-detail-schedule-section ${section.class}`"
+      >
         <div class="itinerary-detail-section-container">
           <!-- 顯示圖片 -->
-          <div v-for="(image, index) in section.images" :key="index" class="itinerary-detail-image-container">
+          <div
+            v-for="(image, index) in section.images"
+            :key="index"
+            class="itinerary-detail-image-container"
+          >
             <img :src="image.src" :alt="image.alt" class="itinerary-detail-schedule-image" />
           </div>
         </div>
       </section>
 
       <!-- 每日詳細行程 -->
-      <section v-for="day in totalDays" :key="day" :id="`day${day}`"
-        class="itinerary-detail-schedule-section itinerary-detail-daily-section">
+      <section
+        v-for="day in totalDays"
+        :key="day"
+        :id="`day${day}`"
+        class="itinerary-detail-schedule-section itinerary-detail-daily-section"
+      >
         <div class="itinerary-detail-section-container">
           <div class="itinerary-detail-image-container">
-            <img :src="`/src/assets/img/itinerary/page${day + 6}.jpg`" :alt="`第${day}天詳細行程`"
-              class="itinerary-detail-schedule-image" />
+            <img
+              :src="`/src/assets/img/itinerary/page${day + 6}.jpg`"
+              :alt="`第${day}天詳細行程`"
+              class="itinerary-detail-schedule-image"
+            />
           </div>
         </div>
       </section>
 
       <!-- 顯示所有的 iframe，放在最後 -->
-      <section v-for="section in infoSections.filter(s => s.iframe)" :key="`${section.id}-iframe`"
-        :id="`${section.id}-iframe`" class="itinerary-detail-schedule-section itinerary-detail-iframe-section">
+      <section
+        v-for="section in infoSections.filter(s => s.iframe)"
+        :key="`${section.id}-iframe`"
+        :id="`${section.id}-iframe`"
+        class="itinerary-detail-schedule-section itinerary-detail-iframe-section"
+      >
         <div class="itinerary-detail-section-container">
           <div v-if="section.iframe" class="itinerary-detail-iframe-container">
-            <iframe :src="section.iframe.src" :title="section.iframe.title || section.name"
-              :width="section.iframe.width || '100%'" :height="section.iframe.height || '600px'"
+            <iframe
+              :src="section.iframe.src"
+              :title="section.iframe.title || section.name"
+              :width="section.iframe.width || '100%'"
+              :height="section.iframe.height || '600px'"
               :frameborder="section.iframe.frameborder || '0'"
-              :allowfullscreen="section.iframe.allowfullscreen || false" class="itinerary-detail-iframe"></iframe>
+              :allowfullscreen="section.iframe.allowfullscreen || false"
+              class="itinerary-detail-iframe"
+            ></iframe>
           </div>
         </div>
       </section>
@@ -223,277 +257,462 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
+// ===================================
+// 主容器
+// ===================================
 .itinerary-detail-container {
-  position: relative;
+  width: 700px;
+  min-height: 100vh;
+  background: $bg-primary;
   margin: 0 auto;
-  padding: 20px;
-  max-width: 800px;
-  border-radius: 12px;
-  background: #f8f9fa;
-  background-color: $warm-bg-content;
-  box-shadow: $warm-shadow-medium;
 }
 
-/* 浮動導航 */
-.itinerary-detail-floating-nav {
-  position: fixed;
-  top: 50%;
-  right: 2rem;
-  z-index: 999;
-  transition: all 0.3s ease;
-  transform: translateY(-50%);
-}
-
-.itinerary-detail-floating-nav.itinerary-detail-nav-hidden {
-  transform: translateY(-50%) translateX(calc(100% + 1rem));
-}
-
-.itinerary-detail-nav-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #2e8b57;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.itinerary-detail-nav-toggle:hover {
-  background: #236645;
-  transform: scale(1.1);
-}
-
-.itinerary-detail-nav-icon {
-  font-size: 1.2rem;
-}
-
-.itinerary-detail-nav-menu {
-  overflow-y: auto;
-  margin-top: 1rem;
-  padding: 1.5rem;
-  min-width: 200px;
-  max-height: 60vh;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-}
-
-.itinerary-detail-nav-section {
-  margin-bottom: 1.5rem;
-}
-
-.itinerary-detail-nav-section:last-child {
-  margin-bottom: 0;
-}
-
-.itinerary-detail-nav-section h4 {
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(46, 139, 87, 0.2);
-  color: #2e8b57;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.itinerary-detail-nav-section a {
-  display: block;
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  color: #2c3e50;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.itinerary-detail-nav-section a:hover {
-  background: rgba(46, 139, 87, 0.1);
-  color: #2e8b57;
-}
-
-.itinerary-detail-nav-section a.itinerary-detail-active {
-  background: #2e8b57;
-  color: white;
-  font-weight: 600;
-}
-
-/* 主標題 */
+// ===================================
+// 頁面標題
+// ===================================
 .itinerary-detail-title {
-  padding: 2rem;
-  color: #2e8b57;
   text-align: center;
+  font-size: 28px;
   font-weight: 700;
-  font-size: 2.5rem;
+  color: $text-primary;
+  margin: $spacing-lg 0 $spacing-xl;
+  padding: 0 $spacing-md;
+
+  @include tablet {
+    font-size: 32px;
+    margin: $spacing-xl 0 $spacing-2xl;
+  }
+
+  @include desktop {
+    font-size: 36px;
+  }
 }
 
-/* 主要內容區域 */
+// ===================================
+// 主要內容區域
+// ===================================
 .itinerary-detail-schedule-content {
+  max-width: 750px;
   margin: 0 auto;
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 0 $spacing-md $spacing-xl;
+
+  @include tablet {
+    padding: 0 $spacing-lg $spacing-2xl;
+  }
+
+  @include desktop {
+    padding: 0 $spacing-xl $spacing-2xl;
+  }
+
+  @include large-desktop {
+    max-width: 1400px;
+  }
 }
 
+// ===================================
+// 內容區塊
+// ===================================
 .itinerary-detail-schedule-section {
-  margin-bottom: 2rem;
-  scroll-margin-top: 100px;
-}
+  margin-bottom: $spacing-2xl;
 
-.itinerary-detail-schedule-section:last-child {
-  margin-bottom: 1rem;
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .itinerary-detail-section-container {
-  padding: 2rem;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(10px);
+  width: 100%;
 }
 
+// ===================================
+// 圖片容器
+// ===================================
 .itinerary-detail-image-container {
+  margin-bottom: $spacing-lg;
+  border-radius: $border-radius-lg;
   overflow: hidden;
-  margin-bottom: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
+  box-shadow: 0 8px 32px $shadow-medium;
+  background: $bg-card;
 
-.itinerary-detail-image-container:last-child {
-  margin-bottom: 0;
-}
+  @include tablet {
+    margin-bottom: $spacing-xl;
+    border-radius: $border-radius-xl;
+  }
 
-.itinerary-detail-image-container:hover {
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-  transform: translateY(-5px);
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .itinerary-detail-schedule-image {
   width: 100%;
   height: auto;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  display: block;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 }
 
-/* iframe 容器樣式 */
+// ===================================
+// iframe 區域
+// ===================================
+.itinerary-detail-iframe-section {
+  .itinerary-detail-section-container {
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    box-shadow: 0 8px 32px $shadow-medium;
+    background: $bg-card;
+
+    @include tablet {
+      border-radius: $border-radius-xl;
+    }
+  }
+}
+
 .itinerary-detail-iframe-container {
-  overflow: hidden;
-  margin-bottom: 2rem;
-  border-radius: 15px;
-  background: white;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
+  width: 100%;
+  position: relative;
+  min-height: 600px;
 
-.itinerary-detail-iframe-container:last-child {
-  margin-bottom: 0;
-}
+  @include tablet {
+    min-height: 700px;
+  }
 
-.itinerary-detail-iframe-container:hover {
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  @include desktop {
+    min-height: 800px;
+  }
 }
 
 .itinerary-detail-iframe {
-  min-height: 600px;
   width: 100%;
+  height: 100%;
   border: none;
-  border-radius: 15px;
-  background: white;
+  display: block;
+  min-height: inherit;
 }
 
-/* 回到頂部按鈕 */
+// ===================================
+// 浮動導航
+// ===================================
+.itinerary-detail-floating-nav {
+  position: fixed;
+  top: 50%;
+  right: $spacing-md;
+  transform: translateY(-50%);
+  z-index: 100;
+  transition: all 0.3s ease-in-out;
+
+  @include tablet {
+    right: $spacing-lg;
+  }
+
+  @include desktop {
+    right: $spacing-xl;
+  }
+
+  // 隱藏狀態
+  &.itinerary-detail-nav-hidden {
+    opacity: 0;
+    transform: translateY(-50%) translateX(100px);
+    pointer-events: none;
+  }
+}
+
+// 導航切換按鈕
+.itinerary-detail-nav-toggle {
+  width: 48px;
+  height: 48px;
+  background: $primary-color;
+  color: $text-white;
+  border-radius: 50%;
+  @include flex-center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px $shadow-medium;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #2d3748;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px $shadow-strong;
+  }
+
+  @include tablet {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+.itinerary-detail-nav-icon {
+  font-size: 20px;
+
+  @include tablet {
+    font-size: 22px;
+  }
+}
+
+// 導航選單
+.itinerary-detail-nav-menu {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  margin-right: $spacing-md;
+  background: $bg-card;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 32px $shadow-medium;
+  min-width: 200px;
+  padding: $spacing-md;
+  border: 1px solid $border-light;
+
+  @include tablet {
+    min-width: 220px;
+    padding: $spacing-lg;
+  }
+
+  // 小箭頭指向切換按鈕
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid $bg-card;
+  }
+}
+
+.itinerary-detail-nav-section {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    color: $text-secondary;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: $spacing-sm;
+    padding-bottom: $spacing-xs;
+    border-bottom: 1px solid $border-light;
+
+    @include tablet {
+      font-size: 15px;
+    }
+  }
+
+  a {
+    display: block;
+    color: $text-muted;
+    text-decoration: none;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(56, 178, 172, 0.1);
+      color: $accent-color-1;
+      transform: translateX(4px);
+    }
+
+    &.itinerary-detail-active {
+      background: rgba(230, 168, 107, 0.1);
+      color: $accent-color-2;
+      font-weight: 500;
+    }
+
+    @include tablet {
+      font-size: 15px;
+      padding: $spacing-sm;
+    }
+  }
+}
+
+// ===================================
+// 回到頂部按鈕
+// ===================================
 .itinerary-detail-back-to-top {
   position: fixed;
-  right: 2rem;
-  bottom: 2rem;
-  z-index: 998;
-  width: 50px;
-  height: 50px;
+  bottom: $spacing-lg;
+  right: $spacing-md;
+  width: 48px;
+  height: 48px;
+  background: $accent-color-2;
+  color: $text-white;
   border: none;
   border-radius: 50%;
-  background: #ff6b6b;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  color: white;
-  font-weight: bold;
-  font-size: 1.5rem;
   cursor: pointer;
+  @include flex-center;
+  font-size: 18px;
+  font-weight: bold;
   transition: all 0.3s ease;
-}
+  z-index: 99;
 
-.itinerary-detail-back-to-top:hover {
-  background: #e55a5a;
-  transform: translateY(-3px);
-}
-
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .itinerary-detail-back-to-home {
-    top: 1rem;
-    left: 1rem;
+  &:hover {
+    background: #d4941b;
+    transform: translateY(-4px) scale(1.1);
+    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.6);
   }
 
-  .itinerary-detail-back-btn {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
+  &:active {
+    transform: translateY(-2px) scale(1.05);
   }
 
+  @include tablet {
+    bottom: $spacing-xl;
+    right: $spacing-lg;
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  @include desktop {
+    right: $spacing-xl;
+  }
+}
+
+// ===================================
+// 特殊區塊樣式
+// ===================================
+
+// 封面區塊
+.cover-section {
+  .itinerary-detail-image-container {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 70%, rgba(56, 178, 172, 0.1));
+      pointer-events: none;
+    }
+  }
+}
+
+// 航班資訊區塊
+.flight-section {
+  .itinerary-detail-image-container {
+    border-left: 4px solid $accent-color-1;
+  }
+}
+
+// 必帶物品區塊
+.packing-section {
+  .itinerary-detail-image-container {
+    border-left: 4px solid $accent-color-2;
+  }
+}
+
+// 地圖區塊
+.map-section {
+  .itinerary-detail-image-container {
+    border-left: 4px solid $primary-color;
+  }
+}
+
+// 總覽區塊
+.overview-section {
+  .itinerary-detail-image-container {
+    border-left: 4px solid $timeline-recent;
+  }
+}
+
+// 注意事項區塊
+.notice-section {
+  .itinerary-detail-iframe-container {
+    border: 2px solid $timeline-old;
+  }
+}
+
+// 每日行程區塊
+.itinerary-detail-daily-section {
+  .itinerary-detail-image-container {
+    border-left: 4px solid $city-gradient-start;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: $spacing-sm;
+      left: $spacing-sm;
+      background: $city-gradient-start;
+      color: $text-white;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $border-radius-sm;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+}
+
+// ===================================
+// 響應式調整
+// ===================================
+
+// 手機版特殊處理
+@include mobile-only {
   .itinerary-detail-floating-nav {
-    right: 1rem;
-  }
-
-  .itinerary-detail-nav-toggle {
-    width: 45px;
-    height: 45px;
+    right: $spacing-sm;
   }
 
   .itinerary-detail-nav-menu {
-    padding: 1.2rem;
     min-width: 180px;
+    padding: $spacing-sm;
+    margin-bottom: $spacing-sm;
+
+    &::after {
+      right: 16px;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid $bg-card;
+    }
   }
 
-  .itinerary-detail-schedule-content {
-    padding: 1rem;
+  .itinerary-detail-nav-toggle {
+    width: 44px;
+    height: 44px;
   }
 
-  .itinerary-detail-section-container {
-    padding: 1rem;
+  .itinerary-detail-nav-icon {
+    font-size: 18px;
   }
 
   .itinerary-detail-back-to-top {
-    right: 1rem;
-    bottom: 1rem;
-    width: 45px;
-    height: 45px;
-    font-size: 1.3rem;
+    bottom: $spacing-md;
+    right: $spacing-sm;
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
   }
 
   .itinerary-detail-title {
-    font-size: 2rem;
+    font-size: 24px;
   }
 
-  .itinerary-detail-iframe {
-    min-height: 400px;
+  .itinerary-detail-iframe-container {
+    min-height: 500px;
   }
 }
 
-@media (max-width: 480px) {
-  .itinerary-detail-schedule-section {
-    margin-bottom: 1rem;
+// 大桌面版優化
+@include large-desktop {
+  .itinerary-detail-floating-nav {
+    right: calc((100vw - 1400px) / 2 + #{$spacing-xl});
   }
 
-  .itinerary-detail-title {
-    font-size: 1.8rem;
-  }
-
-  .itinerary-detail-iframe {
-    min-height: 300px;
+  .itinerary-detail-back-to-top {
+    right: calc((100vw - 1400px) / 2 + #{$spacing-xl});
   }
 }
 </style>

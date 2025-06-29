@@ -1,19 +1,23 @@
 <template>
-  <div class="foodwheel-page">
-    <div class="foodwheel-container">
-      <!-- 麵包屑 -->
-      <div class="nav-area">
-        <BreadcrumbNav />
-      </div>
-      <!-- 遊戲區域 -->
-      <h1>美食轉輪</h1>
+  <div class="foodwheel-container">
+    <!-- 麵包屑 -->
+    <div class="nav-area">
+      <BreadcrumbNav />
+    </div>
+    <!-- 遊戲區域 -->
+    <div class="game-wrapper">
+      <div class="game-title">美食轉輪</div>
       <div class="game-content">
         <div class="game-area">
           <div class="wheel-wrapper">
             <div class="wheel-pointer"></div>
             <div class="wheel" ref="wheelRef">
-              <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item"
-                :style="getWheelItemStyle(index)">
+              <div
+                v-for="(item, index) in wheelItems"
+                :key="index"
+                class="wheel-item"
+                :style="getWheelItemStyle(index)"
+              >
                 <span>{{ item }}</span>
               </div>
               <div class="wheel-center"></div>
@@ -29,7 +33,12 @@
           <h2>設定選項</h2>
           <div class="input-group">
             <label>新增美食類型</label>
-            <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem" />
+            <input
+              type="text"
+              v-model="newItem"
+              placeholder="例如：北歐料理、地中海美食"
+              @keyup.enter="addItem"
+            />
             <button class="add-button" @click="addItem">新增項目</button>
           </div>
           <div class="items-list">
@@ -194,134 +203,203 @@ const updateWheel = (): void => {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:color';
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
-.foodwheel-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 20px;
-}
-
+// ===================================
+// 主容器
+// ===================================
 .foodwheel-container {
-  margin: 0 auto;
-  padding: 50px;
-  max-width: 1100px;
-  width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow:
-    0 25px 50px rgba($deep-blue, 0.15),
-    0 10px 25px rgba($teal-green, 0.1);
+  min-height: 100vh;
+  background: $bg-primary;
+  // padding-top: $header-height;
+  // padding: $spacing-xl $spacing-md;
 
-  backdrop-filter: blur(20px);
+  // @include tablet {
+  //   padding-top: calc(#{$header-height} + #{$spacing-lg});
+  //   padding-left: $spacing-lg;
+  //   padding-right: $spacing-lg;
+  // }
+
+  // @include desktop {
+  //   padding-left: $spacing-xl;
+  //   padding-right: $spacing-xl;
+  // }
 }
+
+.game-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  border: 1px solid $border-light;
+  border-radius: $border-radius-xl;
+  background: $bg-card;
+  box-shadow: 0 25px 50px $shadow-strong;
+  // display: flex;
+
+  @include tablet {
+    padding: $spacing-xl;
+  }
+
+  @include desktop {
+    max-width: 1200px;
+  }
+
+  @include large-desktop {
+    max-width: 1300px;
+  }
+}
+
+// ===================================
+// 遊戲內容布局
+// ===================================
 
 .game-content {
   display: flex;
-  margin-top: 12px;
-  border-radius: 20px;
-  background: #2e4057;
+  flex-direction: column;
+  margin-top: $spacing-md;
+  border-radius: $border-radius-lg;
+  background: linear-gradient(135deg, $accent-color-1, $accent-color-2);
+  overflow: hidden;
+
+  @include desktop {
+    flex-direction: row;
+  }
 }
 
 .game-area {
   display: flex;
   align-items: center;
-  flex: 1.2;
   flex-direction: column;
   justify-content: center;
-  margin-right: 40px;
-  padding: 40px;
+  padding: $spacing-xl;
   width: 100%;
-  // background: #2e4057;
-  // border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(46, 64, 87, 0.3);
+
+  @include tablet {
+    padding: $spacing-2xl;
+  }
+
+  // @include desktop {
+  //   flex: 0 0 auto; // 不縮放，固定寬度
+  //   width: 650px; // 給轉輪固定寬度
+  // }
 }
 
 .control-panel {
   overflow: hidden;
-  flex: 0.8;
-  padding: 35px;
+  padding: $spacing-xl;
   min-width: 330px;
-  max-width: 400px;
-  border: 1px solid rgba(69, 105, 144, 0.2);
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(69, 105, 144, 0.08), rgba(73, 190, 170, 0.08));
-
+  border-radius: 0 $border-radius-md $border-radius-md 0;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
+
+  @include tablet {
+    padding: $spacing-2xl;
+  }
+
+  @include desktop {
+    flex: 1; // 佔滿剩餘空間
+    // min-width: 400px;
+    padding: $spacing-lg $spacing-xl;
+  }
 }
 
-h1 {
-  position: relative;
-  margin-bottom: 45px;
-  background: color.adjust($coral-red, $lightness: -5%);
-  -webkit-background-clip: text;
-  background-clip: text;
+// ===================================
+// 標題樣式
+// ===================================
+.game-title {
   text-align: center;
-  letter-spacing: 3px;
+  font-size: 28px;
   font-weight: 600;
-  font-size: 36px;
+  color: $accent-color-2; // 保留橘色主題
+  // margin-bottom: $spacing-xl;
 
-  -webkit-text-fill-color: transparent;
-
-  &::after {
-    position: absolute;
-    top: 50%;
-    right: -45px;
-    content: '🎯';
-    font-size: 28px;
-    transform: translateY(-50%);
-    animation: sway 4s ease-in-out infinite;
+  @include tablet {
+    font-size: 32px;
   }
 }
 
 @keyframes sway {
-
   0%,
   100% {
     transform: translateY(-50%) rotate(-5deg);
   }
-
   50% {
     transform: translateY(-55%) rotate(5deg);
   }
 }
 
 h2 {
-  margin-bottom: 28px;
-  color: $deep-blue;
+  margin-bottom: $spacing-lg;
+  color: $text-primary;
   letter-spacing: 1px;
   font-weight: 500;
   font-size: 22px;
+
+  @include tablet {
+    font-size: 24px;
+  }
 }
 
+// ===================================
+// 轉輪樣式 (保持鮮豔色彩)
+// ===================================
 .wheel-wrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 45px;
-  width: 400px;
-  height: 400px;
-  filter: drop-shadow(0 20px 40px rgba($deep-blue, 0.2));
+  margin: 0 auto $spacing-2xl;
+  width: 240px;
+  height: 240px;
+
+  // 375px 以上手機
+  @media (min-width: 375px) {
+    width: 280px;
+    height: 280px;
+  }
+
+  // 480px 以上手機
+  @media (min-width: 480px) {
+    width: 320px;
+    height: 320px;
+  }
+
+  @include tablet {
+    width: 360px;
+    height: 360px;
+    margin-top: $spacing-xl;
+  }
+
+  @include desktop {
+    width: 400px;
+    height: 400px;
+  }
 }
 
 .wheel {
   position: relative;
+  right: 6px;
   overflow: hidden;
   width: 100%;
   height: 100%;
-  border: 6px solid $deep-blue;
+  border: 4px solid $primary-color;
   border-radius: 50%;
-  background: #ffffff;
+  background: $bg-card;
   box-shadow:
-    0 0 0 8px rgba(255, 255, 255, 0.9),
-    0 0 0 16px rgba($teal-green, 0.2),
-    inset 0 0 40px rgba($deep-blue, 0.05);
+    0 0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 0 12px rgba(56, 178, 172, 0.2),
+    inset 0 0 30px rgba(74, 85, 104, 0.05);
   transform: rotate(0deg);
+
+  @include tablet {
+    border: 6px solid $primary-color;
+    box-shadow:
+      0 0 0 8px rgba(255, 255, 255, 0.9),
+      0 0 0 16px rgba(56, 178, 172, 0.2),
+      inset 0 0 40px rgba(74, 85, 104, 0.05);
+  }
 }
 
 .wheel-center {
@@ -329,20 +407,32 @@ h2 {
   top: 50%;
   left: 50%;
   z-index: 10;
-  width: 30px;
-  height: 30px;
-  border: 4px solid #ffffff;
+  width: 20px;
+  height: 20px;
+  border: 3px solid $bg-card;
   border-radius: 50%;
-  background: $coral-red;
-  box-shadow: 0 6px 20px rgba($coral-red, 0.4);
+  background: $accent-color-2;
+  box-shadow: 0 4px 15px rgba(230, 168, 107, 0.4);
   transform: translate(-50%, -50%);
+
+  @media (min-width: 375px) {
+    width: 24px;
+    height: 24px;
+  }
+
+  @include tablet {
+    width: 30px;
+    height: 30px;
+    border: 4px solid $bg-card;
+    box-shadow: 0 6px 20px rgba(230, 168, 107, 0.4);
+  }
 }
 
 .wheel-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $deep-blue;
+  color: $text-primary;
   font-weight: 500;
   font-size: 16px;
 
@@ -350,72 +440,145 @@ h2 {
     position: absolute;
     top: var(--text-y);
     left: var(--text-x);
-    width: 100px;
-    color: $deep-blue;
+    width: 65px;
+    color: $text-primary;
     text-align: center;
     text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
     letter-spacing: 0.5px;
     font-weight: 600;
-    font-size: 16px;
-    line-height: 1.4;
+    font-size: 11px;
+    line-height: 1.3;
     transform: translate(-50%, -50%) rotate(var(--text-rotation));
+
+    @media (min-width: 375px) {
+      width: 75px;
+      font-size: 12px;
+    }
+
+    @media (min-width: 480px) {
+      width: 85px;
+      font-size: 13px;
+    }
+
+    @include tablet {
+      width: 95px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    @include desktop {
+      width: 100px;
+      font-size: 16px;
+    }
   }
 }
 
 .wheel-pointer {
   position: absolute;
-  top: -28px;
+  top: -18px;
   left: 50%;
   z-index: 15;
   width: 0;
   height: 0;
-  border-top: 40px solid $coral-red;
-  border-right: 20px solid transparent;
-  border-left: 20px solid transparent;
-  filter: drop-shadow(0 4px 10px rgba($coral-red, 0.5));
+  border-top: 24px solid $accent-color-2;
+  border-right: 12px solid transparent;
+  border-left: 12px solid transparent;
+  filter: drop-shadow(0 3px 8px rgba(230, 168, 107, 0.5));
   transform: translateX(-50%);
+
+  @media (min-width: 375px) {
+    top: -20px;
+    border-top: 28px solid $accent-color-2;
+    border-right: 14px solid transparent;
+    border-left: 14px solid transparent;
+  }
+
+  @media (min-width: 480px) {
+    top: -22px;
+    border-top: 32px solid $accent-color-2;
+    border-right: 16px solid transparent;
+    border-left: 16px solid transparent;
+  }
+
+  @include tablet {
+    top: -25px;
+    border-top: 36px solid $accent-color-2;
+    border-right: 18px solid transparent;
+    border-left: 18px solid transparent;
+  }
+
+  @include desktop {
+    top: -28px;
+    border-top: 40px solid $accent-color-2;
+    border-right: 20px solid transparent;
+    border-left: 20px solid transparent;
+  }
 
   &::after {
     position: absolute;
-    top: -35px;
+    top: -20px;
     left: 50%;
     content: '⭐';
-    font-size: 18px;
+    font-size: 14px;
     transform: translateX(-50%);
     animation: pulse 2s ease-in-out infinite;
+
+    @media (min-width: 375px) {
+      top: -22px;
+      font-size: 15px;
+    }
+
+    @media (min-width: 480px) {
+      top: -25px;
+      font-size: 16px;
+    }
+
+    @include tablet {
+      top: -30px;
+      font-size: 17px;
+    }
+
+    @include desktop {
+      top: -35px;
+      font-size: 18px;
+    }
   }
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }
-
   50% {
     opacity: 0.7;
     transform: translateX(-50%) scale(1.1);
   }
 }
 
+// ===================================
+// 按鈕樣式
+// ===================================
 .spin-button {
   position: relative;
   overflow: hidden;
-  padding: 20px 50px;
+  padding: $spacing-lg $spacing-2xl;
   border: none;
-  border-radius: 12px;
-  background: $coral-red;
-  box-shadow:
-    0 12px 35px rgba($coral-red, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  color: #ffffff;
+  border-radius: $border-radius-md;
+  background: $accent-color-2;
+  box-shadow: 0 12px 35px rgba(230, 168, 107, 0.3);
+  color: $text-white;
   letter-spacing: 1px;
   font-weight: 600;
   font-size: 18px;
   cursor: pointer;
   transition: all 0.3s ease;
+
+  @include mobile-only {
+    padding: $spacing-md $spacing-xl;
+    font-size: 16px;
+  }
 
   &::before {
     position: absolute;
@@ -433,10 +596,8 @@ h2 {
   }
 
   &:hover:not(:disabled) {
-    background: color.adjust($coral-red, $lightness: -5%);
-    box-shadow:
-      0 18px 40px rgba($coral-red, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    background: #d4941b;
+    box-shadow: 0 18px 40px rgba(230, 168, 107, 0.4);
     transform: translateY(-3px);
   }
 
@@ -445,30 +606,37 @@ h2 {
   }
 
   &:disabled {
-    background: #a8a8a8;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    color: #ffffff;
+    background: $state-muted;
+    box-shadow: 0 6px 15px $shadow-light;
+    color: $text-white;
     cursor: not-allowed;
     transform: none;
   }
 }
 
+// ===================================
+// 結果顯示
+// ===================================
 .result-display {
-  margin-top: 35px;
-  padding: 20px 35px;
+  margin-top: $spacing-xl;
+  padding: $spacing-lg $spacing-xl;
   min-height: 40px;
-  border: 2px solid rgba($teal-green, 0.3);
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba($mint-green, 0.15), rgba($teal-green, 0.15));
-  box-shadow: 0 6px 20px rgba($teal-green, 0.2);
-  color: $deep-blue;
+  border: 2px solid rgba(56, 178, 172, 0.3);
+  border-radius: $border-radius-md;
+  background: linear-gradient(135deg, rgba(56, 178, 172, 0.15), rgba(230, 168, 107, 0.15));
+  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.2);
+  color: $text-primary;
   text-align: center;
   letter-spacing: 1px;
   font-weight: 600;
   font-size: 24px;
   animation: fadeIn 0.6s ease-out;
-
   backdrop-filter: blur(10px);
+
+  @include mobile-only {
+    font-size: 20px;
+    padding: $spacing-md $spacing-lg;
+  }
 }
 
 @keyframes fadeIn {
@@ -476,78 +644,118 @@ h2 {
     opacity: 0;
     transform: translateY(-15px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+// ===================================
+// 控制面板
+// ===================================
 .input-group {
-  margin-bottom: 28px;
+  margin-bottom: $spacing-lg;
+
+  @include desktop {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
 
   label {
     display: block;
-    margin-bottom: 12px;
-    color: #456990;
+    margin-bottom: $spacing-md;
+    color: $text-secondary;
     letter-spacing: 0.5px;
     font-weight: 500;
     font-size: 16px;
+
+    @include desktop {
+      margin-bottom: $spacing-sm;
+    }
+  }
+
+  .input-row {
+    @include desktop {
+      display: flex;
+      gap: $spacing-md;
+      align-items: flex-end;
+    }
   }
 
   input {
     box-sizing: border-box;
-    margin-bottom: 18px;
-    padding: 16px 20px;
-    width: calc(100% - 4px);
-    border: 2px solid rgba(69, 105, 144, 0.3);
-    border-radius: 10px;
+    margin-bottom: $spacing-md;
+    padding: $spacing-md $spacing-lg;
+    width: 100%;
+    border: 2px solid $border-primary;
+    border-radius: $border-radius-sm;
     background: rgba(255, 255, 255, 0.9);
-    color: #456990;
+    color: $text-secondary;
     font-weight: 400;
     font-size: 15px;
     transition: all 0.3s ease;
-
     backdrop-filter: blur(5px);
+
+    @include desktop {
+      flex: 1;
+      margin-bottom: 0;
+    }
 
     &:focus {
       outline: none;
-      border-color: #eeb868;
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow:
-        0 0 0 3px rgba(238, 184, 104, 0.15),
-        0 4px 15px rgba(238, 184, 104, 0.2);
+      border-color: $accent-color-2;
+      background: $bg-card;
+      box-shadow: 0 0 0 3px rgba(230, 168, 107, 0.15);
     }
 
     &::placeholder {
-      color: rgba(69, 105, 144, 0.6);
+      color: $text-light;
+    }
+  }
+
+  .add-button {
+    @include desktop {
+      flex-shrink: 0;
+      width: auto;
+      min-width: 120px;
     }
   }
 }
 
 .items-list {
   overflow-y: auto;
-  margin-top: 25px;
-  padding-right: 8px;
+  margin-top: $spacing-lg;
+  padding-right: $spacing-sm;
   max-height: 320px;
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $spacing-md;
+    max-height: 280px;
+  }
 }
 
 .list-item {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
-  padding: 16px 20px;
-  border: 2px solid rgba(238, 184, 104, 0.2);
-  border-radius: 12px;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  border: 2px solid rgba(230, 168, 107, 0.2);
+  border-radius: $border-radius-md;
   background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
-
   backdrop-filter: blur(5px);
 
+  @include desktop {
+    margin-bottom: 0; // Grid 佈局不需要 margin
+  }
+
   &:hover {
-    border-color: rgba(238, 184, 104, 0.4);
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 25px rgba(238, 184, 104, 0.2);
+    border-color: rgba(230, 168, 107, 0.4);
+    background: $bg-card;
+    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.2);
     transform: translateY(-2px);
   }
 }
@@ -555,32 +763,31 @@ h2 {
 .item-input {
   flex: 1;
   box-sizing: border-box;
-  margin-right: 16px;
-  padding: 12px 16px;
+  margin-right: $spacing-md;
+  padding: $spacing-sm $spacing-md;
   min-width: 0;
-  border: 1px solid rgba(69, 105, 144, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #456990;
+  border: 1px solid $border-primary;
+  border-radius: $border-radius-sm;
+  background: $bg-card;
+  color: $text-secondary;
   font-weight: 400;
   font-size: 15px;
   transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #eeb868;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 0 0 2px rgba(238, 184, 104, 0.15);
+    border-color: $accent-color-2;
+    box-shadow: 0 0 0 2px rgba(230, 168, 107, 0.15);
   }
 }
 
 .delete-button {
   flex-shrink: 0;
-  padding: 10px 16px;
+  padding: $spacing-sm $spacing-md;
   border: none;
-  border-radius: 8px;
+  border-radius: $border-radius-sm;
   background: #ef767a;
-  color: #ffffff;
+  color: $text-white;
   white-space: nowrap;
   font-weight: 500;
   font-size: 14px;
@@ -595,37 +802,36 @@ h2 {
 }
 
 .add-button {
-  padding: 16px 32px;
+  padding: $spacing-md $spacing-xl;
   width: 100%;
-  border: 2px solid rgba(238, 184, 104, 0.4);
-  border-radius: 10px;
-  background: rgba(238, 184, 104, 0.15);
-  color: #456990;
+  border: 2px solid rgba(230, 168, 107, 0.4);
+  border-radius: $border-radius-sm;
+  background: rgba(230, 168, 107, 0.15);
+  color: $text-secondary;
   letter-spacing: 0.5px;
   font-weight: 500;
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-
   backdrop-filter: blur(5px);
 
   &:hover {
-    border-color: rgba(238, 184, 104, 0.6);
-    background: rgba(238, 184, 104, 0.25);
-    box-shadow: 0 8px 25px rgba(238, 184, 104, 0.25);
+    border-color: rgba(230, 168, 107, 0.6);
+    background: rgba(230, 168, 107, 0.25);
+    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.25);
     transform: translateY(-2px);
   }
 }
 
 .update-button {
-  margin-top: 28px;
-  padding: 18px 36px;
+  margin-top: $spacing-lg;
+  padding: $spacing-md $spacing-xl;
   width: 100%;
   border: none;
-  border-radius: 12px;
-  background: #456990;
-  box-shadow: 0 10px 30px rgba(69, 105, 144, 0.3);
-  color: #ffffff;
+  border-radius: $border-radius-md;
+  background: $primary-color;
+  box-shadow: 0 10px 30px rgba(74, 85, 104, 0.3);
+  color: $text-white;
   letter-spacing: 0.5px;
   font-weight: 600;
   font-size: 17px;
@@ -633,309 +839,74 @@ h2 {
   transition: all 0.3s ease;
 
   &:hover {
-    background: #3a5a7a;
-    box-shadow: 0 15px 35px rgba(69, 105, 144, 0.4);
+    background: #2d3748;
+    box-shadow: 0 15px 35px rgba(74, 85, 104, 0.4);
     transform: translateY(-3px);
   }
 }
 
-/* 響應式設計 */
-@media (max-width: 1200px) {
+// ===================================
+// 響應式調整
+// ===================================
+
+// 手機版
+@include mobile-only {
   .foodwheel-container {
-    padding: 40px;
+    padding: $spacing-md;
   }
 
-  .wheel-wrapper {
-    width: 360px;
-    height: 360px;
+  .game-wrapper {
+    padding: $spacing-lg;
   }
-}
 
-@media (max-width: 992px) {
-  .foodwheel-container {
-    align-items: center;
+  .game-content {
     flex-direction: column;
-    padding: 30px;
-    max-width: 600px;
   }
 
   .game-area {
-    align-items: center;
-    width: 100%;
+    margin-right: 0;
+    margin-bottom: $spacing-lg;
   }
 
   .control-panel {
     min-width: auto;
     max-width: none;
-    max-width: 500px;
-    width: 100%;
+    padding: $spacing-lg;
   }
 
   .wheel-wrapper {
-    margin: 0 auto 35px;
-    width: 340px;
-    height: 340px;
+    margin-bottom: $spacing-xl;
   }
 
   h1 {
-    margin-bottom: 35px;
-    text-align: center;
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 768px) {
-  .foodwheel-page {
-    padding: 15px;
-  }
-
-  .foodwheel-container {
-    align-items: center;
-    padding: 25px;
-  }
-
-  .game-area {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .wheel-wrapper {
-    margin: 0 auto 35px;
-    width: 300px;
-    height: 300px;
-  }
-
-  .control-panel {
-    padding: 25px;
-    max-width: 400px;
-  }
-
-  h1 {
-    margin-bottom: 30px;
-    text-align: center;
-    letter-spacing: 2px;
-    font-size: 26px;
-
-    &::after {
-      right: -35px;
-      font-size: 22px;
-    }
+    font-size: 24px;
+    margin-bottom: $spacing-xl;
   }
 
   h2 {
-    margin-bottom: 24px;
     font-size: 18px;
-  }
-
-  .spin-button {
-    padding: 16px 35px;
-    font-size: 16px;
-  }
-
-  .result-display {
-    margin-top: 30px;
-    padding: 16px 25px;
-    font-size: 20px;
+    margin-bottom: $spacing-md;
   }
 }
 
-@media (max-width: 480px) {
-  .foodwheel-page {
-    padding: 10px;
+// 平板版
+@include tablet-only {
+  .game-wrapper {
+    max-width: 800px;
   }
 
-  .foodwheel-container {
-    align-items: center;
-    padding: 20px;
-    border-radius: 12px;
+  .game-content {
+    flex-direction: column;
   }
 
   .game-area {
+    margin-right: 0;
+    margin-bottom: $spacing-lg;
+  }
+
+  .control-panel {
     width: 100%;
-  }
-
-  .wheel-wrapper {
-    margin: 0 auto 30px;
-    width: 260px;
-    height: 260px;
-  }
-
-  .wheel {
-    border: 3px solid $deep-blue;
-    box-shadow:
-      0 0 0 6px rgba(255, 255, 255, 0.8),
-      0 0 0 12px rgba($teal-green, 0.08),
-      inset 0 0 30px rgba($deep-blue, 0.03);
-  }
-
-  .wheel-center {
-    width: 20px;
-    height: 20px;
-    border: 3px solid #ffffff;
-  }
-
-  .wheel-pointer {
-    top: -18px;
-    border-top: 30px solid $coral-red;
-    border-right: 15px solid transparent;
-    border-left: 15px solid transparent;
-  }
-
-  .wheel-item span {
-    width: 80px;
-    font-size: 13px;
-  }
-
-  .control-panel {
-    padding: 20px;
-    max-width: 350px;
-    width: 100%;
-    border-radius: 10px;
-  }
-
-  h1 {
-    margin-bottom: 25px;
-    text-align: center;
-    letter-spacing: 1.5px;
-    font-size: 22px;
-
-    &::after {
-      right: -30px;
-      font-size: 18px;
-    }
-  }
-
-  h2 {
-    margin-bottom: 20px;
-    font-size: 16px;
-  }
-
-  .spin-button {
-    padding: 14px 30px;
-    border-radius: 6px;
-    font-size: 15px;
-  }
-
-  .result-display {
-    margin-top: 25px;
-    padding: 14px 20px;
-    border-radius: 10px;
-    font-size: 18px;
-  }
-
-  .input-group {
-    label {
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-
-    input {
-      margin-bottom: 15px;
-      padding: 12px 15px;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-  }
-
-  .list-item {
-    margin-bottom: 12px;
-    padding: 12px 15px;
-    border-radius: 8px;
-  }
-
-  .item-input {
-    padding: 8px 12px;
-    border-radius: 5px;
-    font-size: 13px;
-  }
-
-  .delete-button {
-    padding: 6px 12px;
-    border-radius: 5px;
-    font-size: 12px;
-  }
-
-  .add-button {
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-
-  .update-button {
-    margin-top: 24px;
-    padding: 14px 25px;
-    border-radius: 6px;
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 375px) {
-  .foodwheel-container {
-    align-items: center;
-    padding: 15px;
-  }
-
-  .wheel-wrapper {
-    margin: 0 auto 25px;
-    width: 240px;
-    height: 240px;
-  }
-
-  .wheel-item span {
-    width: 70px;
-    font-size: 12px;
-  }
-
-  .control-panel {
-    max-width: 320px;
-  }
-
-  h1 {
-    margin-bottom: 20px;
-    text-align: center;
-    font-size: 20px;
-
-    &::after {
-      right: -25px;
-      font-size: 16px;
-    }
-  }
-
-  .spin-button {
-    padding: 12px 25px;
-    font-size: 14px;
-  }
-
-  .result-display {
-    padding: 12px 18px;
-    font-size: 16px;
-  }
-}
-
-@media (max-width: 320px) {
-  .foodwheel-container {
-    align-items: center;
-  }
-
-  .wheel-wrapper {
-    margin: 0 auto 20px;
-    width: 220px;
-    height: 220px;
-  }
-
-  .wheel-item span {
-    width: 65px;
-    font-size: 11px;
-  }
-
-  .control-panel {
-    padding: 15px;
-    max-width: 280px;
-  }
-
-  h1 {
-    text-align: center;
-    font-size: 18px;
+    border-radius: 0 0 $border-radius-md $border-radius-md;
   }
 }
 </style>

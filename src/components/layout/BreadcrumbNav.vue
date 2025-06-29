@@ -69,228 +69,190 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
+// ===================================
+// 麵包屑導航
+// ===================================
 .breadcrumb-nav {
-  margin-bottom: $spacing-lg;
-  padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid $border-light;
-  background: $bg-card;
-  box-shadow: 0 2px 4px rgba($primary-color, 0.05);
+  padding: $spacing-sm 0;
+
+  @include tablet {
+    padding: $spacing-md 0;
+  }
 }
 
 .breadcrumb-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   margin: 0 auto;
-  max-width: 1200px;
-  font-size: 14px;
-
+  padding: 0 $spacing-md;
+  @include flex-center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
   gap: $spacing-xs;
+
+  @include tablet {
+    padding: 0 $spacing-lg;
+    gap: $spacing-sm;
+  }
+
+  @include desktop {
+    padding: 0 $spacing-xl;
+  }
 }
 
-/* 首頁鏈接 */
+// ===================================
+// 麵包屑項目
+// ===================================
+
+// 首頁鏈接
 .breadcrumb-home {
-  display: flex;
-  align-items: center;
-  padding: $spacing-xs $spacing-sm;
-  border-radius: $radius-sm;
+  @include flex-center;
+  gap: $spacing-xs;
   color: $accent-color-1;
   text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-
-  gap: $spacing-xs;
+  font-weight: 500;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  transition: all 0.2s ease;
 
   &:hover {
-    background: rgba($accent-color-1, 0.1);
-    color: darken($accent-color-1, 10%);
+    background: rgba(56, 178, 172, 0.1);
+    color: $accent-color-1;
     transform: translateY(-1px);
   }
 
-  .breadcrumb-icon {
-    font-size: 16px;
-  }
-
-  .breadcrumb-text {
-    font-size: 14px;
+  @include tablet {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
   }
 }
 
-/* 分隔符 */
-.breadcrumb-separator {
-  margin: 0 $spacing-xs;
-  color: $text-muted;
-  font-weight: 400;
-  font-size: 16px;
-
-  user-select: none;
-}
-
-/* 麵包屑鏈接 */
+// 一般鏈接
 .breadcrumb-link {
-  display: flex;
-  align-items: center;
-  padding: $spacing-xs $spacing-sm;
-  border-radius: $radius-sm;
+  @include flex-center;
+  gap: $spacing-xs;
   color: $text-secondary;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
-
-  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  transition: all 0.2s ease;
 
   &:hover {
-    background: rgba($primary-color, 0.08);
+    background: rgba(74, 85, 104, 0.1);
     color: $primary-color;
     transform: translateY(-1px);
   }
 
-  .breadcrumb-icon {
-    font-size: 14px;
-    opacity: 0.8;
+  @include tablet {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
   }
 }
 
-/* 純文字項目 */
-.breadcrumb-item {
-  display: flex;
-  align-items: center;
-  padding: $spacing-xs $spacing-sm;
-  color: $text-muted;
-  font-weight: 500;
-
-  gap: $spacing-xs;
-
-  .breadcrumb-icon {
-    font-size: 14px;
-    opacity: 0.7;
-  }
-}
-
-/* 當前頁面項目 */
+// 當前頁面
 .breadcrumb-current {
-  position: relative;
-  display: flex;
-  align-items: center;
-  padding: $spacing-xs $spacing-sm;
-  border-radius: $radius-sm;
-  background: rgba($primary-color, 0.08);
-  color: $primary-color;
-  font-weight: 600;
-
+  @include flex-center;
   gap: $spacing-xs;
+  color: $text-primary;
+  font-weight: 600;
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(230, 168, 107, 0.1);
+  border-radius: $border-radius-sm;
 
-  &::before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
-    background: $accent-color-2;
-    content: '';
-  }
-
-  .breadcrumb-icon {
-    color: $accent-color-2;
-    font-size: 14px;
+  @include tablet {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
   }
 }
 
-/* 響應式設計 */
-@media (max-width: $breakpoint-mobile) {
-  .breadcrumb-nav {
-    margin-bottom: $spacing-md;
-    padding: $spacing-sm $spacing-md;
-  }
+// 純文字項目
+.breadcrumb-item {
+  @include flex-center;
+  gap: $spacing-xs;
+  color: $text-muted;
+  padding: $spacing-xs $spacing-sm;
 
-  .breadcrumb-container {
-    font-size: 13px;
-
-    gap: $spacing-xs;
-  }
-
-  .breadcrumb-home,
-  .breadcrumb-link,
-  .breadcrumb-item,
-  .breadcrumb-current {
-    padding: $spacing-xs;
-  }
-
-  .breadcrumb-home .breadcrumb-icon {
-    font-size: 14px;
-  }
-
-  .breadcrumb-home .breadcrumb-text,
-  .breadcrumb-link,
-  .breadcrumb-item,
-  .breadcrumb-current {
-    font-size: 13px;
-  }
-
-  .breadcrumb-separator {
-    margin: 0 2px;
-    font-size: 14px;
-  }
-
-  /* 超長路徑處理 */
-  .breadcrumb-container {
-    overflow-x: auto;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
+  @include tablet {
+    padding: $spacing-sm;
+    gap: $spacing-sm;
   }
 }
 
-@media (max-width: 480px) {
+// ===================================
+// 麵包屑元素
+// ===================================
+
+// 圖標
+.breadcrumb-icon {
+  font-size: 16px;
+
+  @include tablet {
+    font-size: 18px;
+  }
+}
+
+// 文字
+.breadcrumb-text {
+  font-size: 14px;
+
+  @include tablet {
+    font-size: 15px;
+  }
+
+  @include desktop {
+    font-size: 16px;
+  }
+}
+
+// 分隔符號
+.breadcrumb-separator {
+  color: $text-light;
+  font-weight: 300;
+  font-size: 14px;
+  margin: 0 $spacing-xs;
+  user-select: none;
+
+  @include tablet {
+    font-size: 16px;
+    margin: 0 $spacing-sm;
+  }
+}
+
+// ===================================
+// 響應式調整
+// ===================================
+
+// 手機版特殊處理
+@include mobile-only {
   .breadcrumb-nav {
-    padding: $spacing-xs $spacing-sm;
+    position: relative; // 手機版不需要 sticky
+    top: auto;
   }
 
   .breadcrumb-container {
-    font-size: 12px;
+    padding: 0 $spacing-sm;
+    gap: 2px;
+  }
+
+  .breadcrumb-text {
+    display: none; // 手機版只顯示圖標
   }
 
   .breadcrumb-home .breadcrumb-text {
-    /* 極小螢幕隱藏文字，只顯示圖標 */
-    display: none;
+    display: inline; // 首頁文字保持顯示
   }
 
-  .breadcrumb-link,
-  .breadcrumb-item,
-  .breadcrumb-current {
-    overflow: hidden;
-    max-width: 80px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .breadcrumb-separator {
+    margin: 0 4px;
     font-size: 12px;
   }
 }
 
-/* 深色模式支援（可選） */
-@media (prefers-color-scheme: dark) {
-  .breadcrumb-nav {
-    border-bottom-color: darken($border-light, 10%);
-    background: darken($bg-card, 5%);
+// 大桌面版優化
+@include large-desktop {
+  .breadcrumb-container {
+    max-width: 1400px;
   }
-}
-
-/* 自定義滾動條（手機版） */
-.breadcrumb-container::-webkit-scrollbar {
-  height: 2px;
-}
-
-.breadcrumb-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.breadcrumb-container::-webkit-scrollbar-thumb {
-  border-radius: 1px;
-  background: rgba($primary-color, 0.3);
 }
 </style>

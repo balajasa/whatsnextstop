@@ -9,7 +9,7 @@ import { ref, onMounted, nextTick, watch, readonly, computed } from 'vue'
 import * as d3 from 'd3'
 import _ from 'lodash'
 import type { Ref } from 'vue'
-import type { Transform, DragBounds, MapEvents, WorldMapProps } from '../types/ITravel'
+import type { Transform, DragBounds, MapEvents, WorldMapProps } from '../types/ITravelMap'
 import { getTravelsData } from '../../composables/usagi'
 import { countryTranslation } from '../../composables/countryTranslation'
 
@@ -372,7 +372,8 @@ const resetView = (): void => {
 // 新增更新地圖顏色的方法
 const updateMapColors = (): void => {
   if (g.value) {
-    g.value.selectAll('.country')
+    g.value
+      .selectAll('.country')
       .style('fill', function (d: any) {
         const countryName = d.properties.name || d.properties.NAME || 'unknown'
         return isCountryVisited(countryName) ? '#F0F8FF' : '#FFD700'
@@ -385,11 +386,15 @@ const updateMapColors = (): void => {
 }
 
 // 監聽旅遊資料變化，更新地圖顏色
-watch(visitedCountriesSet, () => {
-  if (worldData.value && g.value) {
-    updateMapColors()
-  }
-}, { deep: true })
+watch(
+  visitedCountriesSet,
+  () => {
+    if (worldData.value && g.value) {
+      updateMapColors()
+    }
+  },
+  { deep: true }
+)
 
 // 暴露方法給父組件
 defineExpose({
@@ -409,29 +414,218 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+// ===================================
+// 地圖 SVG 容器 (Mobile First)
+// ===================================
 .world-map-svg-container {
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background: #1B4F72; // 海洋顏色
+  background: $primary-color; // 海洋顏色改為主色調
+  border-radius: $border-radius-sm;
+
+  @include tablet {
+    border-radius: $border-radius-md;
+  }
+
+  @include desktop {
+    border-radius: $border-radius-lg;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .world-map-svg {
   display: block;
   margin: 0 auto;
+  max-width: 100%;
+  height: auto;
 }
 
+// ===================================
+// 國家樣式 (保留 D3.js 邏輯，只調整基礎樣式)
+// ===================================
 :deep(.country) {
   cursor: pointer;
-  transition: fill 0.3s ease;
+  transition:
+    fill 0.3s ease-in-out,
+    stroke-width 0.2s ease;
 
-  fill: #e6c619;
-  stroke: #ffffff;
-  stroke-width: 1;
+  // 基礎樣式 - JavaScript 會覆蓋 fill 屬性
+  stroke: $text-white;
+  stroke-width: 0.5;
 
+  @include tablet {
+    stroke-width: 0.8;
+  }
+
+  @include desktop {
+    stroke-width: 1;
+    transition:
+      fill 0.2s ease-in-out,
+      stroke-width 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  // Hover 效果增強
   &:hover {
-    fill: #FFA500;
+    stroke-width: 1.5;
+
+    @include tablet {
+      stroke-width: 2;
+    }
+
+    @include desktop {
+      stroke-width: 2.5;
+      transform: scale(1.001); // 微妙的放大效果
+      filter: brightness(1.05);
+    }
+  }
+
+  // 已訪問國家的特殊邊框
+  &[data-visited='true'] {
+    stroke: $accent-color-1;
+    stroke-width: 1;
+
+    @include tablet {
+      stroke-width: 1.2;
+    }
+
+    @include desktop {
+      stroke-width: 1.5;
+    }
+
+    &:hover {
+      stroke: $accent-color-2;
+      stroke-width: 2;
+
+      @include desktop {
+        stroke-width: 3;
+        filter: brightness(1.1);
+      }
+    }
+  }
+}
+
+// ===================================
+// 響應式優化
+// ===================================
+
+// 手機版優化
+@include mobile-only {
+  .world-map-svg-container {
+    background: $primary-color;
+    border-radius: $border-radius-sm;
+  }
+
+  :deep(.country) {
+    stroke-width: 0.3;
+
+    &:hover {
+      stroke-width: 1;
+    }
+
+    &[data-visited='true'] {
+      stroke-width: 0.8;
+
+      &:hover {
+        stroke-width: 1.5;
+      }
+    }
+  }
+}
+
+// 平板版優化
+@include tablet-only {
+  .world-map-svg-container {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// 桌面版增強效果
+@include desktop {
+  .world-map-svg-container {
+    background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 5%) 100%);
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      pointer-events: none;
+    }
+  }
+
+  :deep(.country) {
+    // 桌面版特殊效果
+    filter: brightness(1);
+
+    &:not([data-visited='true']) {
+      &:hover {
+        filter: brightness(1.08) saturate(1.1);
+      }
+    }
+  }
+}
+
+// 大桌面版特殊效果
+@include large-desktop {
+  .world-map-svg-container {
+    border-radius: $border-radius-xl;
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.1),
+      0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  :deep(.country) {
+    &:hover {
+      transition: all 0.15s ease-out;
+    }
+  }
+}
+
+// ===================================
+// 載入狀態和錯誤狀態樣式
+// ===================================
+.world-map-svg-container {
+  &.loading {
+    background: linear-gradient(135deg, $bg-primary, lighten($bg-primary, 3%));
+
+    &::after {
+      content: '載入地圖中...';
+      @include absolute-center;
+      color: $text-muted;
+      font-size: 14px;
+      font-weight: 500;
+
+      @include tablet {
+        font-size: 16px;
+      }
+    }
+  }
+
+  &.error {
+    background: lighten($timeline-recent, 45%);
+    border: 2px dashed lighten($timeline-recent, 20%);
+
+    &::after {
+      content: '地圖載入失敗';
+      @include absolute-center;
+      color: $timeline-recent;
+      font-size: 14px;
+      font-weight: 600;
+
+      @include tablet {
+        font-size: 16px;
+      }
+    }
   }
 }
 </style>

@@ -1,17 +1,25 @@
 <template>
   <aside class="sidebar" :class="sidebarClasses">
+    <!-- 關閉按鈕 -->
+    <button class="sidebar-close" @click="closeSidebar" type="button">
+      <!-- <span class="close-icon">×</span> -->
+    </button>
     <div class="sidebar-content">
       <ul class="sidebar-menu">
-        <!-- 首頁 - 始終顯示 -->
+        <!-- 首頁 -->
         <li>
-          <router-link to="/" class="sidebar-item home-item" :class="{ active: isActive('/') }"
-            @click="handleItemClick">
+          <router-link
+            to="/"
+            class="sidebar-item home-item"
+            :class="{ active: isActive('/') }"
+            @click="handleItemClick"
+          >
             <div class="sidebar-icon">🏠</div>
             <span class="sidebar-text">首頁</span>
           </router-link>
         </li>
 
-        <!-- 按分類顯示 - 只在展開時顯示 -->
+        <!-- 分類 -->
         <template v-for="category in sidebarCategory" :key="category">
           <li class="sidebar-category">
             <div class="category-title">
@@ -20,8 +28,12 @@
             </div>
           </li>
           <li v-for="item in getItemsByCategory(category)" :key="item.path">
-            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }"
-              @click="handleItemClick">
+            <router-link
+              :to="item.path"
+              class="sidebar-item category-item"
+              :class="{ active: isActive(item.path) }"
+              @click="handleItemClick"
+            >
               <div class="sidebar-icon">{{ item.icon }}</div>
               <span class="sidebar-text">{{ item.name }}</span>
             </router-link>
@@ -137,66 +149,151 @@ defineExpose({
 })
 </script>
 
+// Sidebar.vue
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
+// ===================================
+// 側邊欄主體
+// ===================================
 .sidebar {
-  position: fixed;
-  top: 65px; // Header height + border
-  bottom: 0;
-  left: 0;
-  z-index: 950;
-  overflow-y: auto;
-  padding: 32px 24px;
-  width: 250px;
-  height: 100vh;
-  border-right: 1px solid $border-primary;
+  @include sidebar-base;
+  width: $sidebar-width-mobile;
   background: $bg-sidebar;
-  transition: transform 0.3s ease;
-  transform: translateX(-100%);
+  padding-top: $header-height;
 
-  // 桌面版展開狀態
-  &.isOpen {
-    position: relative;
-    top: auto;
-    bottom: auto;
-    left: auto;
-    transform: translateX(0);
-
-    grid-row: 2;
+  @include desktop {
+    width: $sidebar-width-desktop;
+    background: $bg-sidebar-desktop;
+    backdrop-filter: blur(8px);
   }
 
-  // 手機版開啟狀態
+  // 展開狀態
+  &.isOpen {
+    transform: translateX(0);
+  }
+
+  // 手機版展開
   &.mobile-open {
     transform: translateX(0);
   }
 
-  // 手機版樣式調整
+  // 手機版樣式
   &.mobile-version {
-    top: 46px; // 調整手機版 header 高度
-    width: 250px;
+    background: $bg-sidebar;
+    backdrop-filter: none;
   }
 }
 
+// ===================================
+// 側邊欄內容
+// ===================================
 .sidebar-content {
   height: 100%;
-}
+  padding: $spacing-lg 0;
+  overflow-y: auto;
+  position: relative;
 
-.sidebar-menu {
-  margin: 0;
-  margin-bottom: 32px;
-  padding: 0;
-  list-style: none;
-
-  li {
-    margin-bottom: 8px;
+  @include desktop {
+    padding: $spacing-xl 0;
   }
 }
 
-// 分類標題
+// ===================================
+// 關閉按鈕（和漢堡選單相同位置和樣式）
+// ===================================
+.sidebar-close {
+  position: absolute;
+  top: 8px; // 與 header 中的漢堡選單對齊
+  left: $spacing-md;
+  width: 40px; // 與漢堡選單相同大小
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  z-index: 10;
+
+  // 使用 SVG 作為背景圖片
+  background-image: url('@/assets/img/icon/close.svg');
+  background-size: 20px 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  // 如果 SVG 需要變色（假設原本是深色，要變成符合設計的顏色）
+  filter: brightness(0) saturate(100%) invert(50%);
+
+  @include tablet {
+    left: $spacing-lg;
+    background-size: 24px 24px;
+  }
+
+  &:hover {
+    background-color: rgba(56, 178, 172, 0.1);
+    // hover 時改變 SVG 顏色
+    filter: brightness(0) saturate(100%) invert(43%) sepia(86%) saturate(1733%) hue-rotate(146deg)
+      brightness(97%) contrast(86%);
+  }
+
+  &:active {
+    background-color: rgba(56, 178, 172, 0.2);
+  }
+}
+
+// ===================================
+// 側邊欄選單
+// ===================================
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+// 選單項目
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  text-decoration: none;
+  color: $text-secondary;
+  transition: all 0.2s ease-in-out;
+  border-left: 4px solid transparent;
+  gap: $spacing-md;
+
+  @include desktop {
+    padding: $spacing-md $spacing-xl;
+  }
+
+  &:hover {
+    background: rgba(56, 178, 172, 0.1);
+    color: $accent-color-1;
+    transform: translateX(4px);
+  }
+
+  &.active {
+    background: rgba(56, 178, 172, 0.15);
+    color: $accent-color-1;
+    border-left-color: $accent-color-1;
+    font-weight: 600;
+  }
+}
+
+// 首頁項目特殊樣式
+.home-item {
+  margin-bottom: $spacing-md;
+
+  .sidebar-icon {
+    font-size: 20px;
+  }
+}
+
+// ===================================
+// 分類樣式
+// ===================================
 .sidebar-category {
-  margin-top: 24px;
-  margin-bottom: 16px;
+  margin-top: $spacing-lg;
 
   &:first-child {
     margin-top: 0;
@@ -206,150 +303,130 @@ defineExpose({
 .category-title {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  color: $primary-color;
+  padding: $spacing-sm $spacing-lg;
+  color: $text-muted;
+  font-size: 14px;
   font-weight: 600;
-  font-size: 16px;
-  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
 
-  gap: 8px;
+  @include desktop {
+    padding: $spacing-sm $spacing-xl;
+  }
 }
 
 .category-icon {
   font-size: 16px;
+  color: $accent-color-2;
 }
 
 .category-text {
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 14px;
+  flex: 1;
 }
 
-// 側邊欄項目
-.sidebar-item {
+// 分類項目
+.category-item {
   position: relative;
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: #4A5568; // 預設文字顏色
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  margin-left: $spacing-md;
 
-  gap: 16px;
-
-  &:hover {
-    background: #E6A86B; // 橙色背景
-    color: white; // 白色文字
-    transform: translateX(4px); // 跟 HTML 模板一樣的移動效果
-  }
-
-  &.active {
-    background: #4A5568; // 深灰背景
-    color: white; // 白色文字
-    font-weight: 600;
+  &:hover::before,
+  &.active::before {
+    background: $accent-color-1;
+    transform: translateY(-50%) scale(1.5);
   }
 }
 
+// ===================================
+// 圖標樣式
+// ===================================
 .sidebar-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
   font-size: 18px;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+
+  @include desktop {
+    font-size: 20px;
+    width: 28px;
+  }
 }
 
 .sidebar-text {
-  flex: 1;
-  font-size: 14px;
-}
+  font-size: 15px;
+  font-weight: 500;
 
-// 首頁項目特殊樣式
-.home-item {
-  margin-bottom: 24px;
-  border-bottom: 1px solid $border-light;
-  font-weight: 600;
-
-  .sidebar-icon {
-    font-size: 20px;
-  }
-
-  .sidebar-text {
+  @include desktop {
     font-size: 16px;
   }
 }
 
-// 分類項目樣式
-.category-item {
-  margin-left: 16px;
-  padding-left: 24px;
-
-  &:hover {
-    border-left-color: $accent-color-1;
+// ===================================
+// 滾動條樣式
+// ===================================
+.sidebar-content {
+  &::-webkit-scrollbar {
+    width: 6px;
   }
 
-  &.active {
-    border-left-color: $accent-color-2;
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-primary;
+    border-radius: 3px;
+
+    &:hover {
+      background: $accent-color-1;
+    }
   }
 }
 
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .sidebar {
-    top: 57px; // 手機版 header 高度
-    width: 280px;
-    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+// ===================================
+// 響應式調整
+// ===================================
 
-    .mobile-version {
-      top: 0;
+// 手機版
+@include mobile-only {
+  .sidebar-item {
+    padding: $spacing-md;
+  }
+
+  .category-title {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .category-item {
+    margin-left: $spacing-sm;
+
+    &::before {
+      left: calc(#{$spacing-md} - 8px);
+    }
+  }
+}
+
+// 平板版特殊調整
+@include tablet-only {
+  .sidebar {
+    box-shadow: 2px 0 8px $shadow-medium;
+  }
+}
+
+// 桌面版特殊效果
+@include desktop {
+  .sidebar-item {
+    border-radius: 0 24px 24px 0;
+    margin-right: $spacing-md;
+
+    &:hover {
+      box-shadow: 2px 2px 8px $shadow-light;
     }
   }
 
-  .category-title {
-    font-size: 15px;
-  }
-
-  .sidebar-item {
-    padding: 10px 14px;
-  }
-
-  .sidebar-text {
-    font-size: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar {
-    padding: 24px 16px;
-    width: 260px;
-  }
-
-  .category-title {
-    padding: 8px;
-  }
-
-  .sidebar-item {
-    padding: 10px 14px;
-  }
-}
-
-/* 自定義滾動條 */
-.sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  border-radius: 3px;
-  background: rgba($border-primary, 0.3);
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background: $border-primary;
-
-  &:hover {
-    background: rgba($primary-color, 0.5);
+  .category-item {
+    margin-right: $spacing-lg;
   }
 }
 </style>

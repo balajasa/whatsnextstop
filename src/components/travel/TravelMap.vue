@@ -4,12 +4,9 @@
       <!-- 麵包屑 -->
       <BreadcrumbNav />
 
-      <!-- 狀態顯示 -->
-      <div class="map-status">狀態: {{ status }}</div>
-
       <!-- 控制區域 -->
       <div class="controls">
-        <button @click="handleResetView" class="reset-btn">重置視圖</button>
+        <button @click="handleResetView" class="reset-btn">重置地圖</button>
         <span class="instructions">💡 拖曳移動地圖，使用 +/- 縮放</span>
       </div>
 
@@ -27,14 +24,29 @@
         </div>
 
         <!-- 地圖組件 -->
-        <WorldMap ref="worldMapRef" :width="width" :height="height" :min-scale="minScale" :max-scale="maxScale"
-          @map-ready="onMapReady" @view-change="onViewChange" @country-hover="onCountryHover"
-          @country-click="onCountryClick" @status-change="onStatusChange" />
+        <WorldMap
+          ref="worldMapRef"
+          :width="width"
+          :height="height"
+          :min-scale="minScale"
+          :max-scale="maxScale"
+          @map-ready="onMapReady"
+          @view-change="onViewChange"
+          @country-hover="onCountryHover"
+          @country-click="onCountryClick"
+          @status-change="onStatusChange"
+        />
 
         <!-- 旅遊圖釘組件 -->
-        <MapPin v-if="mapProjection && mapWorldData" :projection="mapProjection" :world-data="mapWorldData"
-          :current-transform="currentTransform" :current-scale="currentScale" @pin-selected="handlePinSelected"
-          @panel-close="handlePanelClose" />
+        <MapPin
+          v-if="mapProjection && mapWorldData"
+          :projection="mapProjection"
+          :world-data="mapWorldData"
+          :current-transform="currentTransform"
+          :current-scale="currentScale"
+          @pin-selected="handlePinSelected"
+          @panel-close="handlePanelClose"
+        />
 
         <!-- 背景遮罩 -->
         <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
@@ -43,9 +55,18 @@
         <InfoPanel v-if="selectedPin" :selected-pin="selectedPin" @close="handlePanelClose" />
       </div>
 
+      <!-- 狀態顯示 -->
+      <div class="map-status">狀態: {{ status }}</div>
+
       <!-- 國家資訊顯示 -->
-      <div class="country-info" v-if="hoveredCountry">目前懸停: {{ getDisplayCountryName(hoveredCountry) }}</div>
-      <div class="country-info" v-if="clickedCountry">最後點擊: {{ getDisplayCountryName(clickedCountry) }}</div>
+      <div class="country-info-container">
+        <div v-if="hoveredCountry" class="country-info">
+          目前懸停: {{ getDisplayCountryName(hoveredCountry) }}
+        </div>
+        <div v-if="clickedCountry" class="country-info">
+          最後點擊: {{ getDisplayCountryName(clickedCountry) }}
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -57,14 +78,14 @@ import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
 import WorldMap from './WorldMap.vue'
 import MapPin from './MapPin.vue'
 import InfoPanel from './InfoPanel.vue'
-import type { Transform, ProcessedPin } from '../types/Itravel'
+import type { Transform, ProcessedPin } from '../types/ITravelMap'
 import { countryTranslation } from '../../composables/countryTranslation'
 
 // Refs
 const container: Ref<HTMLElement | null> = ref(null)
 const worldMapRef: Ref<any> = ref(null)
 
-const { getCountryChineseName, getCountryFlag } = countryTranslation()
+const { getCountryChineseName } = countryTranslation()
 
 // State
 const status: Ref<string> = ref('載入中...')
@@ -89,9 +110,8 @@ const getDisplayCountryName = (countryName: string): string => {
   if (!countryName) return ''
 
   const chineseName = getCountryChineseName(countryName)
-  const flag = getCountryFlag(countryName)
 
-  return `${flag} ${chineseName}`
+  return `${chineseName}`
 }
 
 // 響應式尺寸計算 - 修正手機版邏輯
@@ -193,175 +213,327 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
 
+// ===================================
+// 主容器 (Mobile First)
+// ===================================
 .world-map-container {
   margin: 0 auto;
   max-width: 1000px;
-  border-radius: 12px;
-  background-color: $warm-bg-content;
-  box-shadow: $warm-shadow-medium;
+  border-radius: $border-radius-lg;
+  background: $bg-card;
+  box-shadow: $shadow-medium;
 
-  @media (max-width: 768px) {
-    margin: 0 auto;
-    max-width: 100%;
+  @include tablet {
+    max-width: 1200px;
+  }
+
+  @include desktop {
+    border-radius: $border-radius-xl;
+  }
+
+  @include large-desktop {
+    max-width: 1400px;
   }
 }
 
 .world-map {
   position: relative;
-  padding: 20px;
+  padding: $spacing-md;
   max-width: 100%;
 
-  @media (max-width: 768px) {
-    padding: 15px;
+  @include tablet {
+    padding: $spacing-lg;
+  }
+
+  @include desktop {
+    padding: $spacing-xl;
   }
 }
 
+// ===================================
+// 控制區域
+// ===================================
 .controls {
-  display: flex;
-  align-items: center;
+  @include flex-between;
   flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 15px;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
 
-  gap: 10px;
+  @include tablet {
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+  }
 
-  @media (max-width: 768px) {
-    align-items: stretch;
+  @include mobile-only {
     flex-direction: column;
-
-    gap: 8px;
+    align-items: stretch;
+    gap: $spacing-xs;
   }
 }
 
 .reset-btn {
-  padding: 8px 16px;
+  padding: $spacing-sm $spacing-md;
   border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
+  border-radius: $border-radius-sm;
+  background: $primary-color;
+  color: $text-white;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease-in-out;
+
+  @include tablet {
+    padding: $spacing-md $spacing-lg;
+    font-size: 15px;
+    border-radius: $border-radius-md;
+  }
 
   &:hover {
-    background-color: #0056b3;
+    background: darken($primary-color, 8%);
+    transform: translateY(-1px);
+    box-shadow: $shadow-light;
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 
 .instructions {
-  color: #666;
+  color: $text-secondary;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 400;
 
-  @media (max-width: 768px) {
+  @include tablet {
+    font-size: 14px;
+    text-align: right;
+  }
+
+  @include desktop {
+    font-size: 15px;
+  }
+
+  @include mobile-only {
+    text-align: center;
     font-size: 12px;
   }
 }
 
+// ===================================
+// 地圖容器
+// ===================================
 .map-container {
   position: relative;
   overflow: hidden;
   margin: 0 auto;
   height: v-bind(height + 'px');
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #f8f9fa;
+  border: 1px solid $border-light;
+  border-radius: $border-radius-md;
+  background: $bg-primary;
 
-  @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* 手機版容器高度會自動調整為較大值 */
+  @include tablet {
+    border-radius: $border-radius-lg;
+    border-width: 2px;
+  }
+
+  @include desktop {
+    @include flex-center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 }
 
+// ===================================
+// 縮放控制
+// ===================================
 .zoom-controls {
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: $spacing-sm;
+  left: $spacing-sm;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  gap: $spacing-xs;
+  padding: $spacing-xs;
+  border-radius: $border-radius-md;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: $shadow-light;
+  border: 1px solid $border-light;
 
-  gap: 5px;
+  @include tablet {
+    top: $spacing-md;
+    left: $spacing-md;
+    gap: $spacing-sm;
+    padding: $spacing-sm;
+  }
 
-  @media (max-width: 768px) {
-    top: 10px;
-    left: 10px;
-    padding: 6px;
+  @include desktop {
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-medium;
   }
 }
 
 .zoom-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   width: 32px;
   height: 32px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: white;
-  color: #333;
-  font-weight: bold;
-  font-size: 18px;
+  border: 1px solid $border-primary;
+  border-radius: $border-radius-sm;
+  background: $bg-card;
+  color: $text-primary;
+  font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in-out;
 
-  @media (max-width: 768px) {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
+  @include tablet {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  @include desktop {
+    width: 40px;
+    height: 40px;
+    border-radius: $border-radius-md;
   }
 
   &:hover:not(:disabled) {
-    border-color: #999;
-    background: #f0f0f0;
+    border-color: $accent-color-1;
+    background: lighten($accent-color-1, 45%);
+    color: $accent-color-1;
+    transform: scale(1.05);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
   }
 
   &:disabled {
-    border-color: #e0e0e0;
-    background: #f5f5f5;
-    color: #ccc;
+    border-color: $border-muted;
+    background: $bg-primary;
+    color: $text-light;
     cursor: not-allowed;
+    opacity: 0.6;
   }
 }
 
 .zoom-level {
-  padding: 2px 0;
-  color: #666;
+  padding: $spacing-xs 0;
+  color: $text-muted;
   text-align: center;
-  font-weight: bold;
-  font-size: 11px;
+  font-weight: 600;
+  font-size: 10px;
+
+  @include tablet {
+    font-size: 11px;
+  }
 }
 
+// ===================================
+// 狀態顯示
+// ===================================
 .map-status {
-  margin-bottom: 20px;
-  padding: 10px;
-  border-radius: 5px;
-  background: #f0f0f0;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  background: $bg-stats;
+  color: $text-secondary;
+  font-size: 14px;
+
+  @include tablet {
+    padding: $spacing-lg;
+    font-size: 15px;
+  }
+
+  @include desktop {
+    border-radius: $border-radius-lg;
+  }
+}
+
+.country-info-container {
+  min-height: 80px; // 固定容器高度
+  margin-top: 20px;
 }
 
 .country-info {
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
-  background: #e8f5e8;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  background: lighten($accent-color-1, 45%);
+  color: $accent-color-1;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid lighten($accent-color-1, 35%);
+  @include flex-center;
+  justify-content: center;
+
+  @include tablet {
+    min-height: 60px;
+    // padding: $spacing-lg;
+    font-size: 15px;
+  }
+
+  @include desktop {
+    border-radius: $border-radius-lg;
+  }
 }
 
-/* InfoPanel 相關樣式 */
+// ===================================
+// InfoPanel 背景遮罩
+// ===================================
 .panel-backdrop {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 998;
+  z-index: $z-mapoverlay;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.1);
+  background: $overlay-bg;
   pointer-events: auto;
+  backdrop-filter: blur(2px);
+}
+
+// ===================================
+// 響應式優化
+// ===================================
+
+// 手機版特殊處理
+@include mobile-only {
+  .world-map {
+    padding: $spacing-sm;
+  }
+
+  .zoom-controls {
+    top: $spacing-xs;
+    left: $spacing-xs;
+    padding: 4px;
+  }
+
+  .zoom-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .map-status,
+  .country-info {
+    padding: $spacing-sm;
+    font-size: 13px;
+  }
+}
+
+// 大桌面版優化
+@include large-desktop {
+  .instructions {
+    font-size: 16px;
+  }
+
+  .zoom-controls {
+    top: $spacing-lg;
+    left: $spacing-lg;
+  }
 }
 </style>
