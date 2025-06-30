@@ -8,8 +8,8 @@
         <!-- 小遊戲區域 -->
         <div class="games-section">
           <div class="games-title">🎮 休閒小遊戲</div>
-          <div class="game-link">
-            <div class="nav-links">
+          <div class="game-linklist">
+            <!-- <div class="nav-links">
               <router-link to="/minigame/dropblock" class="nav-link">
                 <div class="link-card dropblock-card mini-card">
                   <div class="card-icon">🧊</div>
@@ -18,8 +18,8 @@
                   <div class="card-decoration"></div>
                 </div>
               </router-link>
-            </div>
-            <div class="nav-links">
+            </div> -->
+            <!-- <div class="nav-links">
               <router-link to="/minigame/foodwheel" class="nav-link">
                 <div class="link-card foodwheel-card mini-card">
                   <div class="card-icon">🎪</div>
@@ -28,13 +28,13 @@
                   <div class="card-decoration"></div>
                 </div>
               </router-link>
-            </div>
+            </div> -->
             <div class="nav-links">
-              <router-link to="/minigame/takemetravel" class="nav-link">
+              <router-link to="/minigame/" class="nav-link">
                 <div class="link-card takemetravel-card mini-card">
                   <div class="card-icon">📸</div>
-                  <div class="card-title">放空自己</div>
-                  <p>記錄旅行的每一刻</p>
+                  <div class="card-title">帶我去旅行</div>
+                  <p>記錄旅行的每一刻 Coming Soon...</p>
                   <div class="card-decoration"></div>
                 </div>
               </router-link>
@@ -125,7 +125,7 @@ import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
   }
 }
 
-.game-link {
+.game-linklist {
   display: grid;
   grid-template-columns: 1fr;
   gap: $spacing-lg;
@@ -329,7 +329,7 @@ import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
     margin-bottom: $spacing-xl;
   }
 
-  .game-link {
+  .game-linklist {
     gap: $spacing-md;
   }
 
