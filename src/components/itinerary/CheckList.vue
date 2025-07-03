@@ -1,82 +1,82 @@
 <template>
   <div class="check-list">
     <!-- Header -->
-    <header class="check-list__header">
-      <div class="check-list__title">
-        <span class="check-list__icon">📋</span>
+    <header class="check-list_header">
+      <div class="check-list_title">
+        <span class="check-list_icon">📋</span>
         攜帶清單
       </div>
-      <div class="check-list__stats">
-        <span class="check-list__stats-item">
+      <div class="check-list_stats">
+        <span class="check-list_stats-item">
           總計: {{ checkItems.length }}
         </span>
-        <span class="check-list__stats-item">
+        <span class="check-list_stats-item">
           已攜帶: {{ packedCount }}
         </span>
-        <span class="check-list__stats-item">
+        <span class="check-list_stats-item">
           待攜帶: {{ unpackedCount }}
         </span>
       </div>
     </header>
 
     <!-- Add Item Form -->
-    <form class="check-list__add-form" @submit="handleSubmit">
-      <div class="check-list__input-group">
-        <input v-model="newItem" type="text" class="check-list__input" placeholder="新增攜帶物品..."
+    <form class="check-list_add-form" @submit="handleSubmit">
+      <div class="check-list_input-group">
+        <input v-model="newItem" type="text" class="check-list_input" placeholder="新增攜帶物品..."
           @keypress="handleKeyPress" />
-        <button type="submit" class="check-list__add-button" :disabled="!newItem.trim()">
-          <span class="check-list__add-icon">+</span>
+        <button type="submit" class="check-list_add-button" :disabled="!newItem.trim()">
+          <span class="check-list_add-icon">+</span>
           新增
         </button>
       </div>
     </form>
 
     <!-- Filter Buttons -->
-    <div class="check-list__filters">
+    <div class="check-list_filters">
       <button v-for="filterOption in filterOptions" :key="filterOption.value"
-        :class="['check-list__filter-btn', { 'check-list__filter-btn--active': filter === filterOption.value }]"
+        :class="['check-list_filter-btn', { 'check-list_filter-btn--active': filter === filterOption.value }]"
         @click="setFilter(filterOption.value)">
         {{ filterOption.label }}
       </button>
     </div>
 
     <!-- Check List -->
-    <div class="check-list__items">
-      <div v-if="filteredItems.length === 0" class="check-list__empty">
-        <p class="check-list__empty-message">
+    <div class="check-list_items">
+      <div v-if="filteredItems.length === 0" class="check-list_empty">
+        <p class="check-list_empty-message">
           {{ getEmptyMessage() }}
         </p>
       </div>
 
-      <div v-else class="check-list__items-container">
+      <div v-else class="check-list_items-container">
         <div v-for="item in filteredItems" :key="item.id"
-          :class="['check-list__item', { 'check-list__item--packed': item.packed }]">
-          <div class="check-list__checkbox" @click="toggleItem(item.id)">
+          :class="['check-list_item', { 'check-list_item--packed': item.packed }]">
+          <div class="check-list_checkbox" @click="toggleItem(item.id)">
             <input type="checkbox" :checked="item.packed" @change="toggleItem(item.id)" />
-            <span class="check-list__checkmark"></span>
+            <span class="check-list_checkmark"></span>
           </div>
 
-          <div class="check-list__content">
-            <span class="check-list__text">{{ item.text }}</span>
-            <span class="check-list__date">
+          <div class="check-list_content">
+            <span class="check-list_text">{{ item.text }}</span>
+            <span class="check-list_date">
               {{ formatDate(item.createdAt) }}
             </span>
           </div>
 
-          <button class="check-list__delete-button" @click="deleteItem(item.id)" :aria-label="`刪除 ${item.text}`">
-            <span class="check-list__delete-icon">×</span>
+          <button class="check-list_delete-button" @click="deleteItem(item.id)" :aria-label="`刪除 ${item.text}`">
+            <span class="check-list_delete-icon">×</span>
           </button>
         </div>
       </div>
     </div>
 
     <!-- Progress Bar -->
-    <div v-if="checkItems.length > 0" class="check-list__progress">
-      <div class="check-list__progress-label">
+    <div v-if="checkItems.length > 0" class="check-list_progress">
+      <div class="check-list_progress-label">
         攜帶進度: {{ Math.round(progressPercentage) }}%
       </div>
-      <div class="check-list__progress-bar">
-        <div class="check-list__progress-fill" :style="{ width: `${progressPercentage}%` }"></div>
+      <div class="check-list_progress-bar">
+        <div class="check-list_progress-fill" :style="{ width: `${progressPercentage}%` }"></div>
       </div>
     </div>
   </div>
@@ -276,7 +276,7 @@ watch(checkItems, () => {
 // ===================================
 // Header Section
 // ===================================
-.check-list__header {
+.check-list_header {
   @include flex-between;
   @include mobile-only {
     flex-direction: column;
@@ -291,7 +291,7 @@ watch(checkItems, () => {
   box-shadow: 0 2px 8px $shadow-light;
 }
 
-.check-list__title {
+.check-list_title {
   @include tablet {
     font-size: 1.75rem;
   }
@@ -305,11 +305,11 @@ watch(checkItems, () => {
   gap: $spacing-sm;
 }
 
-.check-list__icon {
+.check-list_icon {
   font-size: 1.25rem;
 }
 
-.check-list__stats {
+.check-list_stats {
   @include mobile-only {
     justify-content: space-between;
     width: 100%;
@@ -319,7 +319,7 @@ watch(checkItems, () => {
   gap: $spacing-md;
 }
 
-.check-list__stats-item {
+.check-list_stats-item {
   padding: $spacing-xs $spacing-sm;
   border: 1px solid $border-primary;
   border-radius: $border-radius-sm;
@@ -331,11 +331,11 @@ watch(checkItems, () => {
 // ===================================
 // Add Item Form
 // ===================================
-.check-list__add-form {
+.check-list_add-form {
   margin-bottom: $spacing-xl;
 }
 
-.check-list__input-group {
+.check-list_input-group {
   @include mobile-only {
     flex-direction: column;
   }
@@ -349,7 +349,7 @@ watch(checkItems, () => {
   gap: $spacing-sm;
 }
 
-.check-list__input {
+.check-list_input {
   flex: 1;
   padding: $spacing-sm $spacing-md;
   border: 1px solid $border-primary;
@@ -369,7 +369,7 @@ watch(checkItems, () => {
   }
 }
 
-.check-list__add-button {
+.check-list_add-button {
   display: flex;
   align-items: center;
   padding: $spacing-sm $spacing-md;
@@ -395,7 +395,7 @@ watch(checkItems, () => {
   }
 }
 
-.check-list__add-icon {
+.check-list_add-icon {
   font-size: 1.25rem;
   line-height: 1;
 }
@@ -403,7 +403,7 @@ watch(checkItems, () => {
 // ===================================
 // Filter Buttons
 // ===================================
-.check-list__filters {
+.check-list_filters {
   display: flex;
   margin-bottom: $spacing-lg;
   padding: $spacing-sm;
@@ -415,7 +415,7 @@ watch(checkItems, () => {
   gap: $spacing-xs;
 }
 
-.check-list__filter-btn {
+.check-list_filter-btn {
   flex: 1;
   padding: $spacing-sm $spacing-md;
   border: 1px solid $border-primary;
@@ -441,11 +441,11 @@ watch(checkItems, () => {
 // ===================================
 // Items List
 // ===================================
-.check-list__items {
+.check-list_items {
   margin-bottom: $spacing-xl;
 }
 
-.check-list__empty {
+.check-list_empty {
   padding: $spacing-2xl;
   border: 1px solid $border-light;
   border-radius: $border-radius-lg;
@@ -453,20 +453,20 @@ watch(checkItems, () => {
   text-align: center;
 }
 
-.check-list__empty-message {
+.check-list_empty-message {
   margin: 0;
   color: $text-muted;
   font-size: 1rem;
 }
 
-.check-list__items-container {
+.check-list_items-container {
   display: flex;
   flex-direction: column;
 
   gap: $spacing-sm;
 }
 
-.check-list__item {
+.check-list_item {
   display: flex;
   align-items: center;
   padding: $spacing-md;
@@ -487,14 +487,14 @@ watch(checkItems, () => {
     background: $bg-sidebar;
     opacity: 0.8;
 
-    .check-list__text {
+    .check-list_text {
       color: $text-muted;
       text-decoration: line-through;
     }
   }
 }
 
-.check-list__checkbox {
+.check-list_checkbox {
   position: relative;
   cursor: pointer;
 
@@ -507,7 +507,7 @@ watch(checkItems, () => {
   }
 }
 
-.check-list__checkmark {
+.check-list_checkmark {
   position: relative;
   display: block;
   width: 20px;
@@ -541,7 +541,7 @@ watch(checkItems, () => {
   }
 }
 
-.check-list__content {
+.check-list_content {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -549,19 +549,19 @@ watch(checkItems, () => {
   gap: $spacing-xs;
 }
 
-.check-list__text {
+.check-list_text {
   color: $text-primary;
   font-weight: 500;
   font-size: 1rem;
   transition: all 0.2s ease;
 }
 
-.check-list__date {
+.check-list_date {
   color: $text-muted;
   font-size: 0.75rem;
 }
 
-.check-list__delete-button {
+.check-list_delete-button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -581,7 +581,7 @@ watch(checkItems, () => {
   }
 }
 
-.check-list__delete-icon {
+.check-list_delete-icon {
   font-size: 1.25rem;
   line-height: 1;
 }
@@ -589,7 +589,7 @@ watch(checkItems, () => {
 // ===================================
 // Progress Section
 // ===================================
-.check-list__progress {
+.check-list_progress {
   padding: $spacing-lg;
   border: 1px solid $border-light;
   border-radius: $border-radius-lg;
@@ -597,21 +597,21 @@ watch(checkItems, () => {
   box-shadow: 0 2px 8px $shadow-light;
 }
 
-.check-list__progress-label {
+.check-list_progress-label {
   margin-bottom: $spacing-sm;
   color: $text-secondary;
   font-weight: 500;
   font-size: 0.875rem;
 }
 
-.check-list__progress-bar {
+.check-list_progress-bar {
   overflow: hidden;
   height: 8px;
   border-radius: $border-radius-sm;
   background: $border-light;
 }
 
-.check-list__progress-fill {
+.check-list_progress-fill {
   height: 100%;
   border-radius: $border-radius-sm;
   background: linear-gradient(90deg, $city-gradient-start, $city-gradient-end);
