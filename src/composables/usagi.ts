@@ -6,7 +6,7 @@ export function getTravelsData(): GetTravels {
   const loading = ref<boolean>(false)
 
   // true = 本地API, false = 線上API
-  const isDev = false
+  const isDev = true
 
   const localUrl = '/api/usagi'
   const prodUrl = 'https://raw.githubusercontent.com/balajasa/coffeeisadog/main'

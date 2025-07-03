@@ -8,12 +8,8 @@
       <ul class="sidebar-menu">
         <!-- 首頁 -->
         <li>
-          <router-link
-            to="/"
-            class="sidebar-item home-item"
-            :class="{ active: isActive('/') }"
-            @click="handleItemClick"
-          >
+          <router-link to="/" class="sidebar-item home-item" :class="{ active: isActive('/') }"
+            @click="handleItemClick">
             <div class="sidebar-icon">🏠</div>
             <span class="sidebar-text">首頁</span>
           </router-link>
@@ -28,12 +24,8 @@
             </div>
           </li>
           <li v-for="item in getItemsByCategory(category)" :key="item.path">
-            <router-link
-              :to="item.path"
-              class="sidebar-item category-item"
-              :class="{ active: isActive(item.path) }"
-              @click="handleItemClick"
-            >
+            <router-link :to="item.path" class="sidebar-item category-item" :class="{ active: isActive(item.path) }"
+              @click="handleItemClick">
               <div class="sidebar-icon">{{ item.icon }}</div>
               <span class="sidebar-text">{{ item.name }}</span>
             </router-link>
@@ -79,6 +71,12 @@ const sidebarList: SidebarItem[] = [
     name: '行程表',
     icon: '🗓️',
     path: '/itinerary'
+  },
+  {
+    category: '要去哪裡',
+    name: '攜帶清單',
+    icon: '📝',
+    path: '/checklist'
   },
   {
     category: '踏踏腳印',
@@ -159,15 +157,15 @@ defineExpose({
 // ===================================
 .sidebar {
   @include sidebar-base;
-  width: $sidebar-width-mobile;
-  background: $bg-sidebar;
-  padding-top: $header-height;
-
   @include desktop {
     width: $sidebar-width-desktop;
     background: $bg-sidebar-desktop;
+
     backdrop-filter: blur(8px);
   }
+  padding-top: $header-height;
+  width: $sidebar-width-mobile;
+  background: $bg-sidebar;
 
   // 展開狀態
   &.isOpen {
@@ -182,6 +180,7 @@ defineExpose({
   // 手機版樣式
   &.mobile-version {
     background: $bg-sidebar;
+
     backdrop-filter: none;
   }
 }
@@ -190,51 +189,46 @@ defineExpose({
 // 側邊欄內容
 // ===================================
 .sidebar-content {
-  height: 100%;
-  padding: $spacing-lg 0;
-  overflow-y: auto;
-  position: relative;
-
   @include desktop {
     padding: $spacing-xl 0;
   }
+  position: relative;
+  overflow-y: auto;
+  padding: $spacing-lg 0;
+  height: 100%;
 }
 
 // ===================================
 // 關閉按鈕（和漢堡選單相同位置和樣式）
 // ===================================
 .sidebar-close {
-  position: absolute;
-  top: 8px; // 與 header 中的漢堡選單對齊
-  left: $spacing-md;
-  width: 40px; // 與漢堡選單相同大小
-  height: 40px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s ease-in-out;
-  z-index: 10;
-
-  // 使用 SVG 作為背景圖片
-  background-image: url('@/assets/img/icon/close.svg');
-  background-size: 20px 20px;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  // 如果 SVG 需要變色（假設原本是深色，要變成符合設計的顏色）
-  filter: brightness(0) saturate(100%) invert(50%);
-
   @include tablet {
     left: $spacing-lg;
     background-size: 24px 24px;
   }
+  position: absolute;
+  top: 8px; // 與 header 中的漢堡選單對齊
+  left: $spacing-md;
+  z-index: 10;
+  width: 40px; // 與漢堡選單相同大小
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  // 使用 SVG 作為背景圖片
+  background-image: url('@/assets/img/icon/close.svg');
+  background-position: center;
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  // 如果 SVG 需要變色（假設原本是深色，要變成符合設計的顏色）
+  filter: brightness(0) saturate(100%) invert(50%);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 
   &:hover {
     background-color: rgba(56, 178, 172, 0.1);
     // hover 時改變 SVG 顏色
-    filter: brightness(0) saturate(100%) invert(43%) sepia(86%) saturate(1733%) hue-rotate(146deg)
-      brightness(97%) contrast(86%);
+    filter: brightness(0) saturate(100%) invert(43%) sepia(86%) saturate(1733%) hue-rotate(146deg) brightness(97%) contrast(86%);
   }
 
   &:active {
@@ -246,25 +240,25 @@ defineExpose({
 // 側邊欄選單
 // ===================================
 .sidebar-menu {
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 // 選單項目
 .sidebar-item {
-  display: flex;
-  align-items: center;
-  padding: $spacing-md $spacing-lg;
-  text-decoration: none;
-  color: $text-secondary;
-  transition: all 0.2s ease-in-out;
-  border-left: 4px solid transparent;
-  gap: $spacing-md;
-
   @include desktop {
     padding: $spacing-md $spacing-xl;
   }
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-left: 4px solid transparent;
+  color: $text-secondary;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+
+  gap: $spacing-md;
 
   &:hover {
     background: rgba(56, 178, 172, 0.1);
@@ -273,9 +267,9 @@ defineExpose({
   }
 
   &.active {
+    border-left-color: $accent-color-1;
     background: rgba(56, 178, 172, 0.15);
     color: $accent-color-1;
-    border-left-color: $accent-color-1;
     font-weight: 600;
   }
 }
@@ -301,25 +295,25 @@ defineExpose({
 }
 
 .category-title {
-  display: flex;
-  align-items: center;
-  padding: $spacing-sm $spacing-lg;
-  color: $text-muted;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  gap: $spacing-sm;
-  margin-bottom: $spacing-sm;
-
   @include desktop {
     padding: $spacing-sm $spacing-xl;
   }
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  font-size: 14px;
+
+  gap: $spacing-sm;
 }
 
 .category-icon {
-  font-size: 16px;
   color: $accent-color-2;
+  font-size: 16px;
 }
 
 .category-text {
@@ -342,24 +336,22 @@ defineExpose({
 // 圖標樣式
 // ===================================
 .sidebar-icon {
-  font-size: 18px;
+  @include desktop {
+    width: 28px;
+    font-size: 20px;
+  }
+  flex-shrink: 0;
   width: 24px;
   text-align: center;
-  flex-shrink: 0;
-
-  @include desktop {
-    font-size: 20px;
-    width: 28px;
-  }
+  font-size: 18px;
 }
 
 .sidebar-text {
-  font-size: 15px;
-  font-weight: 500;
-
   @include desktop {
     font-size: 16px;
   }
+  font-weight: 500;
+  font-size: 15px;
 }
 
 // ===================================
@@ -375,8 +367,8 @@ defineExpose({
   }
 
   &::-webkit-scrollbar-thumb {
-    background: $border-primary;
     border-radius: 3px;
+    background: $border-primary;
 
     &:hover {
       background: $accent-color-1;
@@ -417,8 +409,8 @@ defineExpose({
 // 桌面版特殊效果
 @include desktop {
   .sidebar-item {
-    border-radius: 0 24px 24px 0;
     margin-right: $spacing-md;
+    border-radius: 0 24px 24px 0;
 
     &:hover {
       box-shadow: 2px 2px 8px $shadow-light;

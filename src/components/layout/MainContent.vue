@@ -7,18 +7,10 @@
 
       <!-- 封面圖片區域 -->
       <div class="cover-image-area">
-        <swiper
-          :modules="modules"
-          :slides-per-view="1"
-          :space-between="0"
-          :loop="true"
+        <swiper :modules="modules" :slides-per-view="1" :space-between="0" :loop="true"
           :autoplay="{ delay: 4000, disableOnInteraction: false }"
-          :pagination="{ clickable: true, dynamicBullets: true }"
-          :navigation="true"
-          effect="fade"
-          :fade-effect="{ crossFade: true }"
-          class="cover-swiper"
-        >
+          :pagination="{ clickable: true, dynamicBullets: true }" :navigation="true" effect="fade"
+          :fade-effect="{ crossFade: true }" class="cover-swiper">
           <swiper-slide v-for="image in coverImages" :key="image.id">
             <div class="cover-slide">
               <img :src="image.src" :alt="image.alt" />
@@ -29,12 +21,7 @@
 
       <!-- 主要功能區域 -->
       <div class="schedule-main-grid">
-        <a
-          v-for="card in mainCards"
-          :key="card.id"
-          :href="card.href"
-          :class="['schedule-card', card.class]"
-        >
+        <a v-for="card in mainCards" :key="card.id" :href="card.href" :class="['schedule-card', card.class]">
           <div class="schedule-icon">{{ card.icon }}</div>
           <h3>{{ card.title }}</h3>
         </a>
@@ -46,12 +33,7 @@
         <div class="daily-grid">
           <!-- 使用 v-for 生成每日行程 -->
           <div class="daily-block">
-            <a
-              v-for="day in totalDays"
-              :key="day"
-              :href="`itinerary-detail#day${day}`"
-              class="daily-card"
-            >
+            <a v-for="day in totalDays" :key="day" :href="`itinerary-detail#day${day}`" class="daily-card">
               Day{{ day }}
             </a>
           </div>
@@ -141,13 +123,13 @@ const mainCards = ref([
     icon: '🎒',
     title: '必帶物品'
   },
-  {
-    id: 'notice',
-    href: 'itinerary-detail#notice',
-    class: 'notice-card',
-    icon: '⚠️',
-    title: '注意事項'
-  }
+  // {
+  //   id: 'notice',
+  //   href: 'itinerary-detail#notice',
+  //   class: 'notice-card',
+  //   icon: '⚠️',
+  //   title: '注意事項'
+  // }
 ])
 </script>
 
@@ -162,18 +144,16 @@ const mainCards = ref([
 // 主要內容包裝
 // ===================================
 .main-content-wrapper {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: $spacing-md;
-
   @include tablet {
     padding: $spacing-lg;
   }
-
   @include desktop {
     padding: $spacing-xl;
   }
+  margin: 0 auto;
+  padding: $spacing-md;
+  max-width: 1200px;
+  width: 100%;
 }
 
 // ===================================
@@ -184,69 +164,63 @@ const mainCards = ref([
 }
 
 .schedule-header {
-  text-align: center;
-  margin-bottom: $spacing-xl;
-
   @include tablet {
     margin-bottom: $spacing-2xl;
   }
+  margin-bottom: $spacing-xl;
+  text-align: center;
 }
 
 .schedule-subtitle {
-  font-size: 18px;
-  color: $text-secondary;
-  font-weight: 500;
-  margin: 0;
-
   @include tablet {
     font-size: 22px;
   }
-
   @include desktop {
     font-size: 24px;
   }
+  margin: 0;
+  color: $text-secondary;
+  font-weight: 500;
+  font-size: 18px;
 }
 
 // ===================================
 // 輪播圖區域
 // ===================================
 .cover-image-area {
-  margin-bottom: $spacing-xl;
-  border-radius: $border-radius-lg;
-  overflow: hidden;
-  box-shadow: 0 8px 32px $shadow-medium;
-
   @include tablet {
     margin-bottom: $spacing-2xl;
     border-radius: $border-radius-xl;
   }
+  overflow: hidden;
+  margin-bottom: $spacing-xl;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 32px $shadow-medium;
 }
 
 .cover-swiper {
-  width: 100%;
-  height: 250px;
-
   @include tablet {
     height: 350px;
   }
-
   @include desktop {
     height: 400px;
   }
-
   @include large-desktop {
     height: 450px;
   }
+  width: 100%;
+  height: 250px;
 }
 
 .cover-slide {
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
 
   img {
     width: 100%;
     height: 100%;
+
     object-fit: cover;
     object-position: center;
   }
@@ -259,18 +233,27 @@ const mainCards = ref([
 // 導航按鈕
 :deep(.swiper-button-next),
 :deep(.swiper-button-prev) {
-  color: $primary-color;
-  background: rgba(255, 255, 255, 0.9);
+  @include mobile-only {
+    margin-top: -18px;
+    width: 36px;
+    height: 36px;
+
+    &:after {
+      font-size: 14px;
+    }
+  }
+  margin-top: -22px;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  margin-top: -22px;
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 2px 8px $shadow-light;
+  color: $primary-color;
   transition: all 0.2s ease;
 
   &:after {
-    font-size: 18px;
     font-weight: bold;
+    font-size: 18px;
   }
 
   &:hover {
@@ -278,41 +261,28 @@ const mainCards = ref([
     color: $text-white;
     transform: scale(1.1);
   }
-
-  @include mobile-only {
-    width: 36px;
-    height: 36px;
-    margin-top: -18px;
-
-    &:after {
-      font-size: 14px;
-    }
-  }
 }
 
 .swiper-button-prev {
-  left: 15px;
-
   @include tablet {
     left: 20px;
   }
+  left: 15px;
 }
 
 .swiper-button-next {
-  right: 15px;
-
   @include tablet {
     right: 20px;
   }
+  right: 15px;
 }
 
 // 分頁指示器
 :deep(.swiper-pagination) {
-  bottom: 15px;
-
   @include tablet {
     bottom: 20px;
   }
+  bottom: 15px;
 }
 
 :deep(.swiper-pagination-bullet) {
@@ -330,88 +300,88 @@ const mainCards = ref([
 
 :deep(.swiper-pagination-bullet-active) {
   background: $accent-color-2;
-  transform: scale(1.3);
   box-shadow: 0 2px 8px rgba(230, 168, 107, 0.4);
+  transform: scale(1.3);
 }
 
 // ===================================
 // 主要功能卡片區域
 // ===================================
 .schedule-main-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $spacing-md;
-  margin-bottom: $spacing-xl;
-
   @include tablet {
+    margin-bottom: $spacing-2xl;
+
     grid-template-columns: repeat(2, 1fr);
     gap: $spacing-lg;
-    margin-bottom: $spacing-2xl;
   }
-
   @include desktop {
     grid-template-columns: repeat(3, 1fr);
   }
-
   @include large-desktop {
     grid-template-columns: repeat(5, 1fr);
   }
+  display: grid;
+  margin-bottom: $spacing-xl;
+
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
 }
 
 .schedule-card {
   @include card-hover;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-lg;
-  background: $bg-card;
-  border-radius: $border-radius-lg;
-  text-decoration: none;
-  color: inherit;
-  box-shadow: 0 2px 8px $shadow-light;
-  min-height: 120px;
-
   @include tablet {
     padding: $spacing-xl;
     min-height: 140px;
   }
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: $spacing-lg;
+  min-height: 120px;
+  border-radius: $border-radius-lg;
+  background: $bg-card;
+  box-shadow: 0 2px 8px $shadow-light;
+  color: inherit;
+  text-decoration: none;
 
   h3 {
-    margin: $spacing-sm 0 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: $text-primary;
-    text-align: center;
-
     @include tablet {
       font-size: 18px;
     }
+    margin: $spacing-sm 0 0;
+    color: $text-primary;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
   }
 }
 
 .schedule-icon {
-  font-size: 32px;
-  margin-bottom: $spacing-sm;
-
   @include tablet {
     font-size: 36px;
   }
+  margin-bottom: $spacing-sm;
+  font-size: 32px;
 }
 
 // 各卡片特殊樣式
 .overview-card .schedule-icon {
   color: $primary-color;
 }
+
 .flight-card .schedule-icon {
   color: $accent-color-1;
 }
+
 .map-card .schedule-icon {
   color: $accent-color-2;
 }
+
 .packing-card .schedule-icon {
   color: $timeline-medium;
 }
+
 .notice-card .schedule-icon {
   color: $timeline-recent;
 }
@@ -424,16 +394,15 @@ const mainCards = ref([
 }
 
 .daily-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: $text-primary;
-  margin-bottom: $spacing-lg;
-  text-align: center;
-
   @include tablet {
-    font-size: 24px;
     text-align: left;
+    font-size: 24px;
   }
+  margin-bottom: $spacing-lg;
+  color: $text-primary;
+  text-align: center;
+  font-weight: 600;
+  font-size: 20px;
 }
 
 .daily-grid {
@@ -441,43 +410,40 @@ const mainCards = ref([
 }
 
 .daily-block {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-md;
-
   @include tablet {
     grid-template-columns: repeat(3, 1fr);
     gap: $spacing-lg;
   }
-
   @include desktop {
     grid-template-columns: repeat(4, 1fr);
   }
-
   @include large-desktop {
     grid-template-columns: repeat(6, 1fr);
   }
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
 }
 
 .daily-card {
   @include card-hover;
+  @include tablet {
+    min-height: 90px;
+    font-size: 18px;
+  }
   display: flex;
   align-items: center;
   justify-content: center;
   padding: $spacing-lg;
+  min-height: 80px;
+  border-radius: $border-radius-md;
   background: linear-gradient(135deg, $accent-color-1, $city-gradient-end);
+  box-shadow: 0 4px 12px $shadow-city;
   color: $text-white;
   text-decoration: none;
-  border-radius: $border-radius-md;
   font-weight: 600;
   font-size: 16px;
-  min-height: 80px;
-  box-shadow: 0 4px 12px $shadow-city;
-
-  @include tablet {
-    font-size: 18px;
-    min-height: 90px;
-  }
 
   &:hover {
     box-shadow: 0 6px 20px $shadow-city-hover;
@@ -500,11 +466,11 @@ const mainCards = ref([
 .test {
   margin-top: $spacing-2xl;
   padding: $spacing-lg;
-  background: $bg-card;
   border-radius: $border-radius-md;
+  background: $bg-card;
+  box-shadow: 0 2px 8px $shadow-light;
   color: $text-muted;
   line-height: 1.6;
-  box-shadow: 0 2px 8px $shadow-light;
 }
 
 // ===================================
@@ -518,8 +484,8 @@ const mainCards = ref([
   }
 
   .schedule-card {
-    min-height: 100px;
     padding: $spacing-md;
+    min-height: 100px;
 
     h3 {
       font-size: 14px;
@@ -554,18 +520,27 @@ const mainCards = ref([
 // 導航按鈕
 :deep(.swiper-button-next),
 :deep(.swiper-button-prev) {
-  color: $primary-color;
-  background: rgba(255, 255, 255, 0.9);
+  @include mobile-only {
+    margin-top: -18px;
+    width: 36px;
+    height: 36px;
+
+    &:after {
+      font-size: 14px;
+    }
+  }
+  margin-top: -22px;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  margin-top: -22px;
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 2px 8px $shadow-light;
+  color: $primary-color;
   transition: all 0.2s ease;
 
   &:after {
-    font-size: 18px;
     font-weight: bold;
+    font-size: 18px;
   }
 
   &:hover {
@@ -573,42 +548,29 @@ const mainCards = ref([
     color: $text-white;
     transform: scale(1.1);
   }
-
-  @include mobile-only {
-    width: 36px;
-    height: 36px;
-    margin-top: -18px;
-
-    &:after {
-      font-size: 14px;
-    }
-  }
 }
 
 // 左右按鈕位置
 :deep(.swiper-button-prev) {
-  left: 15px;
-
   @include tablet {
     left: 20px;
   }
+  left: 15px;
 }
 
 :deep(.swiper-button-next) {
-  right: 15px;
-
   @include tablet {
     right: 20px;
   }
+  right: 15px;
 }
 
 // 分頁指示器
 :deep(.swiper-pagination) {
-  bottom: 15px;
-
   @include tablet {
     bottom: 20px;
   }
+  bottom: 15px;
 }
 
 :deep(.swiper-pagination-bullet) {
@@ -626,7 +588,7 @@ const mainCards = ref([
 
 :deep(.swiper-pagination-bullet-active) {
   background: $accent-color-2;
-  transform: scale(1.3);
   box-shadow: 0 2px 8px rgba(230, 168, 107, 0.4);
+  transform: scale(1.3);
 }
 </style>

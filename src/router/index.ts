@@ -3,6 +3,7 @@ import Home from '../components/Home.vue'
 import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../components/games/FoodWheel.vue'
 import DropBlock from '../components/games/DropBlock.vue'
+import CheckList from '../components/itinerary/CheckList.vue'
 import Itinerary from '../components/itinerary/Itinerary.vue'
 import ItineraryDetail from '../components/itinerary/ItineraryDetail.vue'
 import TravelMap from '../components/travel/TravelMap.vue'
@@ -49,6 +50,18 @@ const routes = [
           breadcrumb: [
             { text: '行程規劃', icon: '🗓️', path: '/itinerary' },
             { text: '詳細行程', icon: '📋' }
+          ]
+        }
+      },
+      {
+        path: 'checklist',
+        name: 'CheckList',
+        component: CheckList,
+        meta: {
+          title: '攜帶清單',
+          showBreadcrumb: true,
+          breadcrumb: [
+            { text: '攜帶清單', icon: '📝' }
           ]
         }
       },

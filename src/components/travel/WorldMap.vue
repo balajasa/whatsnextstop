@@ -460,7 +460,7 @@ onMounted(async () => {
   await loadTravels()
   await loadWorldData()
   initMap()
-  
+
   // 監聽視窗大小變化
   if (typeof window !== 'undefined') {
     window.addEventListener('resize', handleResize)
@@ -484,23 +484,21 @@ onUnmounted(() => {
 // 地圖 SVG 容器 (Mobile First) - 使用主題配色
 // ===================================
 .world-map-svg-container {
+  @include tablet {
+    border-radius: $border-radius-md;
+  }
+  @include desktop {
+    border-radius: $border-radius-lg;
+    box-shadow:
+      inset 0 2px 4px rgba(74, 85, 104, 0.1),
+      0 4px 12px rgba(74, 85, 104, 0.15);
+  }
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%); // 古典海藍漸層
   border-radius: $border-radius-sm;
-
-  @include tablet {
-    border-radius: $border-radius-md;
-  }
-
-  @include desktop {
-    border-radius: $border-radius-lg;
-    box-shadow: 
-      inset 0 2px 4px rgba(74, 85, 104, 0.1),
-      0 4px 12px rgba(74, 85, 104, 0.15);
-  }
+  background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%); // 古典海藍漸層
 }
 
 .world-map-svg {
@@ -514,70 +512,71 @@ onUnmounted(() => {
 // 國家樣式 - 使用主題配色系統
 // ===================================
 :deep(.country) {
-  cursor: pointer;
-  transition:
-    fill 0.3s ease-in-out,
-    stroke-width 0.2s ease,
-    filter 0.2s ease;
-
-  // 基礎樣式 - 古銅色邊框
-  stroke: #8B4513; // 古銅色
-  stroke-width: 0.5;
-
   @include tablet {
     stroke-width: 0.8;
   }
-
   @include desktop {
-    stroke-width: 1;
     transition:
       fill 0.2s ease-in-out,
       stroke-width 0.2s ease,
       transform 0.2s ease,
       filter 0.2s ease;
+
+    stroke-width: 1;
   }
+  cursor: pointer;
+  transition:
+    fill 0.3s ease-in-out,
+    stroke-width 0.2s ease,
+    filter 0.2s ease;
+  // 基礎樣式 - 古銅色邊框
+
+  stroke: #8B4513; // 古銅色
+  stroke-width: 0.5;
 
   // Hover 效果增強
   &:hover {
-    stroke-width: 1.5;
-    filter: brightness(1.05) saturate(1.1);
-
     @include tablet {
       stroke-width: 2;
     }
-
     @include desktop {
-      stroke-width: 2.5;
-      transform: scale(1.002); // 微妙的放大效果
       filter: brightness(1.08) saturate(1.15);
+      transform: scale(1.002); // 微妙的放大效果
+
+      stroke-width: 2.5;
     }
+    filter: brightness(1.05) saturate(1.1);
+
+    stroke-width: 1.5;
   }
 
   // 已訪問國家的特殊邊框 - 探險紅色系
   &[data-visited='true'] {
-    stroke: #A93226; // 深探險紅
-    stroke-width: 1;
+    @include tablet {
+      filter: drop-shadow(0 0 8px rgba(192, 57, 43, 0.4));
+
+      stroke-width: 1.2;
+    }
+    @include desktop {
+      filter: drop-shadow(0 0 10px rgba(192, 57, 43, 0.5));
+
+      stroke-width: 1.5;
+    }
     filter: drop-shadow(0 0 6px rgba(192, 57, 43, 0.3));
 
-    @include tablet {
-      stroke-width: 1.2;
-      filter: drop-shadow(0 0 8px rgba(192, 57, 43, 0.4));
-    }
-
-    @include desktop {
-      stroke-width: 1.5;
-      filter: drop-shadow(0 0 10px rgba(192, 57, 43, 0.5));
-    }
+    stroke: #A93226; // 深探險紅
+    stroke-width: 1;
 
     &:hover {
-      stroke: #E74C3C; // 亮探險紅
-      stroke-width: 2;
+      @include desktop {
+        filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.7));
+
+        stroke-width: 3;
+      }
       filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6));
 
-      @include desktop {
-        stroke-width: 3;
-        filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.7));
-      }
+      stroke: #E74C3C; // 亮探險紅
+      stroke-width: 2;
     }
   }
 
@@ -596,9 +595,9 @@ onUnmounted(() => {
 // 手機版優化
 @include mobile-only {
   .world-map-svg-container {
-    background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%);
     border-radius: $border-radius-sm;
-    box-shadow: 
+    background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%);
+    box-shadow:
       0 2px 8px rgba(41, 128, 185, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
@@ -607,8 +606,9 @@ onUnmounted(() => {
     stroke-width: 0.3;
 
     &:hover {
-      stroke-width: 1;
       filter: brightness(1.08);
+
+      stroke-width: 1;
     }
 
     &[data-visited='true'] {
@@ -624,7 +624,7 @@ onUnmounted(() => {
 // 平板版優化
 @include tablet-only {
   .world-map-svg-container {
-    box-shadow: 
+    box-shadow:
       inset 0 1px 3px rgba(74, 85, 104, 0.08),
       0 2px 10px $shadow-medium;
   }
@@ -633,40 +633,40 @@ onUnmounted(() => {
 // 桌面版增強效果 - 古地圖風格
 @include desktop {
   .world-map-svg-container {
-    background: 
-      radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 50%),
-      linear-gradient(135deg, #2980B9 0%, #1f618d 50%, #17527a 100%);
     position: relative;
+    background:
+      radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+      linear-gradient(135deg, #2980B9 0%, #1f618d 50%, #17527a 100%);
 
     // 古地圖質感邊框
     &::before {
-      content: '';
       position: absolute;
       top: 0;
-      left: 0;
       right: 0;
+      left: 0;
       height: 3px;
-      background: linear-gradient(90deg, 
-        transparent, 
-        rgba(139, 69, 19, 0.3) 20%, 
-        rgba(244, 228, 188, 0.2) 50%,
-        rgba(139, 69, 19, 0.3) 80%, 
-        transparent);
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(139, 69, 19, 0.3) 20%,
+          rgba(244, 228, 188, 0.2) 50%,
+          rgba(139, 69, 19, 0.3) 80%,
+          transparent);
+      content: '';
       pointer-events: none;
     }
 
     &::after {
-      content: '';
       position: absolute;
+      right: 0;
       bottom: 0;
       left: 0;
-      right: 0;
       height: 2px;
-      background: linear-gradient(90deg, 
-        transparent, 
-        rgba(192, 57, 43, 0.2) 30%, 
-        rgba(169, 50, 38, 0.3) 70%, 
-        transparent);
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(192, 57, 43, 0.2) 30%,
+          rgba(169, 50, 38, 0.3) 70%,
+          transparent);
+      content: '';
       pointer-events: none;
     }
   }
@@ -678,10 +678,10 @@ onUnmounted(() => {
 
     &:not([data-visited='true']) {
       // 未訪問國家的羊皮紙質感
-      background: 
-        radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
         linear-gradient(45deg, #F4E4BC 0%, #F0D89E 100%);
-      
+
       &:hover {
         filter: brightness(1.1) sepia(0.1);
         transform: scale(1.002);
@@ -691,20 +691,20 @@ onUnmounted(() => {
     &[data-visited='true'] {
       // 已訪問國家的探險質感
       position: relative;
-      
+
       &::before {
-        content: '';
         position: absolute;
         top: 50%;
         left: 50%;
         width: 8px;
         height: 8px;
-        background: radial-gradient(circle, rgba(231, 76, 60, 0.8) 0%, transparent 70%);
-        transform: translate(-50%, -50%);
         border-radius: 50%;
+        background: radial-gradient(circle, rgba(231, 76, 60, 0.8) 0%, transparent 70%);
+        content: '';
+        transform: translate(-50%, -50%);
         pointer-events: none;
       }
-      
+
       &:hover {
         filter: brightness(1.15) saturate(1.3);
         transform: scale(1.005);
@@ -729,10 +729,11 @@ onUnmounted(() => {
     }
 
     &[data-visited='true'] {
+
       // 更強的視覺回饋
       &:hover {
-        transform: scale(1.003);
         box-shadow: 0 0 25px rgba(49, 151, 149, 0.6);
+        transform: scale(1.003);
       }
     }
   }
@@ -743,35 +744,33 @@ onUnmounted(() => {
 // ===================================
 .world-map-svg-container {
   &.loading {
-    background: linear-gradient(135deg, $bg-primary, lighten($bg-primary, 3%));
+    background: linear-gradient(135deg, rgba(245, 247, 250, 1), rgba(248, 250, 251, 1));
 
     &::after {
-      content: '載入地圖中...';
       @include absolute-center;
-      color: $text-muted;
-      font-size: 14px;
-      font-weight: 500;
-
       @include tablet {
         font-size: 16px;
       }
+      color: $text-muted;
+      content: '載入地圖中...';
+      font-weight: 500;
+      font-size: 14px;
     }
   }
 
   &.error {
-    background: lighten($timeline-recent, 45%);
-    border: 2px dashed lighten($timeline-recent, 20%);
+    border: 2px dashed rgba(238, 194, 153, 1);
+    background: rgba(247, 230, 212, 1);
 
     &::after {
-      content: '地圖載入失敗';
       @include absolute-center;
-      color: $timeline-recent;
-      font-size: 14px;
-      font-weight: 600;
-
       @include tablet {
         font-size: 16px;
       }
+      color: $timeline-recent;
+      content: '地圖載入失敗';
+      font-weight: 600;
+      font-size: 14px;
     }
   }
 }

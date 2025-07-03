@@ -24,29 +24,14 @@
         </div>
 
         <!-- 地圖組件 -->
-        <WorldMap
-          ref="worldMapRef"
-          :width="width"
-          :height="height"
-          :min-scale="minScale"
-          :max-scale="maxScale"
-          @map-ready="onMapReady"
-          @view-change="onViewChange"
-          @country-hover="onCountryHover"
-          @country-click="onCountryClick"
-          @status-change="onStatusChange"
-        />
+        <WorldMap ref="worldMapRef" :width="width" :height="height" :min-scale="minScale" :max-scale="maxScale"
+          @map-ready="onMapReady" @view-change="onViewChange" @country-hover="onCountryHover"
+          @country-click="onCountryClick" @status-change="onStatusChange" />
 
         <!-- 旅遊圖釘組件 -->
-        <MapPin
-          v-if="mapProjection && mapWorldData"
-          :projection="mapProjection"
-          :world-data="mapWorldData"
-          :current-transform="currentTransform"
-          :current-scale="currentScale"
-          @pin-selected="handlePinSelected"
-          @panel-close="handlePanelClose"
-        />
+        <MapPin v-if="mapProjection && mapWorldData" :projection="mapProjection" :world-data="mapWorldData"
+          :current-transform="currentTransform" :current-scale="currentScale" @pin-selected="handlePinSelected"
+          @panel-close="handlePanelClose" />
 
         <!-- 背景遮罩 -->
         <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
@@ -219,37 +204,32 @@ defineExpose({
 // 主容器 (Mobile First)
 // ===================================
 .world-map-container {
+  @include tablet {
+    max-width: 1200px;
+  }
+  @include desktop {
+    border-radius: $border-radius-xl;
+  }
+  @include large-desktop {
+    max-width: 1400px;
+  }
   margin: 0 auto;
   max-width: 1000px;
   border-radius: $border-radius-lg;
   background: $bg-card;
   box-shadow: $shadow-medium;
-
-  @include tablet {
-    max-width: 1200px;
-  }
-
-  @include desktop {
-    border-radius: $border-radius-xl;
-  }
-
-  @include large-desktop {
-    max-width: 1400px;
-  }
 }
 
 .world-map {
-  position: relative;
-  padding: $spacing-md;
-  max-width: 100%;
-
   @include tablet {
     padding: $spacing-lg;
   }
-
   @include desktop {
     padding: $spacing-xl;
   }
+  position: relative;
+  padding: $spacing-md;
+  max-width: 100%;
 }
 
 // ===================================
@@ -257,43 +237,43 @@ defineExpose({
 // ===================================
 .controls {
   @include flex-between;
-  flex-wrap: wrap;
-  gap: $spacing-sm;
-  margin-bottom: $spacing-md;
-
   @include tablet {
-    gap: $spacing-md;
     margin-bottom: $spacing-lg;
-  }
 
+    gap: $spacing-md;
+  }
   @include mobile-only {
-    flex-direction: column;
     align-items: stretch;
+    flex-direction: column;
+
     gap: $spacing-xs;
   }
+  flex-wrap: wrap;
+  margin-bottom: $spacing-md;
+
+  gap: $spacing-sm;
 }
 
 .reset-btn {
+  @include tablet {
+    padding: $spacing-md $spacing-lg;
+    border-radius: $border-radius-md;
+    font-size: 15px;
+  }
   padding: $spacing-sm $spacing-md;
   border: none;
   border-radius: $border-radius-sm;
   background: $primary-color;
   color: $text-white;
-  font-size: 14px;
   font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
-  @include tablet {
-    padding: $spacing-md $spacing-lg;
-    font-size: 15px;
-    border-radius: $border-radius-md;
-  }
-
   &:hover {
-    background: darken($primary-color, 8%);
-    transform: translateY(-1px);
+    background: rgba(60, 70, 84, 1);
     box-shadow: $shadow-light;
+    transform: translateY(-1px);
   }
 
   &:active {
@@ -302,30 +282,35 @@ defineExpose({
 }
 
 .instructions {
-  color: $text-secondary;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 400;
-
   @include tablet {
-    font-size: 14px;
     text-align: right;
+    font-size: 14px;
   }
-
   @include desktop {
     font-size: 15px;
   }
-
   @include mobile-only {
     text-align: center;
     font-size: 12px;
   }
+  color: $text-secondary;
+  text-align: center;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 // ===================================
 // 地圖容器
 // ===================================
 .map-container {
+  @include tablet {
+    border-width: 2px;
+    border-radius: $border-radius-lg;
+  }
+  @include desktop {
+    @include flex-center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  }
   position: relative;
   overflow: hidden;
   margin: 0 auto;
@@ -333,51 +318,51 @@ defineExpose({
   border: 1px solid $border-light;
   border-radius: $border-radius-md;
   background: $bg-primary;
-
-  @include tablet {
-    border-radius: $border-radius-lg;
-    border-width: 2px;
-  }
-
-  @include desktop {
-    @include flex-center;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-  }
 }
 
 // ===================================
 // 縮放控制
 // ===================================
 .zoom-controls {
+  @include tablet {
+    top: $spacing-md;
+    left: $spacing-md;
+    padding: $spacing-sm;
+
+    gap: $spacing-sm;
+  }
+  @include desktop {
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-medium;
+  }
   position: absolute;
   top: $spacing-sm;
   left: $spacing-sm;
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
   padding: $spacing-xs;
+  border: 1px solid $border-light;
   border-radius: $border-radius-md;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
   box-shadow: $shadow-light;
-  border: 1px solid $border-light;
 
-  @include tablet {
-    top: $spacing-md;
-    left: $spacing-md;
-    gap: $spacing-sm;
-    padding: $spacing-sm;
-  }
-
-  @include desktop {
-    border-radius: $border-radius-lg;
-    box-shadow: $shadow-medium;
-  }
+  gap: $spacing-xs;
+  backdrop-filter: blur(8px);
 }
 
 .zoom-btn {
   @include flex-center;
+  @include tablet {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  @include desktop {
+    width: 40px;
+    height: 40px;
+    border-radius: $border-radius-md;
+  }
   width: 32px;
   height: 32px;
   border: 1px solid $border-primary;
@@ -389,21 +374,9 @@ defineExpose({
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
-  @include tablet {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
-
-  @include desktop {
-    width: 40px;
-    height: 40px;
-    border-radius: $border-radius-md;
-  }
-
   &:hover:not(:disabled) {
     border-color: $accent-color-1;
-    background: lighten($accent-color-1, 45%);
+    background: rgba(212, 241, 239, 1);
     color: $accent-color-1;
     transform: scale(1.05);
   }
@@ -416,69 +389,64 @@ defineExpose({
     border-color: $border-muted;
     background: $bg-primary;
     color: $text-light;
-    cursor: not-allowed;
     opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
 .zoom-level {
+  @include tablet {
+    font-size: 11px;
+  }
   padding: $spacing-xs 0;
   color: $text-muted;
   text-align: center;
   font-weight: 600;
   font-size: 10px;
-
-  @include tablet {
-    font-size: 11px;
-  }
 }
 
 // ===================================
 // 狀態顯示
 // ===================================
 .map-status {
+  @include tablet {
+    padding: $spacing-lg;
+    font-size: 15px;
+  }
+  @include desktop {
+    border-radius: $border-radius-lg;
+  }
   margin-bottom: $spacing-lg;
   padding: $spacing-md;
   border-radius: $border-radius-md;
   background: $bg-stats;
   color: $text-secondary;
   font-size: 14px;
-
-  @include tablet {
-    padding: $spacing-lg;
-    font-size: 15px;
-  }
-
-  @include desktop {
-    border-radius: $border-radius-lg;
-  }
 }
 
 .country-info-container {
-  min-height: 80px; // 固定容器高度
   margin-top: 20px;
+  min-height: 80px; // 固定容器高度
 }
 
 .country-info {
-  padding: $spacing-md;
-  border-radius: $border-radius-md;
-  background: lighten($accent-color-1, 45%);
-  color: $accent-color-1;
-  font-size: 14px;
-  font-weight: 500;
-  border: 1px solid lighten($accent-color-1, 35%);
   @include flex-center;
-  justify-content: center;
-
   @include tablet {
     min-height: 60px;
     // padding: $spacing-lg;
     font-size: 15px;
   }
-
   @include desktop {
     border-radius: $border-radius-lg;
   }
+  justify-content: center;
+  padding: $spacing-md;
+  border: 1px solid lighten($accent-color-1, 35%);
+  border-radius: $border-radius-md;
+  background: rgba(212, 241, 239, 1);
+  color: $accent-color-1;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 // ===================================
@@ -493,6 +461,7 @@ defineExpose({
   height: 100%;
   background: $overlay-bg;
   pointer-events: auto;
+
   backdrop-filter: blur(2px);
 }
 

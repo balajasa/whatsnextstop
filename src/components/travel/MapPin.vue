@@ -1,22 +1,12 @@
 <template>
   <div class="travel-pins-overlay">
     <!-- 圖釘們 -->
-    <div
-      v-for="pin in processedPins"
-      :key="pin.country"
-      class="travel-pin"
-      :class="`visits-${Math.min(pin.visitCount, 3)}`"
-      :style="pinStyle(pin)"
-      @click="handlePinClick(pin)"
-    >
+    <div v-for="pin in processedPins" :key="pin.country" class="travel-pin"
+      :class="`visits-${Math.min(pin.visitCount, 3)}`" :style="pinStyle(pin)" @click="handlePinClick(pin)">
       <!-- SVG 圖釘 -->
       <svg viewBox="0 0 30 40" class="pin-svg">
-        <path
-          d="M15 5 C8 5, 3 10, 3 16 C3 22, 15 35, 15 35 S27 22, 27 16 C27 10, 22 5, 15 5 Z"
-          :fill="getPinColor(pin.visitCount)"
-          stroke="#fff"
-          stroke-width="2"
-        />
+        <path d="M15 5 C8 5, 3 10, 3 16 C3 22, 15 35, 15 35 S27 22, 27 16 C27 10, 22 5, 15 5 Z"
+          :fill="getPinColor(pin.visitCount)" stroke="#fff" stroke-width="2" />
         <circle cx="15" cy="16" r="6" :fill="getPinHighlight(pin.visitCount)" opacity="0.3" />
       </svg>
 
@@ -157,7 +147,7 @@ watch(
   { deep: true }
 )
 
-// 圖釘樣式計算
+// 圖釘樣式計算 - 修改為適度縮放
 const pinStyle = (pin: ProcessedPin): any => {
   // 應用地圖內部變換
   const mapTransformedX = pin.x * props.currentScale + props.currentTransform.x
@@ -171,9 +161,10 @@ const pinStyle = (pin: ProcessedPin): any => {
   const finalX = scaledX + svgOffset.value.x
   const finalY = scaledY + svgOffset.value.y
 
-  // 圖釘固定大小（考慮所有縮放因子）
-  const pinScale =
-    1 / (props.currentScale * Math.min(containerScale.value.x, containerScale.value.y))
+  // 圖釘適度縮放：最小 0.8x，最大 1.5x
+  // 當地圖縮放1x時，圖釘是1x
+  // 當地圖縮放3x時，圖釘約是1.4x
+  const pinScale = Math.max(0.8, Math.min(1.5, 0.7 + props.currentScale * 0.3))
 
   return {
     position: 'absolute' as const,
@@ -266,27 +257,34 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   pointer-events: auto;
+  // 確保最小點擊區域
+  min-width: 20px;
+  min-height: 28px;
 
   @include tablet {
     width: 28px;
     height: 36px;
+    min-width: 24px;
+    min-height: 32px;
   }
 
   @include desktop {
     width: 30px;
     height: 40px;
+    min-width: 26px;
+    min-height: 36px;
   }
 
   &:hover {
-    transform: translate(-50%, -100%) scale(1.15);
+    transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.15));
     z-index: 10;
 
     @include tablet {
-      transform: translate(-50%, -100%) scale(1.2);
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.2));
     }
 
     @include desktop {
-      transform: translate(-50%, -100%) scale(1.25);
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.25));
     }
 
     .pin-svg {
@@ -299,10 +297,10 @@ onUnmounted(() => {
   }
 
   &:active {
-    transform: translate(-50%, -100%) scale(1.05);
+    transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.05));
 
     @include tablet {
-      transform: translate(-50%, -100%) scale(1.1);
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.1));
     }
   }
 
@@ -480,13 +478,15 @@ onUnmounted(() => {
   .travel-pin {
     width: 28px;
     height: 36px;
+    min-width: 24px;
+    min-height: 32px;
 
     &:hover {
-      transform: translate(-50%, -100%) scale(1.1);
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.1));
     }
 
     &:active {
-      transform: translate(-50%, -100%) scale(1);
+      transform: translate(-50%, -100%) scale(var(--current-pin-scale, 1));
     }
   }
 
@@ -546,7 +546,7 @@ onUnmounted(() => {
 @include large-desktop {
   .travel-pin {
     &:hover {
-      transform: translate(-50%, -100%) scale(1.3);
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.3));
 
       .pin-svg {
         filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6));
@@ -561,10 +561,12 @@ onUnmounted(() => {
 
 // 脈衝發光動畫 (僅桌面版)
 @keyframes pulse-glow {
+
   0%,
   100% {
     filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
   }
+
   50% {
     filter: drop-shadow(0 3px 15px rgba(56, 178, 172, 0.4));
   }
