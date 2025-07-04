@@ -9,8 +9,9 @@ import { ref, onMounted, nextTick, watch, readonly, computed } from 'vue'
 import * as d3 from 'd3'
 import _ from 'lodash'
 import type { Ref } from 'vue'
-import type { Transform, DragBounds, MapEvents, WorldMapProps } from '../types/ITravelMap'
-import { getTravelsData } from '../../composables/usagi'
+import type { Transform, DragBounds, MapEvents, WorldMapProps, TravelData } from '../../types/travel-map'
+import { useTravelStore } from '../../stores/useTravelStore'
+import { storeToRefs } from 'pinia'
 import { countryTranslation } from '../../composables/countryTranslation'
 
 const props = withDefaults(defineProps<WorldMapProps>(), {
@@ -40,19 +41,20 @@ const baseScale: Ref<number | null> = ref(null)
 const baseTranslate: Ref<[number, number] | null> = ref(null)
 
 // 使用旅遊資料和國家翻譯
-const { travels, loadTravels } = getTravelsData()
+const travelStore = useTravelStore()
+const { travels } = storeToRefs(travelStore)
 const { getCountryEnglishName } = countryTranslation()
 
 // 計算去過的國家集合（使用 Set 提升查詢效能）
 const visitedCountriesSet = computed(() => {
   const countries = new Set<string>()
 
-  travels.value.forEach(travel => {
+  travels.value.forEach((travel: TravelData) => {
     // 處理 country 可能是字串或陣列
     const countryList = Array.isArray(travel.country) ? travel.country : [travel.country]
 
     // 將每個國家標準化後加入 Set
-    countryList.forEach(country => {
+    countryList.forEach((country: string) => {
       const standardName = getCountryEnglishName(country)
       countries.add(standardName)
     })
@@ -437,13 +439,14 @@ const updateMapColors = (): void => {
 
 // 監聽旅遊資料變化，更新地圖顏色
 watch(
-  visitedCountriesSet,
-  () => {
-    if (worldData.value && g.value) {
+  travels,
+  (newTravels: TravelData[]) => {
+    if (newTravels.length > 0 && worldData.value && g.value) {
+      // 旅遊資料載入完成，更新地圖顏色
       updateMapColors()
     }
   },
-  { deep: true }
+  { immediate: true }
 )
 
 // 暴露方法給父組件
@@ -457,7 +460,7 @@ defineExpose({
 })
 
 onMounted(async () => {
-  await loadTravels()
+  await travelStore.loadTravels()
   await loadWorldData()
   initMap()
 
@@ -477,13 +480,17 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
-// ===================================
-// 地圖 SVG 容器 (Mobile First) - 使用主題配色
-// ===================================
 .world-map-svg-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  border-radius: $border-radius-sm;
+  background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%); // 古典海藍漸層
+
   @include tablet {
     border-radius: $border-radius-md;
   }
@@ -493,12 +500,6 @@ onUnmounted(() => {
       inset 0 2px 4px rgba(74, 85, 104, 0.1),
       0 4px 12px rgba(74, 85, 104, 0.15);
   }
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  border-radius: $border-radius-sm;
-  background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%); // 古典海藍漸層
 }
 
 .world-map-svg {
@@ -512,6 +513,13 @@ onUnmounted(() => {
 // 國家樣式 - 使用主題配色系統
 // ===================================
 :deep(.country) {
+  cursor: pointer;
+  transition: fill 0.3s ease-in-out,
+  stroke-width 0.2s ease,
+  filter 0.2s ease;
+  stroke: #8B4513; // 古銅色
+  stroke-width: 0.5;
+
   @include tablet {
     stroke-width: 0.8;
   }
@@ -521,62 +529,47 @@ onUnmounted(() => {
       stroke-width 0.2s ease,
       transform 0.2s ease,
       filter 0.2s ease;
-
     stroke-width: 1;
   }
-  cursor: pointer;
-  transition:
-    fill 0.3s ease-in-out,
-    stroke-width 0.2s ease,
-    filter 0.2s ease;
-  // 基礎樣式 - 古銅色邊框
 
-  stroke: #8B4513; // 古銅色
-  stroke-width: 0.5;
-
-  // Hover 效果增強
   &:hover {
+    filter: brightness(1.05) saturate(1.1);
+    stroke-width: 1.5;
+
     @include tablet {
       stroke-width: 2;
     }
     @include desktop {
       filter: brightness(1.08) saturate(1.15);
-      transform: scale(1.002); // 微妙的放大效果
-
+      transform: scale(1.002);
       stroke-width: 2.5;
     }
-    filter: brightness(1.05) saturate(1.1);
-
-    stroke-width: 1.5;
   }
 
   // 已訪問國家的特殊邊框 - 探險紅色系
   &[data-visited='true'] {
+    filter: drop-shadow(0 0 6px rgba(192, 57, 43, 0.3));
+    stroke: #A93226;
+    stroke-width: 1;
+
     @include tablet {
       filter: drop-shadow(0 0 8px rgba(192, 57, 43, 0.4));
-
       stroke-width: 1.2;
     }
     @include desktop {
       filter: drop-shadow(0 0 10px rgba(192, 57, 43, 0.5));
-
       stroke-width: 1.5;
     }
-    filter: drop-shadow(0 0 6px rgba(192, 57, 43, 0.3));
-
-    stroke: #A93226; // 深探險紅
-    stroke-width: 1;
 
     &:hover {
+      filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6));
+      stroke: #E74C3C;
+      stroke-width: 2;
+
       @include desktop {
         filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.7));
-
         stroke-width: 3;
       }
-      filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6));
-
-      stroke: #E74C3C; // 亮探險紅
-      stroke-width: 2;
     }
   }
 
@@ -589,7 +582,7 @@ onUnmounted(() => {
 }
 
 // ===================================
-// 響應式優化 - 針對不同裝置調整
+// 響應式
 // ===================================
 
 // 手機版優化
@@ -607,7 +600,6 @@ onUnmounted(() => {
 
     &:hover {
       filter: brightness(1.08);
-
       stroke-width: 1;
     }
 
@@ -729,7 +721,6 @@ onUnmounted(() => {
     }
 
     &[data-visited='true'] {
-
       // 更強的視覺回饋
       &:hover {
         box-shadow: 0 0 25px rgba(49, 151, 149, 0.6);
@@ -748,13 +739,14 @@ onUnmounted(() => {
 
     &::after {
       @include absolute-center;
-      @include tablet {
-        font-size: 16px;
-      }
       color: $text-muted;
       content: '載入地圖中...';
       font-weight: 500;
       font-size: 14px;
+
+      @include tablet {
+        font-size: 16px;
+      }
     }
   }
 
@@ -764,13 +756,14 @@ onUnmounted(() => {
 
     &::after {
       @include absolute-center;
-      @include tablet {
-        font-size: 16px;
-      }
       color: $timeline-recent;
       content: '地圖載入失敗';
       font-weight: 600;
       font-size: 14px;
+
+      @include tablet {
+        font-size: 16px;
+      }
     }
   }
 }

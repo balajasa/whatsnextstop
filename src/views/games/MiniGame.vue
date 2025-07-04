@@ -54,12 +54,12 @@
 </template>
 
 <script setup lang="ts">
-import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主容器

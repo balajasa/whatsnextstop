@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { BreadcrumbItem, BreadcrumbProps } from '../types/ILayout'
+import { BreadcrumbItem, BreadcrumbProps } from '../../types/layout'
 
 const route = useRoute()
 
@@ -68,8 +68,8 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 麵包屑導航

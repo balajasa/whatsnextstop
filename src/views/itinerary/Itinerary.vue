@@ -16,12 +16,8 @@
       <div class="nav-menu" v-show="navOpen">
         <div class="nav-section">
           <h4>📋 行程資訊</h4>
-          <a
-            href="#itinerary"
-            @click="scrollToSection('itinerary')"
-            :class="{ active: activeSection === 'itinerary' }"
-            >行程內容</a
-          >
+          <a href="#itinerary" @click="scrollToSection('itinerary')"
+            :class="{ active: activeSection === 'itinerary' }">行程內容</a>
         </div>
       </div>
     </nav>
@@ -32,8 +28,7 @@
       <section id="itinerary" class="schedule-section itinerary-section">
         <div class="section-container">
           <div class="iframe-container">
-            <div
-              style="
+            <div style="
                 position: relative;
                 width: 100%;
                 height: 0;
@@ -45,11 +40,8 @@
                 overflow: hidden;
                 border-radius: 8px;
                 will-change: transform;
-              "
-            >
-              <iframe
-                loading="lazy"
-                style="
+              ">
+              <iframe loading="lazy" style="
                   position: absolute;
                   width: 100%;
                   height: 100%;
@@ -58,11 +50,8 @@
                   border: none;
                   padding: 0;
                   margin: 0;
-                "
-                src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed"
-                allowfullscreen
-                allow="fullscreen"
-              >
+                " src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed" allowfullscreen
+                allow="fullscreen">
               </iframe>
             </div>
           </div>
@@ -79,7 +68,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
-import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
 const route = useRoute()
 
@@ -164,8 +153,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主容器

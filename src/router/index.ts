@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../components/Home.vue'
+import Home from '../views/Home.vue'
 import MainContent from '../components/layout/MainContent.vue'
-import FoodWheel from '../components/games/FoodWheel.vue'
-import DropBlock from '../components/games/DropBlock.vue'
-import CheckList from '../components/itinerary/CheckList.vue'
-import Itinerary from '../components/itinerary/Itinerary.vue'
-import ItineraryDetail from '../components/itinerary/ItineraryDetail.vue'
-import TravelMap from '../components/travel/TravelMap.vue'
-import TravelTrace from '../components/travel/TravelTrace.vue'
-import MiniGame from '../components/games/MiniGame.vue'
+import FoodWheel from '../views/games/FoodWheel.vue'
+import DropBlock from '../views/games/DropBlock.vue'
+import CheckList from '../views/itinerary/CheckList.vue'
+import Itinerary from '../views/itinerary/Itinerary.vue'
+import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
+import TravelMap from '../views/travel/TravelMap.vue'
+import TravelTrace from '../views/travel/TravelTrace.vue'
+import MiniGame from '../views/games/MiniGame.vue'
 
 const routes = [
   {

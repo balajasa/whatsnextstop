@@ -42,7 +42,7 @@ const progressText = computed(() => `${Math.round(props.progress)}% of ${props.t
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
+@use '@/assets/styles/variables' as *;
 
 .blocks-progress {
   background: #4A5568;

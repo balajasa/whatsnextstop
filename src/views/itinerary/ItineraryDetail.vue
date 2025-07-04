@@ -77,8 +77,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
-import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
-import { InfoSection } from '../types/IItinerary'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import { InfoSection } from '../../types/itinerary'
 
 const route = useRoute()
 
@@ -222,8 +222,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主容器
@@ -239,6 +239,13 @@ onUnmounted(() => {
 // 頁面標題
 // ===================================
 .itinerary-detail-title {
+  margin: $spacing-lg 0 $spacing-xl;
+  padding: 0 $spacing-md;
+  color: $text-primary;
+  text-align: center;
+  font-weight: 700;
+  font-size: 28px;
+
   @include tablet {
     margin: $spacing-xl 0 $spacing-2xl;
     font-size: 32px;
@@ -246,18 +253,16 @@ onUnmounted(() => {
   @include desktop {
     font-size: 36px;
   }
-  margin: $spacing-lg 0 $spacing-xl;
-  padding: 0 $spacing-md;
-  color: $text-primary;
-  text-align: center;
-  font-weight: 700;
-  font-size: 28px;
 }
 
 // ===================================
 // 主要內容區域
 // ===================================
 .itinerary-detail-schedule-content {
+  margin: 0 auto;
+  padding: 0 $spacing-md $spacing-xl;
+  max-width: 750px;
+
   @include tablet {
     padding: 0 $spacing-lg $spacing-2xl;
   }
@@ -267,9 +272,6 @@ onUnmounted(() => {
   @include large-desktop {
     max-width: 1400px;
   }
-  margin: 0 auto;
-  padding: 0 $spacing-md $spacing-xl;
-  max-width: 750px;
 }
 
 // ===================================
@@ -291,15 +293,16 @@ onUnmounted(() => {
 // 圖片容器
 // ===================================
 .itinerary-detail-image-container {
-  @include tablet {
-    margin-bottom: $spacing-xl;
-    border-radius: $border-radius-xl;
-  }
   overflow: hidden;
   margin-bottom: $spacing-lg;
   border-radius: $border-radius-lg;
   background: $bg-card;
   box-shadow: 0 8px 32px $shadow-medium;
+
+  @include tablet {
+    margin-bottom: $spacing-xl;
+    border-radius: $border-radius-xl;
+  }
 
   &:last-child {
     margin-bottom: 0;
@@ -322,26 +325,28 @@ onUnmounted(() => {
 // ===================================
 .itinerary-detail-iframe-section {
   .itinerary-detail-section-container {
-    @include tablet {
-      border-radius: $border-radius-xl;
-    }
     overflow: hidden;
     border-radius: $border-radius-lg;
     background: $bg-card;
     box-shadow: 0 8px 32px $shadow-medium;
+
+    @include tablet {
+      border-radius: $border-radius-xl;
+    }
   }
 }
 
 .itinerary-detail-iframe-container {
+  position: relative;
+  min-height: 600px;
+  width: 100%;
+
   @include tablet {
     min-height: 700px;
   }
   @include desktop {
     min-height: 800px;
   }
-  position: relative;
-  min-height: 600px;
-  width: 100%;
 }
 
 .itinerary-detail-iframe {
@@ -356,18 +361,19 @@ onUnmounted(() => {
 // 浮動導航
 // ===================================
 .itinerary-detail-floating-nav {
-  @include tablet {
-    right: $spacing-lg;
-  }
-  @include desktop {
-    right: $spacing-xl;
-  }
   position: fixed;
   top: 50%;
   right: $spacing-md;
   z-index: 100;
   transition: all 0.3s ease-in-out;
   transform: translateY(-50%);
+
+  @include tablet {
+    right: $spacing-lg;
+  }
+  @include desktop {
+    right: $spacing-xl;
+  }
 
   // 隱藏狀態
   &.itinerary-detail-nav-hidden {
@@ -380,10 +386,6 @@ onUnmounted(() => {
 // 導航切換按鈕
 .itinerary-detail-nav-toggle {
   @include flex-center;
-  @include tablet {
-    width: 52px;
-    height: 52px;
-  }
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -393,26 +395,28 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.2s ease;
 
+  @include tablet {
+    width: 52px;
+    height: 52px;
+  }
+
   &:hover {
-    background: #2d3748;
+    background: rgba(45, 55, 72, 1);
     box-shadow: 0 6px 20px $shadow-strong;
     transform: scale(1.1);
   }
 }
 
 .itinerary-detail-nav-icon {
+  font-size: 20px;
+
   @include tablet {
     font-size: 22px;
   }
-  font-size: 20px;
 }
 
 // 導航選單
 .itinerary-detail-nav-menu {
-  @include tablet {
-    padding: $spacing-lg;
-    min-width: 220px;
-  }
   position: absolute;
   top: 50%;
   right: 100%;
@@ -424,6 +428,11 @@ onUnmounted(() => {
   background: $bg-card;
   box-shadow: 0 8px 32px $shadow-medium;
   transform: translateY(-50%);
+
+  @include tablet {
+    padding: $spacing-lg;
+    min-width: 220px;
+  }
 
   // 小箭頭指向切換按鈕
   &::after {
@@ -447,22 +456,19 @@ onUnmounted(() => {
   }
 
   h4 {
-    @include tablet {
-      font-size: 15px;
-    }
     margin-bottom: $spacing-sm;
     padding-bottom: $spacing-xs;
     border-bottom: 1px solid $border-light;
     color: $text-secondary;
     font-weight: 600;
     font-size: 14px;
+
+    @include tablet {
+      font-size: 15px;
+    }
   }
 
   a {
-    @include tablet {
-      padding: $spacing-sm;
-      font-size: 15px;
-    }
     display: block;
     padding: $spacing-xs $spacing-sm;
     border-radius: $border-radius-sm;
@@ -470,6 +476,11 @@ onUnmounted(() => {
     text-decoration: none;
     font-size: 14px;
     transition: all 0.2s ease;
+
+    @include tablet {
+      padding: $spacing-sm;
+      font-size: 15px;
+    }
 
     &:hover {
       background: rgba(56, 178, 172, 0.1);
@@ -490,16 +501,6 @@ onUnmounted(() => {
 // ===================================
 .itinerary-detail-back-to-top {
   @include flex-center;
-  @include tablet {
-    right: $spacing-lg;
-    bottom: $spacing-xl;
-    width: 52px;
-    height: 52px;
-    font-size: 20px;
-  }
-  @include desktop {
-    right: $spacing-xl;
-  }
   position: fixed;
   right: $spacing-md;
   bottom: $spacing-lg;
@@ -515,8 +516,19 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.3s ease;
 
+  @include tablet {
+    right: $spacing-lg;
+    bottom: $spacing-xl;
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+  @include desktop {
+    right: $spacing-xl;
+  }
+
   &:hover {
-    background: #d4941b;
+    background: rgba(212, 148, 27, 1);
     box-shadow: 0 8px 25px rgba(230, 168, 107, 0.6);
     transform: translateY(-4px) scale(1.1);
   }

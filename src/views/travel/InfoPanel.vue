@@ -11,14 +11,7 @@
         </div>
       </div>
       <button class="close-btn" @click="handleClose">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -66,12 +59,8 @@
         </div>
         <div class="detail-content">
           <div class="visit-list" :class="{ scrollable: getVisitHistory(selectedPin).length > 3 }">
-            <div
-              v-for="(visit, index) in getVisitHistory(selectedPin)"
-              :key="visit"
-              class="visit-item"
-              :class="{ latest: index === 0 }"
-            >
+            <div v-for="(visit, index) in getVisitHistory(selectedPin)" :key="visit" class="visit-item"
+              :class="{ latest: index === 0 }">
               <div class="visit-date">{{ visit }}</div>
               <div v-if="index === 0" class="latest-badge">最新</div>
             </div>
@@ -83,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProcessedPin } from '../types/ITravelMap'
+import type { ProcessedPin } from '../../types/travel-map'
 import { countryTranslation } from '../../composables/countryTranslation'
 
 const { getCountryFlag } = countryTranslation()
@@ -140,37 +129,31 @@ const handleClose = () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
-// ===================================
-// 信息面板主體 (Mobile First)
-// ===================================
 .info-panel {
   @include absolute-center;
   z-index: $z-modal;
-  background: $bg-card;
-  border-radius: $border-radius-lg;
-  // box-shadow: $shadow-strong;
-  width: 260px;
+  overflow-y: auto;
   max-width: calc(100% - #{$spacing-lg});
   max-height: calc(100% - #{$spacing-lg});
-  overflow-y: auto;
-  pointer-events: auto;
+  width: 260px;
   border: 1px solid $border-light;
+  border-radius: $border-radius-lg;
+  background: $bg-card;
+  pointer-events: auto;
 
   @include tablet {
-    width: 320px;
     max-width: calc(100% - #{$spacing-xl});
     max-height: calc(100% - #{$spacing-xl});
+    width: 320px;
     border-radius: $border-radius-xl;
   }
-
   @include desktop {
     width: 360px;
     border: 2px solid $border-primary;
   }
-
   @include large-desktop {
     width: 380px;
   }
@@ -187,7 +170,6 @@ const handleClose = () => {
   @include tablet {
     padding: $spacing-lg $spacing-md $spacing-md;
   }
-
   @include desktop {
     padding: $spacing-xl $spacing-lg $spacing-lg;
   }
@@ -206,16 +188,15 @@ const handleClose = () => {
   @include flex-center;
   width: 28px;
   height: 28px;
-  background: $bg-stats;
-  border-radius: $border-radius-md;
-  box-shadow: $shadow-light;
   border: 1px solid $border-light;
+  border-radius: $border-radius-md;
+  background: $bg-stats;
+  box-shadow: $shadow-light;
 
   @include tablet {
     width: 36px;
     height: 36px;
   }
-
   @include desktop {
     width: 42px;
     height: 42px;
@@ -229,7 +210,6 @@ const handleClose = () => {
   @include tablet {
     font-size: 20px;
   }
-
   @include desktop {
     font-size: 24px;
   }
@@ -242,39 +222,37 @@ const handleClose = () => {
 
 .country-name {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
   color: $text-primary;
+  font-weight: 600;
+  font-size: 15px;
   line-height: 1.3;
 
   @include tablet {
     font-size: 17px;
   }
-
   @include desktop {
-    font-size: 18px;
     font-weight: 700;
+    font-size: 18px;
   }
 }
 
 .close-btn {
   @include flex-center;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
   border: none;
-  background: $bg-primary;
-  border-radius: 50%;
-  cursor: pointer;
-  color: $text-muted;
-  transition: all 0.2s ease-in-out;
   border: 1px solid $border-light;
-  flex-shrink: 0;
+  border-radius: 50%;
+  background: $bg-primary;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 
   @include tablet {
     width: 28px;
     height: 28px;
   }
-
   @include desktop {
     width: 32px;
     height: 32px;
@@ -282,9 +260,9 @@ const handleClose = () => {
   }
 
   &:hover {
+    border-color: $accent-color-1;
     background: $accent-color-1;
     color: $text-white;
-    border-color: $accent-color-1;
     transform: scale(1.1);
   }
 
@@ -300,7 +278,6 @@ const handleClose = () => {
       width: 14px;
       height: 14px;
     }
-
     @include desktop {
       width: 16px;
       height: 16px;
@@ -313,32 +290,30 @@ const handleClose = () => {
 // ===================================
 .visit-count-section {
   padding: $spacing-sm $spacing-md $spacing-md;
-  text-align: center;
   border-bottom: 1px solid $border-muted;
   background: linear-gradient(135deg, rgba($accent-color-1, 0.6), rgba($accent-color-1, 0.8));
+  text-align: center;
 
   @include tablet {
     padding: $spacing-md $spacing-lg $spacing-lg;
   }
-
   @include desktop {
     padding: $spacing-lg $spacing-xl $spacing-xl;
   }
 }
 
 .visit-count {
-  font-size: 18px;
-  font-weight: 600;
-  color: $text-primary;
   display: block;
+  color: $text-primary;
+  font-weight: 600;
+  font-size: 18px;
 
   @include tablet {
     font-size: 20px;
   }
-
   @include desktop {
-    font-size: 22px;
     font-weight: 700;
+    font-size: 22px;
   }
 }
 
@@ -351,7 +326,6 @@ const handleClose = () => {
   @include tablet {
     padding: $spacing-lg $spacing-md $spacing-lg;
   }
-
   @include desktop {
     padding: $spacing-xl $spacing-lg $spacing-xl;
   }
@@ -371,13 +345,13 @@ const handleClose = () => {
 
 .detail-header {
   @include flex-center;
-  gap: $spacing-xs;
-  margin-bottom: $spacing-xs;
   justify-content: flex-start;
+  margin-bottom: $spacing-xs;
+  gap: $spacing-xs;
 
   @include tablet {
-    gap: $spacing-sm;
     margin-bottom: $spacing-sm;
+    gap: $spacing-sm;
   }
 }
 
@@ -388,21 +362,19 @@ const handleClose = () => {
   @include tablet {
     font-size: 16px;
   }
-
   @include desktop {
     font-size: 18px;
   }
 }
 
 .detail-title {
-  font-weight: 600;
   color: $text-primary;
+  font-weight: 600;
   font-size: 13px;
 
   @include tablet {
     font-size: 14px;
   }
-
   @include desktop {
     font-size: 15px;
   }
@@ -422,19 +394,18 @@ const handleClose = () => {
 .info-pill {
   display: inline-block;
   padding: $spacing-xs $spacing-sm;
+  border: 1px solid rgba($primary-color, 0.25);
+  border-radius: $border-radius-lg;
   background: rgba($primary-color, 0.15);
   color: $primary-color;
-  border-radius: $border-radius-lg;
-  font-size: 12px;
   font-weight: 500;
-  border: 1px solid rgba($primary-color, 0.25);
+  font-size: 12px;
   transition: all 0.2s ease-in-out;
 
   @include tablet {
     padding: $spacing-sm $spacing-md;
     font-size: 13px;
   }
-
   @include desktop {
     border-radius: $border-radius-xl;
   }
@@ -455,43 +426,42 @@ const handleClose = () => {
 
 .city-tag {
   @include flex-center;
-  padding: $spacing-xs $spacing-sm;
-  background: linear-gradient(135deg, rgba($accent-color-1, 0.4), rgba($accent-color-1, 0.6));
-  color: rgba($accent-color-1, 0.8);
-  border: 1px solid rgba($accent-color-1, 0.3);
-  border-radius: $border-radius-lg;
-  font-size: 11px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
   position: relative;
   overflow: hidden;
+  padding: $spacing-xs $spacing-sm;
+  border: 1px solid rgba($accent-color-1, 0.3);
+  border-radius: $border-radius-lg;
+  background: linear-gradient(135deg, rgba($accent-color-1, 0.4), rgba($accent-color-1, 0.6));
+  color: rgba($accent-color-1, 0.8);
+  font-weight: 500;
+  font-size: 11px;
+  transition: all 0.2s ease-in-out;
 
   @include tablet {
     padding: $spacing-sm $spacing-md;
     font-size: 12px;
   }
-
   @include desktop {
     border-radius: $border-radius-xl;
     font-size: 13px;
   }
 
   &:hover {
-    background: linear-gradient(135deg, $accent-color-1, rgba($accent-color-1, 0.9));
-    color: $text-white;
     border-color: $accent-color-1;
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, $accent-color-1, rgba($accent-color-1, 0.9));
     box-shadow: $shadow-light;
+    color: $text-white;
+    transform: translateY(-1px);
   }
 
   &::before {
-    content: '';
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
+    left: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    content: '';
     opacity: 0;
     transition: opacity 0.2s ease;
   }
@@ -505,13 +475,13 @@ const handleClose = () => {
 // 訪問歷史列表
 // ===================================
 .visit-list {
-  max-height: none;
   overflow-y: visible;
+  max-height: none;
 
   &.scrollable {
-    max-height: 100px;
     overflow-y: auto;
     padding-right: $spacing-xs;
+    max-height: 100px;
 
     @include tablet {
       max-height: 120px;
@@ -523,13 +493,13 @@ const handleClose = () => {
     }
 
     &::-webkit-scrollbar-track {
-      background: $bg-primary;
       border-radius: $border-radius-sm;
+      background: $bg-primary;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $border-primary;
       border-radius: $border-radius-sm;
+      background: $border-primary;
 
       &:hover {
         background: $accent-color-1;
@@ -540,18 +510,17 @@ const handleClose = () => {
 
 .visit-item {
   @include flex-between;
-  padding: $spacing-xs $spacing-sm;
   margin-bottom: $spacing-xs;
-  background: $bg-stats;
-  border-radius: $border-radius-md;
+  padding: $spacing-xs $spacing-sm;
   border: 1px solid $border-light;
+  border-radius: $border-radius-md;
+  background: $bg-stats;
   transition: all 0.2s ease-in-out;
 
   @include tablet {
-    padding: $spacing-sm $spacing-md;
     margin-bottom: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
   }
-
   @include desktop {
     border-radius: $border-radius-lg;
   }
@@ -561,47 +530,45 @@ const handleClose = () => {
   }
 
   &.latest {
-    background: linear-gradient(135deg, rgba($accent-color-2, 0.15), rgba($accent-color-2, 0.18));
     border-color: rgba($accent-color-2, 0.3);
+    background: linear-gradient(135deg, rgba($accent-color-2, 0.15), rgba($accent-color-2, 0.18));
     box-shadow: $shadow-light;
   }
 
   &:hover {
-    transform: translateY(-1px);
     box-shadow: $shadow-light;
+    transform: translateY(-1px);
   }
 }
 
 .visit-date {
-  font-size: 11px;
-  font-weight: 500;
   color: $text-secondary;
+  font-weight: 500;
+  font-size: 11px;
 
   @include tablet {
     font-size: 12px;
   }
-
   @include desktop {
     font-size: 13px;
   }
 }
 
 .latest-badge {
-  font-size: 9px;
-  font-weight: 600;
-  color: $accent-color-2;
-  background: rgba($accent-color-2, 0.12);
   padding: 2px $spacing-xs;
+  border: 1px solid rgba($accent-color-2, 0.25);
   border-radius: $border-radius-sm;
+  background: rgba($accent-color-2, 0.12);
+  color: $accent-color-2;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border: 1px solid rgba($accent-color-2, 0.25);
+  font-weight: 600;
+  font-size: 9px;
 
   @include tablet {
-    font-size: 10px;
     padding: $spacing-xs $spacing-sm;
+    font-size: 10px;
   }
-
   @include desktop {
     border-radius: $border-radius-md;
   }
@@ -612,7 +579,6 @@ const handleClose = () => {
 // ===================================
 @include mobile-only {
   .info-panel {
-    // width: 240px;
     border-radius: $border-radius-md;
   }
 
@@ -686,8 +652,8 @@ const handleClose = () => {
   }
 
   .latest-badge {
-    font-size: 8px;
     padding: 1px 2px;
+    font-size: 8px;
   }
 }
 </style>

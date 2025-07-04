@@ -4,51 +4,39 @@
     <BreadcrumbNav />
     <div class="game-container">
       <!-- A區小方塊 (body石頭) -->
-      <div
-        v-if="gameState.taskA"
-        :class="[
-          'cube',
-          'cube-a',
-          { dropping: gameState.aDropping, expanded: gameState.aExpanded }
-        ]"
-        :style="{
-          backgroundImage: `url(${getStoneImage('body')})`,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center'
-        }"
-      />
+      <div v-if="gameState.taskA" :class="[
+        'cube',
+        'cube-a',
+        { dropping: gameState.aDropping, expanded: gameState.aExpanded }
+      ]" :style="{
+        backgroundImage: `url(${getStoneImage('body')})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center'
+      }" />
 
       <!-- B區小方塊 (head石頭) -->
-      <div
-        v-if="gameState.taskB"
-        :class="[
-          'cube',
-          'cube-b',
-          { dropping: gameState.bDropping, expanded: gameState.bExpanded }
-        ]"
-        :style="{
-          backgroundImage: `url(${getStoneImage('head')})`,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center'
-        }"
-      />
+      <div v-if="gameState.taskB" :class="[
+        'cube',
+        'cube-b',
+        { dropping: gameState.bDropping, expanded: gameState.bExpanded }
+      ]" :style="{
+        backgroundImage: `url(${getStoneImage('head')})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center'
+      }" />
 
       <!-- A區地圖 -->
-      <div
-        v-if="gameState.aExpanded"
-        :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]"
-      >
+      <div v-if="gameState.aExpanded"
+        :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]">
         <img src="@/assets/img/mini/reel_map_a.png" alt="地圖A" />
         <div class="overlay-text">{{ gameState.taskA }}</div>
       </div>
 
       <!-- B區地圖 -->
-      <div
-        v-if="gameState.bExpanded"
-        :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]"
-      >
+      <div v-if="gameState.bExpanded"
+        :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]">
         <img src="@/assets/img/mini/reel_map_b.png" alt="地圖B" />
         <div class="overlay-text">{{ gameState.taskB }}</div>
       </div>
@@ -72,11 +60,7 @@
         {{ gameState.aExpanded ? '已完成 A 區' : '掉落 A 區方塊' }}
       </button>
 
-      <button
-        @click="dropCube('B')"
-        :disabled="!gameState.aExpanded || gameState.bExpanded"
-        class="btn btn-primary"
-      >
+      <button @click="dropCube('B')" :disabled="!gameState.aExpanded || gameState.bExpanded" class="btn btn-primary">
         {{ gameState.bExpanded ? '已完成 B 區' : '掉落 B 區方塊' }}
       </button>
 
@@ -91,9 +75,9 @@
 
 <script setup lang="ts">
 import { reactive, nextTick, ref } from 'vue'
-import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
-import taskConfig from './taskConfig.json'
-import { GameState } from '../types/IMinigame'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import taskConfig from '../../constants/taskConfig.json'
+import { GameState } from '../../types/minigame'
 // 預先引入所有石頭圖片
 import body01 from '@/assets/img/stone/body_01.png'
 import body02 from '@/assets/img/stone/body_02.png'
@@ -228,8 +212,8 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主容器

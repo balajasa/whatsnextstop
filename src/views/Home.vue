@@ -13,19 +13,10 @@
     <div class="home-content">
       <div class="sidebar" :class="{ active: sidebarOpen }">
         <!-- 側邊欄 -->
-        <Sidebar
-          ref="sidebarRef"
-          :isMobile="isMobile"
-          :headerHeight="50"
-          @keydown-escape="handleEscapeKey"
-        />
+        <Sidebar ref="sidebarRef" :isMobile="isMobile" :headerHeight="50" @keydown-escape="handleEscapeKey" />
       </div>
       <!-- 覆蓋層 (僅手機版) -->
-      <div
-        class="sidebar-overlay"
-        :class="{ active: sidebarOpen }"
-        @click="closeMobileSidebar"
-      ></div>
+      <div class="sidebar-overlay" :class="{ active: sidebarOpen }" @click="closeMobileSidebar"></div>
 
       <!-- 主內容區域 -->
       <main class="main-container">
@@ -45,7 +36,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import Sidebar from '@/components/layout/Sidebar.vue'
 // import Footer from '@/components/layout/Footer.vue'
-import { SidebarRef } from './types/ILayout'
+import { SidebarRef } from '../types/layout'
 
 const sidebarRef: Ref<SidebarRef | null> = ref(null)
 const isMobile: Ref<boolean> = ref(false)
@@ -103,8 +94,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 .home {
   min-height: 100vh;

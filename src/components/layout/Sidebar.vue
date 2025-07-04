@@ -40,7 +40,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
-import { SidebarItem, SidebarProps } from '../types/ILayout'
+import { SidebarItem, SidebarProps } from '../../types/layout'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   isMobile: false,
@@ -147,25 +147,21 @@ defineExpose({
 })
 </script>
 
-// Sidebar.vue
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
-// ===================================
-// 側邊欄主體
-// ===================================
 .sidebar {
   @include sidebar-base;
-  @include desktop {
-    width: $sidebar-width-desktop;
-    background: $bg-sidebar-desktop;
-
-    backdrop-filter: blur(8px);
-  }
   padding-top: $header-height;
   width: $sidebar-width-mobile;
   background: $bg-sidebar;
+
+  @include desktop {
+    width: $sidebar-width-desktop;
+    background: $bg-sidebar-desktop;
+    backdrop-filter: blur(8px);
+  }
 
   // 展開狀態
   &.isOpen {
@@ -180,7 +176,6 @@ defineExpose({
   // 手機版樣式
   &.mobile-version {
     background: $bg-sidebar;
-
     backdrop-filter: none;
   }
 }
@@ -189,23 +184,20 @@ defineExpose({
 // 側邊欄內容
 // ===================================
 .sidebar-content {
-  @include desktop {
-    padding: $spacing-xl 0;
-  }
   position: relative;
   overflow-y: auto;
   padding: $spacing-lg 0;
   height: 100%;
+
+  @include desktop {
+    padding: $spacing-xl 0;
+  }
 }
 
 // ===================================
 // 關閉按鈕（和漢堡選單相同位置和樣式）
 // ===================================
 .sidebar-close {
-  @include tablet {
-    left: $spacing-lg;
-    background-size: 24px 24px;
-  }
   position: absolute;
   top: 8px; // 與 header 中的漢堡選單對齊
   left: $spacing-md;
@@ -224,6 +216,11 @@ defineExpose({
   filter: brightness(0) saturate(100%) invert(50%);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+
+  @include tablet {
+    left: $spacing-lg;
+    background-size: 24px 24px;
+  }
 
   &:hover {
     background-color: rgba(56, 178, 172, 0.1);
@@ -247,9 +244,6 @@ defineExpose({
 
 // 選單項目
 .sidebar-item {
-  @include desktop {
-    padding: $spacing-md $spacing-xl;
-  }
   display: flex;
   align-items: center;
   padding: $spacing-md $spacing-lg;
@@ -257,8 +251,11 @@ defineExpose({
   color: $text-secondary;
   text-decoration: none;
   transition: all 0.2s ease-in-out;
-
   gap: $spacing-md;
+
+  @include desktop {
+    padding: $spacing-md $spacing-xl;
+  }
 
   &:hover {
     background: rgba(56, 178, 172, 0.1);
@@ -295,9 +292,6 @@ defineExpose({
 }
 
 .category-title {
-  @include desktop {
-    padding: $spacing-sm $spacing-xl;
-  }
   display: flex;
   align-items: center;
   margin-bottom: $spacing-sm;
@@ -307,8 +301,11 @@ defineExpose({
   letter-spacing: 0.5px;
   font-weight: 600;
   font-size: 14px;
-
   gap: $spacing-sm;
+
+  @include desktop {
+    padding: $spacing-sm $spacing-xl;
+  }
 }
 
 .category-icon {
@@ -336,22 +333,24 @@ defineExpose({
 // 圖標樣式
 // ===================================
 .sidebar-icon {
-  @include desktop {
-    width: 28px;
-    font-size: 20px;
-  }
   flex-shrink: 0;
   width: 24px;
   text-align: center;
   font-size: 18px;
+
+  @include desktop {
+    width: 28px;
+    font-size: 20px;
+  }
 }
 
 .sidebar-text {
+  font-weight: 500;
+  font-size: 15px;
+
   @include desktop {
     font-size: 16px;
   }
-  font-weight: 500;
-  font-size: 15px;
 }
 
 // ===================================

@@ -12,12 +12,8 @@
           <div class="wheel-wrapper">
             <div class="wheel-pointer"></div>
             <div class="wheel" ref="wheelRef">
-              <div
-                v-for="(item, index) in wheelItems"
-                :key="index"
-                class="wheel-item"
-                :style="getWheelItemStyle(index)"
-              >
+              <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item"
+                :style="getWheelItemStyle(index)">
                 <span>{{ item }}</span>
               </div>
               <div class="wheel-center"></div>
@@ -33,12 +29,7 @@
           <h2>設定選項</h2>
           <div class="input-group">
             <label>新增美食類型</label>
-            <input
-              type="text"
-              v-model="newItem"
-              placeholder="例如：北歐料理、地中海美食"
-              @keyup.enter="addItem"
-            />
+            <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem" />
             <button class="add-button" @click="addItem">新增項目</button>
           </div>
           <div class="items-list">
@@ -59,7 +50,7 @@ import { ref } from 'vue'
 import { gsap } from 'gsap'
 import _ from 'lodash'
 import type { Ref } from 'vue'
-import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
 const wheelRef: Ref<HTMLElement | null> = ref(null)
 const wheelItems: Ref<string[]> = ref([
@@ -203,8 +194,8 @@ const updateWheel = (): void => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主容器
@@ -212,19 +203,6 @@ const updateWheel = (): void => {
 .foodwheel-container {
   min-height: 100vh;
   background: $bg-primary;
-  // padding-top: $header-height;
-  // padding: $spacing-xl $spacing-md;
-
-  // @include tablet {
-  //   padding-top: calc(#{$header-height} + #{$spacing-lg});
-  //   padding-left: $spacing-lg;
-  //   padding-right: $spacing-lg;
-  // }
-
-  // @include desktop {
-  //   padding-left: $spacing-xl;
-  //   padding-right: $spacing-xl;
-  // }
 }
 
 .game-wrapper {
@@ -235,7 +213,6 @@ const updateWheel = (): void => {
   border-radius: $border-radius-xl;
   background: $bg-card;
   box-shadow: 0 25px 50px $shadow-strong;
-  // display: flex;
 
   @include tablet {
     padding: $spacing-xl;
@@ -278,11 +255,6 @@ const updateWheel = (): void => {
   @include tablet {
     padding: $spacing-2xl;
   }
-
-  // @include desktop {
-  //   flex: 0 0 auto; // 不縮放，固定寬度
-  //   width: 650px; // 給轉輪固定寬度
-  // }
 }
 
 .control-panel {

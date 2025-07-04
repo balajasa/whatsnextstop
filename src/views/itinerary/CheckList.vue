@@ -256,21 +256,22 @@ watch(checkItems, () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // Check List Container
 // ===================================
 .check-list {
-  @include tablet {
-    padding: $spacing-xl;
-  }
   margin: 0 auto;
   padding: $spacing-lg;
   min-height: 100vh;
   max-width: 600px;
   background: $bg-primary;
+
+  @include tablet {
+    padding: $spacing-xl;
+  }
 }
 
 // ===================================
@@ -278,31 +279,31 @@ watch(checkItems, () => {
 // ===================================
 .check-list_header {
   @include flex-between;
-  @include mobile-only {
-    flex-direction: column;
-
-    gap: $spacing-md;
-  }
   margin-bottom: $spacing-xl;
   padding: $spacing-lg;
   border: 1px solid $border-light;
   border-radius: $border-radius-lg;
   background: $bg-card;
   box-shadow: 0 2px 8px $shadow-light;
+
+  @include mobile-only {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
 }
 
 .check-list_title {
-  @include tablet {
-    font-size: 1.75rem;
-  }
   display: flex;
   align-items: center;
   margin: 0;
   color: $primary-color;
   font-weight: 600;
   font-size: 1.5rem;
-
   gap: $spacing-sm;
+
+  @include tablet {
+    font-size: 1.75rem;
+  }
 }
 
 .check-list_icon {
@@ -310,13 +311,13 @@ watch(checkItems, () => {
 }
 
 .check-list_stats {
+  display: flex;
+  gap: $spacing-md;
+
   @include mobile-only {
     justify-content: space-between;
     width: 100%;
   }
-  display: flex;
-
-  gap: $spacing-md;
 }
 
 .check-list_stats-item {
@@ -336,17 +337,17 @@ watch(checkItems, () => {
 }
 
 .check-list_input-group {
-  @include mobile-only {
-    flex-direction: column;
-  }
   display: flex;
   padding: $spacing-md;
   border: 1px solid $border-light;
   border-radius: $border-radius-lg;
   background: $bg-card;
   box-shadow: 0 2px 8px $shadow-light;
-
   gap: $spacing-sm;
+
+  @include mobile-only {
+    flex-direction: column;
+  }
 }
 
 .check-list_input {
@@ -381,11 +382,10 @@ watch(checkItems, () => {
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
-
   gap: $spacing-xs;
 
   &:hover:not(:disabled) {
-    background: darken($accent-color-1, 10%);
+    background: rgba(56, 178, 172, 0.8);
     transform: translateY(-1px);
   }
 
@@ -411,7 +411,6 @@ watch(checkItems, () => {
   border-radius: $border-radius-lg;
   background: $bg-card;
   box-shadow: 0 2px 8px $shadow-light;
-
   gap: $spacing-xs;
 }
 
@@ -462,7 +461,6 @@ watch(checkItems, () => {
 .check-list_items-container {
   display: flex;
   flex-direction: column;
-
   gap: $spacing-sm;
 }
 
@@ -475,7 +473,6 @@ watch(checkItems, () => {
   background: $bg-card;
   box-shadow: 0 1px 3px $shadow-light;
   transition: all 0.2s ease;
-
   gap: $spacing-md;
 
   &:hover {
@@ -545,7 +542,6 @@ watch(checkItems, () => {
   display: flex;
   flex: 1;
   flex-direction: column;
-
   gap: $spacing-xs;
 }
 

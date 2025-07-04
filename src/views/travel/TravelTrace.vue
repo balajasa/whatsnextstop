@@ -20,11 +20,8 @@
           <div></div>
         </div>
 
-        <div
-          v-for="(travel, index) in travels"
-          :key="`${travel.year}-${travel.startDate}-${index}`"
-          class="travel-item"
-        >
+        <div v-for="(travel, index) in travels" :key="`${travel.year}-${travel.startDate}-${index}`"
+          class="travel-item">
           <div class="item-header" @click="toggleDetails(index)">
             <div class="year">{{ travel.year }}</div>
             <div class="date">{{ formatDateRange(travel.startDate, travel.endDate) }}</div>
@@ -37,23 +34,12 @@
           <div class="item-details" :class="{ expanded: expandedItems.has(index) }">
             <div class="details-content">
               <div v-if="travel.photo.length > 0" class="photo-gallery">
-                <div
-                  v-for="(photoName, photoIndex) in travel.photo"
-                  :key="photoIndex"
-                  class="photo-container"
-                >
-                  <div
-                    v-if="!loadedPhotos.has(getPhotoUrl(travel, photoName))"
-                    class="photo-placeholder"
+                <div v-for="(photoName, photoIndex) in travel.photo" :key="photoIndex" class="photo-container">
+                  <div v-if="!loadedPhotos.has(getPhotoUrl(travel, photoName))" class="photo-placeholder"
                     :class="{ loading: loadingPhotos.has(getPhotoUrl(travel, photoName)) }"
-                    @click="loadPhoto(travel, photoName)"
-                  ></div>
-                  <div
-                    v-else
-                    class="photo-img"
-                    :style="{ backgroundImage: `url(${getPhotoUrl(travel, photoName)})` }"
-                    @click="openPhoto(getPhotoUrl(travel, photoName))"
-                  ></div>
+                    @click="loadPhoto(travel, photoName)"></div>
+                  <div v-else class="photo-img" :style="{ backgroundImage: `url(${getPhotoUrl(travel, photoName)})` }"
+                    @click="openPhoto(getPhotoUrl(travel, photoName))"></div>
                 </div>
               </div>
             </div>
@@ -65,39 +51,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { getTravelsData } from '../../composables/usagi'
+import { onMounted } from 'vue'
+import { useTravelStore } from '../../stores/useTravelStore'
+import { storeToRefs } from 'pinia'
 import { countryTranslation } from '../../composables/countryTranslation'
-import BreadcrumbNav from '@/components/layout/BreadcrumbNav.vue'
-import type { TravelData } from '../types/IResponse'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import type { TravelData } from '../../types/response'
 
-// Composables
-const { travels, loading, loadTravels, getImageUrl } = getTravelsData()
+// 導入工具函數和 composables
+import {
+  formatDateRange,
+  calculateDays,
+  formatLocations,
+  openPhoto
+} from '../../utils/travelUtils'
+import { useTravelPhotos } from '../../composables/useTravelPhotos'
+import { useTravelList } from '../../composables/useTravelList'
+
+const travelStore = useTravelStore()
+const { travels, loading } = storeToRefs(travelStore)
 const { getCountryInfo } = countryTranslation()
 
-// 響應式資料
-const expandedItems = ref<Set<number>>(new Set())
-const loadedPhotos = ref<Set<string>>(new Set())
-const loadingPhotos = ref<Set<string>>(new Set())
-
-// 格式化日期範圍
-function formatDateRange(startDate: string, endDate: string): string {
-  return `${startDate.replace('-', '/')}/${endDate.replace('-', '/')}`
+// 獲取照片 URL (這個函數依賴於 travelStore，所以保留在組件中)
+function getPhotoUrl(travel: TravelData, photoName: string): string {
+  return travelStore.getImageUrl(travel, photoName)
 }
 
-// 計算天數
-function calculateDays(startDate: string, endDate: string): number {
-  const [startMonth, startDay] = startDate.split('-').map(Number)
-  const [endMonth, endDay] = endDate.split('-').map(Number)
+// 使用 composables (傳入 getPhotoUrl 函數)
+const { loadedPhotos, loadingPhotos, loadPhoto, loadPhotosWithDelay } = useTravelPhotos(getPhotoUrl)
+const { expandedItems, toggleDetails: toggleDetailsBase } = useTravelList()
 
-  const start = new Date(2024, startMonth - 1, startDay)
-  const end = new Date(2024, endMonth - 1, endDay)
-
-  const diffTime = Math.abs(end.getTime() - start.getTime())
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-}
-
-// 格式化國家顯示
+// 格式化國家顯示 (這個函數依賴於 countryTranslation，所以保留在組件中)
 function formatCountries(countries: string[], withFlag: boolean = true): string {
   return countries
     .map(country => {
@@ -107,69 +91,24 @@ function formatCountries(countries: string[], withFlag: boolean = true): string 
     .join('、')
 }
 
-// 格式化地點顯示
-function formatLocations(travel: TravelData): string {
-  return travel.cityTW?.join('、') || travel.city.join('、')
-}
-
-// 獲取照片 URL
-function getPhotoUrl(travel: TravelData, photoName: string): string {
-  return getImageUrl(travel, photoName)
-}
-
-// 展開/收合詳細資訊
+// 展開/收合詳細資訊 (使用 composable 的版本)
 function toggleDetails(index: number) {
-  if (expandedItems.value.has(index)) {
-    expandedItems.value.delete(index)
-  } else {
-    expandedItems.value.add(index)
+  toggleDetailsBase(index, () => {
     // 展開時載入照片
     const travel = travels.value[index]
-    travel.photo.forEach((photoName, photoIndex) => {
-      setTimeout(() => {
-        loadPhoto(travel, photoName)
-      }, photoIndex * 200)
-    })
-  }
-}
-
-// 載入照片
-function loadPhoto(travel: TravelData, photoName: string) {
-  const url = getPhotoUrl(travel, photoName)
-
-  if (loadedPhotos.value.has(url) || loadingPhotos.value.has(url)) {
-    return
-  }
-
-  loadingPhotos.value.add(url)
-
-  const img = new Image()
-  img.onload = () => {
-    setTimeout(() => {
-      loadingPhotos.value.delete(url)
-      loadedPhotos.value.add(url)
-    }, 300)
-  }
-  img.onerror = () => {
-    loadingPhotos.value.delete(url)
-  }
-  img.src = url
-}
-
-// 開啟照片
-function openPhoto(url: string) {
-  window.open(url, '_blank')
+    loadPhotosWithDelay(travel)
+  })
 }
 
 // 初始化
 onMounted(async () => {
-  await loadTravels()
+  await travelStore.loadTravels()
 })
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主容器 (Mobile First)

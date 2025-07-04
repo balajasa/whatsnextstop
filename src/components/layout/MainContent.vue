@@ -134,26 +134,24 @@ const mainCards = ref([
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/index' as *;
-
-// 行程頁面 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 主要內容包裝
 // ===================================
 .main-content-wrapper {
+  margin: 0 auto;
+  padding: $spacing-md;
+  max-width: 1200px;
+  width: 100%;
+
   @include tablet {
     padding: $spacing-lg;
   }
   @include desktop {
     padding: $spacing-xl;
   }
-  margin: 0 auto;
-  padding: $spacing-md;
-  max-width: 1200px;
-  width: 100%;
 }
 
 // ===================================
@@ -164,41 +162,47 @@ const mainCards = ref([
 }
 
 .schedule-header {
+  margin-bottom: $spacing-xl;
+  text-align: center;
+
   @include tablet {
     margin-bottom: $spacing-2xl;
   }
-  margin-bottom: $spacing-xl;
-  text-align: center;
 }
 
 .schedule-subtitle {
+  margin: 0;
+  color: $text-secondary;
+  font-weight: 500;
+  font-size: 18px;
+
   @include tablet {
     font-size: 22px;
   }
   @include desktop {
     font-size: 24px;
   }
-  margin: 0;
-  color: $text-secondary;
-  font-weight: 500;
-  font-size: 18px;
 }
 
 // ===================================
 // 輪播圖區域
 // ===================================
 .cover-image-area {
-  @include tablet {
-    margin-bottom: $spacing-2xl;
-    border-radius: $border-radius-xl;
-  }
   overflow: hidden;
   margin-bottom: $spacing-xl;
   border-radius: $border-radius-lg;
   box-shadow: 0 8px 32px $shadow-medium;
+
+  @include tablet {
+    margin-bottom: $spacing-2xl;
+    border-radius: $border-radius-xl;
+  }
 }
 
 .cover-swiper {
+  width: 100%;
+  height: 250px;
+
   @include tablet {
     height: 350px;
   }
@@ -208,8 +212,6 @@ const mainCards = ref([
   @include large-desktop {
     height: 450px;
   }
-  width: 100%;
-  height: 250px;
 }
 
 .cover-slide {
@@ -220,19 +222,27 @@ const mainCards = ref([
   img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
     object-position: center;
   }
 }
 
 // ===================================
-// Swiper 自訂樣式
+// Swiper 自訂樣式 (合併重複區塊)
 // ===================================
 
 // 導航按鈕
 :deep(.swiper-button-next),
 :deep(.swiper-button-prev) {
+  margin-top: -22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px $shadow-light;
+  color: $primary-color;
+  transition: all 0.2s ease;
+
   @include mobile-only {
     margin-top: -18px;
     width: 36px;
@@ -242,14 +252,6 @@ const mainCards = ref([
       font-size: 14px;
     }
   }
-  margin-top: -22px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 8px $shadow-light;
-  color: $primary-color;
-  transition: all 0.2s ease;
 
   &:after {
     font-weight: bold;
@@ -263,26 +265,29 @@ const mainCards = ref([
   }
 }
 
-.swiper-button-prev {
+:deep(.swiper-button-prev) {
+  left: 15px;
+
   @include tablet {
     left: 20px;
   }
-  left: 15px;
 }
 
-.swiper-button-next {
+:deep(.swiper-button-next) {
+  right: 15px;
+
   @include tablet {
     right: 20px;
   }
-  right: 15px;
 }
 
 // 分頁指示器
 :deep(.swiper-pagination) {
+  bottom: 15px;
+
   @include tablet {
     bottom: 20px;
   }
-  bottom: 15px;
 }
 
 :deep(.swiper-pagination-bullet) {
@@ -308,9 +313,13 @@ const mainCards = ref([
 // 主要功能卡片區域
 // ===================================
 .schedule-main-grid {
+  display: grid;
+  margin-bottom: $spacing-xl;
+  grid-template-columns: 1fr;
+  gap: $spacing-md;
+
   @include tablet {
     margin-bottom: $spacing-2xl;
-
     grid-template-columns: repeat(2, 1fr);
     gap: $spacing-lg;
   }
@@ -320,19 +329,10 @@ const mainCards = ref([
   @include large-desktop {
     grid-template-columns: repeat(5, 1fr);
   }
-  display: grid;
-  margin-bottom: $spacing-xl;
-
-  grid-template-columns: 1fr;
-  gap: $spacing-md;
 }
 
 .schedule-card {
   @include card-hover;
-  @include tablet {
-    padding: $spacing-xl;
-    min-height: 140px;
-  }
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -345,24 +345,33 @@ const mainCards = ref([
   color: inherit;
   text-decoration: none;
 
+  @include tablet {
+    padding: $spacing-xl;
+    min-height: 140px;
+  }
+
   h3 {
-    @include tablet {
-      font-size: 18px;
-    }
+
     margin: $spacing-sm 0 0;
     color: $text-primary;
     text-align: center;
     font-weight: 600;
     font-size: 16px;
+
+
+    @include tablet {
+      font-size: 18px;
+    }
   }
 }
 
 .schedule-icon {
+  margin-bottom: $spacing-sm;
+  font-size: 32px;
+
   @include tablet {
     font-size: 36px;
   }
-  margin-bottom: $spacing-sm;
-  font-size: 32px;
 }
 
 // 各卡片特殊樣式
@@ -394,15 +403,16 @@ const mainCards = ref([
 }
 
 .daily-title {
-  @include tablet {
-    text-align: left;
-    font-size: 24px;
-  }
   margin-bottom: $spacing-lg;
   color: $text-primary;
   text-align: center;
   font-weight: 600;
   font-size: 20px;
+
+  @include tablet {
+    text-align: left;
+    font-size: 24px;
+  }
 }
 
 .daily-grid {
@@ -410,6 +420,10 @@ const mainCards = ref([
 }
 
 .daily-block {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+
   @include tablet {
     grid-template-columns: repeat(3, 1fr);
     gap: $spacing-lg;
@@ -420,18 +434,10 @@ const mainCards = ref([
   @include large-desktop {
     grid-template-columns: repeat(6, 1fr);
   }
-  display: grid;
-
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-md;
 }
 
 .daily-card {
   @include card-hover;
-  @include tablet {
-    min-height: 90px;
-    font-size: 18px;
-  }
   display: flex;
   align-items: center;
   justify-content: center;
@@ -444,6 +450,11 @@ const mainCards = ref([
   text-decoration: none;
   font-weight: 600;
   font-size: 16px;
+
+  @include tablet {
+    min-height: 90px;
+    font-size: 18px;
+  }
 
   &:hover {
     box-shadow: 0 6px 20px $shadow-city-hover;
@@ -511,84 +522,5 @@ const mainCards = ref([
   .cover-swiper {
     height: 500px;
   }
-}
-
-// ===================================
-// Swiper 自訂樣式
-// ===================================
-
-// 導航按鈕
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  @include mobile-only {
-    margin-top: -18px;
-    width: 36px;
-    height: 36px;
-
-    &:after {
-      font-size: 14px;
-    }
-  }
-  margin-top: -22px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 8px $shadow-light;
-  color: $primary-color;
-  transition: all 0.2s ease;
-
-  &:after {
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  &:hover {
-    background: $accent-color-1;
-    color: $text-white;
-    transform: scale(1.1);
-  }
-}
-
-// 左右按鈕位置
-:deep(.swiper-button-prev) {
-  @include tablet {
-    left: 20px;
-  }
-  left: 15px;
-}
-
-:deep(.swiper-button-next) {
-  @include tablet {
-    right: 20px;
-  }
-  right: 15px;
-}
-
-// 分頁指示器
-:deep(.swiper-pagination) {
-  @include tablet {
-    bottom: 20px;
-  }
-  bottom: 15px;
-}
-
-:deep(.swiper-pagination-bullet) {
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 1;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.8);
-    transform: scale(1.2);
-  }
-}
-
-:deep(.swiper-pagination-bullet-active) {
-  background: $accent-color-2;
-  box-shadow: 0 2px 8px rgba(230, 168, 107, 0.4);
-  transform: scale(1.3);
 }
 </style>

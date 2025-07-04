@@ -21,11 +21,13 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import * as d3 from 'd3'
 import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
-import { getTravelsData } from '../../composables/usagi'
-import type { TravelData, ProcessedPin, MapPinProps } from '../types/ITravelMap'
+import { useTravelStore } from '../../stores/useTravelStore'
+import { storeToRefs } from 'pinia'
+import type { TravelData, ProcessedPin, MapPinProps } from '../../types/travel-map'
 
 const { getCountryChineseName } = countryTranslation()
-const { travels, loadTravels } = getTravelsData()
+const travelStore = useTravelStore()
+const { travels } = storeToRefs(travelStore)
 
 const props = defineProps<MapPinProps>()
 
@@ -80,11 +82,11 @@ const processedPins = computed((): ProcessedPin[] => {
   // 按國家分組
   const countryGroups: Record<string, TravelData[]> = {}
 
-  travels.value.forEach(trip => {
+  travels.value.forEach((trip: TravelData) => {
     // 處理 country 陣列
     const countryList = Array.isArray(trip.country) ? trip.country : [trip.country]
 
-    countryList.forEach(country => {
+    countryList.forEach((country: string) => {
       const countryKey = country.toLowerCase()
       if (!countryGroups[countryKey]) {
         countryGroups[countryKey] = []
@@ -213,7 +215,7 @@ watch(
 
 // 組件掛載&載入旅遊資料
 onMounted(() => {
-  loadTravels()
+  travelStore.loadTravels()
   calculateContainerScale()
 
   // 監聽視窗大小變化
@@ -232,8 +234,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
+@use '@/assets/styles/variables' as *;
+@use '@/assets/styles/mixins' as *;
 
 // ===================================
 // 圖釘覆蓋層 (Mobile First)
