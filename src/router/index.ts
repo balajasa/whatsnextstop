@@ -17,7 +17,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/home'
+        redirect: 'home' // 改成相對路徑，去掉 /
       },
       {
         path: 'home',
@@ -119,7 +119,6 @@ const routes = [
       }
     ]
   },
-  // 所有未匹配的路由都導回首頁
   {
     path: '/:pathMatch(.*)*',
     redirect: '/home'

@@ -135,22 +135,23 @@ onMounted(() => {
 })
 </script>
 
+
 <style lang="sass" scoped>
 @use '@/styles/variables' as *
 @use '@/styles/mixins' as *
 
-// ====================================
-// Footer 主容器 (Mobile First)
-// ====================================
 .travel-collection-footer
   width: 100%
   height: 130px
   background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%)
-  color: $text-white
+  color: #ffffff
   font-family: inherit
   position: relative
-  overflow: hidden
+  overflow-x: hidden
+  overflow-y: visible
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15)
+  // 添加觸控優化
+  touch-action: pan-x pan-y
 
   @media (min-width: 768px)
     height: 160px
@@ -186,7 +187,7 @@ onMounted(() => {
     padding: 12px $spacing-lg
 
 // ====================================
-// Header 區域 (Mobile First)
+// Header 區域
 // ====================================
 .header-section
   display: flex
@@ -217,43 +218,44 @@ onMounted(() => {
     font-size: 14px
 
 // ====================================
-// 卡片區域 (Mobile First)
+// 卡片區域
 // ====================================
 .cards-section
   flex: 1
   display: flex
   align-items: center
   justify-content: center
+  // 修正：確保有足夠空間滾動
+  overflow: visible
+  min-height: 0
 
 .cards-container
   display: flex
   gap: 10px
   overflow-x: auto
+  overflow-y: hidden
   align-items: center
   padding: 0 $spacing-sm
   width: 100%
-  height: 60px
-
-  // 美化滾動條
+  min-height: 60px
+  // 添加移動端滾動優化
+  -webkit-overflow-scrolling: touch  // iOS 滑順滾動
+  scroll-behavior: smooth
   scrollbar-width: thin
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent
-  &::-webkit-scrollbar
-    height: 4px
+  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1)
 
-  &::-webkit-scrollbar-track
-    background: rgba(255, 255, 255, 0.1)
-    border-radius: 2px
-
-  &::-webkit-scrollbar-thumb
-    background: rgba(255, 255, 255, 0.3)
-    border-radius: 2px
-    &:hover
-      background: rgba(255, 255, 255, 0.5)
+  // 針對移動端優化觸控滾動
+  @media (max-width: 767px)
+    gap: 8px
+    padding: 5px $spacing-sm
+    padding-left: 20px
+    padding-right: 20px
+    box-sizing: border-box
 
   @media (min-width: 768px)
     gap: 8px
     padding: 10px $spacing-md
-    height: 70px
+    min-height: 70px
 
     &::-webkit-scrollbar
       height: 6px
@@ -261,18 +263,22 @@ onMounted(() => {
   @media (min-width: 1024px)
     gap: 12px
     padding: 0 $spacing-lg
-    height: 80px
+    min-height: 80px
 
 // ====================================
-// 卡片樣式 (Mobile First)
+// 卡片樣式 - 添加觸控優化
 // ====================================
 .card-holder
   flex-shrink: 0
+  @media (max-width: 767px)
+    margin: 0 2px
 
 .travel-card
   width: 35px
   height: 45px
   position: relative
+  // 添加觸控優化
+  touch-action: manipulation
 
   @media (min-width: 768px)
     width: 50px
@@ -308,7 +314,7 @@ onMounted(() => {
     padding: 6px
 
 // ====================================
-// 已收集的卡片 (Mobile First)
+// 已收集的卡片
 // ====================================
 .card-surface.collected
   background: linear-gradient(135deg,
@@ -316,7 +322,7 @@ onMounted(() => {
       rgba(255, 250, 205, 0.98) 50%,
       rgba(230, 243, 255, 0.95) 100%)
   border-color: #ffd93d
-  box-shadow:0 4px 12px rgba(255, 217, 61, 0.4), 0 0 0 1px rgba(255, 217, 61, 0.6)
+  box-shadow: 0 4px 12px rgba(255, 217, 61, 0.4), 0 0 0 1px rgba(255, 217, 61, 0.6)
   animation: gentleGlow 3s ease-in-out infinite alternate
 
   @keyframes gentleGlow
@@ -355,7 +361,7 @@ onMounted(() => {
       transform: scale(1.2) rotate(180deg)
 
 // ====================================
-// 未收集的卡片（上鎖）(Mobile First)
+// 未收集的卡片
 // ====================================
 .card-surface.locked
   background: linear-gradient(135deg,
@@ -404,7 +410,7 @@ onMounted(() => {
     filter: grayscale(80%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))
 
 // ====================================
-// 國家內容 (Mobile First)
+// 國家內容
 // ====================================
 .country-flag
   font-size: 14px
@@ -435,4 +441,5 @@ onMounted(() => {
 
   @media (min-width: 1024px)
     font-size: 12px
+
 </style>
