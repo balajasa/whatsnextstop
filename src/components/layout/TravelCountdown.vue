@@ -123,17 +123,17 @@ const getWeatherTip = () => {
 const getWeatherIconUrl = (code: string): string => {
   // 如果已經知道這個圖片載入失敗，直接返回 magic.png
   if (failedImages.value.has(code)) {
-    return '/src/assets/img/weather/magic.png'
+    return new URL(`../../assets/img/weather/magic.png`, import.meta.url).href
   }
 
   // 如果已經成功載入過，直接返回原始路徑
   if (loadedImages.value.has(code)) {
-    return `/src/assets/img/weather/${code}.png`
+    return new URL(`../../assets/img/weather/${code}.png`, import.meta.url).href
   }
 
   // 第一次載入，嘗試載入原始圖片
   checkImageExists(code)
-  return `/src/assets/img/weather/${code}.png`
+  return new URL(`../../assets/img/weather/${code}.png`, import.meta.url).href
 }
 
 // 檢查圖片是否存在

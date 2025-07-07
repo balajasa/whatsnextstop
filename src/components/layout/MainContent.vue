@@ -62,6 +62,10 @@ import 'swiper/css/pagination'
 import 'swiper/css/autoplay'
 import 'swiper/css/effect-fade'
 
+import banner01 from '@/assets/img/bg/banner_01.jpg'
+import banner02 from '@/assets/img/bg/banner_02.jpg'
+import banner03 from '@/assets/img/bg/banner_03.jpg'
+
 // 接收側邊欄狀態和手機版狀態
 defineProps({
   sidebarOpen: {
@@ -80,15 +84,15 @@ const modules = [Navigation, Pagination, Autoplay, EffectFade]
 const coverImages = ref([
   {
     id: 1,
-    src: '/src/assets/img/bg/banner_01.jpg'
+    src: banner01
   },
   {
     id: 2,
-    src: '/src/assets/img/bg/banner_02.jpg'
+    src: banner02
   },
   {
     id: 3,
-    src: '/src/assets/img/bg/banner_03.jpg'
+    src: banner03
   }
 ])
 
