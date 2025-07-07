@@ -52,7 +52,6 @@ export class FirebaseStorageService implements IStorageService {
    */
   async saveItems(items: CheckItem[]): Promise<boolean> {
     if (!this.currentUserId) {
-      console.error('使用者未登入，無法儲存到雲端')
       return false
     }
 
@@ -73,7 +72,6 @@ export class FirebaseStorageService implements IStorageService {
 
       return true
     } catch (error) {
-      console.error('儲存到 Firebase 失敗:', error)
       return false
     }
   }
@@ -83,7 +81,6 @@ export class FirebaseStorageService implements IStorageService {
    */
   async loadItems(): Promise<CheckItem[]> {
     if (!this.currentUserId) {
-      console.warn('使用者未登入，無法從雲端載入資料')
       return []
     }
 
@@ -392,10 +389,6 @@ export class FirebaseStorageService implements IStorageService {
     if (!this.currentUserId) {
       throw new Error('使用者未登入')
     }
-    console.log('🔍 Firebase Debug:', {
-      currentUserId: this.currentUserId,
-      path: `users/${this.currentUserId}/checkItems`
-    })
 
     return ref(database, `users/${this.currentUserId}/checkItems`)
   }

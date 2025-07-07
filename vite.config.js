@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  base: '/whatsnextstop/',
+  base: process.env.NODE_ENV === 'production' ? '/whatsnextstop/' : '/',
   server: {
     proxy: {
       '/api/usagi': {
