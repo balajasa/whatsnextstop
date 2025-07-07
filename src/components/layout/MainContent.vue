@@ -39,17 +39,18 @@
           </div>
         </div>
       </div>
-      <div class="test">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium praesentium aperiam vel
-        corporis numquam, quibusdam aliquid officia nobis ipsum, excepturi illo. Velit doloremque
-        quis laborum nemo, similique inventore nostrum sequi.
+
+      <div class="countdown-section">
+        <TravelCountdown />
       </div>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import TravelCountdown from '@/components/layout/TravelCountdown.vue'
 // 導入 Swiper 組件和模組
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules'
@@ -133,99 +134,86 @@ const mainCards = ref([
 ])
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
-@use '@/assets/styles/mixins' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
 // ===================================
 // 主要內容包裝
 // ===================================
-.main-content-wrapper {
-  margin: 0 auto;
-  padding: $spacing-md;
-  max-width: 1200px;
-  width: 100%;
+.main-content-wrapper
+  margin: 0 auto
+  padding: $spacing-md
+  max-width: 1200px
+  width: 100%
 
-  @include tablet {
-    padding: $spacing-lg;
-  }
-  @include desktop {
-    padding: $spacing-xl;
-  }
-}
+  @include tablet
+    padding: $spacing-lg
+
+  @include desktop
+    padding: $spacing-xl
 
 // ===================================
 // 行程區塊
 // ===================================
-.schedule-section {
-  width: 100%;
-}
+.schedule-section
+  width: 100%
 
-.schedule-header {
-  margin-bottom: $spacing-xl;
-  text-align: center;
+.schedule-header
+  margin-bottom: $spacing-xl
+  text-align: center
 
-  @include tablet {
-    margin-bottom: $spacing-2xl;
-  }
-}
+  @include tablet
+    margin-bottom: $spacing-2xl
 
-.schedule-subtitle {
-  margin: 0;
-  color: $text-secondary;
-  font-weight: 500;
-  font-size: 18px;
+.schedule-subtitle
+  margin: 0
+  color: $text-secondary
+  font-weight: 500
+  font-size: 18px
 
-  @include tablet {
-    font-size: 22px;
-  }
-  @include desktop {
-    font-size: 24px;
-  }
-}
+  @include tablet
+    font-size: 22px
+
+  @include desktop
+    font-size: 24px
 
 // ===================================
 // 輪播圖區域
 // ===================================
-.cover-image-area {
-  overflow: hidden;
-  margin-bottom: $spacing-xl;
-  border-radius: $border-radius-lg;
-  box-shadow: 0 8px 32px $shadow-medium;
+.cover-image-area
+  overflow: hidden
+  margin-bottom: $spacing-xl
+  border-radius: $border-radius-lg
+  box-shadow: 0 8px 32px $shadow-medium
 
-  @include tablet {
-    margin-bottom: $spacing-2xl;
-    border-radius: $border-radius-xl;
-  }
-}
+  @include tablet
+    margin-bottom: $spacing-2xl
+    border-radius: $border-radius-xl
 
-.cover-swiper {
-  width: 100%;
-  height: 250px;
+.cover-swiper
+  width: 100%
+  height: 250px
 
-  @include tablet {
-    height: 350px;
-  }
-  @include desktop {
-    height: 400px;
-  }
-  @include large-desktop {
-    height: 450px;
-  }
-}
+  @include tablet
+    height: 350px
 
-.cover-slide {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  @include desktop
+    height: 400px
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-  }
-}
+  @include large-desktop
+    height: 450px
+
+.cover-slide
+  position: relative
+  width: 100%
+  height: 100%
+
+  img
+    width: 100%
+    height: 100%
+    object-fit: cover
+    object-position: center
 
 // ===================================
 // Swiper 自訂樣式 (合併重複區塊)
@@ -233,294 +221,238 @@ const mainCards = ref([
 
 // 導航按鈕
 :deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  margin-top: -22px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 8px $shadow-light;
-  color: $primary-color;
-  transition: all 0.2s ease;
+:deep(.swiper-button-prev)
+  margin-top: -22px
+  width: 44px
+  height: 44px
+  border-radius: 50%
+  background: rgba(255, 255, 255, 0.9)
+  box-shadow: 0 2px 8px $shadow-light
+  color: $primary-color
+  transition: all 0.2s ease
 
-  @include mobile-only {
-    margin-top: -18px;
-    width: 36px;
-    height: 36px;
+  @include mobile-only
+    margin-top: -18px
+    width: 36px
+    height: 36px
 
-    &:after {
-      font-size: 14px;
-    }
-  }
+    &:after
+      font-size: 14px
 
-  &:after {
-    font-weight: bold;
-    font-size: 18px;
-  }
+  &:after
+    font-weight: bold
+    font-size: 18px
 
-  &:hover {
-    background: $accent-color-1;
-    color: $text-white;
-    transform: scale(1.1);
-  }
-}
+  &:hover
+    background: $accent-color-1
+    color: $text-white
+    transform: scale(1.1)
 
-:deep(.swiper-button-prev) {
-  left: 15px;
+:deep(.swiper-button-prev)
+  left: 15px
 
-  @include tablet {
-    left: 20px;
-  }
-}
+  @include tablet
+    left: 20px
 
-:deep(.swiper-button-next) {
-  right: 15px;
+:deep(.swiper-button-next)
+  right: 15px
 
-  @include tablet {
-    right: 20px;
-  }
-}
+  @include tablet
+    right: 20px
 
 // 分頁指示器
-:deep(.swiper-pagination) {
-  bottom: 15px;
+:deep(.swiper-pagination)
+  bottom: 15px
 
-  @include tablet {
-    bottom: 20px;
-  }
-}
+  @include tablet
+    bottom: 20px
 
-:deep(.swiper-pagination-bullet) {
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 1;
-  transition: all 0.3s ease;
+:deep(.swiper-pagination-bullet)
+  width: 12px
+  height: 12px
+  background: rgba(255, 255, 255, 0.5)
+  opacity: 1
+  transition: all 0.3s ease
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.8);
-    transform: scale(1.2);
-  }
-}
+  &:hover
+    background: rgba(255, 255, 255, 0.8)
+    transform: scale(1.2)
 
-:deep(.swiper-pagination-bullet-active) {
-  background: $accent-color-2;
-  box-shadow: 0 2px 8px rgba(230, 168, 107, 0.4);
-  transform: scale(1.3);
-}
+:deep(.swiper-pagination-bullet-active)
+  background: $accent-color-2
+  box-shadow: 0 2px 8px rgba(230, 168, 107, 0.4)
+  transform: scale(1.3)
 
 // ===================================
 // 主要功能卡片區域
 // ===================================
-.schedule-main-grid {
-  display: grid;
-  margin-bottom: $spacing-xl;
-  grid-template-columns: 1fr;
-  gap: $spacing-md;
+.schedule-main-grid
+  display: grid
+  margin-bottom: $spacing-xl
+  grid-template-columns: 1fr
+  gap: $spacing-md
 
-  @include tablet {
-    margin-bottom: $spacing-2xl;
-    grid-template-columns: repeat(2, 1fr);
-    gap: $spacing-lg;
-  }
-  @include desktop {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  @include large-desktop {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
+  @include tablet
+    margin-bottom: $spacing-2xl
+    grid-template-columns: repeat(2, 1fr)
+    gap: $spacing-lg
 
-.schedule-card {
-  @include card-hover;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  padding: $spacing-lg;
-  min-height: 120px;
-  border-radius: $border-radius-lg;
-  background: $bg-card;
-  box-shadow: 0 2px 8px $shadow-light;
-  color: inherit;
-  text-decoration: none;
+  @include desktop
+    grid-template-columns: repeat(3, 1fr)
 
-  @include tablet {
-    padding: $spacing-xl;
-    min-height: 140px;
-  }
+  @include large-desktop
+    grid-template-columns: repeat(5, 1fr)
 
-  h3 {
+.schedule-card
+  @include card-hover
+  display: flex
+  align-items: center
+  flex-direction: column
+  justify-content: center
+  padding: $spacing-lg
+  min-height: 120px
+  border-radius: $border-radius-lg
+  background: $bg-card
+  box-shadow: 0 2px 8px $shadow-light
+  color: inherit
+  text-decoration: none
 
-    margin: $spacing-sm 0 0;
-    color: $text-primary;
-    text-align: center;
-    font-weight: 600;
-    font-size: 16px;
+  @include tablet
+    padding: $spacing-xl
+    min-height: 140px
 
+  h3
+    margin: $spacing-sm 0 0
+    color: $text-primary
+    text-align: center
+    font-weight: 600
+    font-size: 16px
 
-    @include tablet {
-      font-size: 18px;
-    }
-  }
-}
+    @include tablet
+      font-size: 18px
 
-.schedule-icon {
-  margin-bottom: $spacing-sm;
-  font-size: 32px;
+.schedule-icon
+  margin-bottom: $spacing-sm
+  font-size: 32px
 
-  @include tablet {
-    font-size: 36px;
-  }
-}
+  @include tablet
+    font-size: 36px
 
 // 各卡片特殊樣式
-.overview-card .schedule-icon {
-  color: $primary-color;
-}
+.overview-card .schedule-icon
+  color: $primary-color
 
-.flight-card .schedule-icon {
-  color: $accent-color-1;
-}
+.flight-card .schedule-icon
+  color: $accent-color-1
 
-.map-card .schedule-icon {
-  color: $accent-color-2;
-}
+.map-card .schedule-icon
+  color: $accent-color-2
 
-.packing-card .schedule-icon {
-  color: $timeline-medium;
-}
+.packing-card .schedule-icon
+  color: $timeline-medium
 
-.notice-card .schedule-icon {
-  color: $timeline-recent;
-}
+.notice-card .schedule-icon
+  color: $timeline-recent
 
 // ===================================
 // 每日行程區域
 // ===================================
-.daily-schedule-section {
-  margin-top: $spacing-2xl;
-}
+.daily-schedule-section
+  margin-top: $spacing-2xl
 
-.daily-title {
-  margin-bottom: $spacing-lg;
-  color: $text-primary;
-  text-align: center;
-  font-weight: 600;
-  font-size: 20px;
+.daily-title
+  margin-bottom: $spacing-lg
+  color: $text-primary
+  text-align: center
+  font-weight: 600
+  font-size: 20px
 
-  @include tablet {
-    text-align: left;
-    font-size: 24px;
-  }
-}
+  @include tablet
+    text-align: left
+    font-size: 24px
 
-.daily-grid {
-  width: 100%;
-}
+.daily-grid
+  width: 100%
 
-.daily-block {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-md;
+.daily-block
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: $spacing-md
 
-  @include tablet {
-    grid-template-columns: repeat(3, 1fr);
-    gap: $spacing-lg;
-  }
-  @include desktop {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  @include large-desktop {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
+  @include tablet
+    grid-template-columns: repeat(3, 1fr)
+    gap: $spacing-lg
 
-.daily-card {
-  @include card-hover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-lg;
-  min-height: 80px;
-  border-radius: $border-radius-md;
-  background: linear-gradient(135deg, $accent-color-1, $city-gradient-end);
-  box-shadow: 0 4px 12px $shadow-city;
-  color: $text-white;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 16px;
+  @include desktop
+    grid-template-columns: repeat(4, 1fr)
 
-  @include tablet {
-    min-height: 90px;
-    font-size: 18px;
-  }
+  @include large-desktop
+    grid-template-columns: repeat(6, 1fr)
 
-  &:hover {
-    box-shadow: 0 6px 20px $shadow-city-hover;
-    transform: scale(1.02) translateY(-2px);
-  }
+.daily-card
+  @include card-hover
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: $spacing-lg
+  min-height: 80px
+  border-radius: $border-radius-md
+  background: linear-gradient(135deg, $accent-color-1, $city-gradient-end)
+  box-shadow: 0 4px 12px $shadow-city
+  color: $text-white
+  text-decoration: none
+  font-weight: 600
+  font-size: 16px
+
+  @include tablet
+    min-height: 90px
+    font-size: 18px
+
+  &:hover
+    box-shadow: 0 6px 20px $shadow-city-hover
+    transform: scale(1.02) translateY(-2px)
 
   // 每日卡片顏色變化
-  &:nth-child(odd) {
-    background: linear-gradient(135deg, $accent-color-2, #d4941b);
-  }
+  &:nth-child(odd)
+    background: linear-gradient(135deg, $accent-color-2, #d4941b)
 
-  &:nth-child(3n) {
-    background: linear-gradient(135deg, $primary-color, #2d3748);
-  }
-}
+  &:nth-child(3n)
+    background: linear-gradient(135deg, $primary-color, #2d3748)
 
 // ===================================
-// 測試區域樣式
+// 倒數元件
 // ===================================
-.test {
-  margin-top: $spacing-2xl;
-  padding: $spacing-lg;
-  border-radius: $border-radius-md;
-  background: $bg-card;
-  box-shadow: 0 2px 8px $shadow-light;
-  color: $text-muted;
-  line-height: 1.6;
-}
+.countdown-section
+  margin-top: 60px
 
 // ===================================
 // 響應式調整
 // ===================================
 
 // 手機版特殊處理
-@include mobile-only {
-  .main-content-wrapper {
-    padding: $spacing-sm;
-  }
+@include mobile-only
+  .main-content-wrapper
+    padding: $spacing-sm
 
-  .schedule-card {
-    padding: $spacing-md;
-    min-height: 100px;
+  .schedule-card
+    padding: $spacing-md
+    min-height: 100px
 
-    h3 {
-      font-size: 14px;
-    }
-  }
+    h3
+      font-size: 14px
 
-  .schedule-icon {
-    font-size: 28px;
-  }
+  .schedule-icon
+    font-size: 28px
 
-  .daily-card {
-    min-height: 70px;
-    font-size: 14px;
-  }
-}
+  .daily-card
+    min-height: 70px
+    font-size: 14px
 
 // 大桌面版優化
-@include large-desktop {
-  .main-content-wrapper {
-    max-width: 1400px;
-  }
+@include large-desktop
+  .main-content-wrapper
+    max-width: 1400px
 
-  .cover-swiper {
-    height: 500px;
-  }
-}
+  .cover-swiper
+    height: 500px
 </style>

@@ -1,0 +1,150 @@
+// ===================================
+// _mixins.sass
+// 響應式 Mixins 和工具函式
+// ===================================
+
+// -----------------------------------
+// 響應式斷點變數
+// -----------------------------------
+$mobile: 480px
+$tablet: 768px
+$desktop: 1024px
+$large: 1280px
+
+// -----------------------------------
+// 響應式 Mixins
+// -----------------------------------
+
+// Mobile First - 預設樣式 (< 480px)
+@mixin mobile
+  // 預設樣式，無需媒體查詢
+
+// 平板版本 (≥ 768px)
+@mixin tablet
+  @media (min-width: $tablet)
+    @content
+
+// 桌面版本 (≥ 1024px)
+@mixin desktop
+  @media (min-width: $desktop)
+    @content
+
+// 大桌面版本 (≥ 1280px)
+@mixin large-desktop
+  @media (min-width: $large)
+    @content
+
+// -----------------------------------
+// 範圍查詢 Mixins
+// -----------------------------------
+
+// 僅平板 (768px - 1023px)
+@mixin tablet-only
+  @media (min-width: $tablet) and (max-width: #{$desktop - 1px})
+    @content
+
+// 手機+平板 (< 1024px)
+@mixin mobile-tablet
+  @media (max-width: #{$desktop - 1px})
+    @content
+
+// 小於平板 (< 768px)
+@mixin mobile-only
+  @media (max-width: #{$tablet - 1px})
+    @content
+
+// -----------------------------------
+// 常用動畫 Mixins
+// -----------------------------------
+
+// 滑入動畫
+@mixin slide-in($direction: left, $duration: 0.3s)
+  transition: transform $duration ease-in-out
+
+  @if $direction == left
+    transform: translateX(-100%)
+
+    &.active
+      transform: translateX(0)
+
+  @else if $direction == right
+    transform: translateX(100%)
+
+    &.active
+      transform: translateX(0)
+
+// 淡入動畫
+@mixin fade-in($duration: 0.3s)
+  transition: opacity $duration ease-in-out
+  opacity: 0
+
+  &.active
+    opacity: 1
+
+// Hover 效果 - 陰影 + 放大
+@mixin card-hover
+  transition: all 0.2s ease-in-out
+  cursor: pointer
+
+  &:hover
+    transform: scale(1.02)
+    box-shadow: 0 8px 25px rgba(74, 85, 104, 0.15)
+
+// -----------------------------------
+// 佈局 Mixins
+// -----------------------------------
+
+// Flexbox 置中
+@mixin flex-center
+  display: flex
+  align-items: center
+  justify-content: center
+
+// Flexbox 間距分布
+@mixin flex-between
+  display: flex
+  align-items: center
+  justify-content: space-between
+
+// 絕對置中
+@mixin absolute-center
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+// -----------------------------------
+// 側邊欄專用 Mixins
+// -----------------------------------
+
+// 側邊欄覆蓋層
+@mixin sidebar-overlay
+  position: fixed
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  background: rgba(0, 0, 0, 0.3)
+  z-index: 999
+  opacity: 0
+  visibility: hidden
+  transition: all 0.3s ease-in-out
+
+  &.active
+    opacity: 1
+    visibility: visible
+
+// 側邊欄基本樣式
+@mixin sidebar-base
+  position: fixed
+  top: 0
+  left: 0
+  height: 100vh
+  background: var(--bg-sidebar)
+  z-index: 1000
+  transform: translateX(-100%)
+  transition: transform 0.3s ease-in-out
+  overflow-y: auto
+
+  &.active
+    transform: translateX(0)

@@ -2,6 +2,8 @@
 import countries from 'i18n-iso-countries'
 import zhTW from 'i18n-iso-countries/langs/zh.json'
 import enLocale from 'i18n-iso-countries/langs/en.json'
+import { COUNTRY_NAME_VARIANTS } from '../constants/regionConfig'
+import { TRADITIONAL_CHINESE_OVERRIDES } from '../constants/countryNameTWConfig'
 
 // 初始化語言包（只初始化一次）
 let isInitialized = false
@@ -22,12 +24,15 @@ export const countryTranslation = () => {
   initializeLocale()
 
   // 動態快取，避免重複查詢
-  const countryCache = new Map<string, {
-    chinese: string
-    english: string
-    flag: string
-    code: string
-  }>()
+  const countryCache = new Map<
+    string,
+    {
+      chinese: string
+      english: string
+      flag: string
+      code: string
+    }
+  >()
 
   /**
    * 根據國家英文名稱自動查找國家代碼
@@ -37,36 +42,10 @@ export const countryTranslation = () => {
   const findCountryCode = (countryName: string): string | null => {
     const normalizedName = countryName.toLowerCase().trim()
 
-    // 常見的國家名稱變體對應
-    const nameVariants: Record<string, string> = {
-      'philippines': 'PH',
-      'indonesia': 'ID',
-      'japan': 'JP',
-      'thailand': 'TH',
-      'singapore': 'SG',
-      'malaysia': 'MY',
-      'vietnam': 'VN',
-      'cambodia': 'KH',
-      'myanmar': 'MM',
-      'laos': 'LA',
-      'south korea': 'KR',
-      'korea': 'KR',
-      'taiwan': 'TW',
-      'china': 'CN',
-      'hong kong': 'HK',
-      'macau': 'MO',
-      'united states': 'US',
-      'usa': 'US',
-      'america': 'US',
-      'united kingdom': 'GB',
-      'uk': 'GB',
-      'britain': 'GB',
-      'england': 'GB'
-    }
-
+    const countryCode = COUNTRY_NAME_VARIANTS[normalizedName]
     // 先檢查常見變體
-    if (nameVariants[normalizedName]) {
-      return nameVariants[normalizedName]
+    if (countryCode) {
+      return countryCode
     }
 
     // 使用 i18n-iso-countries 的反向查詢
@@ -96,7 +75,7 @@ export const countryTranslation = () => {
    * @returns 國旗 emoji
    */
   const generateFlag = (countryCode: string): string => {
-    if (!countryCode || countryCode.length !== 2) return '🏳️'
+    if (!countryCode || countryCode.length !== 2) return '❌'
 
     try {
       // 將 ISO 代碼轉換為 Unicode 區域指示符號
@@ -108,8 +87,51 @@ export const countryTranslation = () => {
       return String.fromCodePoint(...codePoints)
     } catch (error) {
       console.warn(`無法生成國旗: ${countryCode}`, error)
-      return '🏳️'
+      return '❌'
     }
+  }
+
+  /**
+   * 獲取繁體中文國家名稱
+   * @param countryCode ISO 國家代碼
+   * @returns 繁體中文國家名稱，如果沒有覆蓋則返回 null
+   */
+  const getTraditionalChineseName = (countryCode: string): string | null => {
+    return TRADITIONAL_CHINESE_OVERRIDES[countryCode.toUpperCase()] || null
+  }
+
+  /**
+   * 檢查是否有自定義的繁體中文名稱
+   * @param countryCode ISO 國家代碼
+   * @returns 是否有自定義名稱
+   */
+  const hasCustomChineseName = (countryCode: string): boolean => {
+    return countryCode.toUpperCase() in TRADITIONAL_CHINESE_OVERRIDES
+  }
+
+  /**
+   * 獲取所有支援自定義名稱的國家代碼
+   * @returns 國家代碼陣列
+   */
+  const getSupportedCountryCodes = (): string[] => {
+    return Object.keys(TRADITIONAL_CHINESE_OVERRIDES)
+  }
+
+  /**
+   * 獲取繁體中文國家名稱
+   * @param countryCode ISO 國家代碼
+   * @returns 繁體中文國家名稱
+   */
+  const getChineseName = (countryCode: string): string => {
+    // 先檢查自定義的繁體中文覆蓋表
+    const customName = getTraditionalChineseName(countryCode)
+    if (customName) {
+      return customName
+    }
+
+    // 如果沒有自定義名稱，使用 i18n-iso-countries 的結果
+    const chineseName = countries.getName(countryCode, 'zh')
+    return chineseName || ''
   }
 
   /**
@@ -127,14 +149,14 @@ export const countryTranslation = () => {
 
     // 查找國家代碼
     const countryCode = findCountryCode(country)
-
+    // console.log(`🔍 查找國家: ${country} -> 代碼: ${countryCode}`)
     let chinese = country
     let english = country
-    let flag = '🏳️'
+    let flag = '🌍'
 
     if (countryCode) {
-      // 獲取中文翻譯
-      const chineseName = countries.getName(countryCode, 'zh')
+      // 獲取繁體中文翻譯（使用覆蓋表）
+      const chineseName = getChineseName(countryCode)
       if (chineseName) {
         chinese = chineseName
       }
@@ -222,6 +244,12 @@ export const countryTranslation = () => {
 
     // 底層工具（供進階使用）
     findCountryCode,
-    generateFlag
+    generateFlag,
+    getChineseName,
+
+    // 名稱配置相關功能
+    getTraditionalChineseName,
+    hasCustomChineseName,
+    getSupportedCountryCodes
   }
 }

@@ -1,106 +1,453 @@
 <template>
-  <div class="blocks-progress">
-    <div class="progress-info">
-      <span class="progress-text">{{ progressText }}</span>
-      <span class="progress-value">{{ currentValue }}/{{ maxValue }} {{ unit }}</span>
-    </div>
+  <footer class="travel-collection-footer">
+    <div class="footer-container">
+      <div class="header-section">
+        <div class="stats-badge">已收集 {{ collectedCount }}</div>
+      </div>
 
-  </div>
+      <div class="cards-section">
+        <div class="cards-container">
+          <div v-for="country in displayCountries" :key="country.code" class="card-holder">
+            <div class="travel-card">
+              <div class="card-surface" :class="{
+                'collected': country.isCollected,
+                'locked': !country.isCollected
+              }">
+                <div class="country-flag">{{ country.flag }}</div>
+                <div class="country-text">{{ country.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useTravelStore } from '../../stores/useTravelStore'
+import { countryTranslation } from '../../composables/countryTranslation'
 
-// Props 定義
-interface Props {
-  progress: number // 0-100 的進度值
-  maxValue?: number // 最大值 (用於顯示 current/max)
-  unit?: string // 單位 (如 'days', 'items' 等)
-  title?: string // 進度標題
-  containerHeight?: number // 容器高度
-  showControls?: boolean // 是否顯示測試按鈕
-  animationDelay?: number // 積木掉落間隔時間 (ms)
-  maxBlocks?: number // 最大積木數量
+interface CountryCard {
+  code: string
+  name: string
+  flag: string
+  isCollected: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  progress: 0,
-  maxValue: 365,
-  unit: 'days',
-  title: 'Progress',
-  containerHeight: 120,
-  showControls: false,
-  animationDelay: 250,
-  maxBlocks: 15
+const travelStore = useTravelStore()
+const { getCountryInfo } = countryTranslation()
+
+const displayCountries = ref<CountryCard[]>([])
+const collectedCount = computed(() =>
+  displayCountries.value.filter(c => c.isCollected).length
+)
+
+// 目標國家清單
+const TARGET_COUNTRIES = [
+  'norway', 'finland', 'australia', 'switzerland',
+]
+
+/**
+* 初始化國家清單
+*/
+const initCountries = () => {
+  // 從 API 取得已去過的地區
+  const visitedRegions = new Set<string>()
+  const visitedCountryCards: CountryCard[] = []
+
+  // 處理已去過的地區
+  travelStore.travels.forEach((travel) => {
+    // 為每個城市檢查是否為特例
+    travel.city.forEach(city => {
+      // 創建只包含單一城市的 travel 物件來檢查
+      const singleCityTravel = { ...travel, city: [city] }
+      const regionInfo = travelStore.getDisplayRegion(singleCityTravel)
+
+      // 如果還沒有收集過這個地區
+      if (!visitedRegions.has(regionInfo.flagCode)) {
+        visitedRegions.add(regionInfo.flagCode)
+
+        try {
+          // 取得旗幟資訊
+          const flagInfo = getCountryInfo(regionInfo.flagCode)
+
+          visitedCountryCards.push({
+            code: regionInfo.flagCode,
+            name: regionInfo.displayName,
+            flag: flagInfo.flag,
+            isCollected: true
+          })
+        } catch (error) {
+          console.error(`❌ 處理地區 ${regionInfo.displayName} 時出錯:`, error)
+        }
+      }
+    })
+  })
+
+  // 處理未去過的熱門國家
+  const unvisitedCountryCards: CountryCard[] = []
+
+  TARGET_COUNTRIES.forEach(countryName => {
+    try {
+      const countryInfo = getCountryInfo(countryName)
+      // 如果這個國家沒有在已去過的清單中
+      if (!visitedRegions.has(countryInfo.code.toUpperCase()) && countryInfo.code) {
+        unvisitedCountryCards.push({
+          code: countryInfo.code,
+          name: countryInfo.chinese,
+          flag: countryInfo.flag,
+          isCollected: false
+        })
+      }
+    } catch (error) {
+      console.error(`❌ 處理未去過的國家 ${countryName} 時出錯:`, error)
+    }
+  })
+
+  // 合併已去過 + 未去過
+  displayCountries.value = [...visitedCountryCards, ...unvisitedCountryCards]
+}
+
+/**
+* 載入資料
+*/
+const loadData = async () => {
+
+  try {
+    await travelStore.loadTravels()
+
+    initCountries()
+
+  } catch (error) {
+    console.error('❌ 載入旅遊資料失敗:', error)
+    // 即使載入失敗也要初始化基本清單
+    initCountries()
+  }
+}
+
+// ====================================
+// 生命週期
+// ====================================
+onMounted(() => {
+  loadData()
 })
-
-// 計算屬性
-const currentValue = computed(() => Math.round(props.maxValue * props.progress / 100))
-
-const progressText = computed(() => `${Math.round(props.progress)}% of ${props.title}`)
-
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
-.blocks-progress {
-  background: #4A5568;
-}
+// ====================================
+// Footer 主容器
+// ====================================
+.travel-collection-footer
+  width: 100%
+  height: 130px
+  background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%)
+  color: $text-white
+  font-family: inherit
+  position: relative
+  overflow: hidden
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15)
 
-/* 進度資訊區域 */
-.progress-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 16px;
-  border-bottom: 1px solid $border-light;
-}
+  @include tablet
+    height: 180px
+  &::before
+    content: ''
+    position: absolute
+    top: -50%
+    left: -50%
+    width: 200%
+    height: 200%
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%)
+    animation: sparkle 8s linear infinite
+    pointer-events: none
 
-.progress-text {
-  color: $text-secondary;
-  font-weight: 600;
-  font-size: 16px;
-}
+  @keyframes sparkle
+    0%
+      transform: rotate(0deg)
 
-.progress-value {
-  padding: 4px 16px;
-  border: 1px solid rgba($accent-color-1, 0.2);
-  border-radius: 20px;
-  background: rgba($accent-color-1, 0.1);
-  color: $accent-color-1;
-  font-weight: 700;
-  font-size: 18px;
-}
+    100%
+      transform: rotate(360deg)
 
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .progress-info {
-    flex-direction: column;
-    text-align: center;
+.footer-container
+  max-width: 1200px
+  margin: 0 auto
+  height: 100%
+  padding: $spacing-md $spacing-lg
+  display: flex
+  flex-direction: column
+  justify-content: space-between
 
-    gap: 4px;
-  }
+  @include mobile-only
+    padding: $spacing-sm $spacing-md
 
-  .progress-text {
-    font-size: 14px;
-  }
+// ====================================
+// Header 區域
+// ====================================
+.header-section
+  display: flex
+  align-items: center
+  justify-content: flex-end
+  margin-bottom: $spacing-sm
+  @include mobile-only
+    margin-bottom: $spacing-xs
 
-  .progress-value {
-    padding: 4px 8px;
-    font-size: 16px;
-  }
+// .title
+//   font-size: 18px
+//   font-weight: 800
+//   color: $text-white
+//   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)
 
-}
+//   @include mobile-only
+//     font-size: 14px
 
-@media (max-width: 480px) {
-  .progress-text {
-    font-size: 13px;
-  }
+//   @include tablet
+//     font-size: 22px
 
-  .progress-value {
-    font-size: 14px;
-  }
+.stats-badge
+  background: rgba(255, 255, 255, 0.15)
+  color: $text-white
+  padding: 6px 12px
+  border-radius: $border-radius-xl
+  font-size: 12px
+  font-weight: 700
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2)
+  backdrop-filter: blur(10px)
+  border: 1px solid rgba(255, 255, 255, 0.2)
 
-}
+  @include mobile-only
+    padding: 4px 8px
+    font-size: 10px
+
+  @include tablet
+    padding: 8px 16px
+    font-size: 14px
+
+
+// ====================================
+// 卡片區域
+// ====================================
+.cards-section
+  flex: 1
+  display: flex
+  align-items: center
+  justify-content: center
+
+.cards-container
+  display: flex
+  gap: 10px
+  overflow-x: auto
+  align-items: center
+  padding: 8px $spacing-sm
+  width: 100%
+  height: 70px
+
+  // 美化滾動條
+  scrollbar-width: thin
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent
+  &::-webkit-scrollbar
+    height: 4px
+
+  &::-webkit-scrollbar-track
+    background: rgba(255, 255, 255, 0.1)
+    border-radius: 2px
+
+  &::-webkit-scrollbar-thumb
+    background: rgba(255, 255, 255, 0.3)
+    border-radius: 2px
+    &:hover
+      background: rgba(255, 255, 255, 0.5)
+
+  @include tablet
+    gap: 8px
+    padding: 10px $spacing-md // 平板版更多空間
+    height: 90px // 平板版高度：65px 卡片 + hover 效果空間
+
+    &::-webkit-scrollbar
+      height: 6px
+
+  @include desktop
+    gap: 12px
+    padding: 12px $spacing-lg // 桌面版最多空間
+    height: 100px // 桌面版高度：70px 卡片 + hover 效果空間
+
+
+// ====================================
+// 卡片樣式
+// ====================================
+.card-holder
+  flex-shrink: 0 // 防止卡片被壓縮
+
+.travel-card
+  width: 35px
+  height: 45px
+  position: relative
+
+  @include tablet
+    width: 50px
+    height: 65px
+
+  @include desktop
+    width: 55px
+    height: 70px
+
+  &:has(.card-surface.collected):hover
+    transform: translateY(-3px) scale(1.05)
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
+
+.card-surface
+  width: 100%
+  height: 100%
+  border-radius: $border-radius-md
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  text-align: center
+  padding: 3px
+  border: 2px solid rgba(255, 255, 255, 0.3)
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)
+  position: relative
+
+  @include tablet
+    padding: 4px
+    border-radius: $border-radius-lg
+
+  @include desktop
+    padding: 6px
+
+// ====================================
+// 已收集的卡片
+// ====================================
+.card-surface.collected
+  background: linear-gradient(135deg,
+      rgba(255, 229, 180, 0.95) 0%,
+      rgba(255, 250, 205, 0.98) 50%,
+      rgba(230, 243, 255, 0.95) 100%)
+  border-color: #ffd93d
+  box-shadow:0 4px 12px rgba(255, 217, 61, 0.4), 0 0 0 1px rgba(255, 217, 61, 0.6)
+  animation: gentleGlow 3s ease-in-out infinite alternate
+
+  @keyframes gentleGlow
+    0%
+      box-shadow: 0 4px 12px rgba(255, 217, 61, 0.4), 0 0 0 1px rgba(255, 217, 61, 0.6)
+
+    100%
+      box-shadow: 0 6px 16px rgba(255, 217, 61, 0.5), 0 0 0 2px rgba(255, 217, 61, 0.7)
+
+  &::before
+    content: '✨'
+    position: absolute
+    top: -3px
+    right: -3px
+    font-size: 10px
+    animation: sparkle-star 2s ease-in-out infinite
+
+    @include tablet
+      font-size: 12px
+      top: -4px
+      right: -4px
+
+    @include desktop
+      font-size: 14px
+      top: -6px
+      right: -6px
+
+  @keyframes sparkle-star
+    0%,
+    100%
+      opacity: 1
+      transform: scale(1) rotate(0deg)
+
+    50%
+      opacity: 0.6
+      transform: scale(1.2) rotate(180deg)
+
+// ====================================
+// 未收集的卡片（上鎖）
+// ====================================
+.card-surface.locked
+  background: linear-gradient(135deg,
+      rgba(189, 195, 199, 0.9) 0%,
+      rgba(232, 232, 232, 0.95) 100%)
+  border: 2px dashed rgba(149, 165, 166, 0.8)
+  opacity: 0.8
+
+  &::after
+    content: '🔒'
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    font-size: 12px // 鎖頭也縮小一點
+    z-index: 10
+    animation: lockShake 3s ease-in-out infinite
+    margin-top: -4px // 調整位置配合縮小的國旗
+
+    @include tablet
+      font-size: 14px
+      margin-top: -5px
+
+    @include desktop
+      font-size: 16px
+      margin-top: -6px
+
+  @keyframes lockShake
+    0%,
+    90%,
+    100%
+      transform: translate(-50%, -50%) rotate(0deg)
+    92%,
+    96%
+      transform: translate(-50%, -50%) rotate(-3deg)
+    94%,
+    98%
+      transform: translate(-50%, -50%) rotate(3deg)
+
+  .country-flag
+    opacity: 0.2
+    filter: grayscale(100%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
+
+  .country-text
+    opacity: 0.7
+    filter: grayscale(80%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))
+
+
+// ====================================
+// 國家內容
+// ====================================
+.country-flag
+  font-size: 14px // 手機版國旗縮小
+  margin-bottom: 2px
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
+  z-index: 5
+  position: relative
+
+  @include tablet
+    font-size: 18px // 平板版國旗
+    margin-bottom: 3px
+
+
+  @include desktop
+    font-size: 20px // 桌面版國旗
+    margin-bottom: 4px
+
+.country-text
+  font-size: 10px // 手機版文字 10px
+  font-weight: 700
+  color: $text-primary
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8)
+  line-height: 1.1
+  z-index: 5
+  position: relative
+
+  @include tablet
+    font-size: 11px // 平板版文字 11px
+
+  @include desktop
+    font-size: 12px // 桌面版文字 12px
+
 </style>

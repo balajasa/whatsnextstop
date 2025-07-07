@@ -1,4 +1,4 @@
-// types/ITravelMap.ts
+// types/ITravel-map.ts
 /**
  * 旅遊行程資料介面
  */

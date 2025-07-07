@@ -147,277 +147,206 @@ defineExpose({
 })
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
-@use '@/assets/styles/mixins' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
-.sidebar {
-  @include sidebar-base;
-  padding-top: $header-height;
-  width: $sidebar-width-mobile;
-  background: $bg-sidebar;
+.sidebar
+  @include sidebar-base
+  padding-top: $header-height
+  width: $sidebar-width-mobile
+  background: $bg-sidebar
 
-  @include desktop {
-    width: $sidebar-width-desktop;
-    background: $bg-sidebar-desktop;
-    backdrop-filter: blur(8px);
-  }
+  @include desktop
+    width: $sidebar-width-desktop
+    background: $bg-sidebar-desktop
+    backdrop-filter: blur(8px)
 
-  // 展開狀態
-  &.isOpen {
-    transform: translateX(0);
-  }
+  &.isOpen
+    transform: translateX(0)
 
-  // 手機版展開
-  &.mobile-open {
-    transform: translateX(0);
-  }
+  &.mobile-open
+    transform: translateX(0)
 
-  // 手機版樣式
-  &.mobile-version {
-    background: $bg-sidebar;
-    backdrop-filter: none;
-  }
-}
+  &.mobile-version
+    background: $bg-sidebar
+    backdrop-filter: none
 
 // ===================================
 // 側邊欄內容
 // ===================================
-.sidebar-content {
-  position: relative;
-  overflow-y: auto;
-  padding: $spacing-lg 0;
-  height: 100%;
+.sidebar-content
+  position: relative
+  overflow-y: auto
+  padding: $spacing-lg 0
+  height: 100%
 
-  @include desktop {
-    padding: $spacing-xl 0;
-  }
-}
+  @include desktop
+    padding: $spacing-xl 0
 
 // ===================================
 // 關閉按鈕（和漢堡選單相同位置和樣式）
 // ===================================
-.sidebar-close {
-  position: absolute;
-  top: 8px; // 與 header 中的漢堡選單對齊
-  left: $spacing-md;
-  z-index: 10;
-  width: 40px; // 與漢堡選單相同大小
-  height: 40px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  // 使用 SVG 作為背景圖片
-  background-image: url('@/assets/img/icon/close.svg');
-  background-position: center;
-  background-size: 20px 20px;
-  background-repeat: no-repeat;
-  // 如果 SVG 需要變色（假設原本是深色，要變成符合設計的顏色）
-  filter: brightness(0) saturate(100%) invert(50%);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+.sidebar-close
+  position: absolute
+  top: 8px // 與 header 中的漢堡選單對齊
+  left: $spacing-md
+  z-index: 10
+  width: 40px // 與漢堡選單相同大小
+  height: 40px
+  border: none
+  border-radius: 4px
+  background: transparent
+  background-image: url('@/assets/img/icon/close.png')
+  background-position: center
+  background-size: 20px 20px
+  background-repeat: no-repeat
+  filter: brightness(0) saturate(100%) invert(50%)
+  cursor: pointer
+  transition: all 0.2s ease-in-out
 
-  @include tablet {
-    left: $spacing-lg;
-    background-size: 24px 24px;
-  }
+  @include tablet
+    left: $spacing-lg
+    background-size: 24px 24px
 
-  &:hover {
-    background-color: rgba(56, 178, 172, 0.1);
-    // hover 時改變 SVG 顏色
-    filter: brightness(0) saturate(100%) invert(43%) sepia(86%) saturate(1733%) hue-rotate(146deg) brightness(97%) contrast(86%);
-  }
+  &:hover
+    background-color: rgba(56, 178, 172, 0.1)
+    filter: brightness(0) saturate(100%) invert(43%) sepia(86%) saturate(1733%) hue-rotate(146deg) brightness(97%) contrast(86%)
 
-  &:active {
-    background-color: rgba(56, 178, 172, 0.2);
-  }
-}
+  &:active
+    background-color: rgba(56, 178, 172, 0.2)
 
 // ===================================
 // 側邊欄選單
 // ===================================
-.sidebar-menu {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
+.sidebar-menu
+  margin: 0
+  padding: 0
+  list-style: none
 
 // 選單項目
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  padding: $spacing-md $spacing-lg;
-  border-left: 4px solid transparent;
-  color: $text-secondary;
-  text-decoration: none;
-  transition: all 0.2s ease-in-out;
-  gap: $spacing-md;
+.sidebar-item
+  display: flex
+  align-items: center
+  padding: $spacing-md $spacing-lg
+  border-left: 4px solid transparent
+  color: $text-secondary
+  text-decoration: none
+  transition: all 0.2s ease-in-out
+  gap: $spacing-md
 
-  @include desktop {
-    padding: $spacing-md $spacing-xl;
-  }
+  @include desktop
+    padding: $spacing-md $spacing-xl
 
-  &:hover {
-    background: rgba(56, 178, 172, 0.1);
-    color: $accent-color-1;
-    transform: translateX(4px);
-  }
+  &:hover
+    background: rgba(56, 178, 172, 0.1)
+    color: $accent-color-1
+    transform: translateX(4px)
 
-  &.active {
-    border-left-color: $accent-color-1;
-    background: rgba(56, 178, 172, 0.15);
-    color: $accent-color-1;
-    font-weight: 600;
-  }
-}
+  &.active
+    border-left-color: $accent-color-1
+    background: rgba(56, 178, 172, 0.15)
+    color: $accent-color-1
+    font-weight: 600
 
 // 首頁項目特殊樣式
-.home-item {
-  margin-bottom: $spacing-md;
+.home-item
+  margin-bottom: $spacing-md
 
-  .sidebar-icon {
-    font-size: 20px;
-  }
-}
+  .sidebar-icon
+    font-size: 20px
 
 // ===================================
 // 分類樣式
 // ===================================
-.sidebar-category {
-  margin-top: $spacing-lg;
+.sidebar-category
+  margin-top: $spacing-lg
 
-  &:first-child {
-    margin-top: 0;
-  }
-}
+  &:first-child
+    margin-top: 0
 
-.category-title {
-  display: flex;
-  align-items: center;
-  margin-bottom: $spacing-sm;
-  padding: $spacing-sm $spacing-lg;
-  color: $text-muted;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-  font-size: 14px;
-  gap: $spacing-sm;
+.category-title
+  display: flex
+  align-items: center
+  margin-bottom: $spacing-sm
+  padding: $spacing-sm $spacing-lg
+  color: $text-muted
+  text-transform: uppercase
+  letter-spacing: 0.5px
+  font-weight: 600
+  font-size: 14px
+  gap: $spacing-sm
 
-  @include desktop {
-    padding: $spacing-sm $spacing-xl;
-  }
-}
+  @include desktop
+    padding: $spacing-sm $spacing-xl
 
-.category-icon {
-  color: $accent-color-2;
-  font-size: 16px;
-}
+.category-icon
+  color: $accent-color-2
+  font-size: 16px
 
-.category-text {
-  flex: 1;
-}
+.category-text
+  flex: 1
 
 // 分類項目
-.category-item {
-  position: relative;
-  margin-left: $spacing-md;
+.category-item
+  position: relative
+  margin-left: $spacing-md
 
   &:hover::before,
-  &.active::before {
-    background: $accent-color-1;
-    transform: translateY(-50%) scale(1.5);
-  }
-}
+  &.active::before
+    background: $accent-color-1
+    transform: translateY(-50%) scale(1.5)
 
 // ===================================
 // 圖標樣式
 // ===================================
-.sidebar-icon {
-  flex-shrink: 0;
-  width: 24px;
-  text-align: center;
-  font-size: 18px;
+.sidebar-icon
+  flex-shrink: 0
+  width: 24px
+  text-align: center
+  font-size: 18px
 
-  @include desktop {
-    width: 28px;
-    font-size: 20px;
-  }
-}
+  @include desktop
+    width: 28px
+    font-size: 20px
 
-.sidebar-text {
-  font-weight: 500;
-  font-size: 15px;
+.sidebar-text
+  font-weight: 500
+  font-size: 15px
 
-  @include desktop {
-    font-size: 16px;
-  }
-}
-
-// ===================================
-// 滾動條樣式
-// ===================================
-.sidebar-content {
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-    background: $border-primary;
-
-    &:hover {
-      background: $accent-color-1;
-    }
-  }
-}
+  @include desktop
+    font-size: 16px
 
 // ===================================
 // 響應式調整
 // ===================================
 
 // 手機版
-@include mobile-only {
-  .sidebar-item {
-    padding: $spacing-md;
-  }
+@include mobile-only
+  .sidebar-item
+    padding: $spacing-md
 
-  .category-title {
-    padding: $spacing-sm $spacing-md;
-  }
+  .category-title
+    padding: $spacing-sm $spacing-md
 
-  .category-item {
-    margin-left: $spacing-sm;
-
-    &::before {
-      left: calc(#{$spacing-md} - 8px);
-    }
-  }
-}
+  .category-item
+    margin-left: $spacing-sm
+    &::before
+      left: calc(#{$spacing-md} - 8px)
 
 // 平板版特殊調整
-@include tablet-only {
-  .sidebar {
-    box-shadow: 2px 0 8px $shadow-medium;
-  }
-}
+@include tablet-only
+  .sidebar
+    box-shadow: 2px 0 8px $shadow-medium
 
 // 桌面版特殊效果
-@include desktop {
-  .sidebar-item {
-    margin-right: $spacing-md;
-    border-radius: 0 24px 24px 0;
+@include desktop
+  .sidebar-item
+    margin-right: $spacing-md
+    border-radius: 0 24px 24px 0
+    &:hover
+      box-shadow: 2px 2px 8px $shadow-light
 
-    &:hover {
-      box-shadow: 2px 2px 8px $shadow-light;
-    }
-  }
-
-  .category-item {
-    margin-right: $spacing-lg;
-  }
-}
+  .category-item
+    margin-right: $spacing-lg
 </style>

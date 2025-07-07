@@ -164,10 +164,6 @@ const spinWheel = (): void => {
       }
 
       result.value = wheelItems.value[selectedIndex]
-
-      console.log(
-        `轉了 ${(totalRotation / 360).toFixed(1)} 圈，最終位置: ${finalPosition.toFixed(1)}°，停在: ${result.value}`
-      )
     }
   })
 }
@@ -193,692 +189,585 @@ const updateWheel = (): void => {
 }
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
-@use '@/assets/styles/mixins' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
 // ===================================
 // 主容器
 // ===================================
-.foodwheel-container {
-  min-height: 100vh;
-  background: $bg-primary;
-}
+.foodwheel-container
+  min-height: 100vh
+  background: $bg-primary
 
-.game-wrapper {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: $spacing-xl;
-  border: 1px solid $border-light;
-  border-radius: $border-radius-xl;
-  background: $bg-card;
-  box-shadow: 0 25px 50px $shadow-strong;
+.game-wrapper
+  max-width: 1100px
+  margin: 0 auto
+  padding: $spacing-xl
+  border: 1px solid $border-light
+  border-radius: $border-radius-xl
+  background: $bg-card
+  box-shadow: 0 25px 50px $shadow-strong
 
-  @include tablet {
-    padding: $spacing-xl;
-  }
+  @include tablet
+    padding: $spacing-xl
 
-  @include desktop {
-    max-width: 1200px;
-  }
+  @include desktop
+    max-width: 1200px
 
-  @include large-desktop {
-    max-width: 1300px;
-  }
-}
+  @include large-desktop
+    max-width: 1300px
 
 // ===================================
 // 遊戲內容布局
 // ===================================
 
-.game-content {
-  display: flex;
-  flex-direction: column;
-  margin-top: $spacing-md;
-  border-radius: $border-radius-lg;
-  background: linear-gradient(135deg, $accent-color-1, $accent-color-2);
-  overflow: hidden;
+.game-content
+  display: flex
+  flex-direction: column
+  margin-top: $spacing-md
+  border-radius: $border-radius-lg
+  background: linear-gradient(135deg, $accent-color-1, $accent-color-2)
+  overflow: hidden
 
-  @include desktop {
-    flex-direction: row;
-  }
-}
+  @include desktop
+    flex-direction: row
 
-.game-area {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  padding: $spacing-xl;
-  width: 100%;
+.game-area
+  display: flex
+  align-items: center
+  flex-direction: column
+  justify-content: center
+  padding: $spacing-xl
+  width: 100%
 
-  @include tablet {
-    padding: $spacing-2xl;
-  }
-}
+  @include tablet
+    padding: $spacing-2xl
 
-.control-panel {
-  overflow: hidden;
-  padding: $spacing-xl;
-  min-width: 330px;
-  border-radius: 0 $border-radius-md $border-radius-md 0;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+.control-panel
+  overflow: hidden
+  padding: $spacing-xl
+  min-width: 330px
+  border-radius: 0 $border-radius-md $border-radius-md 0
+  background: rgba(255, 255, 255, 0.9)
+  border: 1px solid rgba(255, 255, 255, 0.2)
+  backdrop-filter: blur(10px)
 
-  @include tablet {
-    padding: $spacing-2xl;
-  }
+  @include tablet
+    padding: $spacing-2xl
 
-  @include desktop {
-    flex: 1; // 佔滿剩餘空間
-    // min-width: 400px;
-    padding: $spacing-lg $spacing-xl;
-  }
-}
+  @include desktop
+    flex: 1
+    // min-width: 400px
+    padding: $spacing-lg $spacing-xl
 
 // ===================================
 // 標題樣式
 // ===================================
-.game-title {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 600;
-  color: $accent-color-2; // 保留橘色主題
-  // margin-bottom: $spacing-xl;
+.game-title
+  text-align: center
+  font-size: 28px
+  font-weight: 600
+  color: $accent-color-2 // 保留橘色主題
 
-  @include tablet {
-    font-size: 32px;
-  }
-}
+  @include tablet
+    font-size: 32px
 
-@keyframes sway {
-  0%,
-  100% {
-    transform: translateY(-50%) rotate(-5deg);
-  }
-  50% {
-    transform: translateY(-55%) rotate(5deg);
-  }
-}
+@keyframes sway
+  0%, 100%
+    transform: translateY(-50%) rotate(-5deg)
 
-h2 {
-  margin-bottom: $spacing-lg;
-  color: $text-primary;
-  letter-spacing: 1px;
-  font-weight: 500;
-  font-size: 22px;
+  50%
+    transform: translateY(-55%) rotate(5deg)
 
-  @include tablet {
-    font-size: 24px;
-  }
-}
+h2
+  margin-bottom: $spacing-lg
+  color: $text-primary
+  letter-spacing: 1px
+  font-weight: 500
+  font-size: 22px
+
+  @include tablet
+    font-size: 24px
 
 // ===================================
 // 轉輪樣式 (保持鮮豔色彩)
 // ===================================
-.wheel-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto $spacing-2xl;
-  width: 240px;
-  height: 240px;
+.wheel-wrapper
+  position: relative
+  display: flex
+  align-items: center
+  justify-content: center
+  margin: 0 auto $spacing-2xl
+  width: 240px
+  height: 240px
 
-  // 375px 以上手機
-  @media (min-width: 375px) {
-    width: 280px;
-    height: 280px;
-  }
+  @media (min-width: 375px)
+    width: 280px
+    height: 280px
 
-  // 480px 以上手機
-  @media (min-width: 480px) {
-    width: 320px;
-    height: 320px;
-  }
+  @media (min-width: 480px)
+    width: 320px
+    height: 320px
 
-  @include tablet {
-    width: 360px;
-    height: 360px;
-    margin-top: $spacing-xl;
-  }
+  @include tablet
+    width: 360px
+    height: 360px
+    margin-top: $spacing-xl
 
-  @include desktop {
-    width: 400px;
-    height: 400px;
-  }
-}
+  @include desktop
+    width: 400px
+    height: 400px
 
-.wheel {
-  position: relative;
-  right: 6px;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  border: 4px solid $primary-color;
-  border-radius: 50%;
-  background: $bg-card;
-  box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.9),
-    0 0 0 12px rgba(56, 178, 172, 0.2),
-    inset 0 0 30px rgba(74, 85, 104, 0.05);
-  transform: rotate(0deg);
+.wheel
+  position: relative
+  right: 6px
+  overflow: hidden
+  width: 100%
+  height: 100%
+  border: 4px solid $primary-color
+  border-radius: 50%
+  background: $bg-card
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.9), 0 0 0 12px rgba(56, 178, 172, 0.2), inset 0 0 30px rgba(74, 85, 104, 0.05)
+  transform: rotate(0deg)
 
-  @include tablet {
-    border: 6px solid $primary-color;
-    box-shadow:
-      0 0 0 8px rgba(255, 255, 255, 0.9),
-      0 0 0 16px rgba(56, 178, 172, 0.2),
-      inset 0 0 40px rgba(74, 85, 104, 0.05);
-  }
-}
+  @include tablet
+    border: 6px solid $primary-color
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.9), 0 0 0 16px rgba(56, 178, 172, 0.2), inset 0 0 40px rgba(74, 85, 104, 0.05)
 
-.wheel-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 10;
-  width: 20px;
-  height: 20px;
-  border: 3px solid $bg-card;
-  border-radius: 50%;
-  background: $accent-color-2;
-  box-shadow: 0 4px 15px rgba(230, 168, 107, 0.4);
-  transform: translate(-50%, -50%);
+.wheel-center
+  position: absolute
+  top: 50%
+  left: 50%
+  z-index: 10
+  width: 20px
+  height: 20px
+  border: 3px solid $bg-card
+  border-radius: 50%
+  background: $accent-color-2
+  box-shadow: 0 4px 15px rgba(230, 168, 107, 0.4)
+  transform: translate(-50%, -50%)
 
-  @media (min-width: 375px) {
-    width: 24px;
-    height: 24px;
-  }
+  @media (min-width: 375px)
+    width: 24px
+    height: 24px
 
-  @include tablet {
-    width: 30px;
-    height: 30px;
-    border: 4px solid $bg-card;
-    box-shadow: 0 6px 20px rgba(230, 168, 107, 0.4);
-  }
-}
+  @include tablet
+    width: 30px
+    height: 30px
+    border: 4px solid $bg-card
+    box-shadow: 0 6px 20px rgba(230, 168, 107, 0.4)
 
-.wheel-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: $text-primary;
-  font-weight: 500;
-  font-size: 16px;
+.wheel-item
+  display: flex
+  align-items: center
+  justify-content: center
+  color: $text-primary
+  font-weight: 500
+  font-size: 16px
 
-  span {
-    position: absolute;
-    top: var(--text-y);
-    left: var(--text-x);
-    width: 65px;
-    color: $text-primary;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    font-size: 11px;
-    line-height: 1.3;
-    transform: translate(-50%, -50%) rotate(var(--text-rotation));
+  span
+    position: absolute
+    top: var(--text-y)
+    left: var(--text-x)
+    width: 65px
+    color: $text-primary
+    text-align: center
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8)
+    letter-spacing: 0.5px
+    font-weight: 600
+    font-size: 11px
+    line-height: 1.3
+    transform: translate(-50%, -50%) rotate(var(--text-rotation))
 
-    @media (min-width: 375px) {
-      width: 75px;
-      font-size: 12px;
-    }
+    @media (min-width: 375px)
+      width: 75px
+      font-size: 12px
 
-    @media (min-width: 480px) {
-      width: 85px;
-      font-size: 13px;
-    }
+    @media (min-width: 480px)
+      width: 85px
+      font-size: 13px
 
-    @include tablet {
-      width: 95px;
-      font-size: 15px;
-      line-height: 1.4;
-    }
+    @include tablet
+      width: 95px
+      font-size: 15px
+      line-height: 1.4
 
-    @include desktop {
-      width: 100px;
-      font-size: 16px;
-    }
-  }
-}
+    @include desktop
+      width: 100px
+      font-size: 16px
 
-.wheel-pointer {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  z-index: 15;
-  width: 0;
-  height: 0;
-  border-top: 24px solid $accent-color-2;
-  border-right: 12px solid transparent;
-  border-left: 12px solid transparent;
-  filter: drop-shadow(0 3px 8px rgba(230, 168, 107, 0.5));
-  transform: translateX(-50%);
+.wheel-pointer
+  position: absolute
+  top: -18px
+  left: 50%
+  z-index: 15
+  width: 0
+  height: 0
+  border-top: 24px solid $accent-color-2
+  border-right: 12px solid transparent
+  border-left: 12px solid transparent
+  filter: drop-shadow(0 3px 8px rgba(230, 168, 107, 0.5))
+  transform: translateX(-50%)
 
-  @media (min-width: 375px) {
-    top: -20px;
-    border-top: 28px solid $accent-color-2;
-    border-right: 14px solid transparent;
-    border-left: 14px solid transparent;
-  }
+  @media (min-width: 375px)
+    top: -20px
+    border-top: 28px solid $accent-color-2
+    border-right: 14px solid transparent
+    border-left: 14px solid transparent
 
-  @media (min-width: 480px) {
-    top: -22px;
-    border-top: 32px solid $accent-color-2;
-    border-right: 16px solid transparent;
-    border-left: 16px solid transparent;
-  }
+  @media (min-width: 480px)
+    top: -22px
+    border-top: 32px solid $accent-color-2
+    border-right: 16px solid transparent
+    border-left: 16px solid transparent
 
-  @include tablet {
-    top: -25px;
-    border-top: 36px solid $accent-color-2;
-    border-right: 18px solid transparent;
-    border-left: 18px solid transparent;
-  }
+  @include tablet
+    top: -25px
+    border-top: 36px solid $accent-color-2
+    border-right: 18px solid transparent
+    border-left: 18px solid transparent
 
-  @include desktop {
-    top: -28px;
-    border-top: 40px solid $accent-color-2;
-    border-right: 20px solid transparent;
-    border-left: 20px solid transparent;
-  }
+  @include desktop
+    top: -28px
+    border-top: 40px solid $accent-color-2
+    border-right: 20px solid transparent
+    border-left: 20px solid transparent
 
-  &::after {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    content: '⭐';
-    font-size: 14px;
-    transform: translateX(-50%);
-    animation: pulse 2s ease-in-out infinite;
+  &::after
+    position: absolute
+    top: -20px
+    left: 50%
+    content: '⭐'
+    font-size: 14px
+    transform: translateX(-50%)
+    animation: pulse 2s ease-in-out infinite
 
-    @media (min-width: 375px) {
-      top: -22px;
-      font-size: 15px;
-    }
+    @media (min-width: 375px)
+      top: -22px
+      font-size: 15px
 
-    @media (min-width: 480px) {
-      top: -25px;
-      font-size: 16px;
-    }
+    @media (min-width: 480px)
+      top: -25px
+      font-size: 16px
 
-    @include tablet {
-      top: -30px;
-      font-size: 17px;
-    }
+    @include tablet
+      top: -30px
+      font-size: 17px
 
-    @include desktop {
-      top: -35px;
-      font-size: 18px;
-    }
-  }
-}
+    @include desktop
+      top: -35px
+      font-size: 18px
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: translateX(-50%) scale(1.1);
-  }
-}
+@keyframes pulse
+  0%, 100%
+    opacity: 1
+    transform: translateX(-50%) scale(1)
+
+  50%
+    opacity: 0.7
+    transform: translateX(-50%) scale(1.1)
 
 // ===================================
 // 按鈕樣式
 // ===================================
-.spin-button {
-  position: relative;
-  overflow: hidden;
-  padding: $spacing-lg $spacing-2xl;
-  border: none;
-  border-radius: $border-radius-md;
-  background: $accent-color-2;
-  box-shadow: 0 12px 35px rgba(230, 168, 107, 0.3);
-  color: $text-white;
-  letter-spacing: 1px;
-  font-weight: 600;
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.spin-button
+  position: relative
+  overflow: hidden
+  padding: $spacing-lg $spacing-2xl
+  border: none
+  border-radius: $border-radius-md
+  background: $accent-color-2
+  box-shadow: 0 12px 35px rgba(230, 168, 107, 0.3)
+  color: $text-white
+  letter-spacing: 1px
+  font-weight: 600
+  font-size: 18px
+  cursor: pointer
+  transition: all 0.3s ease
 
-  @include mobile-only {
-    padding: $spacing-md $spacing-xl;
-    font-size: 16px;
-  }
+  @include mobile-only
+    padding: $spacing-md $spacing-xl
+    font-size: 16px
 
-  &::before {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    content: '';
-    transition: left 0.6s;
-  }
+  &::before
+    position: absolute
+    top: 0
+    left: -100%
+    width: 100%
+    height: 100%
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)
+    content: ''
+    transition: left 0.6s
 
-  &:hover::before {
-    left: 100%;
-  }
+  &:hover::before
+    left: 100%
 
-  &:hover:not(:disabled) {
-    background: #d4941b;
-    box-shadow: 0 18px 40px rgba(230, 168, 107, 0.4);
-    transform: translateY(-3px);
-  }
+  &:hover:not(:disabled)
+    background: #d4941b
+    box-shadow: 0 18px 40px rgba(230, 168, 107, 0.4)
+    transform: translateY(-3px)
 
-  &:active {
-    transform: translateY(-1px);
-  }
+  &:active
+    transform: translateY(-1px)
 
-  &:disabled {
-    background: $state-muted;
-    box-shadow: 0 6px 15px $shadow-light;
-    color: $text-white;
-    cursor: not-allowed;
-    transform: none;
-  }
-}
+  &:disabled
+    background: $state-muted
+    box-shadow: 0 6px 15px $shadow-light
+    color: $text-white
+    cursor: not-allowed
+    transform: none
 
 // ===================================
 // 結果顯示
 // ===================================
-.result-display {
-  margin-top: $spacing-xl;
-  padding: $spacing-lg $spacing-xl;
-  min-height: 40px;
-  border: 2px solid rgba(56, 178, 172, 0.3);
-  border-radius: $border-radius-md;
-  background: linear-gradient(135deg, rgba(56, 178, 172, 0.15), rgba(230, 168, 107, 0.15));
-  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.2);
-  color: $text-primary;
-  text-align: center;
-  letter-spacing: 1px;
-  font-weight: 600;
-  font-size: 24px;
-  animation: fadeIn 0.6s ease-out;
-  backdrop-filter: blur(10px);
+.result-display
+  margin-top: $spacing-xl
+  padding: $spacing-lg $spacing-xl
+  min-height: 40px
+  border: 2px solid rgba(56, 178, 172, 0.3)
+  border-radius: $border-radius-md
+  background: linear-gradient(135deg, rgba(56, 178, 172, 0.15), rgba(230, 168, 107, 0.15))
+  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.2)
+  color: $text-primary
+  text-align: center
+  letter-spacing: 1px
+  font-weight: 600
+  font-size: 24px
+  animation: fadeIn 0.6s ease-out
+  backdrop-filter: blur(10px)
 
-  @include mobile-only {
-    font-size: 20px;
-    padding: $spacing-md $spacing-lg;
-  }
-}
+  @include mobile-only
+    font-size: 20px
+    padding: $spacing-md $spacing-lg
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+@keyframes fadeIn
+  from
+    opacity: 0
+    transform: translateY(-15px)
+
+  to
+    opacity: 1
+    transform: translateY(0)
 
 // ===================================
 // 控制面板
 // ===================================
-.input-group {
-  margin-bottom: $spacing-lg;
+.input-group
+  margin-bottom: $spacing-lg
 
-  @include desktop {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-sm;
-  }
+  @include desktop
+    display: flex
+    flex-direction: column
+    gap: $spacing-sm
 
-  label {
-    display: block;
-    margin-bottom: $spacing-md;
-    color: $text-secondary;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-    font-size: 16px;
+  label
+    display: block
+    margin-bottom: $spacing-md
+    color: $text-secondary
+    letter-spacing: 0.5px
+    font-weight: 500
+    font-size: 16px
 
-    @include desktop {
-      margin-bottom: $spacing-sm;
-    }
-  }
+    @include desktop
+      margin-bottom: $spacing-sm
 
-  .input-row {
-    @include desktop {
-      display: flex;
-      gap: $spacing-md;
-      align-items: flex-end;
-    }
-  }
+  .input-row
+    @include desktop
+      display: flex
+      gap: $spacing-md
+      align-items: flex-end
 
-  input {
-    box-sizing: border-box;
-    margin-bottom: $spacing-md;
-    padding: $spacing-md $spacing-lg;
-    width: 100%;
-    border: 2px solid $border-primary;
-    border-radius: $border-radius-sm;
-    background: rgba(255, 255, 255, 0.9);
-    color: $text-secondary;
-    font-weight: 400;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+  input
+    box-sizing: border-box
+    margin-bottom: $spacing-md
+    padding: $spacing-md $spacing-lg
+    width: 100%
+    border: 2px solid $border-primary
+    border-radius: $border-radius-sm
+    background: rgba(255, 255, 255, 0.9)
+    color: $text-secondary
+    font-weight: 400
+    font-size: 15px
+    transition: all 0.3s ease
+    backdrop-filter: blur(5px)
 
-    @include desktop {
-      flex: 1;
-      margin-bottom: 0;
-    }
+    @include desktop
+      flex: 1
+      margin-bottom: 0
 
-    &:focus {
-      outline: none;
-      border-color: $accent-color-2;
-      background: $bg-card;
-      box-shadow: 0 0 0 3px rgba(230, 168, 107, 0.15);
-    }
+    &:focus
+      outline: none
+      border-color: $accent-color-2
+      background: $bg-card
+      box-shadow: 0 0 0 3px rgba(230, 168, 107, 0.15)
 
-    &::placeholder {
-      color: $text-light;
-    }
-  }
+    &::placeholder
+      color: $text-light
 
-  .add-button {
-    @include desktop {
-      flex-shrink: 0;
-      width: auto;
-      min-width: 120px;
-    }
-  }
-}
+  .add-button
+    @include desktop
+      flex-shrink: 0
+      width: auto
+      min-width: 120px
 
-.items-list {
-  overflow-y: auto;
-  margin-top: $spacing-lg;
-  padding-right: $spacing-sm;
-  max-height: 320px;
+.items-list
+  overflow-y: auto
+  margin-top: $spacing-lg
+  padding-right: $spacing-sm
+  max-height: 320px
 
-  @include desktop {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: $spacing-md;
-    max-height: 280px;
-  }
-}
+  @include desktop
+    display: grid
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
+    gap: $spacing-md
+    max-height: 280px
 
-.list-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: $spacing-md;
-  padding: $spacing-md $spacing-lg;
-  border: 2px solid rgba(230, 168, 107, 0.2);
-  border-radius: $border-radius-md;
-  background: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+.list-item
+  display: flex
+  align-items: center
+  margin-bottom: $spacing-md
+  padding: $spacing-md $spacing-lg
+  border: 2px solid rgba(230, 168, 107, 0.2)
+  border-radius: $border-radius-md
+  background: rgba(255, 255, 255, 0.8)
+  transition: all 0.3s ease
+  backdrop-filter: blur(5px)
 
-  @include desktop {
-    margin-bottom: 0; // Grid 佈局不需要 margin
-  }
+  @include desktop
+    margin-bottom: 0 // Grid 佈局不需要 margin
 
-  &:hover {
-    border-color: rgba(230, 168, 107, 0.4);
-    background: $bg-card;
-    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.2);
-    transform: translateY(-2px);
-  }
-}
+  &:hover
+    border-color: rgba(230, 168, 107, 0.4)
+    background: $bg-card
+    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.2)
+    transform: translateY(-2px)
 
-.item-input {
-  flex: 1;
-  box-sizing: border-box;
-  margin-right: $spacing-md;
-  padding: $spacing-sm $spacing-md;
-  min-width: 0;
-  border: 1px solid $border-primary;
-  border-radius: $border-radius-sm;
-  background: $bg-card;
-  color: $text-secondary;
-  font-weight: 400;
-  font-size: 15px;
-  transition: all 0.3s ease;
+.item-input
+  flex: 1
+  box-sizing: border-box
+  margin-right: $spacing-md
+  padding: $spacing-sm $spacing-md
+  min-width: 0
+  border: 1px solid $border-primary
+  border-radius: $border-radius-sm
+  background: $bg-card
+  color: $text-secondary
+  font-weight: 400
+  font-size: 15px
+  transition: all 0.3s ease
 
-  &:focus {
-    outline: none;
-    border-color: $accent-color-2;
-    box-shadow: 0 0 0 2px rgba(230, 168, 107, 0.15);
-  }
-}
+  &:focus
+    outline: none
+    border-color: $accent-color-2
+    box-shadow: 0 0 0 2px rgba(230, 168, 107, 0.15)
 
-.delete-button {
-  flex-shrink: 0;
-  padding: $spacing-sm $spacing-md;
-  border: none;
-  border-radius: $border-radius-sm;
-  background: #ef767a;
-  color: $text-white;
-  white-space: nowrap;
-  font-weight: 500;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.delete-button
+  flex-shrink: 0
+  padding: $spacing-sm $spacing-md
+  border: none
+  border-radius: $border-radius-sm
+  background: #ef767a
+  color: $text-white
+  white-space: nowrap
+  font-weight: 500
+  font-size: 14px
+  cursor: pointer
+  transition: all 0.3s ease
 
-  &:hover {
-    background: #e6636a;
-    box-shadow: 0 6px 15px rgba(239, 118, 122, 0.3);
-    transform: translateY(-1px);
-  }
-}
+  &:hover
+    background: #e6636a
+    box-shadow: 0 6px 15px rgba(239, 118, 122, 0.3)
+    transform: translateY(-1px)
 
-.add-button {
-  padding: $spacing-md $spacing-xl;
-  width: 100%;
-  border: 2px solid rgba(230, 168, 107, 0.4);
-  border-radius: $border-radius-sm;
-  background: rgba(230, 168, 107, 0.15);
-  color: $text-secondary;
-  letter-spacing: 0.5px;
-  font-weight: 500;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+.add-button
+  padding: $spacing-md $spacing-xl
+  width: 100%
+  border: 2px solid rgba(230, 168, 107, 0.4)
+  border-radius: $border-radius-sm
+  background: rgba(230, 168, 107, 0.15)
+  color: $text-secondary
+  letter-spacing: 0.5px
+  font-weight: 500
+  font-size: 16px
+  cursor: pointer
+  transition: all 0.3s ease
+  backdrop-filter: blur(5px)
 
-  &:hover {
-    border-color: rgba(230, 168, 107, 0.6);
-    background: rgba(230, 168, 107, 0.25);
-    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.25);
-    transform: translateY(-2px);
-  }
-}
+  &:hover
+    border-color: rgba(230, 168, 107, 0.6)
+    background: rgba(230, 168, 107, 0.25)
+    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.25)
+    transform: translateY(-2px)
 
-.update-button {
-  margin-top: $spacing-lg;
-  padding: $spacing-md $spacing-xl;
-  width: 100%;
-  border: none;
-  border-radius: $border-radius-md;
-  background: $primary-color;
-  box-shadow: 0 10px 30px rgba(74, 85, 104, 0.3);
-  color: $text-white;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-  font-size: 17px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.update-button
+  margin-top: $spacing-lg
+  padding: $spacing-md $spacing-xl
+  width: 100%
+  border: none
+  border-radius: $border-radius-md
+  background: $primary-color
+  box-shadow: 0 10px 30px rgba(74, 85, 104, 0.3)
+  color: $text-white
+  letter-spacing: 0.5px
+  font-weight: 600
+  font-size: 17px
+  cursor: pointer
+  transition: all 0.3s ease
 
-  &:hover {
-    background: #2d3748;
-    box-shadow: 0 15px 35px rgba(74, 85, 104, 0.4);
-    transform: translateY(-3px);
-  }
-}
+  &:hover
+    background: #2d3748
+    box-shadow: 0 15px 35px rgba(74, 85, 104, 0.4)
+    transform: translateY(-3px)
 
 // ===================================
 // 響應式調整
 // ===================================
 
 // 手機版
-@include mobile-only {
-  .foodwheel-container {
-    padding: $spacing-md;
-  }
+@include mobile-only
+  .foodwheel-container
+    padding: $spacing-md
 
-  .game-wrapper {
-    padding: $spacing-lg;
-  }
+  .game-wrapper
+    padding: $spacing-lg
 
-  .game-content {
-    flex-direction: column;
-  }
+  .game-content
+    flex-direction: column
 
-  .game-area {
-    margin-right: 0;
-    margin-bottom: $spacing-lg;
-  }
+  .game-area
+    margin-right: 0
+    margin-bottom: $spacing-lg
 
-  .control-panel {
-    min-width: auto;
-    max-width: none;
-    padding: $spacing-lg;
-  }
+  .control-panel
+    min-width: auto
+    max-width: none
+    padding: $spacing-lg
 
-  .wheel-wrapper {
-    margin-bottom: $spacing-xl;
-  }
+  .wheel-wrapper
+    margin-bottom: $spacing-xl
 
-  h1 {
-    font-size: 24px;
-    margin-bottom: $spacing-xl;
-  }
+  h1
+    font-size: 24px
+    margin-bottom: $spacing-xl
 
-  h2 {
-    font-size: 18px;
-    margin-bottom: $spacing-md;
-  }
-}
+  h2
+    font-size: 18px
+    margin-bottom: $spacing-md
 
 // 平板版
-@include tablet-only {
-  .game-wrapper {
-    max-width: 800px;
-  }
+@include tablet-only
+  .game-wrapper
+    max-width: 800px
 
-  .game-content {
-    flex-direction: column;
-  }
+  .game-content
+    flex-direction: column
 
-  .game-area {
-    margin-right: 0;
-    margin-bottom: $spacing-lg;
-  }
+  .game-area
+    margin-right: 0
+    margin-bottom: $spacing-lg
 
-  .control-panel {
-    width: 100%;
-    border-radius: 0 0 $border-radius-md $border-radius-md;
-  }
-}
+  .control-panel
+    width: 100%
+    border-radius: 0 0 $border-radius-md $border-radius-md
 </style>

@@ -128,532 +128,452 @@ const handleClose = () => {
 }
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
-@use '@/assets/styles/mixins' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
-.info-panel {
-  @include absolute-center;
-  z-index: $z-modal;
-  overflow-y: auto;
-  max-width: calc(100% - #{$spacing-lg});
-  max-height: calc(100% - #{$spacing-lg});
-  width: 260px;
-  border: 1px solid $border-light;
-  border-radius: $border-radius-lg;
-  background: $bg-card;
-  pointer-events: auto;
+.info-panel
+  @include absolute-center
+  z-index: $z-modal
+  overflow-y: auto
+  max-width: calc(100% - #{$spacing-lg})
+  max-height: calc(100% - #{$spacing-lg})
+  width: 260px
+  border: 1px solid $border-light
+  border-radius: $border-radius-lg
+  background: $bg-card
+  pointer-events: auto
 
-  @include tablet {
-    max-width: calc(100% - #{$spacing-xl});
-    max-height: calc(100% - #{$spacing-xl});
-    width: 320px;
-    border-radius: $border-radius-xl;
-  }
-  @include desktop {
-    width: 360px;
-    border: 2px solid $border-primary;
-  }
-  @include large-desktop {
-    width: 380px;
-  }
-}
+  @include tablet
+    max-width: calc(100% - #{$spacing-xl})
+    max-height: calc(100% - #{$spacing-xl})
+    width: 320px
+    border-radius: $border-radius-xl
+
+  @include desktop
+    width: 360px
+    border: 2px solid $border-primary
+
+  @include large-desktop
+    width: 380px
 
 // ===================================
 // 面板頭部
 // ===================================
-.panel-header {
-  @include flex-between;
-  padding: $spacing-md $spacing-sm $spacing-sm;
-  border-bottom: 1px solid $border-muted;
+.panel-header
+  @include flex-between
+  padding: $spacing-md $spacing-sm $spacing-sm
+  border-bottom: 1px solid $border-muted
 
-  @include tablet {
-    padding: $spacing-lg $spacing-md $spacing-md;
-  }
-  @include desktop {
-    padding: $spacing-xl $spacing-lg $spacing-lg;
-  }
-}
+  @include tablet
+    padding: $spacing-lg $spacing-md $spacing-md
 
-.country-header {
-  @include flex-center;
-  gap: $spacing-sm;
+  @include desktop
+    padding: $spacing-xl $spacing-lg $spacing-lg
 
-  @include tablet {
-    gap: $spacing-md;
-  }
-}
+.country-header
+  @include flex-center
+  gap: $spacing-sm
 
-.country-flag-container {
-  @include flex-center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid $border-light;
-  border-radius: $border-radius-md;
-  background: $bg-stats;
-  box-shadow: $shadow-light;
+  @include tablet
+    gap: $spacing-md
 
-  @include tablet {
-    width: 36px;
-    height: 36px;
-  }
-  @include desktop {
-    width: 42px;
-    height: 42px;
-    border-radius: $border-radius-lg;
-  }
-}
+.country-flag-container
+  @include flex-center
+  width: 28px
+  height: 28px
+  border: 1px solid $border-light
+  border-radius: $border-radius-md
+  background: $bg-stats
+  box-shadow: $shadow-light
 
-.country-flag {
-  font-size: 16px;
+  @include tablet
+    width: 36px
+    height: 36px
 
-  @include tablet {
-    font-size: 20px;
-  }
-  @include desktop {
-    font-size: 24px;
-  }
-}
+  @include desktop
+    width: 42px
+    height: 42px
+    border-radius: $border-radius-lg
 
-.country-info {
-  flex: 1;
-  min-width: 0;
-}
+.country-flag
+  font-size: 16px
 
-.country-name {
-  margin: 0;
-  color: $text-primary;
-  font-weight: 600;
-  font-size: 15px;
-  line-height: 1.3;
+  @include tablet
+    font-size: 20px
 
-  @include tablet {
-    font-size: 17px;
-  }
-  @include desktop {
-    font-weight: 700;
-    font-size: 18px;
-  }
-}
+  @include desktop
+    font-size: 24px
 
-.close-btn {
-  @include flex-center;
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border: none;
-  border: 1px solid $border-light;
-  border-radius: 50%;
-  background: $bg-primary;
-  color: $text-muted;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+.country-info
+  flex: 1
+  min-width: 0
 
-  @include tablet {
-    width: 28px;
-    height: 28px;
-  }
-  @include desktop {
-    width: 32px;
-    height: 32px;
-    background: $bg-stats;
-  }
+.country-name
+  margin: 0
+  color: $text-primary
+  font-weight: 600
+  font-size: 15px
+  line-height: 1.3
 
-  &:hover {
-    border-color: $accent-color-1;
-    background: $accent-color-1;
-    color: $text-white;
-    transform: scale(1.1);
-  }
+  @include tablet
+    font-size: 17px
 
-  &:active {
-    transform: scale(0.95);
-  }
+  @include desktop
+    font-weight: 700
+    font-size: 18px
 
-  svg {
-    width: 12px;
-    height: 12px;
+.close-btn
+  @include flex-center
+  flex-shrink: 0
+  width: 24px
+  height: 24px
+  border: none
+  border: 1px solid $border-light
+  border-radius: 50%
+  background: $bg-primary
+  color: $text-muted
+  cursor: pointer
+  transition: all 0.2s ease-in-out
 
-    @include tablet {
-      width: 14px;
-      height: 14px;
-    }
-    @include desktop {
-      width: 16px;
-      height: 16px;
-    }
-  }
-}
+  @include tablet
+    width: 28px
+    height: 28px
+
+  @include desktop
+    width: 32px
+    height: 32px
+    background: $bg-stats
+
+  &:hover
+    border-color: $accent-color-1
+    background: $accent-color-1
+    color: $text-white
+    transform: scale(1.1)
+
+  &:active
+    transform: scale(0.95)
+
+  svg
+    width: 12px
+    height: 12px
+
+    @include tablet
+      width: 14px
+      height: 14px
+
+    @include desktop
+      width: 16px
+      height: 16px
 
 // ===================================
 // 訪問次數區域
 // ===================================
-.visit-count-section {
-  padding: $spacing-sm $spacing-md $spacing-md;
-  border-bottom: 1px solid $border-muted;
-  background: linear-gradient(135deg, rgba($accent-color-1, 0.6), rgba($accent-color-1, 0.8));
-  text-align: center;
+.visit-count-section
+  padding: $spacing-sm $spacing-md $spacing-md
+  border-bottom: 1px solid $border-muted
+  background: linear-gradient(135deg, rgba($accent-color-1, 0.6), rgba($accent-color-1, 0.8))
+  text-align: center
 
-  @include tablet {
-    padding: $spacing-md $spacing-lg $spacing-lg;
-  }
-  @include desktop {
-    padding: $spacing-lg $spacing-xl $spacing-xl;
-  }
-}
+  @include tablet
+    padding: $spacing-md $spacing-lg $spacing-lg
 
-.visit-count {
-  display: block;
-  color: $text-primary;
-  font-weight: 600;
-  font-size: 18px;
+  @include desktop
+    padding: $spacing-lg $spacing-xl $spacing-xl
 
-  @include tablet {
-    font-size: 20px;
-  }
-  @include desktop {
-    font-weight: 700;
-    font-size: 22px;
-  }
-}
+.visit-count
+  display: block
+  color: $text-primary
+  font-weight: 600
+  font-size: 18px
+
+  @include tablet
+    font-size: 20px
+
+  @include desktop
+    font-weight: 700
+    font-size: 22px
 
 // ===================================
 // 詳細資訊區域
 // ===================================
-.details-section {
-  padding: $spacing-md $spacing-sm $spacing-md;
+.details-section
+  padding: $spacing-md $spacing-sm $spacing-md
 
-  @include tablet {
-    padding: $spacing-lg $spacing-md $spacing-lg;
-  }
-  @include desktop {
-    padding: $spacing-xl $spacing-lg $spacing-xl;
-  }
-}
+  @include tablet
+    padding: $spacing-lg $spacing-md $spacing-lg
 
-.detail-item {
-  margin-bottom: $spacing-md;
+  @include desktop
+    padding: $spacing-xl $spacing-lg $spacing-xl
 
-  @include tablet {
-    margin-bottom: $spacing-lg;
-  }
+.detail-item
+  margin-bottom: $spacing-md
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
+  @include tablet
+    margin-bottom: $spacing-lg
 
-.detail-header {
-  @include flex-center;
-  justify-content: flex-start;
-  margin-bottom: $spacing-xs;
-  gap: $spacing-xs;
+  &:last-child
+    margin-bottom: 0
 
-  @include tablet {
-    margin-bottom: $spacing-sm;
-    gap: $spacing-sm;
-  }
-}
+.detail-header
+  @include flex-center
+  justify-content: flex-start
+  margin-bottom: $spacing-xs
+  gap: $spacing-xs
 
-.detail-icon {
-  font-size: 14px;
-  opacity: 0.8;
+  @include tablet
+    margin-bottom: $spacing-sm
+    gap: $spacing-sm
 
-  @include tablet {
-    font-size: 16px;
-  }
-  @include desktop {
-    font-size: 18px;
-  }
-}
+.detail-icon
+  font-size: 14px
+  opacity: 0.8
 
-.detail-title {
-  color: $text-primary;
-  font-weight: 600;
-  font-size: 13px;
+  @include tablet
+    font-size: 16px
 
-  @include tablet {
-    font-size: 14px;
-  }
-  @include desktop {
-    font-size: 15px;
-  }
-}
+  @include desktop
+    font-size: 18px
 
-.detail-content {
-  margin-left: $spacing-lg;
+.detail-title
+  color: $text-primary
+  font-weight: 600
+  font-size: 13px
 
-  @include tablet {
-    margin-left: $spacing-xl;
-  }
-}
+  @include tablet
+    font-size: 14px
+
+  @include desktop
+    font-size: 15px
+
+.detail-content
+  margin-left: $spacing-lg
+
+  @include tablet
+    margin-left: $spacing-xl
 
 // ===================================
 // 資訊標籤樣式
 // ===================================
-.info-pill {
-  display: inline-block;
-  padding: $spacing-xs $spacing-sm;
-  border: 1px solid rgba($primary-color, 0.25);
-  border-radius: $border-radius-lg;
-  background: rgba($primary-color, 0.15);
-  color: $primary-color;
-  font-weight: 500;
-  font-size: 12px;
-  transition: all 0.2s ease-in-out;
+.info-pill
+  display: inline-block
+  padding: $spacing-xs $spacing-sm
+  border: 1px solid rgba($primary-color, 0.25)
+  border-radius: $border-radius-lg
+  background: rgba($primary-color, 0.15)
+  color: $primary-color
+  font-weight: 500
+  font-size: 12px
+  transition: all 0.2s ease-in-out
 
-  @include tablet {
-    padding: $spacing-sm $spacing-md;
-    font-size: 13px;
-  }
-  @include desktop {
-    border-radius: $border-radius-xl;
-  }
-}
+  @include tablet
+    padding: $spacing-sm $spacing-md
+    font-size: 13px
+
+  @include desktop
+    border-radius: $border-radius-xl
 
 // ===================================
 // 城市標籤
 // ===================================
-.city-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-xs;
+.city-tags
+  display: flex
+  flex-wrap: wrap
+  gap: $spacing-xs
 
-  @include tablet {
-    gap: $spacing-sm;
-  }
-}
+  @include tablet
+    gap: $spacing-sm
 
-.city-tag {
-  @include flex-center;
-  position: relative;
-  overflow: hidden;
-  padding: $spacing-xs $spacing-sm;
-  border: 1px solid rgba($accent-color-1, 0.3);
-  border-radius: $border-radius-lg;
-  background: linear-gradient(135deg, rgba($accent-color-1, 0.4), rgba($accent-color-1, 0.6));
-  color: rgba($accent-color-1, 0.8);
-  font-weight: 500;
-  font-size: 11px;
-  transition: all 0.2s ease-in-out;
+.city-tag
+  @include flex-center
+  position: relative
+  overflow: hidden
+  padding: $spacing-xs $spacing-sm
+  border: 1px solid rgba($accent-color-1, 0.3)
+  border-radius: $border-radius-lg
+  background: linear-gradient(135deg, rgba($accent-color-1, 0.4), rgba($accent-color-1, 0.6))
+  color: rgba($accent-color-1, 0.8)
+  font-weight: 500
+  font-size: 11px
+  transition: all 0.2s ease-in-out
 
-  @include tablet {
-    padding: $spacing-sm $spacing-md;
-    font-size: 12px;
-  }
-  @include desktop {
-    border-radius: $border-radius-xl;
-    font-size: 13px;
-  }
+  @include tablet
+    padding: $spacing-sm $spacing-md
+    font-size: 12px
 
-  &:hover {
-    border-color: $accent-color-1;
-    background: linear-gradient(135deg, $accent-color-1, rgba($accent-color-1, 0.9));
-    box-shadow: $shadow-light;
-    color: $text-white;
-    transform: translateY(-1px);
-  }
+  @include desktop
+    border-radius: $border-radius-xl
+    font-size: 13px
 
-  &::before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-    content: '';
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
+  &:hover
+    border-color: $accent-color-1
+    background: linear-gradient(135deg, $accent-color-1, rgba($accent-color-1, 0.9))
+    box-shadow: $shadow-light
+    color: $text-white
+    transform: translateY(-1px)
 
-  &:hover::before {
-    opacity: 1;
-  }
-}
+  &::before
+    position: absolute
+    top: 0
+    right: 0
+    left: 0
+    height: 1px
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent)
+    content: ''
+    opacity: 0
+    transition: opacity 0.2s ease
+
+  &:hover::before
+    opacity: 1
 
 // ===================================
 // 訪問歷史列表
 // ===================================
-.visit-list {
-  overflow-y: visible;
-  max-height: none;
+.visit-list
+  overflow-y: visible
+  max-height: none
 
-  &.scrollable {
-    overflow-y: auto;
-    padding-right: $spacing-xs;
-    max-height: 100px;
+  &.scrollable
+    overflow-y: auto
+    padding-right: $spacing-xs
+    max-height: 100px
 
-    @include tablet {
-      max-height: 120px;
-    }
+    @include tablet
+      max-height: 120px
 
     // 自訂滾動條
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
+    &::-webkit-scrollbar
+      width: 4px
 
-    &::-webkit-scrollbar-track {
-      border-radius: $border-radius-sm;
-      background: $bg-primary;
-    }
+    &::-webkit-scrollbar-track
+      border-radius: $border-radius-sm
+      background: $bg-primary
 
-    &::-webkit-scrollbar-thumb {
-      border-radius: $border-radius-sm;
-      background: $border-primary;
+    &::-webkit-scrollbar-thumb
+      border-radius: $border-radius-sm
+      background: $border-primary
 
-      &:hover {
-        background: $accent-color-1;
-      }
-    }
-  }
-}
+      &:hover
+        background: $accent-color-1
 
-.visit-item {
-  @include flex-between;
-  margin-bottom: $spacing-xs;
-  padding: $spacing-xs $spacing-sm;
-  border: 1px solid $border-light;
-  border-radius: $border-radius-md;
-  background: $bg-stats;
-  transition: all 0.2s ease-in-out;
+.visit-item
+  @include flex-between
+  margin-bottom: $spacing-xs
+  padding: $spacing-xs $spacing-sm
+  border: 1px solid $border-light
+  border-radius: $border-radius-md
+  background: $bg-stats
+  transition: all 0.2s ease-in-out
 
-  @include tablet {
-    margin-bottom: $spacing-sm;
-    padding: $spacing-sm $spacing-md;
-  }
-  @include desktop {
-    border-radius: $border-radius-lg;
-  }
+  @include tablet
+    margin-bottom: $spacing-sm
+    padding: $spacing-sm $spacing-md
 
-  &:last-child {
-    margin-bottom: 0;
-  }
+  @include desktop
+    border-radius: $border-radius-lg
 
-  &.latest {
-    border-color: rgba($accent-color-2, 0.3);
-    background: linear-gradient(135deg, rgba($accent-color-2, 0.15), rgba($accent-color-2, 0.18));
-    box-shadow: $shadow-light;
-  }
+  &:last-child
+    margin-bottom: 0
 
-  &:hover {
-    box-shadow: $shadow-light;
-    transform: translateY(-1px);
-  }
-}
+  &.latest
+    border-color: rgba($accent-color-2, 0.3)
+    background: linear-gradient(135deg, rgba($accent-color-2, 0.15), rgba($accent-color-2, 0.18))
+    box-shadow: $shadow-light
 
-.visit-date {
-  color: $text-secondary;
-  font-weight: 500;
-  font-size: 11px;
+  &:hover
+    box-shadow: $shadow-light
+    transform: translateY(-1px)
 
-  @include tablet {
-    font-size: 12px;
-  }
-  @include desktop {
-    font-size: 13px;
-  }
-}
+.visit-date
+  color: $text-secondary
+  font-weight: 500
+  font-size: 11px
 
-.latest-badge {
-  padding: 2px $spacing-xs;
-  border: 1px solid rgba($accent-color-2, 0.25);
-  border-radius: $border-radius-sm;
-  background: rgba($accent-color-2, 0.12);
-  color: $accent-color-2;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-  font-size: 9px;
+  @include tablet
+    font-size: 12px
 
-  @include tablet {
-    padding: $spacing-xs $spacing-sm;
-    font-size: 10px;
-  }
-  @include desktop {
-    border-radius: $border-radius-md;
-  }
-}
+  @include desktop
+    font-size: 13px
+
+.latest-badge
+  padding: 2px $spacing-xs
+  border: 1px solid rgba($accent-color-2, 0.25)
+  border-radius: $border-radius-sm
+  background: rgba($accent-color-2, 0.12)
+  color: $accent-color-2
+  text-transform: uppercase
+  letter-spacing: 0.05em
+  font-weight: 600
+  font-size: 9px
+
+  @include tablet
+    padding: $spacing-xs $spacing-sm
+    font-size: 10px
+
+  @include desktop
+    border-radius: $border-radius-md
 
 // ===================================
 // 手機版特殊優化
 // ===================================
-@include mobile-only {
-  .info-panel {
-    border-radius: $border-radius-md;
-  }
+@include mobile-only
+  .info-panel
+    border-radius: $border-radius-md
 
-  .panel-header {
-    padding: $spacing-sm $spacing-xs $spacing-xs;
-  }
+  .panel-header
+    padding: $spacing-sm $spacing-xs $spacing-xs
 
-  .country-flag-container {
-    width: 24px;
-    height: 24px;
-  }
+  .country-flag-container
+    width: 24px
+    height: 24px
 
-  .country-flag {
-    font-size: 14px;
-  }
+  .country-flag
+    font-size: 14px
 
-  .country-name {
-    font-size: 14px;
-  }
+  .country-name
+    font-size: 14px
 
-  .close-btn {
-    width: 20px;
-    height: 20px;
+  .close-btn
+    width: 20px
+    height: 20px
 
-    svg {
-      width: 10px;
-      height: 10px;
-    }
-  }
+    svg
+      width: 10px
+      height: 10px
 
-  .visit-count-section {
-    padding: $spacing-xs $spacing-sm $spacing-sm;
-  }
+  .visit-count-section
+    padding: $spacing-xs $spacing-sm $spacing-sm
 
-  .visit-count {
-    font-size: 16px;
-  }
+  .visit-count
+    font-size: 16px
 
-  .details-section {
-    padding: $spacing-sm $spacing-xs $spacing-sm;
-  }
+  .details-section
+    padding: $spacing-sm $spacing-xs $spacing-sm
 
-  .detail-item {
-    margin-bottom: $spacing-sm;
-  }
+  .detail-item
+    margin-bottom: $spacing-sm
 
-  .detail-content {
-    margin-left: $spacing-md;
-  }
+  .detail-content
+    margin-left: $spacing-md
 
-  .city-tag {
-    padding: 2px $spacing-xs;
-    font-size: 10px;
-  }
+  .city-tag
+    padding: 2px $spacing-xs
+    font-size: 10px
 
-  .info-pill {
-    padding: 2px $spacing-xs;
-    font-size: 11px;
-  }
+  .info-pill
+    padding: 2px $spacing-xs
+    font-size: 11px
 
-  .visit-list.scrollable {
-    max-height: 80px;
-  }
+  .visit-list.scrollable
+    max-height: 80px
 
-  .visit-item {
-    padding: 2px $spacing-xs;
-  }
+  .visit-item
+    padding: 2px $spacing-xs
 
-  .visit-date {
-    font-size: 10px;
-  }
+  .visit-date
+    font-size: 10px
 
-  .latest-badge {
-    padding: 1px 2px;
-    font-size: 8px;
-  }
-}
+  .latest-badge
+    padding: 1px 2px
+    font-size: 8px
 </style>

@@ -194,7 +194,6 @@ const getPinHighlight = (visitCount: number): string => {
 // 圖釘點擊處理 - 發出事件給父組件
 const handlePinClick = (pin: ProcessedPin) => {
   emit('pin-selected', pin)
-  console.log('選中圖釘:', pin.displayName, '訪問次數:', pin.visitCount)
 }
 
 // 處理視窗大小變化
@@ -233,344 +232,266 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
-@use '@/assets/styles/mixins' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
 // ===================================
 // 圖釘覆蓋層 (Mobile First)
 // ===================================
-.travel-pins-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
+.travel-pins-overlay
+  position: absolute
+  top: 0
+  left: 0
+  z-index: 5
+  width: 100%
+  height: 100%
+  pointer-events: none
 
 // ===================================
 // 旅遊圖釘主體
 // ===================================
-.travel-pin {
-  width: 24px;
-  height: 32px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  pointer-events: auto;
+.travel-pin
+  width: 24px
+  height: 32px
+  cursor: pointer
+  transition: all 0.3s ease-in-out
+  pointer-events: auto
   // 確保最小點擊區域
-  min-width: 20px;
-  min-height: 28px;
+  min-width: 20px
+  min-height: 28px
 
-  @include tablet {
-    width: 28px;
-    height: 36px;
-    min-width: 24px;
-    min-height: 32px;
-  }
+  @include tablet
+    width: 28px
+    height: 36px
+    min-width: 24px
+    min-height: 32px
 
-  @include desktop {
-    width: 30px;
-    height: 40px;
-    min-width: 26px;
-    min-height: 36px;
-  }
+  @include desktop
+    width: 30px
+    height: 40px
+    min-width: 26px
+    min-height: 36px
 
-  &:hover {
-    transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.15));
-    z-index: 10;
+  &:hover
+    transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.15))
+    z-index: 10
 
-    @include tablet {
-      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.2));
-    }
+    @include tablet
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.2))
 
-    @include desktop {
-      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.25));
-    }
+    @include desktop
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.25))
 
-    .pin-svg {
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+    .pin-svg
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))
 
-      @include desktop {
-        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
-      }
-    }
-  }
+      @include desktop
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5))
 
-  &:active {
-    transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.05));
+  &:active
+    transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.05))
 
-    @include tablet {
-      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.1));
-    }
-  }
+    @include tablet
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.1))
 
   // 根據訪問次數的不同樣式
-  &.visits-1 {
-    .pin-svg path {
-      fill: #ff4444;
-    }
-  }
+  &.visits-1
+    .pin-svg path
+      fill: #ff4444
 
-  &.visits-2 {
-    .pin-svg path {
-      fill: #ff8800;
-    }
-  }
+  &.visits-2
+    .pin-svg path
+      fill: #ff8800
 
-  &.visits-3 {
-    .pin-svg path {
-      fill: #44aa44;
-    }
-  }
-}
+  &.visits-3
+    .pin-svg path
+      fill: #44aa44
 
 // ===================================
 // SVG 圖釘樣式
 // ===================================
-.pin-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
-  transition: filter 0.3s ease-in-out;
+.pin-svg
+  width: 100%
+  height: 100%
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25))
+  transition: filter 0.3s ease-in-out
 
-  @include tablet {
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-  }
+  @include tablet
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))
 
-  @include desktop {
-    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
-  }
+  @include desktop
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35))
 
-  path {
-    stroke: $text-white;
-    stroke-width: 1.5;
-    transition: all 0.3s ease-in-out;
+  path
+    stroke: $text-white
+    stroke-width: 1.5
+    transition: all 0.3s ease-in-out
 
-    @include tablet {
-      stroke-width: 2;
-    }
-  }
+    @include tablet
+      stroke-width: 2
 
-  circle {
-    transition: all 0.3s ease-in-out;
-  }
-}
+  circle
+    transition: all 0.3s ease-in-out
 
 // ===================================
 // 圖釘數字顯示
 // ===================================
-.pin-number {
-  position: absolute;
-  top: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: $text-white;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-  font-weight: 700;
-  font-size: 9px;
-  pointer-events: none;
-  line-height: 1;
+.pin-number
+  position: absolute
+  top: 6px
+  left: 50%
+  transform: translateX(-50%)
+  color: $text-white
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8)
+  font-weight: 700
+  font-size: 9px
+  pointer-events: none
+  line-height: 1
 
-  @include tablet {
-    top: 7px;
-    font-size: 10px;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-  }
+  @include tablet
+    top: 7px
+    font-size: 10px
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9)
 
-  @include desktop {
-    top: 8px;
-    font-size: 11px;
-    font-weight: 800;
-  }
-}
+  @include desktop
+    top: 8px
+    font-size: 11px
+    font-weight: 800
 
 // ===================================
 // 圖釘顏色方案
 // ===================================
 
 // 1次訪問 - 青綠色系
-.visits-1 {
-  .pin-svg {
-    path {
-      fill: #ff4444;
-    }
+.visits-1
+  .pin-svg
+    path
+      fill: #ff4444
 
-    circle {
-      fill: rgba(#ff4444, 0.8);
-      opacity: 0.4;
-    }
-  }
+    circle
+      fill: rgba(#ff4444, 0.8)
+      opacity: 0.4
 
-  &:hover {
-    .pin-svg {
-      path {
-        fill: #ff1744;
-      }
+  &:hover
+    .pin-svg
+      path
+        fill: #ff1744
 
-      circle {
-        fill: rgba(#ff4444, 0.6);
-        opacity: 0.6;
-      }
-    }
-  }
-}
+      circle
+        fill: rgba(#ff4444, 0.6)
+        opacity: 0.6
 
 // 2次訪問 - 溫暖橘色系
-.visits-2 {
-  .pin-svg {
-    path {
-      fill: #ff8800;
-    }
+.visits-2
+  .pin-svg
+    path
+      fill: #ff8800
 
-    circle {
-      fill: rgba(#ff8800, 0.8);
-      opacity: 0.4;
-    }
-  }
+    circle
+      fill: rgba(#ff8800, 0.8)
+      opacity: 0.4
 
-  &:hover {
-    .pin-svg {
-      path {
-        fill: #ff6f00;
-      }
+  &:hover
+    .pin-svg
+      path
+        fill: #ff6f00
 
-      circle {
-        fill: rgba(#ff8800, 0.6);
-        opacity: 0.6;
-      }
-    }
-  }
-}
+      circle
+        fill: rgba(#ff8800, 0.6)
+        opacity: 0.6
 
 // 3次以上訪問 - 主青綠色系
-.visits-3 {
-  .pin-svg {
-    path {
-      fill: #44aa44;
-    }
+.visits-3
+  .pin-svg
+    path
+      fill: #44aa44
 
-    circle {
-      fill: rgba(#44aa44, 0.8);
-      opacity: 0.4;
-    }
-  }
+    circle
+      fill: rgba(#44aa44, 0.8)
+      opacity: 0.4
 
-  &:hover {
-    .pin-svg {
-      path {
-        fill: #388e3c;
-      }
+  &:hover
+    .pin-svg
+      path
+        fill: #388e3c
 
-      circle {
-        fill: rgba(#44aa44, 0.6);
-        opacity: 0.6;
-      }
-    }
-  }
-}
+      circle
+        fill: rgba(#44aa44, 0.6)
+        opacity: 0.6
 
 // ===================================
 // 響應式動畫優化
 // ===================================
 
 // 手機版優化 - 更大的觸控區域和簡化動畫
-@include mobile-only {
-  .travel-pin {
-    width: 28px;
-    height: 36px;
-    min-width: 24px;
-    min-height: 32px;
+@include mobile-only
+  .travel-pin
+    width: 28px
+    height: 36px
+    min-width: 24px
+    min-height: 32px
 
-    &:hover {
-      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.1));
-    }
+    &:hover
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.1))
 
-    &:active {
-      transform: translate(-50%, -100%) scale(var(--current-pin-scale, 1));
-    }
-  }
+    &:active
+      transform: translate(-50%, -100%) scale(var(--current-pin-scale, 1))
 
-  .pin-number {
-    top: 8px;
-    font-size: 10px;
-    font-weight: 600;
-  }
+  .pin-number
+    top: 8px
+    font-size: 10px
+    font-weight: 600
 
-  .pin-svg {
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  .pin-svg
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
 
-    path {
-      stroke-width: 1.5;
-    }
-  }
-}
+    path
+      stroke-width: 1.5
 
 // 平板版優化
-@include tablet-only {
-  .travel-pin {
-    &:hover {
-      .pin-svg {
-        filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.45));
-      }
-    }
-  }
-}
+@include tablet-only
+  .travel-pin
+    &:hover
+      .pin-svg
+        filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.45))
 
 // 桌面版增強效果
-@include desktop {
-  .travel-pin {
-    transition: all 0.2s ease-in-out;
+@include desktop
+  .travel-pin
+    transition: all 0.2s ease-in-out
 
-    &:hover {
-      transition: all 0.15s ease-out;
+    &:hover
+      transition: all 0.15s ease-out
 
-      .pin-svg {
-        transition: filter 0.15s ease-out;
-      }
-    }
+      .pin-svg
+        transition: filter 0.15s ease-out
 
     // 添加脈衝效果給高訪問次數的圖釘
-    &.visits-3 {
-      animation: pulse-glow 3s ease-in-out infinite;
-    }
-  }
+    &.visits-3
+      animation: pulse-glow 3s ease-in-out infinite
 
-  .pin-number {
-    text-shadow:
-      0 1px 4px rgba(0, 0, 0, 0.9),
-      0 0 8px rgba(0, 0, 0, 0.3);
-  }
-}
+  .pin-number
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.3)
 
 // 大桌面版特殊效果
-@include large-desktop {
-  .travel-pin {
-    &:hover {
-      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.3));
+@include large-desktop
+  .travel-pin
+    &:hover
+      transform: translate(-50%, -100%) scale(calc(var(--current-pin-scale, 1) * 1.3))
 
-      .pin-svg {
-        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6));
-      }
-    }
-  }
-}
+      .pin-svg
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.6))
 
 // ===================================
 // 動畫定義
 // ===================================
 
 // 脈衝發光動畫 (僅桌面版)
-@keyframes pulse-glow {
+@keyframes pulse-glow
+  0%, 100%
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35))
 
-  0%,
-  100% {
-    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
-  }
-
-  50% {
-    filter: drop-shadow(0 3px 15px rgba(56, 178, 172, 0.4));
-  }
-}
+  50%
+    filter: drop-shadow(0 3px 15px rgba(56, 178, 172, 0.4))
 </style>

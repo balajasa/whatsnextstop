@@ -35,9 +35,7 @@ const routes = [
         meta: {
           title: '行程規劃',
           showBreadcrumb: true,
-          breadcrumb: [
-            { text: '行程規劃', icon: '🗓️' }
-          ]
+          breadcrumb: [{ text: '行程規劃', icon: '🗓️' }]
         }
       },
       {
@@ -60,9 +58,7 @@ const routes = [
         meta: {
           title: '攜帶清單',
           showBreadcrumb: true,
-          breadcrumb: [
-            { text: '攜帶清單', icon: '📝' }
-          ]
+          breadcrumb: [{ text: '攜帶清單', icon: '📝' }]
         }
       },
       {
@@ -70,11 +66,9 @@ const routes = [
         name: 'TravelMap',
         component: TravelMap,
         meta: {
-          title: '世界地圖',
+          title: '旅行地圖',
           showBreadcrumb: true,
-          breadcrumb: [
-            { text: '世界地圖', icon: '🗺️' }
-          ]
+          breadcrumb: [{ text: '旅行地圖', icon: '🗺️' }]
         }
       },
       {
@@ -84,9 +78,7 @@ const routes = [
         meta: {
           title: '我的足跡',
           showBreadcrumb: true,
-          breadcrumb: [
-            { text: '我的足跡', icon: '👣' }
-          ]
+          breadcrumb: [{ text: '我的足跡', icon: '👣' }]
         }
       },
       {
@@ -96,9 +88,7 @@ const routes = [
         meta: {
           title: '小遊戲',
           showBreadcrumb: true,
-          breadcrumb: [
-            { text: '小遊戲', icon: '🎮' }
-          ]
+          breadcrumb: [{ text: '小遊戲', icon: '🎮' }]
         }
       },
       {
@@ -159,22 +149,22 @@ const router = createRouter({
 
 // 全域路由守衛 - 設定頁面標題
 router.beforeEach((to, _from, next) => {
-  const title = to.meta?.title || '溫暖旅程';
-  const randomSubtitle = getRandomTitle();
-  document.title = `${title} | ${randomSubtitle}`;
+  const title = to.meta?.title || '溫暖旅程'
+  const randomSubtitle = getRandomTitle()
+  document.title = `${title} | ${randomSubtitle}`
 
   next()
 })
 
 // 隨機文案陣列
 const randomTitles = [
-  "目前位置：沙發上，夢想著下一個目的地",
-  "收集回憶中...進度：永遠不夠",
-  "本站含有大量旅行毒素，可能引起 wanderlust 症狀",
-  "小小的世界地圖，記錄著我去過的地方",
-  "旅行夥伴：咖啡、相機、還有我的方向感",
-  "世界很大，腳步很小，故事很多",
-  "旅の途中"
+  '目前位置：沙發上，夢想著下一個目的地',
+  '收集回憶中...進度：永遠不夠',
+  '本站含有大量旅行毒素，可能引起 wanderlust 症狀',
+  '小小的世界地圖，記錄著我去過的地方',
+  '旅行夥伴：咖啡、相機、還有我的方向感',
+  '世界很大，腳步很小，故事很多',
+  '旅の途中'
 ]
 
 // 取得隨機文案的函數

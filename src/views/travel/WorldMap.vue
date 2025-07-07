@@ -204,10 +204,9 @@ const initMap = (): void => {
     // 儲存初始變換狀態
     initialTransform.value = d3.zoomIdentity
 
-    const visitedCount = visitedCountriesSet.value.size
     emit(
       'status-change',
-      `載入完成！共 ${worldData.value.features.length} 個國家/地區，已造訪 ${visitedCount} 個國家 (可拖曳移動)`
+      `載入完成！共 ${worldData.value.features.length} 個國家/地區`
     )
     emit('map-ready', {
       projection: projection.value,
@@ -479,292 +478,220 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-@use '@/assets/styles/variables' as *;
-@use '@/assets/styles/mixins' as *;
+<style lang="sass" scoped>
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
-.world-map-svg-container {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  border-radius: $border-radius-sm;
-  background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%); // 古典海藍漸層
+.world-map-svg-container
+  position: relative
+  overflow: hidden
+  width: 100%
+  height: 100%
+  border-radius: $border-radius-sm
+  background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%) // 古典海藍漸層
 
-  @include tablet {
-    border-radius: $border-radius-md;
-  }
-  @include desktop {
-    border-radius: $border-radius-lg;
-    box-shadow:
-      inset 0 2px 4px rgba(74, 85, 104, 0.1),
-      0 4px 12px rgba(74, 85, 104, 0.15);
-  }
-}
+  @include tablet
+    border-radius: $border-radius-md
 
-.world-map-svg {
-  display: block;
-  margin: 0 auto;
-  max-width: 100%;
-  height: auto;
-}
+  @include desktop
+    border-radius: $border-radius-lg
+    box-shadow: inset 0 2px 4px rgba(74, 85, 104, 0.1), 0 4px 12px rgba(74, 85, 104, 0.15)
+
+.world-map-svg
+  display: block
+  margin: 0 auto
+  max-width: 100%
+  height: auto
 
 // ===================================
 // 國家樣式 - 使用主題配色系統
 // ===================================
-:deep(.country) {
-  cursor: pointer;
-  transition: fill 0.3s ease-in-out,
-  stroke-width 0.2s ease,
-  filter 0.2s ease;
-  stroke: #8B4513; // 古銅色
-  stroke-width: 0.5;
+:deep(.country)
+  cursor: pointer
+  transition: fill 0.3s ease-in-out, stroke-width 0.2s ease, filter 0.2s ease
+  stroke: #8B4513 // 古銅色
+  stroke-width: 0.5
 
-  @include tablet {
-    stroke-width: 0.8;
-  }
-  @include desktop {
-    transition:
-      fill 0.2s ease-in-out,
-      stroke-width 0.2s ease,
-      transform 0.2s ease,
-      filter 0.2s ease;
-    stroke-width: 1;
-  }
+  @include tablet
+    stroke-width: 0.8
 
-  &:hover {
-    filter: brightness(1.05) saturate(1.1);
-    stroke-width: 1.5;
+  @include desktop
+    transition: fill 0.2s ease-in-out, stroke-width 0.2s ease, transform 0.2s ease, filter 0.2s ease
+    stroke-width: 1
 
-    @include tablet {
-      stroke-width: 2;
-    }
-    @include desktop {
-      filter: brightness(1.08) saturate(1.15);
-      transform: scale(1.002);
-      stroke-width: 2.5;
-    }
-  }
+  &:hover
+    filter: brightness(1.05) saturate(1.1)
+    stroke-width: 1.5
+
+    @include tablet
+      stroke-width: 2
+
+    @include desktop
+      filter: brightness(1.08) saturate(1.15)
+      transform: scale(1.002)
+      stroke-width: 2.5
 
   // 已訪問國家的特殊邊框 - 探險紅色系
-  &[data-visited='true'] {
-    filter: drop-shadow(0 0 6px rgba(192, 57, 43, 0.3));
-    stroke: #A93226;
-    stroke-width: 1;
+  &[data-visited='true']
+    filter: drop-shadow(0 0 6px rgba(192, 57, 43, 0.3))
+    stroke: #A93226
+    stroke-width: 1
 
-    @include tablet {
-      filter: drop-shadow(0 0 8px rgba(192, 57, 43, 0.4));
-      stroke-width: 1.2;
-    }
-    @include desktop {
-      filter: drop-shadow(0 0 10px rgba(192, 57, 43, 0.5));
-      stroke-width: 1.5;
-    }
+    @include tablet
+      filter: drop-shadow(0 0 8px rgba(192, 57, 43, 0.4))
+      stroke-width: 1.2
 
-    &:hover {
-      filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6));
-      stroke: #E74C3C;
-      stroke-width: 2;
+    @include desktop
+      filter: drop-shadow(0 0 10px rgba(192, 57, 43, 0.5))
+      stroke-width: 1.5
 
-      @include desktop {
-        filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.7));
-        stroke-width: 3;
-      }
-    }
-  }
+    &:hover
+      filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6))
+      stroke: #E74C3C
+      stroke-width: 2
+
+      @include desktop
+        filter: drop-shadow(0 0 15px rgba(231, 76, 60, 0.7))
+        stroke-width: 3
 
   // 未訪問國家特殊效果
-  &[data-visited='false'] {
-    &:hover {
-      filter: drop-shadow(0 0 4px rgba(139, 69, 19, 0.3)) brightness(1.08);
-    }
-  }
-}
+  &[data-visited='false']
+    &:hover
+      filter: drop-shadow(0 0 4px rgba(139, 69, 19, 0.3)) brightness(1.08)
 
 // ===================================
 // 響應式
 // ===================================
 
 // 手機版優化
-@include mobile-only {
-  .world-map-svg-container {
-    border-radius: $border-radius-sm;
-    background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%);
-    box-shadow:
-      0 2px 8px rgba(41, 128, 185, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
+@include mobile-only
+  .world-map-svg-container
+    border-radius: $border-radius-sm
+    background: linear-gradient(135deg, #2980B9 0%, #1f618d 100%)
+    box-shadow: 0 2px 8px rgba(41, 128, 185, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)
 
-  :deep(.country) {
-    stroke-width: 0.3;
+  :deep(.country)
+    stroke-width: 0.3
 
-    &:hover {
-      filter: brightness(1.08);
-      stroke-width: 1;
-    }
+    &:hover
+      filter: brightness(1.08)
+      stroke-width: 1
 
-    &[data-visited='true'] {
-      stroke-width: 0.8;
+    &[data-visited='true']
+      stroke-width: 0.8
 
-      &:hover {
-        stroke-width: 1.5;
-      }
-    }
-  }
-}
+      &:hover
+        stroke-width: 1.5
 
 // 平板版優化
-@include tablet-only {
-  .world-map-svg-container {
-    box-shadow:
-      inset 0 1px 3px rgba(74, 85, 104, 0.08),
-      0 2px 10px $shadow-medium;
-  }
-}
+@include tablet-only
+  .world-map-svg-container
+    box-shadow: inset 0 1px 3px rgba(74, 85, 104, 0.08), 0 2px 10px $shadow-medium
 
 // 桌面版增強效果 - 古地圖風格
-@include desktop {
-  .world-map-svg-container {
-    position: relative;
-    background:
-      radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-      linear-gradient(135deg, #2980B9 0%, #1f618d 50%, #17527a 100%);
+@include desktop
+  .world-map-svg-container
+    position: relative
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 50%), linear-gradient(135deg, #2980B9 0%, #1f618d 50%, #17527a 100%)
 
     // 古地圖質感邊框
-    &::before {
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      height: 3px;
-      background: linear-gradient(90deg,
-          transparent,
-          rgba(139, 69, 19, 0.3) 20%,
-          rgba(244, 228, 188, 0.2) 50%,
-          rgba(139, 69, 19, 0.3) 80%,
-          transparent);
-      content: '';
-      pointer-events: none;
-    }
+    &::before
+      position: absolute
+      top: 0
+      right: 0
+      left: 0
+      height: 3px
+      background: linear-gradient(90deg, transparent, rgba(139, 69, 19, 0.3) 20%, rgba(244, 228, 188, 0.2) 50%, rgba(139, 69, 19, 0.3) 80%, transparent)
+      content: ''
+      pointer-events: none
 
-    &::after {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: 2px;
-      background: linear-gradient(90deg,
-          transparent,
-          rgba(192, 57, 43, 0.2) 30%,
-          rgba(169, 50, 38, 0.3) 70%,
-          transparent);
-      content: '';
-      pointer-events: none;
-    }
-  }
+    &::after
+      position: absolute
+      right: 0
+      bottom: 0
+      left: 0
+      height: 2px
+      background: linear-gradient(90deg, transparent, rgba(192, 57, 43, 0.2) 30%, rgba(169, 50, 38, 0.3) 70%, transparent)
+      content: ''
+      pointer-events: none
 
-  :deep(.country) {
+  :deep(.country)
     // 桌面版特殊效果
-    filter: brightness(1);
-    transition: all 0.3s ease;
+    filter: brightness(1)
+    transition: all 0.3s ease
 
-    &:not([data-visited='true']) {
+    &:not([data-visited='true'])
       // 未訪問國家的羊皮紙質感
-      background:
-        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        linear-gradient(45deg, #F4E4BC 0%, #F0D89E 100%);
+      background: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), linear-gradient(45deg, #F4E4BC 0%, #F0D89E 100%)
 
-      &:hover {
-        filter: brightness(1.1) sepia(0.1);
-        transform: scale(1.002);
-      }
-    }
+      &:hover
+        filter: brightness(1.1) sepia(0.1)
+        transform: scale(1.002)
 
-    &[data-visited='true'] {
+    &[data-visited='true']
       // 已訪問國家的探險質感
-      position: relative;
+      position: relative
 
-      &::before {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(231, 76, 60, 0.8) 0%, transparent 70%);
-        content: '';
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-      }
+      &::before
+        position: absolute
+        top: 50%
+        left: 50%
+        width: 8px
+        height: 8px
+        border-radius: 50%
+        background: radial-gradient(circle, rgba(231, 76, 60, 0.8) 0%, transparent 70%)
+        content: ''
+        transform: translate(-50%, -50%)
+        pointer-events: none
 
-      &:hover {
-        filter: brightness(1.15) saturate(1.3);
-        transform: scale(1.005);
-      }
-    }
-  }
-}
+      &:hover
+        filter: brightness(1.15) saturate(1.3)
+        transform: scale(1.005)
 
 // 大桌面版特殊效果
-@include large-desktop {
-  .world-map-svg-container {
-    border-radius: $border-radius-xl;
-    box-shadow:
-      inset 0 2px 4px rgba(74, 85, 104, 0.1),
-      0 8px 25px rgba(74, 85, 104, 0.15),
-      0 2px 10px rgba(56, 178, 172, 0.05);
-  }
+@include large-desktop
+  .world-map-svg-container
+    border-radius: $border-radius-xl
+    box-shadow: inset 0 2px 4px rgba(74, 85, 104, 0.1), 0 8px 25px rgba(74, 85, 104, 0.15), 0 2px 10px rgba(56, 178, 172, 0.05)
 
-  :deep(.country) {
-    &:hover {
-      transition: all 0.15s ease-out;
-    }
+  :deep(.country)
+    &:hover
+      transition: all 0.15s ease-out
 
-    &[data-visited='true'] {
+    &[data-visited='true']
       // 更強的視覺回饋
-      &:hover {
-        box-shadow: 0 0 25px rgba(49, 151, 149, 0.6);
-        transform: scale(1.003);
-      }
-    }
-  }
-}
+      &:hover
+        box-shadow: 0 0 25px rgba(49, 151, 149, 0.6)
+        transform: scale(1.003)
 
 // ===================================
 // 載入狀態和錯誤狀態樣式 - 使用主題色
 // ===================================
-.world-map-svg-container {
-  &.loading {
-    background: linear-gradient(135deg, rgba(245, 247, 250, 1), rgba(248, 250, 251, 1));
+.world-map-svg-container
+  &.loading
+    background: linear-gradient(135deg, rgba(245, 247, 250, 1), rgba(248, 250, 251, 1))
 
-    &::after {
-      @include absolute-center;
-      color: $text-muted;
-      content: '載入地圖中...';
-      font-weight: 500;
-      font-size: 14px;
+    &::after
+      @include absolute-center
+      color: $text-muted
+      content: '載入地圖中...'
+      font-weight: 500
+      font-size: 14px
 
-      @include tablet {
-        font-size: 16px;
-      }
-    }
-  }
+      @include tablet
+        font-size: 16px
 
-  &.error {
-    border: 2px dashed rgba(238, 194, 153, 1);
-    background: rgba(247, 230, 212, 1);
+  &.error
+    border: 2px dashed rgba(238, 194, 153, 1)
+    background: rgba(247, 230, 212, 1)
 
-    &::after {
-      @include absolute-center;
-      color: $timeline-recent;
-      content: '地圖載入失敗';
-      font-weight: 600;
-      font-size: 14px;
+    &::after
+      @include absolute-center
+      color: $timeline-recent
+      content: '地圖載入失敗'
+      font-weight: 600
+      font-size: 14px
 
-      @include tablet {
-        font-size: 16px;
-      }
-    }
-  }
-}
+      @include tablet
+        font-size: 16px
 </style>
