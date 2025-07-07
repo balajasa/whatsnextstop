@@ -151,7 +151,7 @@ const checkImageExists = (code: string) => {
     console.warn(`天氣圖片載入失敗: ${code}.png，使用 magic.png 替代`)
   }
 
-  img.src = `/src/assets/img/weather/${code}.png`
+  img.src = new URL(`../../assets/img/weather/${code}.png`, import.meta.url).href
 }
 
 // ===================================
