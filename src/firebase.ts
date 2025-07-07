@@ -3,6 +3,8 @@ import { initializeApp, FirebaseApp } from 'firebase/app'
 import { getDatabase, Database } from 'firebase/database'
 import { getAuth, Auth } from 'firebase/auth'
 
+const env = import.meta.env
+
 // Firebase 設定介面
 interface FirebaseConfig {
   apiKey: string
@@ -14,15 +16,14 @@ interface FirebaseConfig {
   appId: string
 }
 
-// 你的 Firebase 設定（替換成你剛才複製的）
 const firebaseConfig: FirebaseConfig = {
-  apiKey: 'AIzaSyAt4LoW66f3eS_sQlxx7EqVm1lspJac3Jg',
-  authDomain: 'pack-panda.firebaseapp.com',
-  databaseURL: 'https://pack-panda-default-rtdb.asia-southeast1.firebasedatabase.app/',
-  projectId: 'pack-panda',
-  storageBucket: 'pack-panda.firebasestorage.app',
-  messagingSenderId: '6487250876',
-  appId: '1:6487250876:web:35c42975b5967be6c7fdb9'
+  apiKey: env.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: env.VITE_FIREBASE_DATABASE_URL,
+  projectId: env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.VITE_FIREBASE_APP_ID
 }
 
 // 初始化 Firebase

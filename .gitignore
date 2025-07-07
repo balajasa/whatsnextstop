@@ -1,3 +1,10 @@
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # Logs
 logs
 *.log
@@ -13,9 +20,6 @@ dist
 dist-ssr
 coverage
 *.local
-
-/cypress/videos/
-/cypress/screenshots/
 
 # Editor directories and files
 .vscode/*

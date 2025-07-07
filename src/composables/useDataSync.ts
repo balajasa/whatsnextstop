@@ -259,6 +259,11 @@ export function useDataSync(options: DataSyncOptions = {}) {
    * 切換到雲端模式
    */
   const switchToCloudMode = async (): Promise<void> => {
+    console.log('🔄 切換到雲端模式:', {
+      canSyncToCloud: canSyncToCloud.value,
+      currentUser: currentUser.value
+    })
+
     if (!canSyncToCloud.value) {
       console.warn('無法切換到雲端模式：使用者未登入')
       return
@@ -270,7 +275,7 @@ export function useDataSync(options: DataSyncOptions = {}) {
 
       // 設定使用者到 Firebase 服務
       firebaseStorageService.setCurrentUser(currentUser.value)
-
+      console.log('✅ Firebase 用戶已設定')
       // 開始即時同步
       firebaseStorageService.startRealTimeSync()
 

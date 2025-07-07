@@ -32,53 +32,74 @@
     <!-- 同步控制區塊 -->
     <div class="sync-controls">
       <!-- 左側資訊區域 -->
-      <div class="sync-controls__info">
+      <div class="sync-controls_info">
         <!-- 模式顯示 -->
-        <div class="sync-controls__info-item">
-          <span class="sync-controls__icon sync-controls__icon--cloud"></span>
+        <div class="sync-controls_info-item">
+          <span class="sync-controls_icon sync-controls_icon--cloud"></span>
           {{ dataSync.syncModeText.value }}
         </div>
 
         <!-- 使用者資訊 -->
-        <div v-if="dataSync.isAuthenticated.value" class="sync-controls__info-item">
-          <span class="sync-controls__icon sync-controls__icon--user"></span>
+        <div v-if="dataSync.isAuthenticated.value" class="sync-controls_info-item">
+          <span class="sync-controls_icon sync-controls_icon--user"></span>
           {{ dataSync.currentUser.value?.displayName || dataSync.currentUser.value?.email }}
         </div>
 
         <!-- 狀態顯示（錯誤狀態優先） -->
-        <div v-if="errorMessage" class="sync-controls__info-item sync-controls__info-item--error">
-          <span class="sync-controls__icon sync-controls__icon--error"></span>
+        <div v-if="errorMessage" class="sync-controls_info-item sync-controls_info-item--error">
+          <span class="sync-controls_icon sync-controls_icon--error"></span>
           {{ errorMessage }}
         </div>
 
-        <!-- 正常狀態顯示 -->
-        <div v-else-if="dataSync.syncState.value.status === 'syncing'" class="sync-controls__info-item">
-          <span class="sync-controls__icon sync-controls__icon--sync"></span>
-          同步中...
-        </div>
+        <!-- 同步狀態顯示 -->
+        <div v-else class="sync-controls_info-item">
+          <!-- 正在同步中 -->
+          <template v-if="dataSync.syncState.value.status === 'syncing'">
+            <span class="sync-controls_icon sync-controls_icon--sync"></span>
+            同步中...
+          </template>
 
-        <div v-else-if="dataSync.syncState.value.lastSyncTime" class="sync-controls__info-item">
-          <span class="sync-controls__icon sync-controls__icon--clock"></span>
-          {{ formatSyncTime(dataSync.syncState.value.lastSyncTime) }}
+          <!-- 雲端模式：顯示最後同步時間 -->
+          <template v-else-if="dataSync.isOnlineMode.value">
+            <span class="sync-controls_icon sync-controls_icon--clock"></span>
+            {{ formatSyncTime(dataSync.syncState.value.lastSyncTime) }}
+          </template>
+
+          <!-- 本地模式：顯示本地狀態 -->
+          <template v-else>
+            <span class="sync-controls_icon sync-controls_icon--check"></span>
+            本地資料已儲存
+          </template>
         </div>
       </div>
 
       <!-- 右側操作按鈕區域 -->
-      <div class="sync-controls__actions">
+      <div class="sync-controls_actions">
         <!-- 動態同步按鈕 -->
         <button v-if="!dataSync.isOnlineMode.value" @click="handleSyncToCloud" :disabled="isLoading"
-          class="sync-controls__btn sync-controls__btn--primary">
-          <span class="sync-controls__btn-icon" :class="{
-            'sync-controls__btn-icon--login': !dataSync.isAuthenticated.value,
-            'sync-controls__btn-icon--cloud-done': dataSync.isAuthenticated.value
+          class="sync-controls_btn sync-controls_btn--primary">
+          <span class="sync-controls_btn-icon" :class="{
+            'sync-controls_btn-icon--login': !dataSync.isAuthenticated.value,
+            'sync-controls_btn-icon--cloud-done': dataSync.isAuthenticated.value
           }"></span>
           {{ dataSync.isAuthenticated.value ? '載入雲端資料' : '登入並同步' }}
         </button>
 
+        <!-- 雲端模式：立即同步按鈕 -->
+        <button v-if="dataSync.isOnlineMode.value" @click="handleManualSync" :disabled="isSyncButtonDisabled" :class="[
+          'sync-controls_btn',
+          'sync-controls_btn--primary',
+          { 'sync-controls_btn--cooldown': isSyncCooldown }
+        ]">
+          <span class="sync-controls_btn-icon sync-controls_btn-icon--sync"
+            :class="{ 'rotating': dataSync.syncState.value.status === 'syncing' }"></span>
+          {{ syncButtonText }}
+        </button>
+
         <!-- 登出按鈕 -->
         <button v-if="dataSync.isAuthenticated.value" @click="handleSignOut" :disabled="isLoading"
-          class="sync-controls__btn sync-controls__btn--secondary">
-          <span class="sync-controls__btn-icon sync-controls__btn-icon--logout"></span>
+          class="sync-controls_btn sync-controls_btn--secondary">
+          <span class="sync-controls_btn-icon sync-controls_btn-icon--logout"></span>
           登出
         </button>
       </div>
@@ -116,13 +137,12 @@
       <div v-else class="check-list_items-container">
         <div v-for="(item, index) in filteredItems" :key="item.id"
           :class="['check-list_item', { 'check-list_item--packed': item.packed }]">
-          <!-- Checkbox -->
           <div class="check-list_checkbox" @click="toggleItem(item.id)">
             <input type="checkbox" :checked="item.packed" @change="toggleItem(item.id)" />
             <span class="check-list_checkmark"></span>
           </div>
 
-          <!-- Content (可編輯) -->
+          <!-- Content -->
           <div class="check-list_content">
             <!-- 顯示模式 -->
             <span v-if="!item.isEditing" @click="startEdit(item)" class="check-list_text check-list_text--editable"
@@ -137,9 +157,9 @@
 
           <!-- 排序控制 -->
           <div class="check-list_order-controls">
-            <button v-if="index > 0" @click="moveUp(index)" class="order-btn order-btn--up" title="上移"></button>
-            <button v-if="index < filteredItems.length - 1" @click="moveDown(index)" class="order-btn order-btn--down"
-              title="下移"></button>
+            <button v-if="index > 0" @click="moveUp(index)" class="order-btn order-btn--arrow_up" title="上移"></button>
+            <button v-if="index < filteredItems.length - 1" @click="moveDown(index)"
+              class="order-btn order-btn--arrow_down" title="下移"></button>
           </div>
 
           <!-- Delete Button -->
@@ -153,6 +173,7 @@
   <!-- 確認對話框 -->
   <ConfirmDialog :visible="showConfirmDialog" title="載入雲端資料" message="載入雲端資料會覆蓋本地資料，確定要繼續嗎？" confirm-text="確認"
     cancel-text="取消" @confirm="handleConfirmLoad" @cancel="handleCancelLoad" @close="handleCancelLoad" />
+
 </template>
 
 <script setup lang="ts">
@@ -330,6 +351,86 @@ const setupWindowFocusListener = (): void => {
   window.addEventListener('focus', windowFocusHandler)
 }
 
+// 在 script setup 中加入以下代碼
+
+// ===================================
+// 立即同步相關狀態
+// ===================================
+const lastSyncTime = ref<number>(0)
+const SYNC_COOLDOWN = 3000 // 3 秒防連點
+const successMessage = ref<string>('')
+
+// 計算距離上次同步的時間
+const timeSinceLastSync = computed(() => {
+  if (lastSyncTime.value === 0) return SYNC_COOLDOWN
+  return Date.now() - lastSyncTime.value
+})
+
+// 是否在冷卻期間
+const isSyncCooldown = computed(() => {
+  return timeSinceLastSync.value < SYNC_COOLDOWN
+})
+
+// 剩餘冷卻時間（秒）
+const cooldownSeconds = computed(() => {
+  if (!isSyncCooldown.value) return 0
+  return Math.ceil((SYNC_COOLDOWN - timeSinceLastSync.value) / 1000)
+})
+
+// 按鈕文字
+const syncButtonText = computed(() => {
+  if (dataSync.syncState.value.status === 'syncing') {
+    return '同步中...'
+  } else {
+    return '立即同步'
+  }
+})
+
+// 按鈕是否禁用
+const isSyncButtonDisabled = computed(() => {
+  return isLoading.value ||
+    dataSync.syncState.value.status === 'syncing' ||
+    isSyncCooldown.value
+})
+
+// ===================================
+// 立即同步方法
+// ===================================
+const handleManualSync = async (): Promise<void> => {
+  if (!dataSync.isOnlineMode.value || !dataSync.canSyncToCloud.value) {
+    showError('無法同步：請確認已登入且為雲端模式')
+    return
+  }
+
+  if (isSyncCooldown.value) {
+    showError(`請稍候 ${cooldownSeconds.value} 秒後再試`)
+    return
+  }
+
+  await withErrorHandling(async () => {
+    // 記錄同步時間
+    lastSyncTime.value = Date.now()
+
+    // 強制同步本地資料到雲端
+    const result = await dataSync.syncToCloud()
+
+    if (!result.success) {
+      throw new Error(result.error || '同步失敗')
+    }
+
+    // 顯示成功訊息
+    showSuccess('同步完成')
+  }, '立即同步失敗', true)
+}
+
+// 顯示成功訊息
+const showSuccess = (message: string): void => {
+  successMessage.value = message
+  setTimeout(() => {
+    successMessage.value = ''
+  }, 2000)
+}
+
 // ===================================
 // 計算屬性
 // ===================================
@@ -438,7 +539,7 @@ const addItem = async (): Promise<void> => {
       order: maxOrder + 1
     }
 
-    // 建立新陣列並儲存
+    // 統一使用 saveItems - useDataSync 會自動選擇 local 或 firebase
     const newItems = [...checkItems.value, item]
     const success = await dataSync.saveItems(newItems)
 
@@ -452,7 +553,9 @@ const addItem = async (): Promise<void> => {
 
 const toggleItem = async (id: number): Promise<void> => {
   await withErrorHandling(async () => {
-    const newItems = checkItems.value.map(item => (item.id === id ? { ...item, packed: !item.packed } : item))
+    const newItems = checkItems.value.map(item =>
+      item.id === id ? { ...item, packed: !item.packed } : item
+    )
 
     const success = await dataSync.saveItems(newItems)
     if (!success) {
@@ -474,11 +577,18 @@ const deleteItem = async (id: number): Promise<void> => {
 
 const updateItem = async (updatedItem: CheckItem): Promise<void> => {
   await withErrorHandling(async () => {
-    const newItems = checkItems.value.map(item => (item.id === updatedItem.id ? { ...updatedItem } : item))
+    const newItems = checkItems.value.map(item =>
+      item.id === updatedItem.id ? { ...updatedItem } : item
+    )
 
     const success = await dataSync.saveItems(newItems)
     if (!success) {
       throw new Error('更新失敗')
+    }
+
+    // 如果是雲端模式，確保同步時間立即更新
+    if (dataSync.isOnlineMode.value && success) {
+      console.log('✅ 更新完成，同步時間:', dataSync.syncState.value.lastSyncTime)
     }
   }, '更新項目失敗')
 }
@@ -555,7 +665,7 @@ const moveUp = async (index: number): Promise<void> => {
       return { ...item }
     })
 
-    // 儲存變更
+    // 儲存變更 - 統一使用 saveItems（排序是批次操作）
     const success = await dataSync.saveItems(newItems)
     if (!success) {
       throw new Error('排序失敗')
@@ -585,7 +695,7 @@ const moveDown = async (index: number): Promise<void> => {
       return { ...item }
     })
 
-    // 儲存變更
+    // 儲存變更 - 統一使用 saveItems（排序是批次操作）
     const success = await dataSync.saveItems(newItems)
     if (!success) {
       throw new Error('排序失敗')
@@ -677,8 +787,18 @@ const handleSubmit = (event: Event): void => {
 // ===================================
 // 生命週期
 // ===================================
+const debugAuth = () => {
+  console.log('🔍 認證狀態檢查:', {
+    isAuthenticated: dataSync.isAuthenticated.value,
+    currentUser: dataSync.currentUser.value,
+    userId: dataSync.currentUser.value?.uid,
+    isOnlineMode: dataSync.isOnlineMode.value
+  })
+}
 
 onMounted(async () => {
+  debugAuth()
+
   isLoading.value = true
 
   try {
@@ -725,7 +845,7 @@ onUnmounted(() => {
     padding: $spacing-xl
 
 // ===================================
-// Header Section - 統計儀表板 (方案2A)
+// Header Section - 統計儀表板
 // ===================================
 .check-list_header
   margin-bottom: $spacing-lg
@@ -794,7 +914,6 @@ onUnmounted(() => {
   color: $text-muted
 
   @include mobile-only
-    // flex-direction: column
     gap: $spacing-xs
 
 .stat-item-mini
@@ -803,25 +922,12 @@ onUnmounted(() => {
   margin-top: 8px
   align-items: center
 
+// 統計圖示 - 使用 mixin
 .stat-icon
-  // display: block
-  width: 16px
-  height: 16px
-  background-repeat: no-repeat
-  background-position: center
-  background-size: 16px 16px
-  flex-shrink: 0
-
-  // 已攜帶圖示 - 青綠色
-  &--packed
-    background-image: url('@/assets/img/icon/task_check.png')
-
-  // 待攜帶圖示 - 橘色
-  &--unpacked
-    background-image: url('@/assets/img/icon/hourglass_top.png')
+  @include generate-icons($stat-icons, 16px)
 
 // ===================================
-// 同步控制區塊 - 方案2: 左右佈局
+// 同步控制區塊
 // ===================================
 .sync-controls
   margin-bottom: $spacing-xl
@@ -839,10 +945,7 @@ onUnmounted(() => {
     padding: 20px
     gap: $spacing-lg
 
-// ===================================
-// 左側資訊區域
-// ===================================
-.sync-controls__info
+.sync-controls_info
   display: flex
   align-items: center
   gap: $spacing-md
@@ -852,14 +955,13 @@ onUnmounted(() => {
   @include tablet
     gap: $spacing-lg
 
-.sync-controls__info-item
+.sync-controls_info-item
   display: flex
   align-items: center
   gap: $spacing-xs
   font-size: 0.8rem
   color: $text-secondary
 
-  // 錯誤狀態的特殊樣式
   &--error
     color: rgba(229, 62, 62, 0.9)
     font-weight: 500
@@ -867,55 +969,15 @@ onUnmounted(() => {
   @include tablet
     font-size: 0.875rem
 
-// ===================================
-// 資訊區域圖示
-// ===================================
-.sync-controls__icon
-  display: inline-block
-  width: 14px
-  height: 14px
-  background-repeat: no-repeat
-  background-position: center
-  background-size: 14px 14px
-  flex-shrink: 0
+// 資訊區域圖示 - 使用 mixin
+.sync-controls_icon
+  @include generate-icons($sync-info-icons, 14px)
 
-  // 雲端圖示 - 青綠色
-  &--cloud
-    background-image: url('@/assets/img/icon/cloud.png')
-
-  // 使用者圖示 - 藍灰色
-  &--user
-    background-image: url('@/assets/img/icon/account.png')
-
-  // 同步中圖示（旋轉動畫） - 青綠色
+  // 同步中動畫
   &--sync
-    background-image: url('@/assets/img/icon/sync.png')
-    animation: rotate 1s linear infinite
+    @include rotating-icon
 
-  // 同步成功圖示 - 綠色
-  &--check
-    background-image: url('@/assets/img/icon/check.png')
-
-  // 錯誤圖示 - 紅色
-  &--error
-    background-image: url('@/assets/img/icon/error.png')
-
-  // 時間圖示 - 中性灰
-  &--clock
-    background-image: url('@/assets/img/icon/clock.png')
-
-// 旋轉動畫
-@keyframes rotate
-  from
-    transform: rotate(0deg)
-
-  to
-    transform: rotate(360deg)
-
-// ===================================
-// 右側操作按鈕區域
-// ===================================
-.sync-controls__actions
+.sync-controls_actions
   display: flex
   gap: $spacing-sm
   flex-shrink: 0
@@ -923,7 +985,7 @@ onUnmounted(() => {
   @include tablet
     gap: $spacing-md
 
-.sync-controls__btn
+.sync-controls_btn
   display: flex
   align-items: center
   padding: $spacing-sm $spacing-md
@@ -943,7 +1005,6 @@ onUnmounted(() => {
     font-size: 0.875rem
     padding: $spacing-sm $spacing-lg
 
-  // 主要按鈕樣式
   &--primary
     background: $accent-color-1
     color: $text-white
@@ -951,7 +1012,6 @@ onUnmounted(() => {
     &:hover:not(:disabled)
       background: rgba(56, 178, 172, 0.8)
 
-  // 次要按鈕樣式
   &--secondary
     background: rgba(247, 250, 252, 0.8)
     border-color: $border-primary
@@ -961,47 +1021,22 @@ onUnmounted(() => {
       background: rgba(237, 242, 247, 0.9)
       border-color: rgba(193, 212, 210, 0.8)
 
-// ===================================
-// 按鈕圖示
-// ===================================
-.sync-controls__btn-icon
-  display: inline-block
-  width: 14px
-  height: 14px
-  background-repeat: no-repeat
-  background-position: center
-  background-size: 14px 14px
-  flex-shrink: 0
+  &--cooldown
+    background: rgba(156, 163, 175, 0.8)
+    color: rgba(255, 255, 255, 0.7)
+    cursor: not-allowed
 
-  // 登入圖示 - 白色（用於主要按鈕）
-  &--login
-    background-image: url('@/assets/img/icon/login.png')
+    &:hover
+      background: rgba(156, 163, 175, 0.8)
+      transform: none
 
-  // 雲端完成圖示 - 白色（用於主要按鈕）
-  &--cloud-done
-    background-image: url('@/assets/img/icon/cloud_done.png')
+// 按鈕圖示 - 使用 mixin
+.sync-controls_btn-icon
+  @include generate-icons($sync-btn-icons, 14px)
 
-  // 登出圖示 - 藍灰色（用於次要按鈕）
-  &--logout
-    background-image: url('@/assets/img/icon/logout.png')
-
-// ===================================
-// 同步控制區塊響應式設計
-// ===================================
-@media (max-width: 768px)
-  .sync-controls
-    flex-direction: column
-    align-items: stretch
-    gap: $spacing-sm
-
-  .sync-controls__info
-    justify-content: space-between
-
-  .sync-controls__actions
-    justify-content: stretch
-
-  .sync-controls__btn
-    flex: 1
+  &--sync
+    &.rotating
+      @include rotating-icon
 
 // ===================================
 // Add Item Form
@@ -1204,7 +1239,6 @@ onUnmounted(() => {
     &:hover
       background: rgba(56, 178, 172, 0.1)
 
-// 編輯輸入框
 .check-list_edit-input
   flex: 1
   padding: 4px 8px
@@ -1220,7 +1254,7 @@ onUnmounted(() => {
     box-shadow: 0 0 0 2px rgba(56, 178, 172, 0.2)
 
 // ===================================
-// 排序控制
+// 排序控制 - 使用 mixin
 // ===================================
 .check-list_order-controls
   display: flex
@@ -1239,9 +1273,12 @@ onUnmounted(() => {
   color: $text-secondary
   font-size: 0.75rem
   cursor: pointer
-  background-repeat: no-repeat
-  background-position: center
-  background-size: 12px 12px
+  @include icon-base(12px)
+
+  // 使用 @each 生成排序圖示
+  @each $name, $filename in $order-icons
+    &--#{$name}
+      background-image: url('#{$icon-base-path}/#{$filename}.png')
 
   &:hover:not(:disabled)
     border-color: $accent-color-1
@@ -1252,17 +1289,12 @@ onUnmounted(() => {
     opacity: 0.3
     cursor: not-allowed
 
-  &--up
-    background-image: url('@/assets/img/icon/arrow_up.png')
-
-  &--down
-    background-image: url('@/assets/img/icon/arrow_down.png')
-
   @include mobile-only
     width: 28px
     height: 24px
-    background-size: 14px 14px
+    @include icon-base(14px)
 
+// 刪除按鈕 - 使用 mixin
 .check-list_delete-button
   display: flex
   align-items: center
@@ -1274,10 +1306,7 @@ onUnmounted(() => {
   background: transparent
   color: $text-muted
   cursor: pointer
-  background-image: url('@/assets/img/icon/close.png')
-  background-repeat: no-repeat
-  background-position: center
-  background-size: 16px 16px
+  @include single-icon('close', 16px)
 
   &:hover
     border-color: $accent-color-2
@@ -1287,37 +1316,27 @@ onUnmounted(() => {
   @include mobile-only
     width: 36px
     height: 36px
-    background-size: 18px 18px
+    @include single-icon('close', 18px)
 
 .check-list_delete-icon
   font-size: 1.25rem
   line-height: 1
 
 // ===================================
-// Progress Section
+// 同步控制區塊響應式設計
 // ===================================
-.check-list_progress
-  padding: $spacing-lg
-  border: 1px solid $border-light
-  border-radius: $border-radius-lg
-  background: $bg-card
-  box-shadow: 0 2px 8px $shadow-light
+@media (max-width: 768px)
+  .sync-controls
+    flex-direction: column
+    align-items: stretch
+    gap: $spacing-sm
 
-.check-list_progress-label
-  margin-bottom: $spacing-sm
-  color: $text-secondary
-  font-weight: 500
-  font-size: 0.875rem
+  .sync-controls_info
+    justify-content: space-between
 
-.check-list_progress-bar
-  overflow: hidden
-  height: 8px
-  border-radius: $border-radius-sm
-  background: $border-light
+  .sync-controls_actions
+    justify-content: stretch
 
-.check-list_progress-fill
-  height: 100%
-  border-radius: $border-radius-sm
-  background: linear-gradient(90deg, $city-gradient-start, $city-gradient-end)
-  transition: width 0.3s ease
+  .sync-controls_btn
+    flex: 1
 </style>

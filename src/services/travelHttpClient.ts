@@ -3,7 +3,7 @@ import axios, { AxiosResponse, AxiosError } from 'axios'
 
 export class travelHttpClient {
   // true: 本機 | false: 線上
-  private static isDev = true
+  private static isDev = false
   private static localUrl = '/api/usagi'
   private static prodUrl = 'https://raw.githubusercontent.com/balajasa/coffeeisadog/main'
 

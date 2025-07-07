@@ -118,10 +118,7 @@ export class FirebaseStorageService implements IStorageService {
       const metadataRef = this.getMetadataRef()
 
       // 同時清除項目和 metadata
-      await Promise.all([
-        remove(userItemsRef),
-        remove(metadataRef)
-      ])
+      await Promise.all([remove(userItemsRef), remove(metadataRef)])
 
       return true
     } catch (error) {
@@ -333,8 +330,8 @@ export class FirebaseStorageService implements IStorageService {
       const userItemsRef = this.getUserItemsRef()
       const serializedItem = this.serializeItem(item)
 
-      // 使用項目 ID 作為 key
-      const itemRef = ref(database, `${userItemsRef.toString()}/${item.id}`)
+      // 修正：使用 child() 方法來獲取子節點參考
+      const itemRef = ref(database, `${userItemsRef.key}/${item.id}`)
       await set(itemRef, serializedItem)
 
       return true
@@ -353,7 +350,8 @@ export class FirebaseStorageService implements IStorageService {
     }
 
     try {
-      const itemRef = ref(database, `users/${this.currentUserId}/checkItems/${item.id}`)
+      // 修正：使用統一的路徑生成方法
+      const itemRef = this.getItemRef(item.id)
       const serializedItem = this.serializeItem(item)
 
       await update(itemRef, serializedItem)
@@ -373,7 +371,8 @@ export class FirebaseStorageService implements IStorageService {
     }
 
     try {
-      const itemRef = ref(database, `users/${this.currentUserId}/checkItems/${itemId}`)
+      // 修正：使用統一的路徑生成方法
+      const itemRef = this.getItemRef(itemId)
       await remove(itemRef)
       return true
     } catch (error) {
@@ -393,7 +392,32 @@ export class FirebaseStorageService implements IStorageService {
     if (!this.currentUserId) {
       throw new Error('使用者未登入')
     }
+    console.log('🔍 Firebase Debug:', {
+      currentUserId: this.currentUserId,
+      path: `users/${this.currentUserId}/checkItems`
+    })
+
     return ref(database, `users/${this.currentUserId}/checkItems`)
+  }
+
+  /**
+   * 獲取特定項目的參考
+   */
+  private getItemRef(itemId: number): DatabaseReference {
+    if (!this.currentUserId) {
+      throw new Error('使用者未登入')
+    }
+    return ref(database, `users/${this.currentUserId}/checkItems/${itemId}`)
+  }
+
+  /**
+   * 獲取當前使用者的 metadata 參考
+   */
+  private getMetadataRef(): DatabaseReference {
+    if (!this.currentUserId) {
+      throw new Error('使用者未登入')
+    }
+    return ref(database, `users/${this.currentUserId}/metadata`)
   }
 
   /**
@@ -459,16 +483,6 @@ export class FirebaseStorageService implements IStorageService {
       (item.createdAt instanceof Date || typeof item.createdAt === 'string') &&
       (typeof item.order === 'number' || item.order === undefined)
     )
-  }
-
-  /**
-   * 獲取當前使用者的 metadata 參考
-   */
-  private getMetadataRef(): DatabaseReference {
-    if (!this.currentUserId) {
-      throw new Error('使用者未登入')
-    }
-    return ref(database, `users/${this.currentUserId}/metadata`)
   }
 }
 

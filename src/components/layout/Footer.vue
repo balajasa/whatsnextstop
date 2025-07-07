@@ -140,7 +140,7 @@ onMounted(() => {
 @use '@/styles/mixins' as *
 
 // ====================================
-// Footer 主容器
+// Footer 主容器 (Mobile First)
 // ====================================
 .travel-collection-footer
   width: 100%
@@ -152,8 +152,9 @@ onMounted(() => {
   overflow: hidden
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15)
 
-  @include tablet
-    height: 180px
+  @media (min-width: 768px)
+    height: 160px
+
   &::before
     content: ''
     position: absolute
@@ -176,59 +177,47 @@ onMounted(() => {
   max-width: 1200px
   margin: 0 auto
   height: 100%
-  padding: $spacing-md $spacing-lg
+  padding: 12px $spacing-md
   display: flex
   flex-direction: column
   justify-content: space-between
 
-  @include mobile-only
-    padding: $spacing-sm $spacing-md
+  @media (min-width: 768px)
+    padding: 12px $spacing-lg
 
 // ====================================
-// Header 區域
+// Header 區域 (Mobile First)
 // ====================================
 .header-section
   display: flex
   align-items: center
   justify-content: flex-end
-  margin-bottom: $spacing-sm
-  @include mobile-only
-    margin-bottom: $spacing-xs
+  margin-bottom: $spacing-xs
 
-// .title
-//   font-size: 18px
-//   font-weight: 800
-//   color: $text-white
-//   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)
-
-//   @include mobile-only
-//     font-size: 14px
-
-//   @include tablet
-//     font-size: 22px
+  @media (min-width: 768px)
+    margin-bottom: $spacing-sm
 
 .stats-badge
   background: rgba(255, 255, 255, 0.15)
   color: $text-white
-  padding: 6px 12px
+  padding: 4px 8px
   border-radius: $border-radius-xl
-  font-size: 12px
+  font-size: 10px
   font-weight: 700
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2)
   backdrop-filter: blur(10px)
   border: 1px solid rgba(255, 255, 255, 0.2)
 
-  @include mobile-only
-    padding: 4px 8px
-    font-size: 10px
+  @media (min-width: 768px)
+    padding: 6px 12px
+    font-size: 12px
 
-  @include tablet
+  @media (min-width: 1024px)
     padding: 8px 16px
     font-size: 14px
 
-
 // ====================================
-// 卡片區域
+// 卡片區域 (Mobile First)
 // ====================================
 .cards-section
   flex: 1
@@ -241,9 +230,9 @@ onMounted(() => {
   gap: 10px
   overflow-x: auto
   align-items: center
-  padding: 8px $spacing-sm
+  padding: 0 $spacing-sm
   width: 100%
-  height: 70px
+  height: 60px
 
   // 美化滾動條
   scrollbar-width: thin
@@ -261,36 +250,35 @@ onMounted(() => {
     &:hover
       background: rgba(255, 255, 255, 0.5)
 
-  @include tablet
+  @media (min-width: 768px)
     gap: 8px
-    padding: 10px $spacing-md // 平板版更多空間
-    height: 90px // 平板版高度：65px 卡片 + hover 效果空間
+    padding: 10px $spacing-md
+    height: 70px
 
     &::-webkit-scrollbar
       height: 6px
 
-  @include desktop
+  @media (min-width: 1024px)
     gap: 12px
-    padding: 12px $spacing-lg // 桌面版最多空間
-    height: 100px // 桌面版高度：70px 卡片 + hover 效果空間
-
+    padding: 0 $spacing-lg
+    height: 80px
 
 // ====================================
-// 卡片樣式
+// 卡片樣式 (Mobile First)
 // ====================================
 .card-holder
-  flex-shrink: 0 // 防止卡片被壓縮
+  flex-shrink: 0
 
 .travel-card
   width: 35px
   height: 45px
   position: relative
 
-  @include tablet
+  @media (min-width: 768px)
     width: 50px
     height: 65px
 
-  @include desktop
+  @media (min-width: 1024px)
     width: 55px
     height: 70px
 
@@ -312,15 +300,15 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)
   position: relative
 
-  @include tablet
+  @media (min-width: 768px)
     padding: 4px
     border-radius: $border-radius-lg
 
-  @include desktop
+  @media (min-width: 1024px)
     padding: 6px
 
 // ====================================
-// 已收集的卡片
+// 已收集的卡片 (Mobile First)
 // ====================================
 .card-surface.collected
   background: linear-gradient(135deg,
@@ -346,12 +334,12 @@ onMounted(() => {
     font-size: 10px
     animation: sparkle-star 2s ease-in-out infinite
 
-    @include tablet
+    @media (min-width: 768px)
       font-size: 12px
       top: -4px
       right: -4px
 
-    @include desktop
+    @media (min-width: 1024px)
       font-size: 14px
       top: -6px
       right: -6px
@@ -367,7 +355,7 @@ onMounted(() => {
       transform: scale(1.2) rotate(180deg)
 
 // ====================================
-// 未收集的卡片（上鎖）
+// 未收集的卡片（上鎖）(Mobile First)
 // ====================================
 .card-surface.locked
   background: linear-gradient(135deg,
@@ -382,16 +370,16 @@ onMounted(() => {
     top: 50%
     left: 50%
     transform: translate(-50%, -50%)
-    font-size: 12px // 鎖頭也縮小一點
+    font-size: 12px
     z-index: 10
     animation: lockShake 3s ease-in-out infinite
-    margin-top: -4px // 調整位置配合縮小的國旗
+    margin-top: -4px
 
-    @include tablet
+    @media (min-width: 768px)
       font-size: 14px
       margin-top: -5px
 
-    @include desktop
+    @media (min-width: 1024px)
       font-size: 16px
       margin-top: -6px
 
@@ -415,28 +403,26 @@ onMounted(() => {
     opacity: 0.7
     filter: grayscale(80%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))
 
-
 // ====================================
-// 國家內容
+// 國家內容 (Mobile First)
 // ====================================
 .country-flag
-  font-size: 14px // 手機版國旗縮小
+  font-size: 14px
   margin-bottom: 2px
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
   z-index: 5
   position: relative
 
-  @include tablet
-    font-size: 18px // 平板版國旗
+  @media (min-width: 768px)
+    font-size: 18px
     margin-bottom: 3px
 
-
-  @include desktop
-    font-size: 20px // 桌面版國旗
+  @media (min-width: 1024px)
+    font-size: 20px
     margin-bottom: 4px
 
 .country-text
-  font-size: 10px // 手機版文字 10px
+  font-size: 10px
   font-weight: 700
   color: $text-primary
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8)
@@ -444,10 +430,9 @@ onMounted(() => {
   z-index: 5
   position: relative
 
-  @include tablet
-    font-size: 11px // 平板版文字 11px
+  @media (min-width: 768px)
+    font-size: 11px
 
-  @include desktop
-    font-size: 12px // 桌面版文字 12px
-
+  @media (min-width: 1024px)
+    font-size: 12px
 </style>

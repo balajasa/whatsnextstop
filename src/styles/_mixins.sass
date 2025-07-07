@@ -148,3 +148,50 @@ $large: 1280px
 
   &.active
     transform: translateX(0)
+
+// ===================================
+// 圖示相關 Mixins 和變數
+// ===================================
+
+// 圖示路徑變數
+$icon-base-path: '@/assets/img/icon'
+
+$sync-info-icons: ('cloud': 'cloud', 'user': 'account', 'sync': 'sync', 'check': 'check', 'error': 'error', 'clock': 'clock')
+
+$sync-btn-icons: ('login': 'login', 'cloud-done': 'cloud_done', 'logout': 'logout', 'sync': 'sync')
+
+$stat-icons: ('packed': 'task_check', 'unpacked': 'hourglass_top')
+
+$order-icons: ('up': 'arrow_up', 'down': 'arrow_down')
+
+// 圖示基礎樣式 mixin
+@mixin icon-base($size: 14px)
+  display: inline-block
+  width: $size
+  height: $size
+  background-repeat: no-repeat
+  background-position: center
+  background-size: $size $size
+  flex-shrink: 0
+
+// 批量生成圖示樣式 mixin
+@mixin generate-icons($icon-map, $size: 14px)
+  @each $name, $filename in $icon-map
+    &--#{$name}
+      @include icon-base($size)
+      background-image: url('#{$icon-base-path}/#{$filename}.png')
+
+// 單個圖示 mixin（用於特殊情況）
+@mixin single-icon($filename, $size: 14px)
+  @include icon-base($size)
+  background-image: url('#{$icon-base-path}/#{$filename}.png')
+
+// 旋轉動畫 mixin
+@mixin rotating-icon
+  animation: icon-rotate 1s linear infinite
+
+@keyframes icon-rotate
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
