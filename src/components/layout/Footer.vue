@@ -148,7 +148,7 @@ onMounted(() => {
   font-family: inherit
   position: relative
   overflow-x: hidden
-  overflow-y: visible
+  overflow-y: hidden  // 修改：所有版本都禁止Y軸滾動
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15)
   // 添加觸控優化
   touch-action: pan-x pan-y
@@ -182,6 +182,7 @@ onMounted(() => {
   display: flex
   flex-direction: column
   justify-content: space-between
+  overflow: hidden  // 添加：防止內容溢出
 
   @media (min-width: 768px)
     padding: 12px $spacing-lg
@@ -194,6 +195,7 @@ onMounted(() => {
   align-items: center
   justify-content: flex-end
   margin-bottom: $spacing-xs
+  flex-shrink: 0  // 添加：防止被壓縮
 
   @media (min-width: 768px)
     margin-bottom: $spacing-sm
@@ -225,9 +227,9 @@ onMounted(() => {
   display: flex
   align-items: center
   justify-content: center
-  // 修正：確保有足夠空間滾動
-  overflow: visible
+  overflow: visible  // 保持 visible，讓卡片可以正常顯示
   min-height: 0
+  max-height: 100%  // 添加：最大高度限制
 
 .cards-container
   display: flex
@@ -238,6 +240,8 @@ onMounted(() => {
   padding: 0 $spacing-sm
   width: 100%
   min-height: 60px
+  max-height: 80px  // 添加：最大高度限制，防止兩排卡片
+  flex-wrap: nowrap  // 確保不換行
   // 添加移動端滾動優化
   -webkit-overflow-scrolling: touch  // iOS 滑順滾動
   scroll-behavior: smooth
@@ -251,6 +255,7 @@ onMounted(() => {
     padding-left: 20px
     padding-right: 20px
     box-sizing: border-box
+    max-height: 70px  // 手機版的最大高度
 
   @media (min-width: 768px)
     gap: 8px
@@ -289,7 +294,7 @@ onMounted(() => {
     height: 70px
 
   &:has(.card-surface.collected):hover
-    transform: translateY(-3px) scale(1.05)
+    transform: scale(1.05)  // 修改：移除translateY，只保留scale
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
 
 .card-surface

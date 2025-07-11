@@ -21,21 +21,22 @@
 
       <!-- 主要功能區域 -->
       <div class="schedule-main-grid">
-        <a v-for="card in mainCards" :key="card.id" :href="card.href" :class="['schedule-card', card.class]">
+        <div v-for="card in mainCards" :key="card.id" :class="['schedule-card', card.class]"
+          @click="navigateToSection(card.route, card.section)">
           <div class="schedule-icon">{{ card.icon }}</div>
           <h3>{{ card.title }}</h3>
-        </a>
+        </div>
       </div>
 
       <!-- 每日行程區域 -->
       <div class="daily-schedule-section">
         <h3 class="daily-title">📅 每日詳細行程</h3>
         <div class="daily-grid">
-          <!-- 使用 v-for 生成每日行程 -->
           <div class="daily-block">
-            <a v-for="day in totalDays" :key="day" :href="`itinerary-detail#day${day}`" class="daily-card">
+
+            <div v-for="day in totalDays" :key="day" class="daily-card" @click="navigateToDay(day)">
               Day{{ day }}
-            </a>
+            </div>
           </div>
         </div>
       </div>
@@ -48,9 +49,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import type { Ref } from 'vue'
 import TravelCountdown from '@/components/layout/TravelCountdown.vue'
+
 // 導入 Swiper 組件和模組
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules'
@@ -66,76 +70,115 @@ import banner01 from '@/assets/img/bg/banner_01.jpg'
 import banner02 from '@/assets/img/bg/banner_02.jpg'
 import banner03 from '@/assets/img/bg/banner_03.jpg'
 
+// 定義類型接口
+interface CoverImage {
+  id: number
+  src: string
+  alt?: string
+}
+
+interface MainCard {
+  id: string
+  route: string
+  section?: string
+  class: string
+  icon: string
+  title: string
+}
+
+interface Props {
+  sidebarOpen?: boolean
+  isMobile?: boolean
+}
+
 // 接收側邊欄狀態和手機版狀態
-defineProps({
-  sidebarOpen: {
-    type: Boolean,
-    default: false
-  },
-  isMobile: {
-    type: Boolean,
-    default: false
-  }
-})
+defineProps<Props>()
+
+const router = useRouter()
 
 // Swiper 模組註冊
 const modules = [Navigation, Pagination, Autoplay, EffectFade]
+
 // 封面圖片數據
-const coverImages = ref([
+const coverImages: Ref<CoverImage[]> = ref([
   {
     id: 1,
-    src: banner01
+    src: banner01,
+    alt: '旅程封面圖片 1'
   },
   {
     id: 2,
-    src: banner02
+    src: banner02,
+    alt: '旅程封面圖片 2'
   },
   {
     id: 3,
-    src: banner03
+    src: banner03,
+    alt: '旅程封面圖片 3'
   }
 ])
 
 // 總天數配置
-const totalDays = ref(6)
+const totalDays: Ref<number> = ref(6)
+
 // 主要功能卡片數據
-const mainCards = ref([
+const mainCards: Ref<MainCard[]> = ref([
   {
     id: 'overview',
-    href: 'itinerary-detail#overview',
+    route: 'ItineraryDetail',
+    section: 'overview',
     class: 'overview-card',
     icon: '📋',
     title: '行程總覽'
   },
   {
     id: 'flight',
-    href: 'itinerary-detail#flight',
+    route: 'ItineraryDetail',
+    section: 'flight',
     class: 'flight-card',
     icon: '✈️',
     title: '航班資訊'
   },
   {
     id: 'map',
-    href: 'itinerary-detail#map',
+    route: 'ItineraryDetail',
+    section: 'map',
     class: 'map-card',
     icon: '🗺️',
     title: '路線地圖'
   },
   {
     id: 'packing',
-    href: 'itinerary-detail#packing',
+    route: 'ItineraryDetail',
+    section: 'packing',
     class: 'packing-card',
     icon: '🎒',
     title: '必帶物品'
   },
-  // {
-  //   id: 'notice',
-  //   href: 'itinerary-detail#notice',
-  //   class: 'notice-card',
-  //   icon: '⚠️',
-  //   title: '注意事項'
-  // }
+  {
+    id: 'checklist',
+    route: 'CheckList',
+    class: 'checklist-card',
+    icon: '📝',
+    title: '攜帶清單'
+  }
 ])
+
+// 導航方法
+const navigateToSection = (routeName: string, section?: string): void => {
+  const routeConfig: { name: string; hash?: string } = { name: routeName }
+  if (section) {
+    routeConfig.hash = `#${section}`
+  }
+  router.push(routeConfig)
+}
+
+const navigateToDay = (day: number): void => {
+  router.push({
+    name: 'ItineraryDetail',
+    hash: `#day${day}`
+  })
+}
 </script>
 
 <style lang="sass" scoped>
@@ -355,6 +398,9 @@ const mainCards = ref([
 .packing-card .schedule-icon
   color: $timeline-medium
 
+.checklist-card .schedule-icon
+  color: $timeline-recent
+
 .notice-card .schedule-icon
   color: $timeline-recent
 
@@ -401,7 +447,7 @@ const mainCards = ref([
   padding: $spacing-lg
   min-height: 80px
   border-radius: $border-radius-md
-  background: linear-gradient(135deg, $accent-color-1, $city-gradient-end)
+  background: linear-gradient(135deg, #6366F1, #4F46E5) // 預設：調暗的薰衣草紫
   box-shadow: 0 4px 12px $shadow-city
   color: $text-white
   text-decoration: none
@@ -413,15 +459,15 @@ const mainCards = ref([
     font-size: 18px
 
   &:hover
-    box-shadow: 0 6px 20px $shadow-city-hover
+    box-shadow: 0 4px 16px $shadow-medium
     transform: scale(1.02) translateY(-2px)
 
   // 每日卡片顏色變化
   &:nth-child(odd)
-    background: linear-gradient(135deg, $accent-color-2, #d4941b)
+    background: linear-gradient(135deg, #22C55E, #16A34A) // 奇數：調暗的薄荷綠
 
   &:nth-child(3n)
-    background: linear-gradient(135deg, $primary-color, #2d3748)
+    background: linear-gradient(135deg, #EC4899, #DB2777) // 3的倍數：調暗的粉紅
 
 // ===================================
 // 倒數元件

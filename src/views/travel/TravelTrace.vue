@@ -250,7 +250,7 @@ onMounted(async () => {
     margin-bottom: 0
 
 // ===================================
-// 項目標題 (Mobile: 卡片式, Desktop: 表格式)
+// 項目標題
 // ===================================
 .item-header
   padding: $spacing-md
@@ -430,30 +430,67 @@ onMounted(async () => {
     padding: $spacing-lg $spacing-xl
 
 // ===================================
-// 照片畫廊 (響應式網格)
+// 照片畫廊 (Mobile First - 水平滾動)
 // ===================================
 .photo-gallery
-  display: grid
-  grid-template-columns: 1fr
+  // 手機版：水平滾動
+  display: flex
   gap: $spacing-sm
+  overflow-x: auto
+  overflow-y: hidden
+  padding: $spacing-sm 0
+  -webkit-overflow-scrolling: touch
+  scroll-behavior: smooth
+  scroll-snap-type: x mandatory
 
+  // 滾動條樣式
+  &::-webkit-scrollbar
+    height: 4px
+
+  &::-webkit-scrollbar-track
+    background: rgba(56, 178, 172, 0.1)
+    border-radius: 2px
+
+  &::-webkit-scrollbar-thumb
+    background: rgba(56, 178, 172, 0.4)
+    border-radius: 2px
+
+    &:hover
+      background: rgba(56, 178, 172, 0.6)
+
+  // 平板版：改回網格佈局
   @include tablet
+    display: grid
     grid-template-columns: repeat(2, 1fr)
     gap: $spacing-md
+    overflow: visible
+    scroll-snap-type: none
 
+  // 桌面版：三欄網格
   @include desktop
     grid-template-columns: repeat(3, 1fr)
     gap: $spacing-lg
 
+  // 大桌面版：四欄網格
   @include large-desktop
     grid-template-columns: repeat(4, 1fr)
 
 .photo-container
+  // 手機版：固定寬度 + 水平滾動
+  width: 240px
   aspect-ratio: 16/12
+  flex-shrink: 0
   border-radius: $border-radius-md
   overflow: hidden
   box-shadow: $shadow-light
   transition: all 0.3s ease-in-out
+  scroll-snap-align: start
+
+  // 平板版以上：取消固定寬度，恢復響應式
+  @include tablet
+    width: auto
+    flex-shrink: 1
+    border-radius: $border-radius-lg
 
   @include desktop
     border-radius: $border-radius-lg
@@ -462,21 +499,29 @@ onMounted(async () => {
     transform: scale(1.02)
     box-shadow: $shadow-medium
 
-.photo-placeholder
-  @include flex-center
-  width: 100%
-  height: 100%
-  background: rgba(193, 212, 210, 0.4)
-  cursor: pointer
-  transition: all 0.3s ease
-  background-image: url('@/assets/img/sym/cat_error.png')
-  background-size: contain
-  background-position: center
-  background-repeat: no-repeat
+  // 手機版：點擊效果
+  @include mobile-only
+    &:active
+      transform: scale(0.98)
+
+  .photo-placeholder
+    width: 100%
+    height: 100%
+    background: rgba(193, 212, 210, 0.4)
+    cursor: pointer
+    transition: all 0.3s ease
+    background-image: url('@/assets/img/sym/cat_error.png')
+    background-size: contain
+    background-position: center
+    background-repeat: no-repeat
+    @include flex-center
 
   &:hover
     background-color: rgba(193, 212, 210, 0.3)
     transform: scale(1.02)
+
+    @include mobile-only
+      transform: scale(1.01)
 
   &.loading
     background-color: rgba(193, 212, 210, 0.5)
@@ -494,6 +539,9 @@ onMounted(async () => {
 
   &:hover
     transform: scale(1.05)
+
+    @include mobile-only
+      transform: scale(1.02)
 
 // ===================================
 // 動畫定義
@@ -544,10 +592,33 @@ onMounted(async () => {
     padding: $spacing-sm
 
   .photo-gallery
-    gap: $spacing-xs
+    gap: 8px
+    padding: $spacing-xs 0
+
+    // 添加漸變遮罩提示可滾動
+    &::after
+      content: ''
+      position: sticky
+      right: 0
+      top: 0
+      width: 20px
+      height: 100%
+      background: linear-gradient(to left, rgba(255,255,255,0.8), transparent)
+      pointer-events: none
+      z-index: 1
+
+  .photo-container
+    width: 200px
+
+    // 小屏手機更小的寬度
+    @media (max-width: 350px)
+      width: 180px
 
 // 大桌面版優化
 @include large-desktop
+  .photo-gallery
+    gap: $spacing-xl
+
   .travel-container
     max-width: 1600px
 

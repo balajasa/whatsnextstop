@@ -4,7 +4,7 @@
     <header class="header">
       <div class="hamburger" :class="{ active: sidebarOpen }" @click="handleToggleSidebar"></div>
       <div class="header-title">
-        <router-link to="/">
+        <router-link to="/home">
           <div class="header-logo"></div>
         </router-link>
       </div>
