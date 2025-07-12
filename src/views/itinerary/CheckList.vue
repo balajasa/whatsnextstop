@@ -781,6 +781,11 @@ onMounted(async () => {
     console.error('恢復日誌失敗:', error)
   }
 
+  addDebugLog('info', `API Key: ${import.meta.env.VITE_FIREBASE_API_KEY?.substring(0, 20)}...`)
+  addDebugLog('info', `Auth Domain: ${import.meta.env.VITE_FIREBASE_AUTH_DOMAIN}`)
+  addDebugLog('info', `Project ID: ${import.meta.env.VITE_FIREBASE_PROJECT_ID}`)
+  addDebugLog('info', `Database URL: ${import.meta.env.VITE_FIREBASE_DATABASE_URL}`)
+
   // 其他初始化代碼...
   debugAuth()
   isLoading.value = true
