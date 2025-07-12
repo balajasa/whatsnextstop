@@ -467,13 +467,18 @@ export function useDataSync(options: DataSyncOptions = {}) {
    */
   const initialize = async (): Promise<void> => {
     try {
+      // ✅ 新增：檢查 redirect 結果
+      const redirectResult = await googleAuthService.checkRedirectResult()
+      if (redirectResult.success && redirectResult.user) {
+        console.log('✅ Redirect 登入成功，自動啟動雲端同步')
+      }
+
       // 監聽認證狀態變化
       const unsubscribeAuth = googleAuthService.onAuthStateChanged(newAuthState => {
         authState.value = newAuthState
 
         // 如果登出，自動切換到本地模式
         if (!newAuthState.isAuthenticated && isOnlineMode.value) {
-          // console.log('偵測到登出，切換到本地模式')
           switchToLocalMode()
         }
       })

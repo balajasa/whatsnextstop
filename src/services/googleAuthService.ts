@@ -2,6 +2,8 @@
 
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
@@ -19,7 +21,7 @@ type AuthStateCallback = (authState: AuthState) => void
 
 interface GoogleAuthServiceConfig {
   persistence?: boolean // 是否保持登入狀態
-  autoSignIn?: boolean  // 是否自動嘗試登入
+  autoSignIn?: boolean // 是否自動嘗試登入
 }
 
 // ===================================
@@ -64,26 +66,50 @@ export class GoogleAuthService {
   // ===================================
 
   /**
-   * 使用 Google 登入
+   * 裝置偵測
+   */
+  private isMobileDevice(): boolean {
+    const userAgent = navigator.userAgent.toLowerCase()
+    const mobileKeywords = ['android', 'iphone', 'ipad', 'mobile', 'tablet']
+
+    return (
+      mobileKeywords.some(keyword => userAgent.includes(keyword)) ||
+      window.innerWidth <= 768 ||
+      'ontouchstart' in window
+    )
+  }
+
+  /**
+   * 智能 Google 登入 - 根據裝置選擇方式
    */
   async signInWithGoogle(): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
       this.setLoadingState(true)
 
-      const result = await signInWithPopup(auth, this.provider)
-      const user = this.convertFirebaseUser(result.user)
+      if (this.isMobileDevice()) {
+        // 行動版：使用 redirect
+        console.log('🔄 行動版登入：使用 redirect 方式')
+        await signInWithRedirect(auth, this.provider)
 
-      this.updateAuthState({
-        user,
-        isLoading: false,
-        isAuthenticated: true
-      })
+        // redirect 不會立即返回結果，頁面會重新載入
+        // 登入結果會在頁面重新載入後由 checkRedirectResult 處理
+        return { success: true }
+      } else {
+        // 桌面版：使用 popup
+        console.log('💻 桌面版登入：使用 popup 方式')
+        const result = await signInWithPopup(auth, this.provider)
+        const user = this.convertFirebaseUser(result.user)
 
-      return {
-        success: true,
-        user
+        this.updateAuthState({
+          user,
+          isLoading: false,
+          isAuthenticated: true
+        })
+
+        return { success: true, user }
       }
     } catch (error) {
+      console.error('Google 登入失敗:', error)
       const authError = error as AuthError
       const errorMessage = this.getErrorMessage(authError)
 
@@ -97,6 +123,44 @@ export class GoogleAuthService {
         success: false,
         error: errorMessage
       }
+    }
+  }
+
+  /**
+   * 檢查 redirect 結果（頁面載入時呼叫）
+   */
+  async checkRedirectResult(): Promise<{ success: boolean; user?: User; error?: string }> {
+    try {
+      console.log('🔍 檢查 redirect 登入結果...')
+      const result = await getRedirectResult(auth)
+
+      if (result) {
+        console.log('✅ Redirect 登入成功:', result.user.email)
+        const user = this.convertFirebaseUser(result.user)
+
+        this.updateAuthState({
+          user,
+          isLoading: false,
+          isAuthenticated: true
+        })
+
+        return { success: true, user }
+      } else {
+        console.log('ℹ️ 沒有 redirect 結果（正常情況）')
+        return { success: true } // 沒有 redirect 結果是正常的
+      }
+    } catch (error) {
+      console.error('檢查 redirect 結果失敗:', error)
+      const authError = error as AuthError
+      const errorMessage = this.getErrorMessage(authError)
+
+      this.updateAuthState({
+        user: null,
+        isLoading: false,
+        isAuthenticated: false
+      })
+
+      return { success: false, error: errorMessage }
     }
   }
 
@@ -208,7 +272,7 @@ export class GoogleAuthService {
    * 初始化認證狀態監聽器
    */
   private initializeAuthStateListener(): void {
-    onAuthStateChanged(auth, (firebaseUser) => {
+    onAuthStateChanged(auth, firebaseUser => {
       if (firebaseUser) {
         const user = this.convertFirebaseUser(firebaseUser)
         this.updateAuthState({
@@ -273,7 +337,13 @@ export class GoogleAuthService {
       case 'auth/popup-closed-by-user':
         return '登入已取消'
       case 'auth/popup-blocked':
-        return '登入彈窗被封鎖，請允許彈窗後重試'
+        return '登入彈窗被封鎖，已改用重導向方式'
+      case 'auth/redirect-cancelled-by-user':
+        return '登入已取消'
+      case 'auth/redirect-operation-pending':
+        return '登入處理中，請稍候'
+      case 'auth/unauthorized-domain':
+        return '網域未授權，請聯絡管理員'
       case 'auth/network-request-failed':
         return '網路連線失敗，請檢查網路狀態'
       case 'auth/too-many-requests':
