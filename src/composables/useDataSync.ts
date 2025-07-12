@@ -466,6 +466,7 @@ export function useDataSync(options: DataSyncOptions = {}) {
    * 初始化本地模式 (不啟動雲端功能)
    */
   const initialize = async (): Promise<void> => {
+    console.log('DEBUG: useDataSync.initialize() is called.')
     try {
       console.log('🔍 開始檢查 redirect 結果...')
       const redirectResult = await googleAuthService.checkRedirectResult()
