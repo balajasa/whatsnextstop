@@ -26,8 +26,6 @@
       </div>
     </nav>
 
-    <h1 class="itinerary-detail-title">行程規劃</h1>
-
     <!-- 主要內容區域 -->
     <div class="itinerary-detail-schedule-content">
       <!-- 所有區域統一渲染 -->
@@ -124,7 +122,7 @@ const allSectionIds = computed(() =>
 // 動態生成圖片配置
 const generateImages = (section: SectionConfig) => {
   return section.pages.map((filename, index) => ({
-    src: `/src/assets/img/itinerary/${filename}.jpg`,
+    src: `src/assets/img/itinerary/${filename}.jpg`,
     alt: section.pages.length > 1
       ? `${section.name} - 第${index + 1}頁`
       : section.name
@@ -226,54 +224,72 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 主容器
+// 主容器 (Mobile First)
 // ===================================
 .itinerary-detail-container
-  margin: 0 auto
+  width: 100%
   min-height: 100vh
-  width: 700px
   background: $bg-primary
 
+  @include tablet
+    max-width: 700px
+    margin: 0 auto
+
+  @include desktop
+    max-width: 800px
+
+  @include large-desktop
+    max-width: 900px
+
 // ===================================
-// 頁面標題
+// 頁面標題 (Mobile First)
 // ===================================
 .itinerary-detail-title
-  margin: $spacing-lg 0 $spacing-xl
+  margin: $spacing-md 0 $spacing-lg
   padding: 0 $spacing-md
   color: $text-primary
   text-align: center
   font-weight: 700
-  font-size: 28px
+  font-size: 20px
 
   @include tablet
+    margin: $spacing-lg 0 $spacing-xl
+    font-size: 28px
+
+  @include desktop
     margin: $spacing-xl 0 $spacing-2xl
     font-size: 32px
 
-  @include desktop
+  @include large-desktop
     font-size: 36px
 
 // ===================================
-// 主要內容區域
+// 主要內容區域 (Mobile First)
 // ===================================
 .itinerary-detail-schedule-content
-  margin: 0 auto
-  padding: 0 $spacing-md $spacing-xl
-  max-width: 750px
+  width: 100%
+  padding: 0 $spacing-sm $spacing-lg
 
   @include tablet
-    padding: 0 $spacing-lg $spacing-2xl
+    padding: 0 $spacing-md $spacing-xl
 
   @include desktop
-    padding: 0 $spacing-xl $spacing-2xl
+    padding: 0 $spacing-lg $spacing-2xl
 
   @include large-desktop
-    max-width: 1400px
+    padding: 0 $spacing-xl $spacing-2xl
 
 // ===================================
-// 內容區塊
+// 內容區塊 (Mobile First)
 // ===================================
 .itinerary-detail-schedule-section
-  margin-bottom: $spacing-2xl
+  margin-bottom: $spacing-lg
+
+  @include tablet
+    margin-bottom: $spacing-xl
+
+  @include desktop
+    margin-bottom: $spacing-2xl
 
   &:last-child
     margin-bottom: 0
@@ -282,18 +298,24 @@ onUnmounted(() => {
   width: 100%
 
 // ===================================
-// 圖片容器
+// 圖片容器 (Mobile First)
 // ===================================
 .itinerary-detail-image-container
   overflow: hidden
-  margin-bottom: $spacing-lg
-  border-radius: $border-radius-lg
+  margin-bottom: $spacing-md
+  border-radius: $border-radius-md
   background: $bg-card
-  box-shadow: 0 8px 32px $shadow-medium
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
 
   @include tablet
+    margin-bottom: $spacing-lg
+    border-radius: $border-radius-lg
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12)
+
+  @include desktop
     margin-bottom: $spacing-xl
     border-radius: $border-radius-xl
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15)
 
   &:last-child
     margin-bottom: 0
@@ -304,23 +326,33 @@ onUnmounted(() => {
   height: auto
   transition: transform 0.3s ease
 
+  &:hover
+    @include tablet
+      transform: scale(1.02)
+
 // ===================================
-// iframe 區域
+// iframe 區域 (Mobile First)
 // ===================================
 .itinerary-detail-iframe-container
   position: relative
-  min-height: 600px
+  min-height: 300px
   width: 100%
   overflow: hidden
-  border-radius: $border-radius-lg
+  border-radius: $border-radius-md
   background: $bg-card
-  box-shadow: 0 8px 32px $shadow-medium
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
 
   @include tablet
-    min-height: 700px
-    border-radius: $border-radius-xl
+    min-height: 500px
+    border-radius: $border-radius-lg
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12)
 
   @include desktop
+    min-height: 700px
+    border-radius: $border-radius-xl
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15)
+
+  @include large-desktop
     min-height: 800px
 
 .itinerary-detail-iframe
@@ -331,119 +363,161 @@ onUnmounted(() => {
   border: none
 
 // ===================================
-// 浮動導航
+// 浮動導航 (Mobile First)
 // ===================================
 .itinerary-detail-floating-nav
   position: fixed
   top: 50%
-  right: $spacing-md
+  right: $spacing-sm
   z-index: 100
   transition: all 0.3s ease-in-out
   transform: translateY(-50%)
 
   @include tablet
-    right: $spacing-lg
+    right: $spacing-md
 
   @include desktop
-    right: $spacing-xl
+    right: $spacing-lg
+
+  @include large-desktop
+    right: calc((100vw - 900px) / 2 + #{$spacing-lg})
 
   // 隱藏狀態
   &.itinerary-detail-nav-hidden
     opacity: 0
-    transform: translateY(-50%) translateX(100px)
+    transform: translateY(-50%) translateX(80px)
     pointer-events: none
 
-// 導航切換按鈕
+    @include tablet
+      transform: translateY(-50%) translateX(100px)
+
+// 導航切換按鈕 (Mobile First)
 .itinerary-detail-nav-toggle
   @include flex-center
-  width: 48px
-  height: 48px
+  width: 40px
+  height: 40px
   border-radius: 50%
   background: $primary-color
-  box-shadow: 0 4px 12px $shadow-medium
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2)
   color: $text-white
   cursor: pointer
   transition: all 0.2s ease
 
   @include tablet
+    width: 48px
+    height: 48px
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25)
+
+  @include desktop
     width: 52px
     height: 52px
 
   &:hover
-    background: rgba(45, 55, 72, 1)
-    box-shadow: 0 6px 20px $shadow-strong
-    transform: scale(1.1)
+    @include tablet
+      background: rgba(45, 55, 72, 1)
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3)
+      transform: scale(1.1)
 
 .itinerary-detail-nav-icon
-  font-size: 20px
+  font-size: 16px
 
   @include tablet
+    font-size: 20px
+
+  @include desktop
     font-size: 22px
 
-// 導航選單
+// 導航選單 (Mobile First)
 .itinerary-detail-nav-menu
   position: absolute
   top: 50%
   right: 100%
-  margin-right: $spacing-md
-  padding: $spacing-md
-  min-width: 200px
+  margin-right: $spacing-xs
+  padding: $spacing-sm
+  min-width: 160px
   border: 1px solid $border-light
-  border-radius: $border-radius-lg
+  border-radius: $border-radius-md
   background: $bg-card
-  box-shadow: 0 8px 32px $shadow-medium
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2)
   transform: translateY(-50%)
 
   @include tablet
+    margin-right: $spacing-sm
+    padding: $spacing-md
+    min-width: 200px
+    border-radius: $border-radius-lg
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25)
+
+  @include desktop
     padding: $spacing-lg
     min-width: 220px
 
   // 小箭頭指向切換按鈕
   &::after
     position: absolute
-    top: 100%
-    right: 20px
+    top: 50%
+    right: -8px
+    transform: translateY(-50%)
     width: 0
     height: 0
-    border-top: 8px solid transparent
-    border-bottom: 8px solid transparent
+    border-top: 6px solid transparent
+    border-bottom: 6px solid transparent
     border-left: 8px solid $bg-card
     content: ''
 
+    @include tablet
+      right: -10px
+      border-top: 8px solid transparent
+      border-bottom: 8px solid transparent
+      border-left: 10px solid $bg-card
+
 .itinerary-detail-nav-section
-  margin-bottom: $spacing-md
+  margin-bottom: $spacing-sm
+
+  @include tablet
+    margin-bottom: $spacing-md
 
   &:last-child
     margin-bottom: 0
 
   h4
-    margin-bottom: $spacing-sm
+    margin-bottom: $spacing-xs
     padding-bottom: $spacing-xs
     border-bottom: 1px solid $border-light
     color: $text-secondary
     font-weight: 600
-    font-size: 14px
+    font-size: 12px
 
     @include tablet
+      margin-bottom: $spacing-sm
+      font-size: 14px
+
+    @include desktop
       font-size: 15px
 
   a
     display: block
-    padding: $spacing-xs $spacing-sm
+    padding: $spacing-xs
     border-radius: $border-radius-sm
     color: $text-muted
     text-decoration: none
-    font-size: 14px
+    font-size: 12px
     transition: all 0.2s ease
 
     @include tablet
+      padding: $spacing-xs $spacing-sm
+      font-size: 14px
+
+    @include desktop
       padding: $spacing-sm
       font-size: 15px
 
     &:hover
       background: rgba(56, 178, 172, 0.1)
       color: $accent-color-1
-      transform: translateX(4px)
+
+      @include tablet
+        transform: translateX(4px)
 
     &.itinerary-detail-active
       background: rgba(230, 168, 107, 0.1)
@@ -451,45 +525,56 @@ onUnmounted(() => {
       font-weight: 500
 
 // ===================================
-// 回到頂部按鈕
+// 回到頂部按鈕 (Mobile First)
 // ===================================
 .itinerary-detail-back-to-top
   @include flex-center
   position: fixed
-  right: $spacing-md
-  bottom: $spacing-lg
+  right: $spacing-sm
+  bottom: $spacing-md
   z-index: 99
-  width: 48px
-  height: 48px
+  width: 40px
+  height: 40px
   border: none
   border-radius: 50%
   background: $accent-color-2
   color: $text-white
   font-weight: bold
-  font-size: 18px
+  font-size: 16px
   cursor: pointer
   transition: all 0.3s ease
 
   @include tablet
+    right: $spacing-md
+    bottom: $spacing-lg
+    width: 48px
+    height: 48px
+    font-size: 18px
+
+  @include desktop
     right: $spacing-lg
     bottom: $spacing-xl
     width: 52px
     height: 52px
     font-size: 20px
 
-  @include desktop
-    right: $spacing-xl
+  @include large-desktop
+    right: calc((100vw - 900px) / 2 + #{$spacing-lg})
 
   &:hover
-    background: rgba(212, 148, 27, 1)
-    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.6)
-    transform: translateY(-4px) scale(1.1)
+    @include tablet
+      background: rgba(212, 148, 27, 1)
+      box-shadow: 0 8px 25px rgba(230, 168, 107, 0.6)
+      transform: translateY(-4px) scale(1.1)
 
   &:active
     transform: translateY(-2px) scale(1.05)
 
+    @include tablet
+      transform: translateY(-2px) scale(1.05)
+
 // ===================================
-// 特殊區塊樣式
+// 特殊區塊樣式 (Mobile First)
 // ===================================
 
 // 封面區塊
@@ -510,74 +595,41 @@ onUnmounted(() => {
 // 航班資訊區塊
 .flight-section
   .itinerary-detail-image-container
-    border-left: 4px solid $accent-color-1
+    border-left: 2px solid $accent-color-1
+
+    @include tablet
+      border-left: 4px solid $accent-color-1
 
 // 必帶物品區塊
 .packing-section
   .itinerary-detail-image-container
-    border-left: 4px solid $accent-color-2
+    border-left: 2px solid $accent-color-2
+
+    @include tablet
+      border-left: 4px solid $accent-color-2
 
 // 地圖區塊
 .map-section
   .itinerary-detail-image-container
-    border-left: 4px solid $primary-color
+    border-left: 2px solid $primary-color
+
+    @include tablet
+      border-left: 4px solid $primary-color
 
 // 總覽區塊
 .overview-section
   .itinerary-detail-image-container
-    border-left: 4px solid $timeline-recent
+    border-left: 2px solid $timeline-recent
+
+    @include tablet
+      border-left: 4px solid $timeline-recent
 
 // 每日行程區塊
 .itinerary-detail-daily-section
   .itinerary-detail-image-container
     position: relative
-    border-left: 4px solid $city-gradient-start
+    border-left: 2px solid $city-gradient-start
 
-// ===================================
-// 響應式調整
-// ===================================
-
-// 手機版特殊處理
-@include mobile-only
-  .itinerary-detail-floating-nav
-    right: $spacing-sm
-
-  .itinerary-detail-nav-menu
-    margin-bottom: $spacing-sm
-    padding: $spacing-sm
-    min-width: 180px
-
-    &::after
-      right: 16px
-      border-top: 6px solid $bg-card
-      border-right: 6px solid transparent
-      border-left: 6px solid transparent
-
-  .itinerary-detail-nav-toggle
-    width: 44px
-    height: 44px
-
-  .itinerary-detail-nav-icon
-    font-size: 18px
-
-  .itinerary-detail-back-to-top
-    right: $spacing-sm
-    bottom: $spacing-md
-    width: 44px
-    height: 44px
-    font-size: 16px
-
-  .itinerary-detail-title
-    font-size: 24px
-
-  .itinerary-detail-iframe-container
-    min-height: 500px
-
-// 大桌面版優化
-@include large-desktop
-  .itinerary-detail-floating-nav
-    right: calc((100vw - 1400px) / 2 + #{$spacing-xl})
-
-  .itinerary-detail-back-to-top
-    right: calc((100vw - 1400px) / 2 + #{$spacing-xl})
+    @include tablet
+      border-left: 4px solid $city-gradient-start
 </style>

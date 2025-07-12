@@ -25,8 +25,9 @@ export class TravelService {
   static getImageUrl(travel: TravelData, photoName: string): string {
     // 路徑格式：images/photo/{year}/{country}/{photoName}.jpg
     // 如果有多個國家，使用第一個國家
-    const country = travel.country[0]
-    return `${travelHttpClient.baseUrl}/images/photo/${travel.year}/${country}/${photoName}.jpg`
+    return `${travelHttpClient.baseUrl}/images/photo/${travel.year}/${travel.folderName}/${photoName}.jpg`
+    // const country = travel.country[0]
+    // return `${travelHttpClient.baseUrl}/images/photo/${travel.year}/${country}/${photoName}.jpg`
   }
 
   // 獲取國家資訊（原有方法，地圖元件使用）

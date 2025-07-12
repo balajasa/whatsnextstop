@@ -1,68 +1,75 @@
 <template>
   <div v-if="selectedPin" class="info-panel" @click.stop>
-    <!-- 頭部區域：國旗 + 國名 + 關閉按鈕 -->
     <div class="panel-header">
-      <div class="country-header">
-        <div class="country-flag-container">
-          <div class="country-flag">{{ getCountryFlag(selectedPin.country) }}</div>
-        </div>
+      <div class="country-section">
+        <div class="country-flag">{{ getCountryFlag(selectedPin.country) }}</div>
         <div class="country-info">
-          <div class="country-name">{{ selectedPin.displayName }}</div>
+          <h3 class="country-name">{{ selectedPin.displayName }}</h3>
         </div>
       </div>
       <button class="close-btn" @click="handleClose">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
     </div>
 
-    <!-- 訪問次數區域 -->
-    <div class="visit-count-section">
-      <span class="visit-count">{{ selectedPin.visitCount }}次訪問</span>
-    </div>
+    <!-- 主要內容區域 -->
+    <div class="panel-content">
+      <div class="content-card places-card">
+        <!-- 造訪次數 -->
+        <div class="card-header">
+          <span class="card-icon">🎖️</span>
+          <div class="card-title">造訪次數</div>
+        </div>
 
-    <!-- 詳細資訊區域 -->
-    <div class="details-section">
-      <!-- 造訪省/州/市/邦/地區 -->
-      <div class="detail-item">
-        <div class="detail-header">
-          <div class="detail-icon">🏛️</div>
-          <div class="detail-title">造訪省/州/市/邦/地區</div>
+        <div class="visit-section">
+          <div class="visit-badge" :class="getVisitLevel(selectedPin.visitCount)">
+            <div class="visit-number">{{ selectedPin.visitCount }}</div>
+            <div class="visit-text">VISIT</div>
+          </div>
         </div>
-        <div class="detail-content">
-          <div class="info-pill">{{ getStateList(selectedPin) }}</div>
-        </div>
-      </div>
 
-      <!-- 造訪城市 -->
-      <div class="detail-item">
-        <div class="detail-header">
-          <div class="detail-icon">🏙️</div>
-          <div class="detail-title">造訪城市</div>
+        <div class="card-header">
+          <span class="card-icon">📍</span>
+          <div class="card-title">造訪地點</div>
         </div>
-        <div class="detail-content">
-          <div class="city-tags">
-            <span v-for="city in getCityList(selectedPin)" :key="city" class="city-tag">
+
+        <!-- 省/州/市/邦/地區 -->
+        <div class="location-section" v-if="getStateList(selectedPin).length > 0">
+          <div class="location-label">省/州/市/邦/地區</div>
+          <div class="location-tags">
+            <span v-for="state in getStateList(selectedPin)" :key="state" class="location-tag state-tag">
+              {{ state }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 城市 -->
+        <div class="location-section" v-if="getCityList(selectedPin).length > 0">
+          <div class="location-label">城市</div>
+          <div class="location-tags">
+            <span v-for="city in getCityList(selectedPin)" :key="city" class="location-tag city-tag">
               {{ city }}
             </span>
           </div>
         </div>
       </div>
 
-      <!-- 最近訪問歷史 -->
-      <div class="detail-item">
-        <div class="detail-header">
-          <div class="detail-icon">⏰</div>
-          <div class="detail-title">訪問歷史</div>
+      <!-- 旅遊時間卡片 -->
+      <div class="content-card timeline-card">
+        <div class="card-header">
+          <span class="card-icon">🗓️</span>
+          <div class="card-title">旅遊時間</div>
         </div>
-        <div class="detail-content">
-          <div class="visit-list" :class="{ scrollable: getVisitHistory(selectedPin).length > 3 }">
-            <div v-for="(visit, index) in getVisitHistory(selectedPin)" :key="visit" class="visit-item"
-              :class="{ latest: index === 0 }">
-              <div class="visit-date">{{ visit }}</div>
-              <div v-if="index === 0" class="latest-badge">最新</div>
+        <div class="timeline-list">
+          <div v-for="(visit, index) in getVisitHistory(selectedPin)" :key="visit" class="timeline-item"
+            :class="{ recent: index === 0 }">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">{{ visit }}</div>
+              <div v-if="index === 0" class="timeline-label">最近</div>
             </div>
           </div>
         </div>
@@ -89,36 +96,37 @@ const emit = defineEmits<{
   close: []
 }>()
 
+// 獲取造訪等級
+const getVisitLevel = (count: number): string => {
+  if (count >= 25) return 'level-legend'    // 傳奇 (紫色)
+  if (count >= 16) return 'level-master'    // 大師 (棕色)
+  if (count >= 8) return 'level-veteran'    // 老手 (綠色)
+  if (count >= 4) return 'level-explorer'   // 探索者 (藍色)
+  return 'level-novice'                     // 新手 (橘色)
+}
+
 // 獲取城市列表
 const getCityList = (pin: ProcessedPin): string[] => {
   if (!pin.trips) return []
-
-  // 從所有旅程中收集城市名稱
   const allCities = pin.trips.flatMap(trip => trip.cityTW || [])
-
-  // 去重並返回
   return [...new Set(allCities)]
 }
 
 // 獲取州省列表
-const getStateList = (pin: ProcessedPin): string => {
-  if (!pin.trips) return '資料不詳'
-
-  const states = [...new Set(pin.trips.flatMap(trip => trip.stateTW || []))].join('、')
-  return states || '資料不詳'
+const getStateList = (pin: ProcessedPin): string[] => {
+  if (!pin.trips) return []
+  const allStates = pin.trips.flatMap(trip => trip.stateTW || [])
+  return [...new Set(allStates)]
 }
 
 // 獲取訪問歷史（按時間由近到遠）
 const getVisitHistory = (pin: ProcessedPin): string[] => {
   if (!pin.trips) return []
-
   const sortedTrips = [...pin.trips].sort((a, b) => {
-    // 按年份和日期排序（由近到遠）
     const dateA = new Date(`${a.year}-${a.startDate}`)
     const dateB = new Date(`${b.year}-${b.startDate}`)
     return dateB.getTime() - dateA.getTime()
   })
-
   return sortedTrips.map(trip => `${trip.year}/${trip.startDate} - ${trip.endDate}`)
 }
 
@@ -132,448 +140,479 @@ const handleClose = () => {
 @use '@/styles/variables' as *
 @use '@/styles/mixins' as *
 
+// ===================================
+// 主容器
+// ===================================
 .info-panel
-  @include absolute-center
-  z-index: $z-modal
-  overflow-y: auto
-  max-width: calc(100% - #{$spacing-lg})
-  max-height: calc(100% - #{$spacing-lg})
-  width: 260px
-  border: 1px solid $border-light
-  border-radius: $border-radius-lg
-  background: $bg-card
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  z-index: 990
+  overflow: hidden
+  // max-width: calc(100% - 16px)
+  max-height: calc(100% - 40px)
+  width: calc(100% - 80px)
+  border-radius: 16px
+  background: $warm-cream
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15)
   pointer-events: auto
+  display: flex
+  flex-direction: column
 
-  @include tablet
-    max-width: calc(100% - #{$spacing-xl})
-    max-height: calc(100% - #{$spacing-xl})
-    width: 320px
-    border-radius: $border-radius-xl
+  @media (min-width: $tablet)
+    max-width: calc(100% - 48px)
+    max-height: calc(100% - 60px)
+    width: 340px
+    border-radius: 20px
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15)
 
-  @include desktop
-    width: 360px
-    border: 2px solid $border-primary
-
-  @include large-desktop
+  @media (min-width: $desktop)
+    max-width: calc(100% - 80px)
+    max-height: calc(100% - 80px)
     width: 380px
+    border-radius: 24px
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15)
 
 // ===================================
 // 面板頭部
 // ===================================
 .panel-header
-  @include flex-between
-  padding: $spacing-md $spacing-sm $spacing-sm
-  border-bottom: 1px solid $border-muted
+  display: flex
+  align-items: flex-start
+  justify-content: space-between
+  padding: 12px 14px
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(234, 88, 12, 0.8) 100%)
+  color: white
+  flex-shrink: 0
 
-  @include tablet
-    padding: $spacing-lg $spacing-md $spacing-md
+  // Tablet 樣式
+  @media (min-width: $tablet)
+    padding: 16px 20px
 
-  @include desktop
-    padding: $spacing-xl $spacing-lg $spacing-lg
+  // Desktop 樣式
+  @media (min-width: $desktop)
+    padding: 18px 24px
 
-.country-header
-  @include flex-center
-  gap: $spacing-sm
+.country-section
+  display: flex
+  align-items: center
+  gap: 12px
+  flex: 1
+  min-width: 0
 
-  @include tablet
-    gap: $spacing-md
-
-.country-flag-container
-  @include flex-center
-  width: 28px
-  height: 28px
-  border: 1px solid $border-light
-  border-radius: $border-radius-md
-  background: $bg-stats
-  box-shadow: $shadow-light
-
-  @include tablet
-    width: 36px
-    height: 36px
-
-  @include desktop
-    width: 42px
-    height: 42px
-    border-radius: $border-radius-lg
+  @media (min-width: $tablet)
+    gap: 16px
 
 .country-flag
-  font-size: 16px
+  font-size: 28px
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))
 
-  @include tablet
-    font-size: 20px
+  @media (min-width: $tablet)
+    font-size: 34px
 
-  @include desktop
-    font-size: 24px
+  @media (min-width: $desktop)
+    font-size: 38px
 
 .country-info
   flex: 1
   min-width: 0
 
 .country-name
+  margin-top: 4px
+  font-weight: 700
+  font-size: 18px
+  line-height: 1.2
+  color: white
+
+  @media (min-width: $tablet)
+    margin-top: 6px
+    font-size: 22px
+
+  @media (min-width: $desktop)
+    font-size: 24px
+
+.close-btn
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-shrink: 0
+  width: 36px
+  height: 36px
+  border: none
+  border-radius: 50%
+  background: rgba(255, 255, 255, 0.2)
+  backdrop-filter: blur(10px)
+  color: white
+  cursor: pointer
+  transition: all 0.2s ease
+
+  @media (min-width: $tablet)
+    width: 32px
+    height: 32px
+
+  @media (min-width: $desktop)
+    width: 36px
+    height: 36px
+
+  &:hover
+    background: rgba(255, 255, 255, 0.3)
+    transform: scale(1.05)
+
+  &:active
+    transform: scale(0.95)
+
+// ===================================
+// 面板內容
+// ===================================
+.panel-content
+  flex: 1
+  min-height: 0
+  overflow-y: auto
+  padding: 12px
+
+  @media (min-width: $tablet)
+    padding: 16px
+
+  @media (min-width: $desktop)
+    padding: 20px
+
+  // 滾動條樣式（所有設備通用）
+  &::-webkit-scrollbar
+    width: 6px
+
+  &::-webkit-scrollbar-track
+    background: #f1f5f9
+    border-radius: 3px
+
+  &::-webkit-scrollbar-thumb
+    background: #cbd5e0
+    border-radius: 3px
+
+    &:hover
+      background: #a0aec0
+
+// ===================================
+// 內容卡片
+// ===================================
+.content-card
+  margin-bottom: 16px
+  padding: 0 8px
+  border-radius: 12px
+
+  @media (min-width: $tablet)
+    margin-bottom: 18px
+    padding: 0 12px
+    border-radius: 16px
+
+  @media (min-width: $desktop)
+    margin-bottom: 20px
+    border-radius: 20px
+
+  &:last-child
+    margin-bottom: 0
+
+.card-header
+  display: flex
+  align-items: center
+  gap: 8px
+  margin-bottom: 8px
+
+  @media (min-width: $tablet)
+    gap: 12px
+    margin-bottom: 12px
+
+  @media (min-width: $desktop)
+    gap: 16px
+    margin-bottom: 14px
+
+.card-icon
+  font-size: 18px
+
+  @media (min-width: $tablet)
+    font-size: 20px
+
+  @media (min-width: $desktop)
+    font-size: 24px
+
+.card-title
   margin: 0
-  color: $text-primary
   font-weight: 600
-  font-size: 15px
-  line-height: 1.3
+  font-size: 18px
+  color: $warm-text
+
+  @media (min-width: $tablet)
+    font-size: 20px
+
+
+// ===================================
+// 造訪次數 - 護照印章風格
+// ===================================
+.visit-section
+  margin-bottom: 12px
+
+  @include tablet
+    margin-bottom: 16px
+
+.visit-badge
+  display: inline-block
+  width: 75px
+  height: 50px
+  border: 2px dashed
+  border-radius: 6px
+  font-family: 'Courier New', monospace
+  font-weight: bold
+  transform: rotate(-3deg)
+  transition: all 0.3s ease
+  position: relative
+  cursor: default
+  background-position: center
+  background-size: cover
+  @include flex-center
+  flex-direction: column
+
+  @include tablet
+    width: 80px
+    height: 52px
+    border-width: 2.5px
+
+  @include desktop
+    width: 85px
+    height: 55px
+
+.visit-number
+  font-size: 16px
+  font-weight: 900
+  line-height: 1
 
   @include tablet
     font-size: 17px
 
   @include desktop
-    font-weight: 700
     font-size: 18px
 
-.close-btn
-  @include flex-center
-  flex-shrink: 0
-  width: 24px
-  height: 24px
-  border: none
-  border: 1px solid $border-light
-  border-radius: 50%
-  background: $bg-primary
-  color: $text-muted
-  cursor: pointer
-  transition: all 0.2s ease-in-out
+.visit-text
+  font-size: 8px
+  font-weight: 600
+  letter-spacing: 1px
+  margin-top: 2px
 
   @include tablet
-    width: 28px
-    height: 28px
+    font-size: 8.5px
 
   @include desktop
-    width: 32px
-    height: 32px
-    background: $bg-stats
+    font-size: 9px
 
-  &:hover
-    border-color: $accent-color-1
-    background: $accent-color-1
-    color: $text-white
-    transform: scale(1.1)
+// 不同等級的配色 (所有斷點通用)
+.visit-badge
+  // 新手 (1-3次) - 橘色
+  &.level-novice
+    border-color: #ea580c
+    color: #ea580c
+    background: radial-gradient(circle at 20% 80%, rgba(234, 88, 12, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(234, 88, 12, 0.1) 0%, transparent 50%), rgba(254, 243, 232, 0.8)
 
-  &:active
-    transform: scale(0.95)
+  // 探索者 (4-7次) - 藍色
+  &.level-explorer
+    border-color: #0ea5e9
+    color: #0ea5e9
+    background: radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), rgba(240, 249, 255, 0.8)
 
-  svg
+  // 老手 (8-15次) - 綠色
+  &.level-veteran
+    border-color: #059669
+    color: #059669
+    background: radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(5, 150, 105, 0.1) 0%, transparent 50%), rgba(236, 253, 245, 0.8)
+
+  // 大師 (16-25次) - 棕色 + 復古效果
+  &.level-master
+    border-color: #7c2d12
+    color: #7c2d12
+    background: radial-gradient(circle at 20% 80%, rgba(124, 45, 18, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(124, 45, 18, 0.1) 0%, transparent 50%), rgba(254, 252, 232, 0.8)
+
+    // 復古磨損效果
+    &::after
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      background: radial-gradient(circle at 80% 20%, rgba(0,0,0,0.05) 20%, transparent 21%), radial-gradient(circle at 20% 80%, rgba(0,0,0,0.03) 15%, transparent 16%), radial-gradient(circle at 60% 60%, rgba(0,0,0,0.02) 25%, transparent 26%)
+      border-radius: 6px
+      pointer-events: none
+
+  // 傳奇 (25+次) - 紫色 + 光澤效果
+  &.level-legend
+    border-color: #7c3aed
+    color: #7c3aed
+    background: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%), rgba(250, 245, 255, 0.8)
+    overflow: hidden
+
+    // 光澤動畫效果
+    &::before
+      content: ''
+      position: absolute
+      top: -2px
+      left: -2px
+      right: -2px
+      bottom: -2px
+      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.8) 50%, transparent 70%)
+      z-index: -1
+      border-radius: 8px
+      animation: shimmer 3s ease-in-out infinite
+
+// 光澤動畫
+@keyframes shimmer
+  0%, 100%
+    transform: translateX(-100%)
+  50%
+    transform: translateX(100%)
+
+// ===================================
+// 地點標籤
+// ===================================
+.location-section
+  margin-bottom: 12px
+
+  @media (min-width: $tablet)
+    margin-bottom: 16px
+
+    &:last-child
+      margin-bottom: 0
+
+.location-label
+  margin-bottom: 6px
+  font-weight: 500
+  font-size: 14px
+  color: $warm-text-light
+  text-transform: uppercase
+  letter-spacing: 0.5px
+
+  @media (min-width: $tablet)
+    margin-bottom: 8px
+    font-size: 14px
+
+  @media (min-width: $desktop)
+    font-size: 16px
+
+.location-tags
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+
+  @media (min-width: $tablet)
+    gap: 8px
+
+  @media (min-width: $desktop)
+    gap: 10px
+
+.location-tag
+  display: inline-block
+  padding: 4px 6px
+  border-radius: 8px
+  font-weight: bold
+  font-size: 14px
+  cursor: default
+
+  @media (min-width: $tablet)
+    padding: 6px 8px
+    border-radius: 12px
+    font-size: 12px
+
+  @media (min-width: $desktop)
+    padding: 8px 12px
+    border-radius: 14px
+    font-size: 14px
+
+.state-tag
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.2) 100%)
+  color: rgba(255, 107, 107, 0.8)
+  border: 1px solid rgba(255, 107, 107, 0.3)
+
+.city-tag
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(52, 211, 153, 0.2) 100%)
+  color: rgba(52, 211, 153, 0.8)
+  border: 1px solid rgba(52, 211, 153, 0.3)
+
+// ===================================
+// 時間軸
+// ===================================
+.timeline-list
+  position: relative
+  padding-left: 6px
+  height: 80px
+  overflow-y: scroll
+
+  @media (min-width: $tablet)
+    height: 100px
+    padding-left: 8px
+
+.timeline-item
+  position: relative
+  display: flex
+  align-items: center
+  margin-bottom: 8px
+  padding-left: 20px
+
+  @media (min-width: $tablet)
+    margin-bottom: 12px
+    padding-left: 24px
+
+  &:last-child
+    margin-bottom: 0
+
+  &.recent
+    .timeline-dot
+      background: $warm-coral
+      box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.2)
+
+    .timeline-date
+      color: $warm-text
+      font-weight: 600
+
+.timeline-dot
+  position: absolute
+  left: 0
+  width: 8px
+  height: 8px
+  border-radius: 50%
+  background: $warm-text-light
+
+  @media (min-width: $tablet)
+    width: 10px
+    height: 10px
+
+  @media (min-width: $desktop)
     width: 12px
     height: 12px
 
-    @include tablet
-      width: 14px
-      height: 14px
+.timeline-content
+  display: flex
+  align-items: center
+  gap: 8px
+  flex: 1
 
-    @include desktop
-      width: 16px
-      height: 16px
+  @media (min-width: $tablet)
+    gap: 12px
 
-// ===================================
-// 訪問次數區域
-// ===================================
-.visit-count-section
-  padding: $spacing-sm $spacing-md $spacing-md
-  border-bottom: 1px solid $border-muted
-  background: linear-gradient(135deg, rgba($accent-color-1, 0.6), rgba($accent-color-1, 0.8))
-  text-align: center
-
-  @include tablet
-    padding: $spacing-md $spacing-lg $spacing-lg
-
-  @include desktop
-    padding: $spacing-lg $spacing-xl $spacing-xl
-
-.visit-count
-  display: block
-  color: $text-primary
-  font-weight: 600
-  font-size: 18px
-
-  @include tablet
-    font-size: 20px
-
-  @include desktop
-    font-weight: 700
-    font-size: 22px
-
-// ===================================
-// 詳細資訊區域
-// ===================================
-.details-section
-  padding: $spacing-md $spacing-sm $spacing-md
-
-  @include tablet
-    padding: $spacing-lg $spacing-md $spacing-lg
-
-  @include desktop
-    padding: $spacing-xl $spacing-lg $spacing-xl
-
-.detail-item
-  margin-bottom: $spacing-md
-
-  @include tablet
-    margin-bottom: $spacing-lg
-
-  &:last-child
-    margin-bottom: 0
-
-.detail-header
-  @include flex-center
-  justify-content: flex-start
-  margin-bottom: $spacing-xs
-  gap: $spacing-xs
-
-  @include tablet
-    margin-bottom: $spacing-sm
-    gap: $spacing-sm
-
-.detail-icon
+.timeline-date
   font-size: 14px
-  opacity: 0.8
+  color: $warm-text-light
 
-  @include tablet
+  @media (min-width: $tablet)
     font-size: 16px
 
-  @include desktop
-    font-size: 18px
-
-.detail-title
-  color: $text-primary
-  font-weight: 600
-  font-size: 13px
-
-  @include tablet
-    font-size: 14px
-
-  @include desktop
-    font-size: 15px
-
-.detail-content
-  margin-left: $spacing-lg
-
-  @include tablet
-    margin-left: $spacing-xl
-
-// ===================================
-// 資訊標籤樣式
-// ===================================
-.info-pill
-  display: inline-block
-  padding: $spacing-xs $spacing-sm
-  border: 1px solid rgba($primary-color, 0.25)
-  border-radius: $border-radius-lg
-  background: rgba($primary-color, 0.15)
-  color: $primary-color
+.timeline-label
+  padding: 1px 6px
+  border-radius: 6px
+  background: rgba(234, 88, 12, 0.15)
+  color: $warm-coral
   font-weight: 500
   font-size: 12px
-  transition: all 0.2s ease-in-out
 
-  @include tablet
-    padding: $spacing-sm $spacing-md
-    font-size: 13px
-
-  @include desktop
-    border-radius: $border-radius-xl
-
-// ===================================
-// 城市標籤
-// ===================================
-.city-tags
-  display: flex
-  flex-wrap: wrap
-  gap: $spacing-xs
-
-  @include tablet
-    gap: $spacing-sm
-
-.city-tag
-  @include flex-center
-  position: relative
-  overflow: hidden
-  padding: $spacing-xs $spacing-sm
-  border: 1px solid rgba($accent-color-1, 0.3)
-  border-radius: $border-radius-lg
-  background: linear-gradient(135deg, rgba($accent-color-1, 0.4), rgba($accent-color-1, 0.6))
-  color: rgba($accent-color-1, 0.8)
-  font-weight: 500
-  font-size: 11px
-  transition: all 0.2s ease-in-out
-
-  @include tablet
-    padding: $spacing-sm $spacing-md
-    font-size: 12px
-
-  @include desktop
-    border-radius: $border-radius-xl
-    font-size: 13px
-
-  &:hover
-    border-color: $accent-color-1
-    background: linear-gradient(135deg, $accent-color-1, rgba($accent-color-1, 0.9))
-    box-shadow: $shadow-light
-    color: $text-white
-    transform: translateY(-1px)
-
-  &::before
-    position: absolute
-    top: 0
-    right: 0
-    left: 0
-    height: 1px
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent)
-    content: ''
-    opacity: 0
-    transition: opacity 0.2s ease
-
-  &:hover::before
-    opacity: 1
-
-// ===================================
-// 訪問歷史列表
-// ===================================
-.visit-list
-  overflow-y: visible
-  max-height: none
-
-  &.scrollable
-    overflow-y: auto
-    padding-right: $spacing-xs
-    max-height: 100px
-
-    @include tablet
-      max-height: 120px
-
-    // 自訂滾動條
-    &::-webkit-scrollbar
-      width: 4px
-
-    &::-webkit-scrollbar-track
-      border-radius: $border-radius-sm
-      background: $bg-primary
-
-    &::-webkit-scrollbar-thumb
-      border-radius: $border-radius-sm
-      background: $border-primary
-
-      &:hover
-        background: $accent-color-1
-
-.visit-item
-  @include flex-between
-  margin-bottom: $spacing-xs
-  padding: $spacing-xs $spacing-sm
-  border: 1px solid $border-light
-  border-radius: $border-radius-md
-  background: $bg-stats
-  transition: all 0.2s ease-in-out
-
-  @include tablet
-    margin-bottom: $spacing-sm
-    padding: $spacing-sm $spacing-md
-
-  @include desktop
-    border-radius: $border-radius-lg
-
-  &:last-child
-    margin-bottom: 0
-
-  &.latest
-    border-color: rgba($accent-color-2, 0.3)
-    background: linear-gradient(135deg, rgba($accent-color-2, 0.15), rgba($accent-color-2, 0.18))
-    box-shadow: $shadow-light
-
-  &:hover
-    box-shadow: $shadow-light
-    transform: translateY(-1px)
-
-.visit-date
-  color: $text-secondary
-  font-weight: 500
-  font-size: 11px
-
-  @include tablet
-    font-size: 12px
-
-  @include desktop
-    font-size: 13px
-
-.latest-badge
-  padding: 2px $spacing-xs
-  border: 1px solid rgba($accent-color-2, 0.25)
-  border-radius: $border-radius-sm
-  background: rgba($accent-color-2, 0.12)
-  color: $accent-color-2
-  text-transform: uppercase
-  letter-spacing: 0.05em
-  font-weight: 600
-  font-size: 9px
-
-  @include tablet
-    padding: $spacing-xs $spacing-sm
-    font-size: 10px
-
-  @include desktop
-    border-radius: $border-radius-md
-
-// ===================================
-// 手機版特殊優化
-// ===================================
-@include mobile-only
-  .info-panel
-    border-radius: $border-radius-md
-
-  .panel-header
-    padding: $spacing-sm $spacing-xs $spacing-xs
-
-  .country-flag-container
-    width: 24px
-    height: 24px
-
-  .country-flag
+  @media (min-width: $tablet)
+    padding: 2px 8px
+    border-radius: 8px
     font-size: 14px
 
-  .country-name
-    font-size: 14px
-
-  .close-btn
-    width: 20px
-    height: 20px
-
-    svg
-      width: 10px
-      height: 10px
-
-  .visit-count-section
-    padding: $spacing-xs $spacing-sm $spacing-sm
-
-  .visit-count
-    font-size: 16px
-
-  .details-section
-    padding: $spacing-sm $spacing-xs $spacing-sm
-
-  .detail-item
-    margin-bottom: $spacing-sm
-
-  .detail-content
-    margin-left: $spacing-md
-
-  .city-tag
-    padding: 2px $spacing-xs
-    font-size: 10px
-
-  .info-pill
-    padding: 2px $spacing-xs
-    font-size: 11px
-
-  .visit-list.scrollable
-    max-height: 80px
-
-  .visit-item
-    padding: 2px $spacing-xs
-
-  .visit-date
-    font-size: 10px
-
-  .latest-badge
-    padding: 1px 2px
-    font-size: 8px
 </style>

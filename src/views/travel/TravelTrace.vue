@@ -3,11 +3,6 @@
     <!-- 麵包屑 -->
     <BreadcrumbNav />
     <div class="travel-container">
-      <div class="travel-header">
-        <!-- <h1>✈️ 我的旅行記錄</h1>
-        <p>點擊展開查看更多照片和詳細資訊</p> -->
-      </div>
-
       <div v-if="loading" class="loading-container">載入中...</div>
 
       <div v-else class="travel-list">
@@ -112,7 +107,6 @@ onMounted(async () => {
 .travel-trace
   width: 100%
   min-height: 100vh
-  background: $bg-primary
   padding: 0 $spacing-md
 
   @include tablet
@@ -124,16 +118,17 @@ onMounted(async () => {
 .travel-container
   max-width: 1200px
   margin: 0 auto
-  background: $bg-card
   border-radius: $border-radius-lg
-  box-shadow: $shadow-medium
+  box-shadow: 0 12px 35px rgba(145, 181, 0, 0.25)
   overflow: hidden
 
   @include desktop
+    background: $matcha-soft
     border-radius: $border-radius-xl
-    box-shadow: $shadow-strong
+    box-shadow: 0 16px 40px rgba(145, 181, 0, 0.3)
 
   @include large-desktop
+    background: $matcha-soft
     max-width: 1400px
 
 // ===================================
@@ -141,8 +136,8 @@ onMounted(async () => {
 // ===================================
 .travel-header
   padding: $spacing-lg
-  background: linear-gradient(135deg, $accent-color-1, rgba(49, 151, 149, 1))
-  color: $text-white
+  background: linear-gradient(135deg, $matcha-bright, $matcha-muted)
+  color: white
   text-align: center
 
   @include tablet
@@ -173,7 +168,7 @@ onMounted(async () => {
 .loading-container
   @include flex-center
   height: 200px
-  color: $text-muted
+  color: $text-dark
   font-size: 16px
 
   @include tablet
@@ -203,27 +198,29 @@ onMounted(async () => {
     grid-template-columns: 80px 160px 60px 1fr 1fr 40px
     gap: $spacing-md
     padding: $spacing-md $spacing-lg
-    background: rgba(56, 178, 172, 0.08)
+    background: $matcha-bright
     border-radius: $border-radius-md
     font-weight: 600
-    color: $text-primary
+    color: $text-dark
     font-size: 14px
     margin-bottom: $spacing-lg
-    border: 1px solid rgba(56, 178, 172, 0.15)
+    border: 1px solid rgba(145, 181, 0, 0.2)
+    justify-content: center
 
   @include large-desktop
     grid-template-columns: 100px 180px 80px 1fr 1fr 50px
     font-size: 15px
+    justify-content: center
 
 // ===================================
 // 旅行項目 (Mobile First - 卡片式)
 // ===================================
 .travel-item
   margin-bottom: $spacing-md
-  background: $bg-card
+  background: #FFFFFF
   border-radius: $border-radius-md
-  box-shadow: $shadow-light
-  border: 1px solid $border-light
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05)
+  border: 1px solid $almond-cream
   overflow: hidden
   transition: all 0.3s ease-in-out
 
@@ -233,18 +230,18 @@ onMounted(async () => {
 
   @include desktop
     margin-bottom: $spacing-md
-    box-shadow: none
-    border: 1px solid $border-muted
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03)
+    border: 1px solid rgba(255, 228, 181, 0.6)
     border-radius: $border-radius-sm
 
   &:hover
-    box-shadow: $shadow-medium
-    transform: translateY(-2px)
-    border-color: $accent-color-1
+    box-shadow: 0 8px 25px rgba(145, 181, 0, 0.15)
+    transform: translateY(-3px)
+    border-color: $matcha-bright
 
     @include desktop
-      box-shadow: $shadow-light
-      transform: translateY(-1px)
+      box-shadow: 0 6px 20px rgba(145, 181, 0, 0.12)
+      transform: translateY(-2px)
 
   &:last-child
     margin-bottom: 0
@@ -271,10 +268,10 @@ onMounted(async () => {
     grid-template-columns: 100px 180px 80px 1fr 1fr 50px
 
   &:hover
-    background: rgba(56, 178, 172, 0.05)
+    background: rgba(145, 181, 0, 0.05)
 
     @include desktop
-      background: rgba(56, 178, 172, 0.03)
+      background: rgba(145, 181, 0, 0.03)
 
   // 手機版和平板版的堆疊佈局
   @include mobile-tablet
@@ -288,7 +285,7 @@ onMounted(async () => {
 // ===================================
 .year
   font-weight: 700
-  color: $accent-color-1
+  color: white
   font-size: 18px
 
   @include tablet
@@ -297,11 +294,12 @@ onMounted(async () => {
   @include desktop
     font-size: 16px
     text-align: center
+    color: $matcha-bright
 
   // 手機/平板版標籤式顯示
   @include mobile-tablet
-    background: rgba(56, 178, 172, 0.1)
-    color: $accent-color-1
+    background: $matcha-bright
+    color: white
     padding: $spacing-xs $spacing-sm
     border-radius: $border-radius-md
     display: inline-block
@@ -312,9 +310,10 @@ onMounted(async () => {
       content: '📅 '
 
 .date
-  color: $text-secondary
+  color: $text-dark
   font-weight: 500
   font-size: 14px
+  opacity: 0.8
 
   @include tablet
     font-size: 15px
@@ -328,7 +327,7 @@ onMounted(async () => {
       margin-right: $spacing-xs
 
 .days
-  color: $accent-color-2
+  color: white
   font-weight: 600
   font-size: 14px
 
@@ -338,10 +337,11 @@ onMounted(async () => {
   @include desktop
     text-align: center
     font-size: 14px
+    color: $caramel-orange
 
   @include mobile-tablet
-    background: rgba(230, 168, 107, 0.1)
-    color: $accent-color-2
+    background: $caramel-orange
+    color: white
     padding: $spacing-xs $spacing-sm
     border-radius: $border-radius-md
     display: inline-block
@@ -352,7 +352,7 @@ onMounted(async () => {
 
 .country
   font-weight: 600
-  color: $text-primary
+  color: $text-dark
   font-size: 15px
 
   @include tablet
@@ -366,8 +366,9 @@ onMounted(async () => {
     margin: $spacing-xs 0
 
 .location
-  color: $text-secondary
+  color: $text-dark
   font-size: 14px
+  opacity: 0.7
 
   @include tablet
     font-size: 15px
@@ -381,20 +382,22 @@ onMounted(async () => {
       margin-right: $spacing-xs
 
 .expand-btn
-  color: $accent-color-1
+  background: $matcha-bright
+  color: white
   font-size: 16px
-  transition: transform 0.3s ease
+  transition: all 0.3s ease
   user-select: none
 
   @include desktop
     text-align: center
     font-size: 14px
+    border-radius: 4px
+    padding: 4px 8px
 
   @include mobile-tablet
     position: absolute
     top: $spacing-md
     right: $spacing-md
-    background: rgba(56, 178, 172, 0.1)
     width: 32px
     height: 32px
     border-radius: 50%
@@ -408,6 +411,10 @@ onMounted(async () => {
   &.rotated
     transform: rotate(180deg)
 
+  &:hover
+    background: rgba(145, 181, 0, 0.8)
+    box-shadow: 0 4px 12px rgba(145, 181, 0, 0.3)
+
 // ===================================
 // 詳細內容區域
 // ===================================
@@ -415,7 +422,7 @@ onMounted(async () => {
   max-height: 0
   overflow: hidden
   transition: max-height 0.4s ease-in-out
-  background: rgba(56, 178, 172, 0.02)
+  background: $almond-soft
 
   &.expanded
     max-height: 2000px
@@ -448,15 +455,15 @@ onMounted(async () => {
     height: 4px
 
   &::-webkit-scrollbar-track
-    background: rgba(56, 178, 172, 0.1)
+    background: rgba(145, 181, 0, 0.1)
     border-radius: 2px
 
   &::-webkit-scrollbar-thumb
-    background: rgba(56, 178, 172, 0.4)
+    background: rgba(145, 181, 0, 0.4)
     border-radius: 2px
 
     &:hover
-      background: rgba(56, 178, 172, 0.6)
+      background: rgba(145, 181, 0, 0.6)
 
   // 平板版：改回網格佈局
   @include tablet
@@ -482,7 +489,7 @@ onMounted(async () => {
   flex-shrink: 0
   border-radius: $border-radius-md
   overflow: hidden
-  box-shadow: $shadow-light
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05)
   transition: all 0.3s ease-in-out
   scroll-snap-align: start
 
@@ -496,8 +503,8 @@ onMounted(async () => {
     border-radius: $border-radius-lg
 
   &:hover
-    transform: scale(1.02)
-    box-shadow: $shadow-medium
+    transform: scale(1.03)
+    box-shadow: 0 8px 25px rgba(210, 105, 30, 0.15)
 
   // 手機版：點擊效果
   @include mobile-only
@@ -507,7 +514,7 @@ onMounted(async () => {
   .photo-placeholder
     width: 100%
     height: 100%
-    background: rgba(193, 212, 210, 0.4)
+    background: $caramel-soft
     cursor: pointer
     transition: all 0.3s ease
     background-image: url('@/assets/img/sym/cat_error.png')
@@ -516,17 +523,17 @@ onMounted(async () => {
     background-repeat: no-repeat
     @include flex-center
 
-  &:hover
-    background-color: rgba(193, 212, 210, 0.3)
-    transform: scale(1.02)
+    &:hover
+      background-color: rgba(210, 105, 30, 0.2)
+      transform: scale(1.02)
 
-    @include mobile-only
-      transform: scale(1.01)
+      @include mobile-only
+        transform: scale(1.01)
 
-  &.loading
-    background-color: rgba(193, 212, 210, 0.5)
-    background-image: url('@/assets/img/sym/cat_error.png')
-    animation: pulse 1.5s infinite
+    &.loading
+      background-color: rgba(210, 105, 30, 0.3)
+      background-image: url('@/assets/img/sym/cat_error.png')
+      animation: pulse 1.5s infinite
 
 .photo-img
   width: 100%
@@ -564,7 +571,7 @@ onMounted(async () => {
 
   .travel-container
     border-radius: $border-radius-md
-    box-shadow: $shadow-light
+    box-shadow: 0 6px 20px rgba(145, 181, 0, 0.08)
 
   .travel-header
     padding: $spacing-md
@@ -603,7 +610,7 @@ onMounted(async () => {
       top: 0
       width: 20px
       height: 100%
-      background: linear-gradient(to left, rgba(255,255,255,0.8), transparent)
+      background: linear-gradient(to left, rgba(255,248,240,0.8), transparent)
       pointer-events: none
       z-index: 1
 

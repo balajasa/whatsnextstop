@@ -194,7 +194,8 @@ onUnmounted(() => {
 .home-content
   position: relative
   padding-top: $header-height
-  min-height: 100vh
+  // min-height: 100vh
+  height: 100%
 
 // 側邊欄容器
 .sidebar

@@ -1,9 +1,9 @@
 <template>
   <div class="main-content-wrapper">
     <div class="schedule-section">
-      <div class="schedule-header">
+      <!-- <div class="schedule-header">
         <p class="schedule-subtitle">精心規劃的{{ totalDays }}天完美旅程</p>
-      </div>
+      </div> -->
 
       <!-- 封面圖片區域 -->
       <div class="cover-image-area">
@@ -155,13 +155,6 @@ const mainCards: Ref<MainCard[]> = ref([
     icon: '🎒',
     title: '必帶物品'
   },
-  {
-    id: 'checklist',
-    route: 'CheckList',
-    class: 'checklist-card',
-    icon: '📝',
-    title: '攜帶清單'
-  }
 ])
 
 // 導航方法
@@ -195,10 +188,10 @@ const navigateToDay = (day: number): void => {
   width: 100%
 
   @include tablet
-    padding: $spacing-lg
+    padding: 8px $spacing-lg
 
   @include desktop
-    padding: $spacing-xl
+    padding: 16px $spacing-xl
 
 // ===================================
 // 行程區塊
