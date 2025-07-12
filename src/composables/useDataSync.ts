@@ -468,13 +468,19 @@ export function useDataSync(options: DataSyncOptions = {}) {
   const initialize = async (): Promise<void> => {
     try {
       // ✅ 新增：檢查 redirect 結果
+      console.log('🔍 開始檢查 redirect 結果...')
       const redirectResult = await googleAuthService.checkRedirectResult()
+      console.log('🔍 Redirect 結果:', redirectResult)
+
       if (redirectResult.success && redirectResult.user) {
         console.log('✅ Redirect 登入成功，自動啟動雲端同步')
+      } else if (redirectResult.error) {
+        console.error('❌ Redirect 錯誤:', redirectResult.error)
       }
 
       // 監聽認證狀態變化
       const unsubscribeAuth = googleAuthService.onAuthStateChanged(newAuthState => {
+        console.log('🔄 認證狀態變化:', newAuthState)
         authState.value = newAuthState
 
         // 如果登出，自動切換到本地模式

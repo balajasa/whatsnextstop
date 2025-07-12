@@ -135,7 +135,10 @@ export class GoogleAuthService {
       const result = await getRedirectResult(auth)
 
       if (result) {
-        console.log('✅ Redirect 登入成功:', result.user.email)
+        console.log('✅ 找到 redirect 結果:', {
+          user: result.user.email,
+          uid: result.user.uid
+        })
         const user = this.convertFirebaseUser(result.user)
 
         this.updateAuthState({
@@ -147,10 +150,10 @@ export class GoogleAuthService {
         return { success: true, user }
       } else {
         console.log('ℹ️ 沒有 redirect 結果（正常情況）')
-        return { success: true } // 沒有 redirect 結果是正常的
+        return { success: true }
       }
     } catch (error) {
-      console.error('檢查 redirect 結果失敗:', error)
+      console.error('❌ 檢查 redirect 結果失敗:', error)
       const authError = error as AuthError
       const errorMessage = this.getErrorMessage(authError)
 

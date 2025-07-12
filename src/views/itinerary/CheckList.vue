@@ -728,10 +728,28 @@ const debugLogs = ref<Array<{ type: string, message: string, time: string }>>([]
 
 const addDebugLog = (type: 'info' | 'error' | 'success', message: string) => {
   const time = new Date().toLocaleTimeString()
-  debugLogs.value.push({ type, message, time })
-  console.log(`[${type}] ${message}`) // 同時也記錄到真正的 console
+  const log = { type, message, time }
 
-  // 保持最多 20 條記錄
+  // 添加到當前頁面
+  debugLogs.value.push(log)
+  console.log(`[${type}] ${message}`)
+
+  // 保存到 localStorage（跨頁面保存）
+  try {
+    const savedLogs = JSON.parse(localStorage.getItem('debug-logs') || '[]')
+    savedLogs.push(log)
+
+    // 保持最多 50 條記錄
+    if (savedLogs.length > 50) {
+      savedLogs.shift()
+    }
+
+    localStorage.setItem('debug-logs', JSON.stringify(savedLogs))
+  } catch (error) {
+    console.error('保存日誌失敗:', error)
+  }
+
+  // 保持頁面顯示最多 20 條
   if (debugLogs.value.length > 20) {
     debugLogs.value.shift()
   }
@@ -739,6 +757,7 @@ const addDebugLog = (type: 'info' | 'error' | 'success', message: string) => {
 
 const clearDebugLogs = () => {
   debugLogs.value = []
+  localStorage.removeItem('debug-logs')
 }
 
 // ===================================
@@ -754,17 +773,23 @@ const debugAuth = () => {
 }
 
 onMounted(async () => {
-  debugAuth()
+  // 恢復保存的日誌
+  try {
+    const savedLogs = JSON.parse(localStorage.getItem('debug-logs') || '[]')
+    debugLogs.value = savedLogs.slice(-20) // 只顯示最後 20 條
+  } catch (error) {
+    console.error('恢復日誌失敗:', error)
+  }
 
+  // 其他初始化代碼...
+  debugAuth()
   isLoading.value = true
 
   try {
-    // 只初始化本地模式，不啟動雲端功能
     await dataSync.initialize()
-
   } catch (error) {
     console.error('初始化失敗:', error)
-    showError('初始化失敗，請重新整理頁面')
+    addDebugLog('error', `初始化失敗: ${error}`)
   } finally {
     isLoading.value = false
   }
