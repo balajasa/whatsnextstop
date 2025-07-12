@@ -122,7 +122,7 @@ const allSectionIds = computed(() =>
 // 動態生成圖片配置
 const generateImages = (section: SectionConfig) => {
   return section.pages.map((filename, index) => ({
-    src: `src/assets/img/itinerary/${filename}.jpg`,
+    src: new URL(`../../assets/img/itinerary/${filename}.jpg`, import.meta.url).href,
     alt: section.pages.length > 1
       ? `${section.name} - 第${index + 1}頁`
       : section.name
