@@ -20,6 +20,9 @@
           </div>
         </div>
       </div>
+      <div class="copy-section">
+        <div class="copy-text">© 2025 OolongLatte</div>
+      </div>
     </div>
   </footer>
 </template>
@@ -178,14 +181,14 @@ onMounted(() => {
   max-width: 1200px
   margin: 0 auto
   height: 100%
-  padding: 12px $spacing-md
+  padding: 12px $spacing-md 4px
   display: flex
   flex-direction: column
   justify-content: space-between
   overflow: hidden  // 添加：防止內容溢出
 
   @media (min-width: 768px)
-    padding: 12px $spacing-lg
+    padding: 12px $spacing-lg 6px
 
 // ====================================
 // Header 區域
@@ -193,9 +196,8 @@ onMounted(() => {
 .header-section
   display: flex
   align-items: center
-  justify-content: flex-end
   margin-bottom: $spacing-xs
-  flex-shrink: 0  // 添加：防止被壓縮
+  flex-shrink: 0
 
   @media (min-width: 768px)
     margin-bottom: $spacing-sm
@@ -205,7 +207,7 @@ onMounted(() => {
   color: $text-white
   padding: 4px 8px
   border-radius: $border-radius-xl
-  font-size: 10px
+  font-size: 12px
   font-weight: 700
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2)
   backdrop-filter: blur(10px)
@@ -213,11 +215,9 @@ onMounted(() => {
 
   @media (min-width: 768px)
     padding: 6px 12px
-    font-size: 12px
 
   @media (min-width: 1024px)
     padding: 8px 16px
-    font-size: 14px
 
 // ====================================
 // 卡片區域
@@ -447,4 +447,9 @@ onMounted(() => {
   @media (min-width: 1024px)
     font-size: 12px
 
+.copy-section
+  display: flex
+  justify-content: center
+  font-size: 10px
+  margin-top: 10px
 </style>

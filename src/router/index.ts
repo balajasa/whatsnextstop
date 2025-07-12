@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
@@ -17,7 +17,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: 'home' // 改成相對路徑，去掉 /
+        redirect: 'home'
       },
       {
         path: 'home',
@@ -126,9 +126,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
-  // 滾動行為設定
   scrollBehavior(to, _from, savedPosition) {
     if (savedPosition) {
       return savedPosition
