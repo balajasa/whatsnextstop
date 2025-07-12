@@ -467,15 +467,16 @@ export function useDataSync(options: DataSyncOptions = {}) {
    */
   const initialize = async (): Promise<void> => {
     try {
-      // ✅ 新增：檢查 redirect 結果
       console.log('🔍 開始檢查 redirect 結果...')
       const redirectResult = await googleAuthService.checkRedirectResult()
       console.log('🔍 Redirect 結果:', redirectResult)
 
       if (redirectResult.success && redirectResult.user) {
         console.log('✅ Redirect 登入成功，自動啟動雲端同步')
+        await switchToCloudMode() // 成功登入，切換到雲端模式並會載入雲端資料
       } else if (redirectResult.error) {
         console.error('❌ Redirect 錯誤:', redirectResult.error)
+        // 可以在這裡處理用戶取消登入或其他錯誤
       }
 
       // 監聽認證狀態變化
@@ -485,13 +486,18 @@ export function useDataSync(options: DataSyncOptions = {}) {
 
         // 如果登出，自動切換到本地模式
         if (!newAuthState.isAuthenticated && isOnlineMode.value) {
+          console.log('用戶登出，切換到本地模式。')
           switchToLocalMode()
         }
       })
       cleanupFunctions.push(unsubscribeAuth)
 
-      // 只載入本地資料
-      await loadItems()
+      // 只有當當前模式不是雲端模式時才載入本地資料
+      // 因為如果 redirect 成功，switchToCloudMode() 已經載入雲端資料了
+      if (!isOnlineMode.value) {
+        console.log('當前為本地模式，載入本地資料。')
+        await loadItems()
+      }
     } catch (error) {
       console.error('初始化失敗:', error)
     }
