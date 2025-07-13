@@ -73,12 +73,6 @@ const sidebarList: SidebarItem[] = [
     path: '/itinerary'
   },
   {
-    category: '要去哪裡',
-    name: '攜帶清單',
-    icon: '📝',
-    path: '/checklist'
-  },
-  {
     category: '踏踏腳印',
     name: '旅行地圖',
     icon: '🗺️',

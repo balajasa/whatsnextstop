@@ -4,7 +4,6 @@ import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
 import DropBlock from '../views/games/DropBlock.vue'
 import TakeMeTravel from '../views/games/TakeMeTravel.vue'
-import CheckList from '../views/itinerary/CheckList.vue'
 import Itinerary from '../views/itinerary/Itinerary.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel/TravelMap.vue'
@@ -49,16 +48,6 @@ const routes = [
             { text: '行程規劃', icon: '🗓️', path: '/itinerary' },
             { text: '詳細行程', icon: '📋' }
           ]
-        }
-      },
-      {
-        path: 'checklist',
-        name: 'CheckList',
-        component: CheckList,
-        meta: {
-          title: '攜帶清單',
-          showBreadcrumb: true,
-          breadcrumb: [{ text: '攜帶清單', icon: '📝' }]
         }
       },
       {
