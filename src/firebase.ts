@@ -28,7 +28,9 @@ interface FirebaseConfig {
 const firebaseConfig: FirebaseConfig = {
   apiKey: env.VITE_FIREBASE_API_KEY,
   authDomain:
-    window.location.hostname === 'localhost' ? 'pack-panda.firebaseapp.com' : 'balajasa.github.io',
+    window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? `localhost:${window.location.port || '5173'}` // 在本地時指向本地伺服器
+      : 'balajasa.github.io', // 部署到 GitHub Pages 時指向 GitHub Pages 網域
   databaseURL: env.VITE_FIREBASE_DATABASE_URL,
   projectId: env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,

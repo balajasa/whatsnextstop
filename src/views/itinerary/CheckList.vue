@@ -168,7 +168,7 @@
   <!-- 調試用 Console 顯示 -->
   <div v-if="debugLogs.length > 0" class="debug-console">
     <div class="debug-header">
-      <span>Debug Console v1.6</span>
+      <span>Debug Console v1.7</span>
       <button @click="clearDebugLogs" class="debug-clear">清除</button>
     </div>
     <div class="debug-content">
@@ -188,7 +188,7 @@ import type { CheckItem, FilterType, FilterOption } from '../../types/check-item
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import { useRedirectStore, setGlobalDebugLogger } from '../../stores/redirectStore'
 import { auth } from '../../firebase'
-import { getRedirectResult } from 'firebase/auth'
+import { getRedirectResult, onAuthStateChanged } from 'firebase/auth'
 
 let popupCheckInterval: number | null = null
 let windowFocusHandler: (() => void) | null = null
@@ -779,12 +779,24 @@ setGlobalDebugLogger(addDebugLog)
 onMounted(async () => {
   addDebugLog('info', 'DEBUG-ONMOUNTED: About to call dataSync.initialize()')
   console.log('DEBUG-ONMOUNTED: About to call dataSync.initialize() (Console)')
-  // 在組件載入時立即檢查
+
+  // === Firebase 狀態檢查 ===
   console.log('=== Firebase 狀態檢查 ===')
   console.log('當前用戶:', auth.currentUser)
   console.log('Auth 物件:', auth)
   console.log('當前域名:', window.location.hostname)
   console.log('Firebase authDomain:', import.meta.env.VITE_FIREBASE_AUTH_DOMAIN)
+
+  // 🔥 新增：直接檢查 Auth 準備狀態
+  console.log('Auth 準備完成:', !auth.currentUser === null) // 檢查是否初始化完成
+
+  // 🔥 新增：設置直接的認證監聽器
+  onAuthStateChanged(auth, (user) => {
+    console.log('🔥🔥🔥 直接 Auth 狀態變化:', user ? `已登入: ${user.email}` : '未登入')
+    if (user) {
+      addDebugLog('success', `🔥 直接偵測到登入: ${user.email}`)
+    }
+  })
 
   // 手動檢查 getRedirectResult
   try {
@@ -795,7 +807,12 @@ onMounted(async () => {
     console.log('getRedirectResult 錯誤:', error)
   }
 
-  // 🔥 新增：先用 Store 檢查 redirect
+  // 🔥 新增：等待 Auth 初始化後再檢查
+  console.log('等待 Auth 初始化...')
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  console.log('等待後的用戶:', auth.currentUser)
+
+  // Store 檢查
   const redirectStore = useRedirectStore()
   addDebugLog('info', 'STORE-TEST: 開始用 Store 檢查 redirect')
 
@@ -803,11 +820,8 @@ onMounted(async () => {
     const storeResult = await redirectStore.checkAuthState()
     addDebugLog('info', `STORE-TEST: Store 結果 = ${JSON.stringify(storeResult)}`)
 
-    // 如果 Store 有結果，直接處理
     if (storeResult?.success && storeResult.user) {
       addDebugLog('success', 'STORE-TEST: Store 檢查成功，有用戶資料！')
-      // 這裡可以手動觸發登入成功的邏輯
-      // 先看看能不能走到這裡
     }
   } catch (error) {
     addDebugLog('error', `STORE-TEST: Store 檢查出錯 = ${error}`)
