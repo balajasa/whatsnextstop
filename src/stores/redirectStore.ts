@@ -28,38 +28,28 @@ export const useRedirectStore = defineStore('redirect', () => {
   // 只負責檢查 redirect 結果
   const checkRedirectResult = async () => {
     log('info', 'STORE: 開始檢查 redirect 結果')
-    isChecking.value = true
-    error.value = null
 
-    try {
-      log('info', 'STORE: 呼叫 googleAuthService.checkRedirectResult()...')
-      const result = await googleAuthService.checkRedirectResult()
+    // 🔥 加入重試機制
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        log('info', `STORE: 第 ${attempt} 次嘗試...`)
+        await new Promise(resolve => setTimeout(resolve, 1000)) // 等待 1 秒
 
-      log('info', `STORE: 原始結果 = ${JSON.stringify(result, null, 2)}`)
+        const result = await googleAuthService.checkRedirectResult()
+        log('info', `STORE: 嘗試 ${attempt} 結果 = ${JSON.stringify(result)}`)
 
-      if (result?.success) {
-        if (result.user) {
-          log('success', `STORE: 登入成功！用戶: ${result.user.email}`)
-        } else {
-          log('info', 'STORE: 檢查完成，但沒有用戶資料（正常情況）')
+        if (result?.success && result.user) {
+          log('success', `STORE: 第 ${attempt} 次成功！用戶: ${result.user.email}`)
+          return result
         }
-      } else {
-        log('error', `STORE: 檢查失敗 - ${result?.error || '未知錯誤'}`)
+      } catch (err) {
+        log('error', `STORE: 第 ${attempt} 次失敗: ${err}`)
       }
-
-      redirectResult.value = result
-      return result
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : String(err)
-      log('error', `STORE: 例外錯誤 - ${errorMsg}`)
-      error.value = errorMsg
-      return null
-    } finally {
-      isChecking.value = false
-      log('info', 'STORE: 檢查完成')
     }
-  }
 
+    log('info', 'STORE: 3 次嘗試都沒有用戶資料')
+    return { success: true }
+  }
   return {
     isChecking,
     redirectResult,
