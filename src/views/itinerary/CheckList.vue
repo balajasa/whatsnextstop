@@ -168,7 +168,7 @@
   <!-- 調試用 Console 顯示 -->
   <div v-if="debugLogs.length > 0" class="debug-console">
     <div class="debug-header">
-      <span>Debug Console 1.2</span>
+      <span>Debug Console v1.3</span>
       <button @click="clearDebugLogs" class="debug-clear">清除</button>
     </div>
     <div class="debug-content">
@@ -186,6 +186,7 @@ import { useDataSync } from '../../composables/useDataSync'
 import { useDialog } from '../../composables/useDialog'
 import type { CheckItem, FilterType, FilterOption } from '../../types/check-item'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import { useRedirectStore, setGlobalDebugLogger } from '../../stores/redirectStore'
 
 let popupCheckInterval: number | null = null
 let windowFocusHandler: (() => void) | null = null
@@ -772,15 +773,36 @@ const debugAuth = () => {
   })
 }
 
+setGlobalDebugLogger(addDebugLog)
 onMounted(async () => {
-  addDebugLog('info', 'DEBUG-ONMOUNTED: About to call dataSync.initialize()'); // <-- 加這行
-  console.log('DEBUG-ONMOUNTED: About to call dataSync.initialize() (Console)'); // <-- 也加 Console Log
-  isLoading.value = true;
+  addDebugLog('info', 'DEBUG-ONMOUNTED: About to call dataSync.initialize()')
+  console.log('DEBUG-ONMOUNTED: About to call dataSync.initialize() (Console)')
+
+  // 🔥 新增：先用 Store 檢查 redirect
+  const redirectStore = useRedirectStore()
+  addDebugLog('info', 'STORE-TEST: 開始用 Store 檢查 redirect')
+
+  try {
+    const storeResult = await redirectStore.checkRedirectResult()
+    addDebugLog('info', `STORE-TEST: Store 結果 = ${JSON.stringify(storeResult)}`)
+
+    // 如果 Store 有結果，直接處理
+    if (storeResult?.success && storeResult.user) {
+      addDebugLog('success', 'STORE-TEST: Store 檢查成功，有用戶資料！')
+      // 這裡可以手動觸發登入成功的邏輯
+      // 先看看能不能走到這裡
+    }
+  } catch (error) {
+    addDebugLog('error', `STORE-TEST: Store 檢查出錯 = ${error}`)
+  }
+
+  // 🔥 現在再呼叫原本的初始化（可以先註釋掉來隔離測試）
+  isLoading.value = true
 
   // 恢復保存的日誌
   try {
     const savedLogs = JSON.parse(localStorage.getItem('debug-logs') || '[]')
-    debugLogs.value = savedLogs.slice(-20) // 只顯示最後 20 條
+    debugLogs.value = savedLogs.slice(-20)
   } catch (error) {
     console.error('恢復日誌失敗:', error)
   }
@@ -790,11 +812,10 @@ onMounted(async () => {
   addDebugLog('info', `Project ID: ${import.meta.env.VITE_FIREBASE_PROJECT_ID}`)
   addDebugLog('info', `Database URL: ${import.meta.env.VITE_FIREBASE_DATABASE_URL}`)
 
-  // 其他初始化代碼...
   debugAuth()
-  isLoading.value = true
 
   try {
+    // 可以先註釋這行來測試 Store 是否工作
     await dataSync.initialize()
   } catch (error) {
     console.error('初始化失敗:', error)
@@ -803,6 +824,7 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
 
 // 清理監聽器
 onUnmounted(() => {

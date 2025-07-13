@@ -15,11 +15,12 @@ export function useDataSync(
   options: DataSyncOptions = {},
   debugLogger?: (type: 'info' | 'warn' | 'error', message: string) => void
 ) {
+  console.log('DEBUG: useDataSync Composable function started executing.')
   // 將傳入的 debugLogger 儲存起來，如果沒有傳入則使用一個空的函數
   const logDebug =
     debugLogger ||
     ((type, message) => console.log(`[useDataSync DEBUG-${type.toUpperCase()}]: ${message}`))
-
+  logDebug('info', 'DEBUG: useDataSync Composable function started executing.')
   // ===================================
   // 響應式狀態
   // ===================================
