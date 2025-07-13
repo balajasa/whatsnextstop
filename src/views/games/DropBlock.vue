@@ -30,14 +30,14 @@
       <!-- A區地圖 -->
       <div v-if="gameState.aExpanded"
         :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]">
-        <img src="@/assets/img/mini/reel_map_a.png" alt="地圖A" />
+        <img src="@/assets/img/minigame/map/reel_map_a.png" alt="地圖A" />
         <div class="overlay-text">{{ gameState.taskA }}</div>
       </div>
 
       <!-- B區地圖 -->
       <div v-if="gameState.bExpanded"
         :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]">
-        <img src="@/assets/img/mini/reel_map_b.png" alt="地圖B" />
+        <img src="@/assets/img/minigame/map/reel_map_b.png" alt="地圖B" />
         <div class="overlay-text">{{ gameState.taskB }}</div>
       </div>
 
@@ -79,18 +79,18 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import taskConfig from '../../constants/taskConfig.json'
 import { GameState } from '../../types/minigame'
 // 預先引入所有石頭圖片
-import body01 from '@/assets/img/stone/body_01.png'
-import body02 from '@/assets/img/stone/body_02.png'
-import body03 from '@/assets/img/stone/body_03.png'
-import body04 from '@/assets/img/stone/body_04.png'
-import body05 from '@/assets/img/stone/body_05.png'
-import body06 from '@/assets/img/stone/body_06.png'
-import head01 from '@/assets/img/stone/head_01.png'
-import head02 from '@/assets/img/stone/head_02.png'
-import head03 from '@/assets/img/stone/head_03.png'
-import head04 from '@/assets/img/stone/head_04.png'
-import head05 from '@/assets/img/stone/head_05.png'
-import head06 from '@/assets/img/stone/head_06.png'
+import body01 from '@/assets/img/minigame/stone/body_01.png'
+import body02 from '@/assets/img/minigame/stone/body_02.png'
+import body03 from '@/assets/img/minigame/stone/body_03.png'
+import body04 from '@/assets/img/minigame/stone/body_04.png'
+import body05 from '@/assets/img/minigame/stone/body_05.png'
+import body06 from '@/assets/img/minigame/stone/body_06.png'
+import head01 from '@/assets/img/minigame/stone/head_01.png'
+import head02 from '@/assets/img/minigame/stone/head_02.png'
+import head03 from '@/assets/img/minigame/stone/head_03.png'
+import head04 from '@/assets/img/minigame/stone/head_04.png'
+import head05 from '@/assets/img/minigame/stone/head_05.png'
+import head06 from '@/assets/img/minigame/stone/head_06.png'
 
 const gameState = reactive<GameState>({
   aExpanded: false,
@@ -396,7 +396,7 @@ defineExpose({
 .result-map
   width: 100%
   height: 100%
-  background: url('@/assets/img/mini/reel_map.png') center
+  background: url('@/assets/img/minigame/map/reel_map.png') center
   background-size: contain
   background-repeat: no-repeat
   border-radius: $border-radius-md
