@@ -168,7 +168,7 @@
   <!-- 調試用 Console 顯示 -->
   <div v-if="debugLogs.length > 0" class="debug-console">
     <div class="debug-header">
-      <span>Debug Console 1.1</span>
+      <span>Debug Console 1.2</span>
       <button @click="clearDebugLogs" class="debug-clear">清除</button>
     </div>
     <div class="debug-content">
@@ -773,6 +773,10 @@ const debugAuth = () => {
 }
 
 onMounted(async () => {
+  addDebugLog('info', 'DEBUG-ONMOUNTED: About to call dataSync.initialize()'); // <-- 加這行
+  console.log('DEBUG-ONMOUNTED: About to call dataSync.initialize() (Console)'); // <-- 也加 Console Log
+  isLoading.value = true;
+
   // 恢復保存的日誌
   try {
     const savedLogs = JSON.parse(localStorage.getItem('debug-logs') || '[]')

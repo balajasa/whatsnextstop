@@ -11,7 +11,15 @@ import type { User, AuthState, SyncStatus, SyncState, DataSyncOptions } from '..
 // useDataSync Composable
 // ===================================
 
-export function useDataSync(options: DataSyncOptions = {}) {
+export function useDataSync(
+  options: DataSyncOptions = {},
+  debugLogger?: (type: 'info' | 'warn' | 'error', message: string) => void
+) {
+  // 將傳入的 debugLogger 儲存起來，如果沒有傳入則使用一個空的函數
+  const logDebug =
+    debugLogger ||
+    ((type, message) => console.log(`[useDataSync DEBUG-${type.toUpperCase()}]: ${message}`))
+
   // ===================================
   // 響應式狀態
   // ===================================
@@ -70,6 +78,7 @@ export function useDataSync(options: DataSyncOptions = {}) {
   const signInWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       authState.value.isLoading = true
+      logDebug('info', 'Attempting Google sign-in...') // 使用 logDebug
 
       const result = await googleAuthService.signInWithGoogle()
 
@@ -80,16 +89,18 @@ export function useDataSync(options: DataSyncOptions = {}) {
           isLoading: false,
           isAuthenticated: true
         }
-
+        logDebug('info', 'Google sign-in successful. Switching to cloud mode.') // 使用 logDebug
         // 登入成功後自動同步到雲端
         await switchToCloudMode()
       } else {
         authState.value.isLoading = false
+        logDebug('warn', `Google sign-in failed: ${result.error || 'Unknown error'}`) // 使用 logDebug
       }
 
       return result
     } catch (error) {
       console.error('登入失敗:', error)
+      logDebug('error', `Sign-in failed: ${error instanceof Error ? error.message : String(error)}`) // 使用 logDebug
       authState.value.isLoading = false
       return {
         success: false,
@@ -466,18 +477,22 @@ export function useDataSync(options: DataSyncOptions = {}) {
    * 初始化本地模式 (不啟動雲端功能)
    */
   const initialize = async (): Promise<void> => {
-    console.log('DEBUG: useDataSync.initialize() is called.')
+    logDebug('info', 'DEBUG-DATASYNCI: useDataSync.initialize() function started.') // <-- 加這行
+    console.log('DEBUG-DATASYNCI: useDataSync.initialize() function started. (Console)') // <-- 也加 Console Log
     try {
-      console.log('🔍 開始檢查 redirect 結果...')
+      logDebug('info', '🔍 開始檢查 redirect 結果...') // 使用 logDebug
+      console.log('🔍 開始檢查 redirect 結果...') // 保持原本的 console.log
       const redirectResult = await googleAuthService.checkRedirectResult()
-      console.log('🔍 Redirect 結果:', redirectResult)
+      logDebug('info', `🔍 Redirect 結果: ${JSON.stringify(redirectResult)}`) // 使用 logDebug
+      console.log('🔍 Redirect 結果:', redirectResult) // 保持原本的 console.log
 
       if (redirectResult.success && redirectResult.user) {
-        console.log('✅ Redirect 登入成功，自動啟動雲端同步')
+        logDebug('info', '✅ Redirect 登入成功，自動啟動雲端同步') // 使用 logDebug
+        console.log('✅ Redirect 登入成功，自動啟動雲端同步') // 保持原本的 console.log
         await switchToCloudMode() // 成功登入，切換到雲端模式並會載入雲端資料
       } else if (redirectResult.error) {
-        console.error('❌ Redirect 錯誤:', redirectResult.error)
-        // 可以在這裡處理用戶取消登入或其他錯誤
+        logDebug('error', `❌ Redirect 錯誤: ${redirectResult.error}`) // 使用 logDebug
+        console.error('❌ Redirect 錯誤:', redirectResult.error) // 保持原本的 console.error
       }
 
       // 監聽認證狀態變化
@@ -496,11 +511,16 @@ export function useDataSync(options: DataSyncOptions = {}) {
       // 只有當當前模式不是雲端模式時才載入本地資料
       // 因為如果 redirect 成功，switchToCloudMode() 已經載入雲端資料了
       if (!isOnlineMode.value) {
-        console.log('當前為本地模式，載入本地資料。')
+        logDebug('info', '當前為本地模式，載入本地資料。') // 使用 logDebug
+        console.log('當前為本地模式，載入本地資料。') // 保持原本的 console.log
         await loadItems()
       }
     } catch (error) {
       console.error('初始化失敗:', error)
+      logDebug(
+        'error',
+        `Initialize failed: ${error instanceof Error ? error.message : String(error)}`
+      ) // 使用 logDebug
     }
   }
 
