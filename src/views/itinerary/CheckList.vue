@@ -168,7 +168,7 @@
   <!-- 調試用 Console 顯示 -->
   <div v-if="debugLogs.length > 0" class="debug-console">
     <div class="debug-header">
-      <span>Debug Console v1.4</span>
+      <span>Debug Console v1.5</span>
       <button @click="clearDebugLogs" class="debug-clear">清除</button>
     </div>
     <div class="debug-content">
