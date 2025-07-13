@@ -3,12 +3,12 @@ import Home from '../views/Home.vue'
 import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
 import DropBlock from '../views/games/DropBlock.vue'
+import TakeMeTravel from '../views/games/TakeMeTravel.vue'
 import CheckList from '../views/itinerary/CheckList.vue'
 import Itinerary from '../views/itinerary/Itinerary.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel/TravelMap.vue'
 import TravelTrace from '../views/travel/TravelTrace.vue'
-import MiniGame from '../views/games/MiniGame.vue'
 
 const routes = [
   {
@@ -82,39 +82,33 @@ const routes = [
         }
       },
       {
-        path: 'minigame',
-        name: 'MiniGame',
-        component: MiniGame,
-        meta: {
-          title: '小遊戲',
-          showBreadcrumb: true,
-          breadcrumb: [{ text: '小遊戲', icon: '🎮' }]
-        }
-      },
-      {
-        path: 'minigame/foodwheel',
-        name: 'FoodWheel',
-        component: FoodWheel,
-        meta: {
-          title: '美食輪盤',
-          showBreadcrumb: true,
-          breadcrumb: [
-            { text: '小遊戲', icon: '🎮', path: '/minigame' },
-            { text: '美食輪盤', icon: '🍽️' }
-          ]
-        }
-      },
-      {
-        path: 'minigame/dropblock',
+        path: 'dropblock',
         name: 'DropBlock',
         component: DropBlock,
         meta: {
-          title: '方塊遊戲',
+          title: '從天而降',
           showBreadcrumb: true,
-          breadcrumb: [
-            { text: '小遊戲', icon: '🎮', path: '/minigame' },
-            { text: '方塊遊戲', icon: '🧊' }
-          ]
+          breadcrumb: [{ text: '從天而降', icon: '🧊' }]
+        }
+      },
+      {
+        path: 'foodwheel',
+        name: 'FoodWheel',
+        component: FoodWheel,
+        meta: {
+          title: '濟州島輪盤',
+          showBreadcrumb: true,
+          breadcrumb: [{ text: '濟州島輪盤', icon: '🍽️' }]
+        }
+      },
+      {
+        path: 'takemetravel',
+        name: 'TakeMeTravel',
+        component: TakeMeTravel,
+        meta: {
+          title: '帶我去旅行',
+          showBreadcrumb: true,
+          breadcrumb: [{ text: '帶我去旅行', icon: '📸' }]
         }
       }
     ]

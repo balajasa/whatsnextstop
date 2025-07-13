@@ -1,33 +1,37 @@
 // utils/photoUtils.ts
 // 貓咪拍照工具函式
 
-import type { PhotoOrientation, CatConfig, Position, CalculatedCatSize } from '../types/cat-photo'
-import { ORIENTATION_THRESHOLDS } from '../constants/catPhotoConfig'
+import type { CatConfig, Position, CalculatedCatSize } from '../types/cat-photo'
 
 /**
- * 偵測照片方向
+ * 偵測照片方向（只分直式和橫式）
  * @param canvas Canvas 元素
  * @returns 照片方向
  */
-export function detectPhotoOrientation(canvas: HTMLCanvasElement): PhotoOrientation {
+export function detectPhotoOrientation(canvas: HTMLCanvasElement): 'portrait' | 'landscape' {
   const aspectRatio = canvas.width / canvas.height
 
-  if (aspectRatio > ORIENTATION_THRESHOLDS.landscape) {
-    return 'landscape'
-  } else if (aspectRatio < ORIENTATION_THRESHOLDS.portrait) {
-    return 'portrait'
+  if (aspectRatio > 1.0) {
+    return 'landscape' // 寬高比 > 1.0 為橫式
   } else {
-    return 'square'
+    return 'portrait' // 寬高比 ≤ 1.0 為直式（包含方形）
   }
 }
 
 /**
- * 計算貓咪縮放後的尺寸
+ * 計算貓咪縮放後的尺寸和實際位置
  * @param catConfig 貓咪配置
- * @param position 位置配置
- * @returns 計算後的尺寸
+ * @param position 相對位置配置
+ * @param canvasWidth 畫布寬度
+ * @param canvasHeight 畫布高度
+ * @returns 計算後的尺寸和位置
  */
-export function calculateCatSize(catConfig: CatConfig, position: Position): CalculatedCatSize {
+export function calculateCatSizeAndPosition(
+  catConfig: CatConfig,
+  position: Position,
+  canvasWidth: number,
+  canvasHeight: number
+): CalculatedCatSize & { actualX: number; actualY: number } {
   const { width: originalWidth, height: originalHeight } = catConfig.originalSize
   const { maxWidth, maxHeight } = position
 
@@ -36,10 +40,19 @@ export function calculateCatSize(catConfig: CatConfig, position: Position): Calc
   const scaleY = maxHeight / originalHeight
   const scale = Math.min(scaleX, scaleY, 1) // 不放大，只縮小
 
+  const finalWidth = Math.round(originalWidth * scale)
+  const finalHeight = Math.round(originalHeight * scale)
+
+  // 計算實際像素位置（相對位置轉為絕對位置）
+  const actualX = Math.round(position.x * canvasWidth - finalWidth / 2) // 居中對齊
+  const actualY = Math.round(position.y * canvasHeight - finalHeight) // 底部對齊
+
   return {
-    width: Math.round(originalWidth * scale),
-    height: Math.round(originalHeight * scale),
-    scale
+    width: finalWidth,
+    height: finalHeight,
+    scale,
+    actualX: Math.max(0, Math.min(actualX, canvasWidth - finalWidth)), // 確保不超出邊界
+    actualY: Math.max(0, Math.min(actualY, canvasHeight - finalHeight))
   }
 }
 

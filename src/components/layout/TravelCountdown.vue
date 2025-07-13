@@ -2,7 +2,8 @@
   <div class="travel-countdown-widget">
     <!-- 元件標題 -->
     <div class="widget-title">
-      {{ store.config.title || `${store.config.countryFlag || '🏖️'} ${store.config.destination || '未知目的地'} 倒數！` }}
+      NEXT STOP {{ store.config.title || `${store.config.countryFlag || '🏖️'} ${store.config.destination || '未知目的地'}
+      倒數！` }}
     </div>
 
     <!-- 主要內容區域 -->
@@ -251,7 +252,7 @@ onUnmounted(() => {
   left: 20px
   background: $accent-color-2
   color: $text-white
-  padding: 8px 20px
+  padding: 8px 14px
   border-radius: 15px
   font-size: 18px
   font-weight: 600

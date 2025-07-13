@@ -211,8 +211,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@import '@/assets/sass/_mixins'
-@import '@/assets/sass/_variables'
+@use '@/styles/variables' as *
+@use '@/styles/mixins' as *
 
 .camera-page
   position: relative

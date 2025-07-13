@@ -6,8 +6,8 @@
 import { ref, computed } from 'vue'
 import { useCatPhotoStore } from '../../stores/catPhotoStore'
 import type { CatConfig, PhotoOrientation, CalculatedCatSize } from '../../types/cat-photo'
-import { FIXED_POSITIONS, SHARE_CONFIG } from '../../constants/catPhotoConfig'
-import { calculateCatSize, loadImage, canvasToBlob } from '../../utils/photoUtils'
+import { SHARE_CONFIG } from '../../constants/catPhotoConfig'
+import { calculateCatSizeAndPosition, loadImage, canvasToBlob } from '../../utils/photoUtils'
 
 export function useCatOverlay() {
   const store = useCatPhotoStore()
@@ -65,14 +65,28 @@ export function useCatOverlay() {
       // 載入貓咪圖片
       const catImg = await loadImage(cat.image)
 
-      // 獲取位置配置
-      const position = FIXED_POSITIONS[orientation]
+      // 獲取貓咪的位置配置
+      const position = cat.positions[orientation]
+      if (!position) {
+        throw new Error(`貓咪 ${cat.id} 缺少 ${orientation} 方向的位置配置`)
+      }
 
-      // 計算貓咪尺寸
-      const calculatedSize = calculateCatSize(cat, position)
+      // 計算貓咪尺寸和位置
+      const calculated = calculateCatSizeAndPosition(
+        cat,
+        position,
+        targetCanvas.width,
+        targetCanvas.height
+      )
 
       // 繪製貓咪
-      ctx.drawImage(catImg, position.x, position.y, calculatedSize.width, calculatedSize.height)
+      ctx.drawImage(
+        catImg,
+        calculated.actualX,
+        calculated.actualY,
+        calculated.width,
+        calculated.height
+      )
 
       lastProcessedPhoto.value = targetCanvas.toDataURL('image/jpeg', SHARE_CONFIG.quality)
 
@@ -226,29 +240,41 @@ export function useCatOverlay() {
    * 獲取貓咪在照片上的預覽位置
    */
   const getCatPreviewPosition = (
+    cat: CatConfig,
     orientation: PhotoOrientation,
     canvasWidth: number,
     canvasHeight: number
   ) => {
-    const position = FIXED_POSITIONS[orientation]
+    const position = cat.positions[orientation]
+    if (!position) {
+      console.warn(`Cat ${cat.id} missing position config for ${orientation}`)
+      return null
+    }
 
     return {
-      x: position.x,
-      y: position.y,
+      x: position.x * canvasWidth,
+      y: position.y * canvasHeight,
       maxWidth: position.maxWidth,
       maxHeight: position.maxHeight,
       // 計算相對位置（百分比）
-      relativeX: position.x / canvasWidth,
-      relativeY: position.y / canvasHeight
+      relativeX: position.x,
+      relativeY: position.y
     }
   }
 
   /**
    * 預覽貓咪尺寸
    */
-  const previewCatSize = (cat: CatConfig, orientation: PhotoOrientation): CalculatedCatSize => {
-    const position = FIXED_POSITIONS[orientation]
-    return calculateCatSize(cat, position)
+  const previewCatSize = (
+    cat: CatConfig,
+    orientation: PhotoOrientation,
+    canvasWidth: number,
+    canvasHeight: number
+  ): CalculatedCatSize | null => {
+    const position = cat.positions[orientation]
+    if (!position) return null
+
+    return calculateCatSizeAndPosition(cat, position, canvasWidth, canvasHeight)
   }
 
   /**
@@ -264,7 +290,7 @@ export function useCatOverlay() {
       if (!photo || !cat || !orientation) return false
 
       // 檢查位置配置
-      if (!FIXED_POSITIONS[orientation]) return false
+      if (!cat.positions || !cat.positions[orientation]) return false
 
       // 檢查貓咪尺寸配置
       if (!cat.originalSize || cat.originalSize.width <= 0 || cat.originalSize.height <= 0) {

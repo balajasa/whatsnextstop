@@ -2,6 +2,7 @@
   <div class="game-wrapper">
     <!-- 麵包屑 -->
     <BreadcrumbNav />
+
     <div class="game-container">
       <!-- A區小方塊 (body石頭) -->
       <div v-if="gameState.taskA" :class="[

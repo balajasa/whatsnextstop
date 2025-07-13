@@ -1,61 +1,47 @@
 <template>
   <div class="main-game">
     <div class="main-game-container">
-      <!-- 麵包屑 -->
-      <BreadcrumbNav />
-      <!-- 當沒有子路由時顯示選擇功能 -->
-      <template v-if="!$route.path.includes('/minigame/')">
-        <!-- 小遊戲區域 -->
-        <div class="games-section">
-          <div class="games-title">🎮 休閒小遊戲</div>
-          <div class="game-linklist">
-            <!-- <div class="nav-links">
-              <router-link to="/minigame/dropblock" class="nav-link">
-                <div class="link-card dropblock-card mini-card">
-                  <div class="card-icon">🧊</div>
-                  <div class="card-title">從天而降</div>
-                  <p>這次會出現什麼任務呢？</p>
-                  <div class="card-decoration"></div>
-                </div>
-              </router-link>
-            </div> -->
-            <!-- <div class="nav-links">
-              <router-link to="/minigame/foodwheel" class="nav-link">
-                <div class="link-card foodwheel-card mini-card">
-                  <div class="card-icon">🎪</div>
-                  <div class="card-title">美食轉輪</div>
-                  <p>讓轉輪決定今天吃什麼</p>
-                  <div class="card-decoration"></div>
-                </div>
-              </router-link>
-            </div> -->
-            <div class="nav-links">
-              <router-link to="/minigame/" class="nav-link">
-                <div class="link-card takemetravel-card mini-card">
-                  <div class="card-icon">📸</div>
-                  <div class="card-title">帶我去旅行</div>
-                  <p>記錄旅行的每一刻 Coming Soon...</p>
-                  <div class="card-decoration"></div>
-                </div>
-              </router-link>
-            </div>
+      <!-- 小遊戲區域 -->
+      <div class="games-section">
+        <div class="game-linklist">
+          <div class="nav-links">
+            <router-link to="/" class="nav-link">
+              <div class="link-card dropblock-card mini-card">
+                <div class="card-icon">🧊</div>
+                <div class="card-title">從天而降</div>
+                <p>天上會掉下來什麼呢？</p>
+                <p>Coming Soon...</p>
+                <div class="card-decoration"></div>
+              </div>
+            </router-link>
+          </div>
+          <div class="nav-links">
+            <router-link to="/" class="nav-link">
+              <div class="link-card foodwheel-card mini-card">
+                <div class="card-icon">🍽️</div>
+                <div class="card-title">濟州島輪盤</div>
+                <p>3 2 1...什麼時候停止呢？</p>
+                <p>Coming Soon...</p>
+                <div class="card-decoration"></div>
+              </div>
+            </router-link>
+          </div>
+          <div class="nav-links">
+            <router-link to="/" class="nav-link">
+              <div class="link-card takemetravel-card mini-card">
+                <div class="card-icon">📸</div>
+                <div class="card-title">帶我去旅行</div>
+                <p>記錄旅行的每一刻</p>
+                <p>Coming Soon...</p>
+                <div class="card-decoration"></div>
+              </div>
+            </router-link>
           </div>
         </div>
-      </template>
-
-      <!-- 子路由內容顯示區域 -->
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
+      </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
-</script>
 
 <style lang="sass" scoped>
 @use '@/styles/variables' as *
@@ -65,29 +51,20 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 // 主容器
 // ===================================
 .main-game
-  min-height: 100vh
+  // min-height: 100vh
   background: $bg-primary
 
 .main-game-container
-  max-width: 900px
-  margin: 0 auto
-  padding: 0 $spacing-md
+  width: 100%
+  // max-width: 900px
+  // margin: 0 auto
 
-  @include tablet
-    padding: 0l $spacing-lg
-
-  @include desktop
-    padding: 0l $spacing-xl
-
-  @include large-desktop
-    max-width: 1000px
 
 // ===================================
 // 遊戲區域
 // ===================================
 .games-section
   text-align: center
-  padding-top: $spacing-md
 
 .games-title
   font-size: 28px
@@ -119,15 +96,15 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
   display: grid
   grid-template-columns: 1fr
   gap: $spacing-lg
-  max-width: 800px
+  // max-width: 800px
   margin: 0 auto
 
   @include tablet
-    grid-template-columns: repeat(2, 1fr)
+    grid-template-columns: repeat(3, 1fr)
     gap: $spacing-xl
 
-  @include desktop
-    grid-template-columns: repeat(3, 1fr)
+  // @include desktop
+  //   grid-template-columns: repeat(3, 1fr)
 
 // ===================================
 // 導航鏈接
@@ -234,7 +211,7 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
   &:hover
     box-shadow: 0 12px 40px rgba(56, 178, 172, 0.2)
 
-// 美食轉輪卡片
+// 濟州島輪盤卡片
 .foodwheel-card
   border-left: 4px solid $accent-color-2
 

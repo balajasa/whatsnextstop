@@ -1,12 +1,11 @@
 <template>
   <div class="foodwheel-container">
     <!-- 麵包屑 -->
-    <div class="nav-area">
-      <BreadcrumbNav />
-    </div>
+    <BreadcrumbNav />
+
     <!-- 遊戲區域 -->
     <div class="game-wrapper">
-      <div class="game-title">美食轉輪</div>
+      <div class="game-title">濟州島輪盤</div>
       <div class="game-content">
         <div class="game-area">
           <div class="wheel-wrapper">

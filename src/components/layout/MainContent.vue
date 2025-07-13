@@ -1,10 +1,6 @@
 <template>
   <div class="main-content-wrapper">
     <div class="schedule-section">
-      <!-- <div class="schedule-header">
-        <p class="schedule-subtitle">精心規劃的{{ totalDays }}天完美旅程</p>
-      </div> -->
-
       <!-- 封面圖片區域 -->
       <div class="cover-image-area">
         <swiper :modules="modules" :slides-per-view="1" :space-between="0" :loop="true"
@@ -30,7 +26,7 @@
 
       <!-- 每日行程區域 -->
       <div class="daily-schedule-section">
-        <h3 class="daily-title">📅 每日詳細行程</h3>
+        <div class="section-title">📅 每日詳細行程</div>
         <div class="daily-grid">
           <div class="daily-block">
 
@@ -41,6 +37,13 @@
         </div>
       </div>
 
+      <!-- 小遊戲區域 -->
+      <div class="minigame-section">
+        <div class="section-title">🎮 休閒小遊戲</div>
+        <MiniGame />
+      </div>
+
+      <!-- 倒數計時區域 -->
       <div class="countdown-section">
         <TravelCountdown />
       </div>
@@ -54,6 +57,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Ref } from 'vue'
 import TravelCountdown from '@/components/layout/TravelCountdown.vue'
+import MiniGame from '@/views/games/MiniGame.vue'
 
 // 導入 Swiper 組件和模組
 import { Swiper, SwiperSlide } from 'swiper/vue'
@@ -397,13 +401,7 @@ const navigateToDay = (day: number): void => {
 .notice-card .schedule-icon
   color: $timeline-recent
 
-// ===================================
-// 每日行程區域
-// ===================================
-.daily-schedule-section
-  margin-top: $spacing-2xl
-
-.daily-title
+.section-title
   margin-bottom: $spacing-lg
   color: $text-primary
   text-align: center
@@ -413,6 +411,12 @@ const navigateToDay = (day: number): void => {
   @include tablet
     text-align: left
     font-size: 24px
+
+// ===================================
+// 每日行程區域
+// ===================================
+.daily-schedule-section
+  margin-top: $spacing-2xl
 
 .daily-grid
   width: 100%
@@ -461,6 +465,13 @@ const navigateToDay = (day: number): void => {
 
   &:nth-child(3n)
     background: linear-gradient(135deg, #EC4899, #DB2777) // 3的倍數：調暗的粉紅
+
+
+// ===================================
+// 小遊戲元件
+// ===================================
+.minigame-section
+  margin-top: $spacing-2xl
 
 // ===================================
 // 倒數元件

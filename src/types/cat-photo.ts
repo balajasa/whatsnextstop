@@ -10,6 +10,10 @@ export interface CatConfig {
     width: number
     height: number
   }
+  positions: {
+    portrait: Position
+    landscape: Position
+  }
 }
 
 // 位置配置介面
@@ -20,8 +24,8 @@ export interface Position {
   maxHeight: number
 }
 
-// 照片方向
-export type PhotoOrientation = 'portrait' | 'landscape' | 'square'
+// 照片方向（移除 square）
+export type PhotoOrientation = 'portrait' | 'landscape'
 
 // 頁面狀態
 export type PageState = 'main' | 'camera' | 'result' | 'final'
@@ -37,12 +41,11 @@ export interface CatPhotoState {
   error: string | null
 }
 
-// 固定位置配置
-export interface FixedPositions {
-  portrait: Position
-  landscape: Position
-  square: Position
-}
+// 固定位置配置（已移除，現在每隻貓咪有自己的位置）
+// export interface FixedPositions {
+//   portrait: Position
+//   landscape: Position
+// }
 
 // 計算後的貓咪尺寸
 export interface CalculatedCatSize {

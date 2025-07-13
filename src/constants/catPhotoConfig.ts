@@ -1,29 +1,11 @@
 // constants/catPhotoConfig.ts
 // 貓咪拍照功能基礎配置
 
-import type { FixedPositions, CameraConfig, CatConfig } from '../types/cat-photo'
-
-// 固定位置配置
-export const FIXED_POSITIONS: FixedPositions = {
-  portrait: {
-    x: 80,
-    y: 350,
-    maxWidth: 120,
-    maxHeight: 140
-  },
-  landscape: {
-    x: 250,
-    y: 120,
-    maxWidth: 120,
-    maxHeight: 140
-  },
-  square: {
-    x: 150,
-    y: 200,
-    maxWidth: 120,
-    maxHeight: 140
-  }
-}
+import type { CameraConfig, CatConfig } from '../types/cat-photo'
+import eatCatImg from '@/assets/img/minigame/cat/eat_cat.png'
+import lazyCatImg from '@/assets/img/minigame/cat/lazy_cat.png'
+import travelCatImg from '@/assets/img/minigame/cat/travel_cat.png'
+import wallCatImg from '@/assets/img/minigame/cat/wall_cat.png'
 
 // 相機配置
 export const CAMERA_CONFIG: CameraConfig = {
@@ -40,42 +22,58 @@ export const ORIENTATION_THRESHOLDS = {
   portrait: 0.8 // 寬高比 < 0.8 為直式
 }
 
-// 預設的貓咪配置../../assets/img src\assets\img\minigame\cat\cat_eat.png
+// 預設的貓咪配置 - 每隻貓咪有不同方向的位置設定
 export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
   {
     id: 'eat_cat',
     name: '吃飯貓貓',
-    image: '../../assets/img/cat/eat_cat.png',
+    image: eatCatImg,
     originalSize: {
       width: 500,
       height: 513
+    },
+    positions: {
+      portrait: { x: 0.5, y: 0.9, maxWidth: 120, maxHeight: 140 }, // 正中間、最下方
+      landscape: { x: 0.15, y: 0.9, maxWidth: 120, maxHeight: 140 } // 左下角
     }
   },
   {
     id: 'lazy_cat',
     name: '趴著貓貓',
-    image: '../../assets/img/cat/lazy_cat.png',
+    image: lazyCatImg,
     originalSize: {
       width: 500,
       height: 332
+    },
+    positions: {
+      portrait: { x: 0.85, y: 0.9, maxWidth: 110, maxHeight: 130 }, // 右下角
+      landscape: { x: 0.85, y: 0.85, maxWidth: 110, maxHeight: 130 } // 右下方
     }
   },
   {
     id: 'travel_cat',
     name: '旅行貓貓',
-    image: '../../assets/img/cat/travel_cat.png',
+    image: travelCatImg,
     originalSize: {
       width: 325,
       height: 500
+    },
+    positions: {
+      portrait: { x: 0.15, y: 0.9, maxWidth: 100, maxHeight: 150 }, // 左下角
+      landscape: { x: 0.15, y: 0.9, maxWidth: 100, maxHeight: 150 } // 左下角
     }
   },
   {
     id: 'wall_cat',
     name: '門邊貓貓',
-    image: '../../assets/img/cat/wall_cat.png',
+    image: wallCatImg,
     originalSize: {
       width: 297,
       height: 500
+    },
+    positions: {
+      portrait: { x: 0.85, y: 0.9, maxWidth: 90, maxHeight: 150 }, // 右下角
+      landscape: { x: 0.85, y: 0.9, maxWidth: 90, maxHeight: 150 } // 右下角
     }
   }
 ]

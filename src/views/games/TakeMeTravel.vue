@@ -1,5 +1,7 @@
 <template>
   <div class="take-me-travel">
+    <!-- 麵包屑 -->
+    <BreadcrumbNav />
     <!-- 錯誤提示 -->
     <div v-if="error" class="error-toast" @click="clearError">
       {{ error }}
@@ -52,17 +54,62 @@
           </div>
         </div>
 
-        <!-- 可用貓咪預覽 -->
-        <div class="cats-preview-section">
-          <h3 class="preview-title">可能遇到的貓咪</h3>
-          <div class="cats-grid">
-            <div v-for="cat in availableCats" :key="cat.id" class="cat-preview-item">
-              <div class="cat-image-placeholder">
-                🐱
+        <!-- 開發模式：位置測試 -->
+        <div v-if="isDevelopmentMode" style="margin-top: 20px; padding: 20px; border: 2px dashed #ccc;">
+          <h3>🧪 開發模式 - 貓咪位置測試</h3>
+
+          <div style="display: flex; gap: 30px; justify-content: center; align-items: flex-start; margin: 20px 0">
+            <!-- 直式照片 -->
+            <div style="text-align: center;">
+              <h4>直式照片 (Portrait)</h4>
+              <div
+                style="position: relative; width: 200px; height: 350px; border: 1px solid #999; background: #f5f5f5; overflow: hidden;">
+                <img v-for="cat in testCats" :key="cat.id + '-portrait'" :src="cat.image"
+                  :style="getCatImageStyle('portrait', cat)" style="position: absolute; object-fit: contain;" />
               </div>
-              <span class="cat-name">{{ cat.name }}</span>
+              <p style="font-size: 12px; margin: 5px 0;">{{ getCurrentCatPortraitInfo() }}</p>
+            </div>
+
+            <!-- 橫式照片 -->
+            <div style="text-align: center;">
+              <h4>橫式照片 (Landscape)</h4>
+              <div
+                style="position: relative; width: 300px; height: 200px; border: 1px solid #999; background: #f5f5f5; overflow: hidden;">
+                <img v-for="cat in testCats" :key="cat.id + '-landscape'" :src="cat.image"
+                  :style="getCatImageStyle('landscape', cat)" style="position: absolute; object-fit: contain;" />
+              </div>
+              <p style="font-size: 12px; margin: 5px 0;">{{ getCurrentCatLandscapeInfo() }}</p>
             </div>
           </div>
+
+          <!-- 貓咪切換控制 -->
+          <div style="text-align: center; margin: 20px 0;">
+            <p style="margin-bottom: 10px;">當前顯示: <strong>{{ currentTestCat.name }}</strong></p>
+            <button v-for="cat in testCats" :key="cat.id" @click="setCurrentTestCat(cat)" :style="{
+              background: currentTestCat.id === cat.id ? '#91B500' : '#e0e0e0',
+              color: currentTestCat.id === cat.id ? 'white' : 'black',
+              border: 'none',
+              padding: '6px 12px',
+              margin: '0 5px',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }">
+              {{ cat.name }}
+            </button>
+          </div>
+
+          <button @click="toggleDevelopmentMode"
+            style="background: #91B500; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            隱藏開發模式
+          </button>
+        </div>
+
+        <!-- 開發模式切換按鈕 -->
+        <div v-else style="margin-top: 20px; text-align: center;">
+          <button @click="toggleDevelopmentMode"
+            style="background: #91B500; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            🧪 顯示開發模式 (測試貓咪位置)
+          </button>
         </div>
       </div>
 
@@ -86,11 +133,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useCatPhoto } from '../../composables/cat-photo/useCatPhoto'
 import CameraPage from '@/components/cat-photo/CameraPage.vue'
 import ResultPage from '@/components/cat-photo/ResultPage.vue'
 import FinalResultPage from '@/components/cat-photo/FinalResultPage.vue'
+import { DEFAULT_CAT_CONFIGS } from '../../constants/catPhotoConfig'
+import { calculateCatSizeAndPosition } from '../../utils/photoUtils'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
 // ===================================
 // Composables
@@ -101,9 +151,6 @@ const {
   currentPage,
   isLoading,
   error,
-  selectedCat,
-  availableCats,
-
   // 方法
   startPhotoProcess,
   returnToMain,
@@ -115,6 +162,73 @@ const {
   resetApp,
   navigateToPage
 } = useCatPhoto()
+
+// ===================================
+// 開發模式
+// ===================================
+
+const isDevelopmentMode = ref(false)
+const currentTestCat = ref(DEFAULT_CAT_CONFIGS[0])
+
+// 測試用的貓咪清單
+const testCats = computed(() => DEFAULT_CAT_CONFIGS)
+
+const toggleDevelopmentMode = () => {
+  isDevelopmentMode.value = !isDevelopmentMode.value
+}
+
+const setCurrentTestCat = (cat: any) => {
+  currentTestCat.value = cat
+}
+
+// 獲取貓咪圖片樣式（使用新的位置配置）
+const getCatImageStyle = (orientation: 'portrait' | 'landscape', cat: any) => {
+  // 只顯示當前選中的貓咪
+  if (cat.id !== currentTestCat.value.id) {
+    return { display: 'none' }
+  }
+
+  // 使用貓咪自己的位置配置
+  if (!cat.positions || !cat.positions[orientation]) {
+    console.warn(`Cat ${cat.id} missing position config for ${orientation}`)
+    return { display: 'none' }
+  }
+
+  const position = cat.positions[orientation]
+  const containerWidth = orientation === 'portrait' ? 200 : 300
+  const containerHeight = orientation === 'portrait' ? 350 : 200
+
+  // 計算實際像素位置和尺寸
+  const calculated = calculateCatSizeAndPosition(
+    cat,
+    position,
+    containerWidth,
+    containerHeight
+  )
+
+  return {
+    left: `${calculated.actualX}px`,
+    top: `${calculated.actualY}px`,
+    width: `${calculated.width}px`,
+    height: `${calculated.height}px`,
+    display: 'block'
+  }
+}
+
+// 獲取當前貓咪的位置資訊
+const getCurrentCatPortraitInfo = () => {
+  const cat = currentTestCat.value
+  if (!cat.positions?.portrait) return '無位置配置'
+  const pos = cat.positions.portrait
+  return `位置: (${(pos.x * 100).toFixed(0)}%, ${(pos.y * 100).toFixed(0)}%) | 最大: ${pos.maxWidth}×${pos.maxHeight}`
+}
+
+const getCurrentCatLandscapeInfo = () => {
+  const cat = currentTestCat.value
+  if (!cat.positions?.landscape) return '無位置配置'
+  const pos = cat.positions.landscape
+  return `位置: (${(pos.x * 100).toFixed(0)}%, ${(pos.y * 100).toFixed(0)}%) | 最大: ${pos.maxWidth}×${pos.maxHeight}`
+}
 
 // ===================================
 // 主頁面事件處理
@@ -251,8 +365,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@import '@/assets/sass/_mixins'
-@import '@/assets/sass/_variables'
+@use '@/styles/mixins' as *
+@use '@/styles/variables' as *
 
 .take-me-travel
   position: relative
@@ -460,54 +574,6 @@ onUnmounted(() => {
   color: $warm-text-light
   line-height: 1.4
   margin: 0
-
-// ===================================
-// 貓咪預覽
-// ===================================
-
-.cats-preview-section
-  width: 100%
-  text-align: center
-
-.preview-title
-  font-size: 18px
-  font-weight: 600
-  color: $text-dark
-  margin-bottom: $spacing-lg
-
-.cats-grid
-  display: grid
-  grid-template-columns: repeat(2, 1fr)
-  gap: $spacing-md
-
-  @include tablet
-    grid-template-columns: repeat(4, 1fr)
-
-.cat-preview-item
-  @include flex-center
-  flex-direction: column
-  padding: $spacing-md
-  background: rgba(white, 0.6)
-  border-radius: $border-radius-md
-  transition: all 0.2s ease
-
-  &:hover
-    background: rgba(white, 0.8)
-    transform: translateY(-2px)
-
-.cat-image-placeholder
-  width: 40px
-  height: 40px
-  @include flex-center
-  font-size: 24px
-  background: $almond-cream
-  border-radius: 50%
-  margin-bottom: $spacing-xs
-
-.cat-name
-  font-size: 12px
-  color: $text-dark
-  font-weight: 500
 
 // ===================================
 // 底部資訊
