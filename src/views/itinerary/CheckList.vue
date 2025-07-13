@@ -168,7 +168,7 @@
   <!-- 調試用 Console 顯示 -->
   <div v-if="debugLogs.length > 0" class="debug-console">
     <div class="debug-header">
-      <span>Debug Console v1.5</span>
+      <span>Debug Console v1.6</span>
       <button @click="clearDebugLogs" class="debug-clear">清除</button>
     </div>
     <div class="debug-content">
@@ -187,6 +187,8 @@ import { useDialog } from '../../composables/useDialog'
 import type { CheckItem, FilterType, FilterOption } from '../../types/check-item'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import { useRedirectStore, setGlobalDebugLogger } from '../../stores/redirectStore'
+import { auth } from '../../firebase'
+import { getRedirectResult } from 'firebase/auth'
 
 let popupCheckInterval: number | null = null
 let windowFocusHandler: (() => void) | null = null
@@ -777,13 +779,28 @@ setGlobalDebugLogger(addDebugLog)
 onMounted(async () => {
   addDebugLog('info', 'DEBUG-ONMOUNTED: About to call dataSync.initialize()')
   console.log('DEBUG-ONMOUNTED: About to call dataSync.initialize() (Console)')
+  // 在組件載入時立即檢查
+  console.log('=== Firebase 狀態檢查 ===')
+  console.log('當前用戶:', auth.currentUser)
+  console.log('Auth 物件:', auth)
+  console.log('當前域名:', window.location.hostname)
+  console.log('Firebase authDomain:', import.meta.env.VITE_FIREBASE_AUTH_DOMAIN)
+
+  // 手動檢查 getRedirectResult
+  try {
+    console.log('開始檢查 getRedirectResult...')
+    const redirectResult = await getRedirectResult(auth)
+    console.log('手動 getRedirectResult 結果:', redirectResult)
+  } catch (error) {
+    console.log('getRedirectResult 錯誤:', error)
+  }
 
   // 🔥 新增：先用 Store 檢查 redirect
   const redirectStore = useRedirectStore()
   addDebugLog('info', 'STORE-TEST: 開始用 Store 檢查 redirect')
 
   try {
-    const storeResult = await redirectStore.checkRedirectResult()
+    const storeResult = await redirectStore.checkAuthState()
     addDebugLog('info', `STORE-TEST: Store 結果 = ${JSON.stringify(storeResult)}`)
 
     // 如果 Store 有結果，直接處理
