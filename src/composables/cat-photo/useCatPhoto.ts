@@ -17,7 +17,6 @@ export function useCatPhoto() {
   const error = computed(() => store.error)
   const hasPhoto = computed(() => store.hasPhoto)
   const hasCat = computed(() => store.hasCat)
-  const selectedCat = computed(() => store.selectedCat)
   const photoOrientation = computed(() => store.photoOrientation)
   const canProceedToResult = computed(() => store.canProceedToResult)
   const availableCats = computed(() => store.availableCats) // 加上這個
@@ -235,7 +234,6 @@ export function useCatPhoto() {
     error,
     hasPhoto,
     hasCat,
-    selectedCat,
     photoOrientation,
     canProceedToResult,
     availableCats, // 加上這個

@@ -25,22 +25,6 @@
           <p>準備分享中...</p>
         </div>
       </div>
-
-      <!-- 照片資訊 -->
-      <div v-if="selectedCat" class="photo-info">
-        <div class="info-item">
-          <span class="info-label">遇到的貓咪：</span>
-          <span class="info-value">{{ selectedCat.name }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">拍攝時間：</span>
-          <span class="info-value">{{ getCurrentTime() }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">照片方向：</span>
-          <span class="info-value">{{ getOrientationText() }}</span>
-        </div>
-      </div>
     </div>
 
     <!-- 分享按鈕區域 -->
@@ -111,8 +95,6 @@ const successMessage = ref('')
 // ===================================
 
 const {
-  selectedCat,
-  photoOrientation,
   showError
 } = useCatPhoto()
 
@@ -201,33 +183,6 @@ const updateFinalDisplay = async () => {
   } catch (error) {
     console.error('Update final display failed:', error)
     showError('載入照片失敗')
-  }
-}
-
-/**
- * 獲取當前時間
- */
-const getCurrentTime = (): string => {
-  return new Date().toLocaleString('zh-TW', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-/**
- * 獲取方向文字
- */
-const getOrientationText = (): string => {
-  switch (photoOrientation.value) {
-    case 'portrait':
-      return '直式照片'
-    case 'landscape':
-      return '橫式照片'
-    default:
-      return '未知'
   }
 }
 
@@ -367,37 +322,6 @@ onMounted(async () => {
   p
     color: $text-dark
     font-weight: 500
-
-// ===================================
-// 照片資訊
-// ===================================
-
-.photo-info
-  background: rgba(white, 0.8)
-  padding: $spacing-lg
-  border-radius: $border-radius-lg
-  width: 100%
-  max-width: 400px
-  backdrop-filter: blur(10px)
-
-.info-item
-  display: flex
-  justify-content: space-between
-  align-items: center
-  padding: $spacing-xs 0
-
-  &:not(:last-child)
-    border-bottom: 1px solid rgba($warm-border, 0.5)
-
-.info-label
-  font-size: 14px
-  color: $warm-text-light
-  font-weight: 500
-
-.info-value
-  font-size: 14px
-  color: $text-dark
-  font-weight: 600
 
 // ===================================
 // 分享區域
