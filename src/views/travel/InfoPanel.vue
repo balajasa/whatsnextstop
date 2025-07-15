@@ -360,7 +360,6 @@ const handleClose = () => {
   height: 50px
   border: 2px dashed
   border-radius: 6px
-  font-family: 'Courier New', monospace
   font-weight: bold
   transform: rotate(-3deg)
   transition: all 0.3s ease

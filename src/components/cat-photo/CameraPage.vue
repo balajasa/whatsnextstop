@@ -1,19 +1,13 @@
 <template>
   <div class="camera-page">
-    <!-- 關閉按鈕 -->
+    <!-- 關閉按鈕（使用自定義圖片） -->
     <button class="close-button" @click="handleClose">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path
-          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-      </svg>
+      <div class="close-icon"></div>
     </button>
 
-    <!-- 切換鏡頭按鈕 -->
+    <!-- 切換鏡頭按鈕（使用自定義圖片） -->
     <button class="switch-camera-button" @click="handleSwitchCamera" :disabled="!isCameraReady || isLoading">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path
-          d="M16 7h2.5l-3-3h-5L8 7h2.5L9 9H7c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V11c0-1.1-.9-2-2-2h-2l-1-2zm-3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-      </svg>
+      <div class="sync-icon"></div>
     </button>
 
     <!-- 相機容器 -->
@@ -79,7 +73,6 @@ const isCapturing = ref(false)
 const {
   isInitializing,
   isCameraReady,
-  isCameraActive,
   isLoading,
   initializeCamera,
   stopCamera,
@@ -215,60 +208,102 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 .camera-page
-  position: relative
-  width: 100%
-  height: 100vh
-  background: black
+  position: fixed !important
+  top: 0 !important
+  left: 0 !important
+  z-index: $z-camera
   overflow: hidden
+  width: 100vw !important
+  height: 100dvh !important
+  background: $camera-text
 
 // ===================================
-// 控制按鈕
+// 控制按鈕（使用自定義圖片）
 // ===================================
 
 .close-button,
 .switch-camera-button
+  @include flex-center
   position: absolute
-  width: 44px
-  height: 44px
-  background: rgba(0, 0, 0, 0.6)
-  color: white
+  z-index: 10
+  // Mobile First - 小尺寸按鈕
+  width: 40px
+  height: 40px
   border: none
   border-radius: 50%
-  @include flex-center
+  background: $camera-bg-overlay
   cursor: pointer
-  z-index: 10
   transition: all 0.2s ease
   backdrop-filter: blur(4px)
 
-  svg
-    width: 24px
-    height: 24px
-
   &:hover:not(:disabled)
-    background: rgba(0, 0, 0, 0.8)
+    background: rgba(120, 124, 123, 0.9)
     transform: scale(1.1)
 
   &:disabled
     opacity: 0.5
     cursor: not-allowed
 
+  // Tablet - 中等尺寸
+  @include tablet
+    width: 44px
+    height: 44px
+
 .close-button
-  top: 20px
-  left: 20px
+  // Mobile First - 較小間距
+  top: 15px
+  left: 15px
+
+  @include tablet
+    top: 20px
+    left: 20px
 
 .switch-camera-button
-  top: 20px
-  right: 20px
+  // Mobile First - 較小間距
+  top: 15px
+  right: 15px
+
+  @include tablet
+    top: 20px
+    right: 20px
+
+// 關閉按鈕圖片
+.close-icon
+  // Mobile First - 較小圖示
+  width: 20px
+  height: 20px
+  background-image: url('@/assets/img/icon/close_w.png')
+  background-position: center
+  background-size: contain
+  background-repeat: no-repeat
+
+  @include tablet
+    width: 24px
+    height: 24px
+
+// 同步/旋轉按鈕圖片
+.sync-icon
+  // Mobile First - 較小圖示
+  width: 20px
+  height: 20px
+  background-image: url('@/assets/img/icon/cached.png')
+  background-position: center
+  background-size: contain
+  background-repeat: no-repeat
+
+  @include tablet
+    width: 24px
+    height: 24px
 
 // ===================================
 // 相機容器
 // ===================================
 
 .camera-container
+  @include flex-center
   position: relative
   width: 100%
   height: 100%
-  @include flex-center
 
 .camera-video
   width: 100%
@@ -283,28 +318,41 @@ onUnmounted(() => {
 .camera-error
   @include absolute-center
   @include flex-center
-  flex-direction: column
-  color: white
   z-index: 5
+  flex-direction: column
+  color: $camera-text-white
 
 .loading-spinner
-  width: 40px
-  height: 40px
-  border: 3px solid rgba(white, 0.2)
-  border-top: 3px solid white
+  margin-bottom: $spacing-md
+  // Mobile First - 較小 spinner
+  width: 36px
+  height: 36px
+  border: 3px solid rgba(255, 255, 255, 0.2)
+  border-top: 3px solid $camera-text-white
   border-radius: 50%
   animation: spin 1s linear infinite
-  margin-bottom: $spacing-md
+
+  @include tablet
+    width: 40px
+    height: 40px
 
 .error-icon
-  font-size: 48px
   margin-bottom: $spacing-md
+  // Mobile First - 較小圖示
+  font-size: 40px
+
+  @include tablet
+    font-size: 48px
 
 .camera-loading p,
 .camera-error p
-  font-size: 16px
-  text-align: center
   margin: 0
+  text-align: center
+  // Mobile First - 較小文字
+  font-size: 14px
+
+  @include tablet
+    font-size: 16px
 
 // ===================================
 // 拍照指引
@@ -314,30 +362,35 @@ onUnmounted(() => {
   position: absolute
   top: 50%
   left: 50%
+  z-index: 3
   transform: translate(-50%, -50%)
   pointer-events: none
-  z-index: 3
 
 .guide-frame
-  width: 200px
-  height: 200px
-  border: 2px solid rgba(white, 0.6)
-  border-radius: $border-radius-lg
   margin-bottom: $spacing-md
+  // Mobile First - 較小框架
+  width: 180px
+  height: 180px
+  border: 2px solid rgba(255, 255, 255, 0.6)
+  border-radius: $border-radius-lg
 
   @include tablet
     width: 250px
     height: 250px
 
 .guide-text
-  color: white
-  text-align: center
-  font-size: 14px
-  background: rgba(0, 0, 0, 0.6)
+  margin: 0
   padding: $spacing-sm $spacing-md
   border-radius: $border-radius-md
+  background: $camera-bg-modal
+  color: $camera-text-white
+  text-align: center
+  // Mobile First - 較小文字
+  font-size: 13px
   backdrop-filter: blur(4px)
-  margin: 0
+
+  @include tablet
+    font-size: 14px
 
 // ===================================
 // 拍照按鈕
@@ -345,44 +398,46 @@ onUnmounted(() => {
 
 .capture-button
   position: absolute
-  bottom: 40px
-  left: 50%
-  transform: translateX(-50%)
-  width: 80px
-  height: 80px
-  background: rgba(white, 0.9)
-  border: 4px solid rgba(white, 0.7)
-  border-radius: 50%
-  cursor: pointer
-  transition: all 0.2s ease
   z-index: 10
-
-  @include tablet
-    width: 90px
-    height: 90px
-    bottom: 50px
-
-  &:hover:not(:disabled)
-    transform: translateX(-50%) scale(1.05)
-    background: white
-
-  &:active:not(:disabled)
-    transform: translateX(-50%) scale(0.95)
+  // Mobile First - 較小按鈕
+  width: 70px
+  height: 70px
+  border: 4px solid rgba(255, 255, 255, 0.7)
+  border-radius: 50%
+  background: rgba(255, 255, 255, 0.9)
+  cursor: pointer
 
   &:disabled
     opacity: 0.6
     cursor: not-allowed
 
+  // 直立模式：底部中央
+  bottom: calc(30px + env(safe-area-inset-bottom, 20px))
+  left: 50%
+  transform: translateX(-50%)
+
+  @include tablet
+    bottom: 50px
+    width: 90px
+    height: 90px
+
+  // 橫向模式：右側中央
+  @media (orientation: landscape)
+    top: 50%
+    right: calc(40px + env(safe-area-inset-right, 20px))
+    bottom: auto
+    left: auto
+    transform: translateY(-50%)
+
 .capture-inner
   width: 100%
   height: 100%
-  background: white
   border-radius: 50%
+  background: $camera-text-white
   transition: all 0.3s ease
 
   &.capturing
-    background: $caramel-orange
-    animation: pulse 0.8s ease-in-out
+    background: $camera-accent
 
 // ===================================
 // 隱藏元素
@@ -395,48 +450,9 @@ onUnmounted(() => {
 // 動畫
 // ===================================
 
-@keyframes spin
-  from
-    transform: rotate(0deg)
-  to
-    transform: rotate(360deg)
-
-@keyframes pulse
-  0%, 100%
-    transform: scale(1)
-  50%
-    transform: scale(0.8)
-
-// ===================================
-// 響應式調整
-// ===================================
-
-@include mobile-only
-  .close-button,
-  .switch-camera-button
-    width: 40px
-    height: 40px
-    top: 15px
-
-    svg
-      width: 20px
-      height: 20px
-
-  .close-button
-    left: 15px
-
-  .switch-camera-button
-    right: 15px
-
-  .capture-button
-    width: 70px
-    height: 70px
-    bottom: 30px
-
-  .guide-frame
-    width: 180px
-    height: 180px
-
-  .guide-text
-    font-size: 13px
+// @keyframes spin
+//   from
+//     transform: rotate(0deg)
+//   to
+//     transform: rotate(360deg)
 </style>

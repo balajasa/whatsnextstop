@@ -16,7 +16,7 @@
       }
     },
     {
-      "files": ["*.scss", "*.css"],
+      "files": ["*.sass", "*.scss", "*.css"],
       "options": {
         "printWidth": 120,
         "parser": "scss"

@@ -235,8 +235,8 @@ onUnmounted(() => {
 
 
   @include desktop
-    padding: $spacing-xl
-    padding-bottom: $spacing-2xl
+    padding: 20px 32px 48px 32px
+    // padding-bottom: $spacing-2xl
 
 
 // Footer 樣式

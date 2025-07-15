@@ -1,12 +1,11 @@
 // ===================================
-// _variables.scss
+// _variables.sass
 // 旅遊足跡網站配色主題 + 佈局變數
 // ===================================
 
 // 全域字型設定
 :root
   font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif !important
-
 
 // -----------------------------------
 // 主要配色
@@ -96,6 +95,75 @@ $caramel-soft: #F4E4D6       // 很淺的焦糖色
 $warm-white: #FFF8F0         // 溫暖白
 $text-dark: #2D3748          // 深色文字
 
+// ===================================
+// 日式攝影師中性配色系統
+// ===================================
+// 主要拍照應用配色
+$camera-neutral: #787C7B      // 鉛 (NAMARI) - 主介面中性灰
+$camera-pure: #FFFFFB         // 胡粉 (GOFUN) - 純白背景
+$camera-accent: #EC6D51       // 洗朱 (ARAISYU) - 強調色（按鈕）
+$camera-muted: #9B9B82        // 素鼠 (SUNEZUMI) - 輔助灰色
+$camera-text: #1C1C1C         // 墨 (SUMI) - 深色文字
+
+// 拍照應用文字色系
+$camera-text-primary: #1C1C1C           // 主文字：深墨色
+$camera-text-secondary: rgba(28, 28, 28, 0.8)  // 次要文字：80%透明度
+$camera-text-light: rgba(28, 28, 28, 0.6)      // 淺色文字：60%透明度
+$camera-text-muted: rgba(28, 28, 28, 0.4)      // 淡化文字：40%透明度
+$camera-text-white: #ffffff              // 白色文字
+
+// 拍照應用背景色系
+$camera-bg-primary: #FFFFFB              // 主背景：胡粉純白
+$camera-bg-secondary: rgba(255, 255, 251, 0.95)  // 次要背景：95%透明度
+$camera-bg-overlay: rgba(120, 124, 123, 0.8)     // 覆蓋層：中性灰80%
+$camera-bg-modal: rgba(0, 0, 0, 0.6)     // 模態背景：黑色60%
+
+// 拍照應用邊框色系
+$camera-border-primary: rgba(155, 155, 130, 0.3)   // 主邊框：素鼠30%
+$camera-border-light: rgba(155, 155, 130, 0.2)     // 淺邊框：素鼠20%
+$camera-border-muted: rgba(155, 155, 130, 0.1)     // 極淺邊框：素鼠10%
+$camera-border-focus: rgba(236, 109, 81, 0.5)      // 焦點邊框：洗朱50%
+
+// 拍照應用按鈕色系
+$camera-btn-primary: #EC6D51             // 主按鈕：洗朱
+$camera-btn-primary-hover: rgba(236, 109, 81, 0.9)  // 主按鈕hover：90%
+$camera-btn-primary-active: rgba(236, 109, 81, 0.8) // 主按鈕active：80%
+$camera-btn-secondary: #787C7B           // 次要按鈕：鉛
+$camera-btn-secondary-hover: rgba(120, 124, 123, 0.9)  // 次要按鈕hover
+$camera-btn-disabled: rgba(120, 124, 123, 0.4)     // 禁用按鈕：40%
+
+// 拍照應用陰影色系
+$camera-shadow-light: rgba(28, 28, 28, 0.1)   // 淺陰影
+$camera-shadow-medium: rgba(28, 28, 28, 0.15)  // 中陰影
+$camera-shadow-strong: rgba(28, 28, 28, 0.2)   // 深陰影
+$camera-shadow-accent: rgba(236, 109, 81, 0.3) // 強調色陰影
+
+// 拍照應用狀態色系
+$camera-success: #91B500                 // 成功：抹茶綠（與主應用呼應）
+$camera-success-bg: rgba(145, 181, 0, 0.1)     // 成功背景
+$camera-error: #D32F2F                   // 錯誤：紅色
+$camera-error-bg: rgba(211, 47, 47, 0.1)       // 錯誤背景
+$camera-warning: #F57C00                 // 警告：橘色
+$camera-warning-bg: rgba(245, 124, 0, 0.1)     // 警告背景
+
+// ===================================
+// 日本傳統色系 - 美食轉輪專用
+// ===================================
+// 濟州島料理轉輪 8 色
+$jp-mizu: #89CDF1        // 水 - 海鮮鍋
+$jp-sakura: #FEEEED      // 桜 - 櫻花蝦
+$jp-moegi: #8FB069       // 萌黄 - 海苔湯
+$jp-kurenai: #DC143C     // 紅 - 辣炒年糕
+$jp-yamabuki: #E6B422    // 山吹 - 柑橘雞
+$jp-murasaki: #884898    // 紫 - 紫薯麵
+$jp-asagi: #4F94CD       // 浅葱 - 烤魚
+$jp-kohaku: #CA6924      // 琥珀 - 味噌湯
+
+// 美食轉輪主題色
+$foodwheel-primary: $jp-murasaki     // 主色：紫
+$foodwheel-accent: $jp-yamabuki      // 強調色：山吹
+$foodwheel-secondary: $jp-asagi      // 次要色：浅葱
+$foodwheel-danger: $jp-kurenai       // 危險色：紅
 
 // -----------------------------------
 // 佈局變數
@@ -138,3 +206,4 @@ $z-mapoverlay: 800
 $z-overlay: 998
 $z-modal: 990
 $z-sidebar: 1000
+$z-camera: 9999 // 拍照相機層級（最高）

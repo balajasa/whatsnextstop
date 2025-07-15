@@ -31,27 +31,26 @@
       <!-- A區地圖 -->
       <div v-if="gameState.aExpanded"
         :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]">
-        <img src="@/assets/img/minigame/map/reel_map_a.png" alt="地圖A" />
         <div class="overlay-text">{{ gameState.taskA }}</div>
       </div>
 
       <!-- B區地圖 -->
       <div v-if="gameState.bExpanded"
         :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]">
-        <img src="@/assets/img/minigame/map/reel_map_b.png" alt="地圖B" />
         <div class="overlay-text">{{ gameState.taskB }}</div>
       </div>
 
       <!-- 最終完整地圖 -->
       <div v-if="gameState.showFinalMap" :class="['final-map', { show: gameState.finalMapShow }]">
-        <!-- 關閉按鈕放在最前面 -->
         <div class="result-map">
+          <!-- 關閉按鈕和文字覆蓋層都在 result-map 內部 -->
           <button @click="closeFinalMap" class="close-btn">✕</button>
-        </div>
-        <div class="overlay-text">
-          <div class="task-item">{{ gameState.taskA }}</div>
-          <div class="task-item">＋</div>
-          <div class="task-item">{{ gameState.taskB }}</div>
+
+          <div class="overlay-text">
+            <div class="task-item">{{ gameState.taskA }}</div>
+            <div class="task-item">＋</div>
+            <div class="task-item">{{ gameState.taskB }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -220,17 +219,15 @@ defineExpose({
 // 主容器
 // ===================================
 .game-wrapper
-  min-height: 100vh
+  // min-height: calc(100vh - 100px)
   background: $bg-primary
-  padding-top: $header-height
-  padding: $spacing-lg
+  padding: $spacing-md
 
   @include tablet
-    padding-top: calc(#{$header-height} + #{$spacing-lg})
-    padding: $spacing-xl
+    padding: $spacing-lg
 
   @include desktop
-    padding: $spacing-2xl
+    padding: $spacing-xl $spacing-2xl
 
 // ===================================
 // 提示訊息
@@ -238,161 +235,197 @@ defineExpose({
 .info
   color: $text-secondary
   text-align: center
-  margin-bottom: $spacing-lg
-  font-size: 16px
+  margin-bottom: $spacing-md
+  font-size: 14px
   font-weight: 500
   background: $bg-card
-  padding: $spacing-md $spacing-lg
+  padding: $spacing-sm $spacing-md
   border-radius: $border-radius-md
   box-shadow: 0 4px 12px $shadow-light
 
   @include tablet
+    font-size: 16px
+    padding: $spacing-md $spacing-lg
+    margin-bottom: $spacing-lg
+
+  @include desktop
     font-size: 18px
     padding: $spacing-lg $spacing-xl
     margin-bottom: $spacing-xl
 
 // ===================================
-// 遊戲容器響應式化
+// 遊戲容器
 // ===================================
 .game-container
-  width: 90vw
-  max-width: 800px
+  width: 100%
+  max-width: none
   aspect-ratio: 4/3
-  margin: 0 auto $spacing-xl
+  margin: 0 auto $spacing-lg
   background-image: url('@/assets/img/bg/game_bg.jpg')
   background-size: cover
   background-position: center
   background-repeat: no-repeat
-  border-radius: $border-radius-lg
+  border-radius: $border-radius-md
   position: relative
   border: 2px solid $border-primary
   box-shadow: 0 8px 32px $shadow-medium
-  margin-top: $spacing-md
 
   @include tablet
-    width: 80vw
-    max-width: 700px
+    width: 85vw
+    max-width: 600px
+    border-radius: $border-radius-lg
+    margin-bottom: $spacing-xl
 
   @include desktop
-    width: 70vw
+    width: 75vw
     max-width: 800px
+    margin-bottom: $spacing-2xl
+
+  @include large-desktop
+    width: 60vw
+    max-width: 900px
 
 // ===================================
-// 方塊樣式 (百分比定位)
+// 方塊樣式
 // ===================================
 .cube
-  width: 12.5%
+  width: 16%
   aspect-ratio: 1
   position: absolute
   border-radius: $border-radius-sm
   transition: top 0.3s cubic-bezier(0.8, 0, 1, 1)
   left: 50%
-  margin-left: -6.25%
+  margin-left: -8%
 
   &.cube-a
-    top: -15%
+    top: -18%
 
   &.cube-b
-    top: -30%
+    top: -36%
 
   &.cube-a.dropping
-    top: 80%
+    top: 78%
 
   &.cube-b.dropping
-    top: 63%
+    top: 57%
 
   &.expanded
     opacity: 1
 
+  @include tablet
+    width: 14%
+    margin-left: -7%
+
+    &.cube-a
+      top: -16%
+
+    &.cube-b
+      top: -32%
+
+    &.cube-a.dropping
+      top: 80%
+
+    &.cube-b.dropping
+      top: 61.5%
+
 // ===================================
-// 地圖結果樣式
+// 地圖結果樣式 - Mobile First
 // ===================================
 .map-result
   position: absolute
-  width: 35%
-  height: 30%
+  width: 42%
+  height: 42%
   transition: all 1s ease
-  top: 25%
+  top: 20%
+  background-size: cover
+  background-position: center
+  background-repeat: no-repeat
 
-  img
-    width: 100%
-    height: 100%
-    object-fit: cover
-    border-radius: $border-radius-sm
-    box-shadow: 0 4px 12px $shadow-medium
+  // 地圖 A 背景圖片
+  &.map-a
+    background-image: url('@/assets/img/minigame/map/reel_map_a.png')
+    left: 4%
+
+    &.merging
+      transform: translateX(50%) scale(0.8)
+      opacity: 0
+
+  // 地圖 B 背景圖片
+  &.map-b
+    background-image: url('@/assets/img/minigame/map/reel_map_b.png')
+    right: 4%
+
+    &.merging
+      transform: translateX(-50%) scale(0.8)
+      opacity: 0
 
   .overlay-text
     position: absolute
     top: 50%
     left: 50%
     transform: translate(-50%, -50%)
-    background: rgba(255, 255, 255, 0.95)
-    padding: $spacing-sm $spacing-md
-    border-radius: $border-radius-sm
     font-weight: 600
     text-align: center
     color: $text-primary
-    max-width: 85%
-    box-shadow: 0 2px 8px $shadow-light
-    backdrop-filter: blur(5px)
+    min-width: 110px
+    width: 100%
+    font-size: 14px
 
-    @include mobile-only
-      font-size: 12px
-      padding: $spacing-xs $spacing-sm
+  @include tablet
+    width: 38%
+    height: 32%
+    top: 22%
 
-  &.map-a
-    left: 8%
+    &.map-a
+      left: 6%
 
-    &.merging
-      transform: translateX(50%) scale(0.8)
-      opacity: 0
+    &.map-b
+      right: 6%
 
-  &.map-b
-    right: 8%
+    .overlay-text
+      font-size: 16px
+      padding: $spacing-sm $spacing-md
 
-    &.merging
-      transform: translateX(-50%) scale(0.8)
-      opacity: 0
+  @include desktop
+    width: 35%
+    height: 30%
+    top: 25%
+
+    &.map-a
+      left: 8%
+
+    &.map-b
+      right: 8%
+
+    .overlay-text
+      font-size: 16px
+      padding: $spacing-sm $spacing-md
 
 // ===================================
 // 最終地圖樣式
 // ===================================
 .final-map
   position: absolute
-  top: 25%
+  top: 10%
   left: 50%
   transform: translate(-50%, 0) scale(0)
-  width: 50%
-  height: 40%
+  width: 90%
+  height: 65%
   transition: all 1.2s ease
-  z-index: 100
-
-  .overlay-text
-    position: absolute
-    top: 50%
-    left: 50%
-    transform: translate(-50%, -50%)
-    padding: $spacing-md $spacing-lg
-    border-radius: $border-radius-md
-    text-align: center
-    color: $text-primary
-    max-width: 90%
-    background: rgba(255, 255, 255, 0.95)
-    backdrop-filter: blur(10px)
-    box-shadow: 0 8px 25px $shadow-medium
-
-    .task-item
-      font-size: 14px
-      line-height: 1.6
-      margin: $spacing-xs 0
-      font-weight: 500
-
-      @include tablet
-        font-size: 16px
-        margin: $spacing-sm 0
+  z-index: 5
 
   &.show
     transform: translate(-50%, 0) scale(1)
+
+  @include tablet
+    top: 15%
+    width: 70%
+    height: 50%
+
+  @include desktop
+    top: 25%
+    width: 50%
+    height: 40%
 
 .result-map
   width: 100%
@@ -401,80 +434,134 @@ defineExpose({
   background-size: contain
   background-repeat: no-repeat
   border-radius: $border-radius-md
-  box-shadow: 0 8px 25px $shadow-strong
+  position: relative
+
+  .overlay-text
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    border-radius: $border-radius-md
+    text-align: center
+    color: $text-primary
+    max-width: 100%
+
+    .task-item
+      font-size: 14px
+      font-weight: 600
+
+    @include tablet
+      .task-item
+        font-size: 16px
 
 .close-btn
   position: absolute
-  top: 8%
-  right: 8%
-  width: 32px
-  height: 32px
+  top: 4%
+  right: 16%
+  width: 30px
+  height: 30px
   border: none
   border-radius: 50%
   background: $accent-color-2
   color: $text-white
-  font-size: 16px
+  font-size: 14px
   font-weight: bold
   cursor: pointer
-  transition: all 0.2s ease
   box-shadow: 0 4px 12px rgba(230, 168, 107, 0.4)
   @include flex-center
 
-  &:hover
-    background: #d4941b
-    transform: scale(1.1)
-    box-shadow: 0 6px 20px rgba(230, 168, 107, 0.6)
+  @include tablet
+    top: 6%
+    right: 16%
+    width: 36px
+    height: 36px
+    font-size: 18px
 
-  &:active
-    transform: scale(0.95)
+  @include desktop
+    top: 6%
+    right: 12%
+    width: 32px
+    height: 32px
+    font-size: 16px
 
 // ===================================
-// 按鈕群組響應式
+// 按鈕群組
 // ===================================
 .controls
   display: grid
-  grid-template-columns: repeat(2, 1fr)
-  gap: $spacing-md
-  max-width: 600px
+  gap: $spacing-sm
+  max-width: 100%
   width: 100%
   margin: 0 auto
+  grid-template-columns: 1fr 1fr
+  grid-template-areas: "btn-a btn-b" "btn-result btn-result" "btn-reset btn-reset"
+
+  // 為每個按鈕指定區域
+  .btn:nth-child(1)
+    grid-area: btn-a
+
+  .btn:nth-child(2)
+    grid-area: btn-b
+
+  .btn:nth-child(3)
+    grid-area: btn-result
+
+  .btn:nth-child(4)
+    grid-area: btn-reset
 
   @include tablet
+    grid-template-columns: repeat(2, 1fr)
+    grid-template-areas: "btn-a btn-b" "btn-result btn-reset"
+    gap: $spacing-md
+    max-width: 500px
+
+  @include desktop
     grid-template-columns: repeat(4, 1fr)
+    grid-template-areas: "btn-a btn-b btn-result btn-reset"
     gap: $spacing-lg
     max-width: 800px
 
-  @include mobile-only
-    grid-template-columns: 1fr
-    gap: $spacing-sm
-    max-width: 300px
+  @include large-desktop
+    max-width: 900px
 
 // ===================================
-// 按鈕樣式統一
+// 按鈕樣式
 // ===================================
 .btn
-  padding: $spacing-md $spacing-lg
+  padding: $spacing-md
   border: none
   border-radius: $border-radius-md
-  font-size: 15px
+  font-size: 14px
   font-weight: 500
   cursor: pointer
   transition: all 0.3s ease
   @include card-hover
-  min-height: 50px
+  min-height: 48px
+  max-height: 48px
   display: flex
   align-items: center
   justify-content: center
   text-align: center
+  line-height: 1.2
+  white-space: nowrap
+  overflow: hidden
 
   @include tablet
+    padding: $spacing-md $spacing-lg
+    font-size: 15px
+    min-height: 52px
+    max-height: 52px
+
+  @include desktop
     padding: $spacing-lg $spacing-xl
     font-size: 16px
     min-height: 56px
+    max-height: 56px
 
   &.btn-primary
     background: $accent-color-2
     color: $text-white
+    margin-top: 6px
     box-shadow: 0 4px 12px rgba(230, 168, 107, 0.3)
 
     &:hover:not(:disabled)
@@ -495,55 +582,4 @@ defineExpose({
       &:hover
         transform: none
         box-shadow: 0 2px 8px $shadow-light
-
-// ===================================
-// 響應式調整
-// ===================================
-
-// 手機版特殊處理
-@include mobile-only
-  .game-wrapper
-    padding: $spacing-md
-
-  .game-container
-    width: 95vw
-    margin-bottom: $spacing-lg
-
-  .cube
-    width: 15%
-    margin-left: -7.5%
-
-  .map-result
-    width: 40%
-    height: 25%
-
-    .overlay-text
-      font-size: 11px
-      padding: 4px 8px
-
-  .final-map
-    width: 65%
-    height: 35%
-
-    .overlay-text .task-item
-      font-size: 12px
-
-  .close-btn
-    width: 28px
-    height: 28px
-    font-size: 14px
-
-// 平板版調整
-@include tablet-only
-  .cube
-    width: 13%
-    margin-left: -6.5%
-
-// 大桌面版優化
-@include large-desktop
-  .game-container
-    width: 60vw
-
-  .controls
-    max-width: 900px
 </style>

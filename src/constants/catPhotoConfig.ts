@@ -10,9 +10,9 @@ import wallCatImg from '@/assets/img/minigame/cat/wall_cat.png'
 // 相機配置
 export const CAMERA_CONFIG: CameraConfig = {
   video: {
-    facingMode: 'environment', // 預設使用後鏡頭
-    width: { ideal: 1280 },
-    height: { ideal: 720 }
+    facingMode: 'environment',
+    width: { max: 2048 }, // 不超過 2K
+    height: { max: 1536 } // 避免過度耗能
   }
 }
 
@@ -22,7 +22,7 @@ export const ORIENTATION_THRESHOLDS = {
   portrait: 0.8 // 寬高比 < 0.8 為直式
 }
 
-// 預設的貓咪配置 - 每隻貓咪有不同方向的位置設定
+// 預設的貓咪配置
 export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
   {
     id: 'eat_cat',
@@ -33,12 +33,12 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
       height: 513
     },
     positions: {
-      portrait: { x: 0.5, y: 0.9, maxWidth: 120, maxHeight: 140 }, // 正中間、最下方
-      landscape: { x: 0.15, y: 0.9, maxWidth: 120, maxHeight: 140 } // 左下角
+      portrait: { x: 0.25, y: 1.0, maxWidth: 500, maxHeight: 513 },
+      landscape: { x: 0.05, y: 1.0, maxWidth: 500, maxHeight: 513 }
     }
   },
   {
-    id: 'lazy_cat',
+    id: 'sleep_cat',
     name: '趴著貓貓',
     image: lazyCatImg,
     originalSize: {
@@ -46,8 +46,8 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
       height: 332
     },
     positions: {
-      portrait: { x: 0.85, y: 0.9, maxWidth: 110, maxHeight: 130 }, // 右下角
-      landscape: { x: 0.85, y: 0.85, maxWidth: 110, maxHeight: 130 } // 右下方
+      portrait: { x: 0.75, y: 1.0, maxWidth: 500, maxHeight: 332 },
+      landscape: { x: 0.75, y: 1.0, maxWidth: 500, maxHeight: 332 }
     }
   },
   {
@@ -59,8 +59,8 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
       height: 500
     },
     positions: {
-      portrait: { x: 0.15, y: 0.9, maxWidth: 100, maxHeight: 150 }, // 左下角
-      landscape: { x: 0.15, y: 0.9, maxWidth: 100, maxHeight: 150 } // 左下角
+      portrait: { x: 0.03, y: 1.0, maxWidth: 325, maxHeight: 500 },
+      landscape: { x: 0.05, y: 1.0, maxWidth: 325, maxHeight: 500 }
     }
   },
   {
@@ -72,16 +72,27 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
       height: 500
     },
     positions: {
-      portrait: { x: 0.85, y: 0.9, maxWidth: 90, maxHeight: 150 }, // 右下角
-      landscape: { x: 0.85, y: 0.9, maxWidth: 90, maxHeight: 150 } // 右下角
+      portrait: { x: 1.0, y: 1.0, maxWidth: 297, maxHeight: 500 },
+      landscape: { x: 1.0, y: 1.0, maxWidth: 297, maxHeight: 500 }
+    }
+  },
+  {
+    id: 'lazy_cat',
+    name: '躺著貓貓',
+    image: lazyCatImg,
+    originalSize: {
+      width: 500,
+      height: 378
+    },
+    positions: {
+      portrait: { x: 0.05, y: 0.25, maxWidth: 500, maxHeight: 378 },
+      landscape: { x: 1.0, y: 0.8, maxWidth: 500, maxHeight: 378 }
     }
   }
 ]
 
 // 分享配置
 export const SHARE_CONFIG = {
-  title: '我的隨機貓咪照片',
-  text: '看看我遇到了什麼貓咪！',
   filename: 'cat-photo.jpg',
   quality: 0.9
 }

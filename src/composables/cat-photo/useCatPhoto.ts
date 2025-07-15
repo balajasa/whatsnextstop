@@ -177,53 +177,6 @@ export function useCatPhoto() {
   })
 
   // ===================================
-  // 工具方法
-  // ===================================
-
-  /**
-   * 格式化貓咪名稱顯示
-   */
-  const formatCatName = (catName?: string) => {
-    return catName ? `遇到了${catName}！` : '等待貓咪出現...'
-  }
-
-  /**
-   * 獲取頁面標題
-   */
-  const getPageTitle = () => {
-    switch (currentPage.value) {
-      case 'main':
-        return '隨機貓咪拍照'
-      case 'camera':
-        return '拍攝照片'
-      case 'result':
-        return '預覽結果'
-      case 'final':
-        return '完成作品'
-      default:
-        return '貓咪拍照'
-    }
-  }
-
-  /**
-   * 獲取當前步驟描述
-   */
-  const getCurrentStepDescription = () => {
-    switch (currentPage.value) {
-      case 'main':
-        return '點擊開始你的貓咪冒險'
-      case 'camera':
-        return '拍攝一張照片，讓貓咪加入'
-      case 'result':
-        return '調整你的貓咪照片'
-      case 'final':
-        return '分享你的作品給朋友'
-      default:
-        return ''
-    }
-  }
-
-  // ===================================
   // 返回 API
   // ===================================
 
@@ -236,30 +189,21 @@ export function useCatPhoto() {
     hasCat,
     photoOrientation,
     canProceedToResult,
-    availableCats, // 加上這個
-
+    availableCats,
     // 頁面導航
     navigateToPage,
     returnToMain,
     startPhotoProcess,
     completePhoto,
-
     // 貓咪相關
     selectRandomCat,
     changeCat,
     addRandomCatToPhoto,
-
     // 錯誤處理
     clearError,
     showError,
-
     // 初始化
     initializeApp,
     resetApp,
-
-    // 工具方法
-    formatCatName,
-    getPageTitle,
-    getCurrentStepDescription
   }
 }

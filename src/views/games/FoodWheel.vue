@@ -5,27 +5,30 @@
 
     <!-- 遊戲區域 -->
     <div class="game-wrapper">
-      <div class="game-title">濟州島輪盤</div>
       <div class="game-content">
-        <div class="game-area">
-          <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
-            <div class="wheel" ref="wheelRef">
-              <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item"
-                :style="getWheelItemStyle(index)">
-                <span>{{ item }}</span>
+        <div class="game-bg">
+          <div class="result-display" :class="{ 'show': result }">今天吃：🍴 {{ result }} 🍴</div>
+          <div class="game-area">
+            <!-- wheel -->
+            <div class="wheel-wrapper">
+              <div class="wheel-pointer"></div>
+              <div class="wheel" ref="wheelRef">
+                <div v-for="(item, index) in wheelItems" :key="index" class="wheel-item"
+                  :style="getWheelItemStyle(index)">
+                  <span>{{ item }}</span>
+                </div>
+                <div class="wheel-center"></div>
               </div>
-              <div class="wheel-center"></div>
             </div>
+            <!-- spin -->
+            <button class="spin-button" @click="spinWheel" :disabled="isSpinning">
+              {{ isSpinning ? '轉動中...' : '開始轉動' }}
+            </button>
           </div>
-          <button class="spin-button" @click="spinWheel" :disabled="isSpinning">
-            {{ isSpinning ? '轉動中...' : '開始轉動' }}
-          </button>
-          <div v-if="result" class="result-display">今天就吃：{{ result }} 🌿</div>
         </div>
 
+
         <div class="control-panel">
-          <h2>設定選項</h2>
           <div class="input-group">
             <label>新增美食類型</label>
             <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem" />
@@ -52,6 +55,7 @@ import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
 const wheelRef: Ref<HTMLElement | null> = ref(null)
+const pawAnimated: Ref<boolean> = ref(false)
 const wheelItems: Ref<string[]> = ref([
   '中式料理',
   '日式料理',
@@ -66,16 +70,14 @@ const newItem: Ref<string> = ref('')
 const result: Ref<string> = ref('')
 
 const colors: string[] = [
-  '#FF6B6B', // 活潑珊瑚紅
-  '#4ECDC4', // 鮮豔青綠
-  '#45B7D1', // 明亮天藍
-  '#96CEB4', // 清新薄荷綠
-  '#FECA57', // 鮮豔金黃
-  '#FF9FF3', // 粉嫩紫紅
-  '#54A0FF', // 鮮豔藍色
-  '#5F27CD', // 深紫羅蘭
-  '#00D2D3', // 亮青色
-  '#FF9F43' // 活潑橙色
+  '#89CDF1', // 水 (MIZU) - 海鮮鍋
+  '#FEEEED', // 桜 (SAKURA) - 櫻花蝦
+  '#8FB069', // 萌黄 (MOEGI) - 海苔湯
+  '#DC143C', // 紅 (KURENAI) - 辣炒年糕
+  '#E6B422', // 山吹 (YAMABUKI) - 柑橘雞
+  '#884898', // 紫 (MURASAKI) - 紫薯麵
+  '#4F94CD', // 浅葱 (ASAGI) - 烤魚
+  '#CA6924'  // 琥珀 (KOHAKU) - 味噌湯
 ]
 
 const getWheelItemStyle = (index: number): Record<string, any> => {
@@ -119,6 +121,7 @@ const spinWheel = (): void => {
   if (isSpinning.value || !wheelRef.value) return
 
   isSpinning.value = true
+  pawAnimated.value = false
 
   // 確保順時針旋轉：至少5圈 + 隨機額外圈數
   const minRotation = 1800 // 5圈 (360° × 5)
@@ -138,7 +141,29 @@ const spinWheel = (): void => {
     rotationZ: targetRotation,
     duration: 4.5,
     ease: 'power2.out',
+    onUpdate: function () {
+      // 當動畫進度到 85% 時觸發貓爪拍擊
+      if (this.progress() > 0.4 && !pawAnimated.value) {
+        pawAnimated.value = true
+        gsap.to('.wheel-pointer', {
+          scale: 1.3,
+          y: 10, // 往下伸
+          duration: 0.1,
+          ease: 'power2.out',
+          onComplete: () => {
+            gsap.to('.wheel-pointer', {
+              scale: 1,
+              y: 0,
+              duration: 0.15,
+              delay: 0.1  // 稍微停留一下再縮回
+            })
+          }
+        })
+      }
+    },
     onComplete: () => {
+      // gsap.to('.wheel-pointer', { scale: 1, y: 0, duration: 0.2 })
+
       isSpinning.value = false
 
       // 計算最終停止的位置（0-360度範圍）
@@ -184,7 +209,7 @@ const removeItem = (index: number): void => {
 const updateWheel = (): void => {
   // 強制重新渲染轉輪
   wheelItems.value = [...wheelItems.value]
-  alert('轉輪已更新！🌿')
+  alert('轉輪已更新！')
 }
 </script>
 
@@ -198,17 +223,19 @@ const updateWheel = (): void => {
 .foodwheel-container
   min-height: 100vh
   background: $bg-primary
+  padding: $spacing-md
 
 .game-wrapper
-  max-width: 1100px
+  max-width: 100%
   margin: 0 auto
-  padding: $spacing-xl
+  // padding: $spacing-lg
   border: 1px solid $border-light
   border-radius: $border-radius-xl
   background: $bg-card
   box-shadow: 0 25px 50px $shadow-strong
 
   @include tablet
+    max-width: 800px
     padding: $spacing-xl
 
   @include desktop
@@ -220,99 +247,77 @@ const updateWheel = (): void => {
 // ===================================
 // 遊戲內容布局
 // ===================================
-
 .game-content
   display: flex
   flex-direction: column
-  margin-top: $spacing-md
+  // margin-top: $spacing-md
   border-radius: $border-radius-lg
-  background: linear-gradient(135deg, $accent-color-1, $accent-color-2)
+  background: linear-gradient(135deg, $jp-mizu, $jp-moegi)
   overflow: hidden
 
   @include desktop
     flex-direction: row
+
+.game-bg
+  width: 100%
+  background: url('@/assets/img/minigame/wheel/wheel_bg.png') center
+  background-repeat: no-repeat
+  // background-position: center
+  background-size: cover
 
 .game-area
   display: flex
   align-items: center
   flex-direction: column
   justify-content: center
-  padding: $spacing-xl
+  padding: $spacing-lg
   width: 100%
+  // margin-bottom: $spacing-lg
+  margin-top: 30px
 
   @include tablet
-    padding: $spacing-2xl
+    padding: $spacing-xl
+    margin-top: 0
+    margin-bottom: 0
+
+  @include desktop
+    margin-bottom: 0
 
 .control-panel
   overflow: hidden
-  padding: $spacing-xl
-  min-width: 330px
-  border-radius: 0 $border-radius-md $border-radius-md 0
+  padding: $spacing-lg
   background: rgba(255, 255, 255, 0.9)
   border: 1px solid rgba(255, 255, 255, 0.2)
   backdrop-filter: blur(10px)
+  border-radius: $border-radius-md
 
   @include tablet
-    padding: $spacing-2xl
+    padding: $spacing-xl
 
   @include desktop
     flex: 1
-    // min-width: 400px
-    padding: $spacing-lg $spacing-xl
+    min-width: 330px
+    border-radius: 0 $border-radius-md $border-radius-md 0
 
 // ===================================
-// 標題樣式
-// ===================================
-.game-title
-  text-align: center
-  font-size: 28px
-  font-weight: 600
-  color: $accent-color-2 // 保留橘色主題
-
-  @include tablet
-    font-size: 32px
-
-@keyframes sway
-  0%, 100%
-    transform: translateY(-50%) rotate(-5deg)
-
-  50%
-    transform: translateY(-55%) rotate(5deg)
-
-h2
-  margin-bottom: $spacing-lg
-  color: $text-primary
-  letter-spacing: 1px
-  font-weight: 500
-  font-size: 22px
-
-  @include tablet
-    font-size: 24px
-
-// ===================================
-// 轉輪樣式 (保持鮮豔色彩)
+// 轉輪樣式
 // ===================================
 .wheel-wrapper
   position: relative
   display: flex
   align-items: center
   justify-content: center
-  margin: 0 auto $spacing-2xl
-  width: 240px
-  height: 240px
-
-  @media (min-width: 375px)
-    width: 280px
-    height: 280px
-
-  @media (min-width: 480px)
-    width: 320px
-    height: 320px
+  // margin-left: auto
+  // margin-right: auto
+  margin-bottom: $spacing-xl
+  width: 280px
+  height: 280px
 
   @include tablet
     width: 360px
     height: 360px
-    margin-top: $spacing-xl
+    margin-top: $spacing-lg
+    margin-bottom: $spacing-2xl
 
   @include desktop
     width: 400px
@@ -320,19 +325,18 @@ h2
 
 .wheel
   position: relative
-  right: 6px
   overflow: hidden
   width: 100%
   height: 100%
-  border: 4px solid $primary-color
+  border: 4px solid $jp-kohaku
   border-radius: 50%
   background: $bg-card
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.9), 0 0 0 12px rgba(56, 178, 172, 0.2), inset 0 0 30px rgba(74, 85, 104, 0.05)
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.9), 0 0 0 12px rgba(202, 105, 36, 0.2), inset 0 0 30px rgba(74, 85, 104, 0.05)
   transform: rotate(0deg)
 
   @include tablet
-    border: 6px solid $primary-color
-    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.9), 0 0 0 16px rgba(56, 178, 172, 0.2), inset 0 0 40px rgba(74, 85, 104, 0.05)
+    border: 6px solid $jp-kohaku
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.9), 0 0 0 16px rgba(202, 105, 36, 0.2), inset 0 0 40px rgba(74, 85, 104, 0.05)
 
 .wheel-center
   position: absolute
@@ -343,19 +347,15 @@ h2
   height: 20px
   border: 3px solid $bg-card
   border-radius: 50%
-  background: $accent-color-2
-  box-shadow: 0 4px 15px rgba(230, 168, 107, 0.4)
+  background: $jp-yamabuki
+  box-shadow: 0 4px 15px rgba(230, 180, 34, 0.4)
   transform: translate(-50%, -50%)
-
-  @media (min-width: 375px)
-    width: 24px
-    height: 24px
 
   @include tablet
     width: 30px
     height: 30px
     border: 4px solid $bg-card
-    box-shadow: 0 6px 20px rgba(230, 168, 107, 0.4)
+    box-shadow: 0 6px 20px rgba(230, 180, 34, 0.4)
 
 .wheel-item
   display: flex
@@ -363,7 +363,6 @@ h2
   justify-content: center
   color: $text-primary
   font-weight: 500
-  font-size: 16px
 
   span
     position: absolute
@@ -372,24 +371,16 @@ h2
     width: 65px
     color: $text-primary
     text-align: center
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8)
-    letter-spacing: 0.5px
-    font-weight: 600
-    font-size: 11px
+    // text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8)
+    // letter-spacing: 0.5px
+    // font-weight: 600
+    font-size: 14px
     line-height: 1.3
     transform: translate(-50%, -50%) rotate(var(--text-rotation))
 
-    @media (min-width: 375px)
-      width: 75px
-      font-size: 12px
-
-    @media (min-width: 480px)
-      width: 85px
-      font-size: 13px
-
     @include tablet
       width: 95px
-      font-size: 15px
+      font-size: 16px
       line-height: 1.4
 
     @include desktop
@@ -398,122 +389,83 @@ h2
 
 .wheel-pointer
   position: absolute
-  top: -18px
+  top: -20px
   left: 50%
   z-index: 15
-  width: 0
-  height: 0
-  border-top: 24px solid $accent-color-2
-  border-right: 12px solid transparent
-  border-left: 12px solid transparent
-  filter: drop-shadow(0 3px 8px rgba(230, 168, 107, 0.5))
+  width: 40px
+  height: 40px
+  background: url('@/assets/img/minigame/icon/paw_w.png')
+  background-size: contain
+  background-repeat: no-repeat
+  background-position: center
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3))
   transform: translateX(-50%)
 
-  @media (min-width: 375px)
-    top: -20px
-    border-top: 28px solid $accent-color-2
-    border-right: 14px solid transparent
-    border-left: 14px solid transparent
-
-  @media (min-width: 480px)
-    top: -22px
-    border-top: 32px solid $accent-color-2
-    border-right: 16px solid transparent
-    border-left: 16px solid transparent
-
   @include tablet
-    top: -25px
-    border-top: 36px solid $accent-color-2
-    border-right: 18px solid transparent
-    border-left: 18px solid transparent
+    top: -40px
+    width: 50px
+    height: 50px
 
   @include desktop
-    top: -28px
-    border-top: 40px solid $accent-color-2
-    border-right: 20px solid transparent
-    border-left: 20px solid transparent
+    top: -45px
+    width: 55px
+    height: 55px
 
   &::after
     position: absolute
-    top: -20px
+    top: 50%
     left: 50%
-    content: '⭐'
-    font-size: 14px
-    transform: translateX(-50%)
+    content: ''
+    transform: translate(-50%, -50%)
     animation: pulse 2s ease-in-out infinite
-
-    @media (min-width: 375px)
-      top: -22px
-      font-size: 15px
-
-    @media (min-width: 480px)
-      top: -25px
-      font-size: 16px
-
-    @include tablet
-      top: -30px
-      font-size: 17px
-
-    @include desktop
-      top: -35px
-      font-size: 18px
 
 @keyframes pulse
   0%, 100%
     opacity: 1
-    transform: translateX(-50%) scale(1)
+    transform: translate(-50%, -50%) scale(1)
 
   50%
-    opacity: 0.7
-    transform: translateX(-50%) scale(1.1)
+    opacity: 0.8
+    transform: translate(-50%, -50%) scale(1.1)
 
 // ===================================
 // 按鈕樣式
 // ===================================
 .spin-button
-  position: relative
   overflow: hidden
-  padding: $spacing-lg $spacing-2xl
-  border: none
+  padding: $spacing-md $spacing-xl
+  margin-top: 12px
+  // border: 3px solid #E65100
   border-radius: $border-radius-md
-  background: $accent-color-2
-  box-shadow: 0 12px 35px rgba(230, 168, 107, 0.3)
-  color: $text-white
+  background: #FF7043
+  box-shadow: 0 12px 35px rgba(230, 81, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(230, 81, 0, 0.8)
+  color: #FFFFFF
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3)
   letter-spacing: 1px
-  font-weight: 600
-  font-size: 18px
+  font-weight: 800
+  font-size: 16px
   cursor: pointer
   transition: all 0.3s ease
 
-  @include mobile-only
-    padding: $spacing-md $spacing-xl
-    font-size: 16px
-
-  &::before
-    position: absolute
-    top: 0
-    left: -100%
-    width: 100%
-    height: 100%
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent)
-    content: ''
-    transition: left 0.6s
-
-  &:hover::before
-    left: 100%
+  @include tablet
+    padding: $spacing-lg $spacing-2xl
+    font-size: 18px
 
   &:hover:not(:disabled)
-    background: #d4941b
-    box-shadow: 0 18px 40px rgba(230, 168, 107, 0.4)
+    background: #FF5722
+    border-color: #D84315
+    box-shadow: 0 18px 40px rgba(230, 81, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(216, 67, 21, 0.8)
     transform: translateY(-3px)
 
   &:active
+    background: #F4511E
     transform: translateY(-1px)
 
   &:disabled
-    background: $state-muted
-    box-shadow: 0 6px 15px $shadow-light
-    color: $text-white
+    background: #E5E5E5
+    border-color: #CCCCCC
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1)
+    color: #999999
     cursor: not-allowed
     transform: none
 
@@ -521,24 +473,34 @@ h2
 // 結果顯示
 // ===================================
 .result-display
-  margin-top: $spacing-xl
-  padding: $spacing-lg $spacing-xl
-  min-height: 40px
-  border: 2px solid rgba(56, 178, 172, 0.3)
-  border-radius: $border-radius-md
-  background: linear-gradient(135deg, rgba(56, 178, 172, 0.15), rgba(230, 168, 107, 0.15))
-  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.2)
-  color: $text-primary
+  visibility: hidden
+  position: relative
+  margin: $spacing-lg auto $spacing-xl
+  padding: 16px
+  width: 100%
+  // max-width: 400px
+  // min-height: 60px
+  border: 3px solid #8B4513
+  border-radius: 16px
+  background: $almond-soft
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(139, 69, 19, 0.1)
+  color: #2D1810
   text-align: center
-  letter-spacing: 1px
-  font-weight: 600
-  font-size: 24px
-  animation: fadeIn 0.6s ease-out
-  backdrop-filter: blur(10px)
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8)
+  letter-spacing: 0.5px
+  font-weight: 800
+  font-size: 18px
 
-  @include mobile-only
+  @include tablet
+    margin: 24px auto
+    padding: 24px
+    max-width: 500px
+    min-height: 70px
     font-size: 20px
-    padding: $spacing-md $spacing-lg
+
+  &.show
+    visibility: visible
+    animation: fadeIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)
 
 @keyframes fadeIn
   from
@@ -555,32 +517,18 @@ h2
 .input-group
   margin-bottom: $spacing-lg
 
-  @include desktop
-    display: flex
-    flex-direction: column
-    gap: $spacing-sm
-
   label
     display: block
-    margin-bottom: $spacing-md
+    margin-bottom: $spacing-sm
     color: $text-secondary
     letter-spacing: 0.5px
     font-weight: 500
     font-size: 16px
 
-    @include desktop
-      margin-bottom: $spacing-sm
-
-  .input-row
-    @include desktop
-      display: flex
-      gap: $spacing-md
-      align-items: flex-end
-
   input
     box-sizing: border-box
     margin-bottom: $spacing-md
-    padding: $spacing-md $spacing-lg
+    padding: 8px
     width: 100%
     border: 2px solid $border-primary
     border-radius: $border-radius-sm
@@ -591,30 +539,19 @@ h2
     transition: all 0.3s ease
     backdrop-filter: blur(5px)
 
-    @include desktop
-      flex: 1
-      margin-bottom: 0
-
     &:focus
       outline: none
-      border-color: $accent-color-2
+      border-color: $jp-yamabuki
       background: $bg-card
-      box-shadow: 0 0 0 3px rgba(230, 168, 107, 0.15)
+      box-shadow: 0 0 0 3px rgba(230, 180, 34, 0.15)
 
     &::placeholder
       color: $text-light
 
-  .add-button
-    @include desktop
-      flex-shrink: 0
-      width: auto
-      min-width: 120px
-
 .items-list
   overflow-y: auto
   margin-top: $spacing-lg
-  padding-right: $spacing-sm
-  max-height: 320px
+  max-height: 260px
 
   @include desktop
     display: grid
@@ -625,21 +562,21 @@ h2
 .list-item
   display: flex
   align-items: center
-  margin-bottom: $spacing-md
+  margin-bottom: 12px
   padding: $spacing-md $spacing-lg
-  border: 2px solid rgba(230, 168, 107, 0.2)
+  border: 2px solid rgba(230, 180, 34, 0.2)
   border-radius: $border-radius-md
   background: rgba(255, 255, 255, 0.8)
   transition: all 0.3s ease
   backdrop-filter: blur(5px)
 
   @include desktop
-    margin-bottom: 0 // Grid 佈局不需要 margin
+    margin-bottom: 0
 
   &:hover
-    border-color: rgba(230, 168, 107, 0.4)
+    border-color: rgba(230, 180, 34, 0.4)
     background: $bg-card
-    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.2)
+    box-shadow: 0 8px 25px rgba(230, 180, 34, 0.2)
     transform: translateY(-2px)
 
 .item-input
@@ -658,15 +595,15 @@ h2
 
   &:focus
     outline: none
-    border-color: $accent-color-2
-    box-shadow: 0 0 0 2px rgba(230, 168, 107, 0.15)
+    border-color: $jp-yamabuki
+    box-shadow: 0 0 0 2px rgba(230, 180, 34, 0.15)
 
 .delete-button
   flex-shrink: 0
   padding: $spacing-sm $spacing-md
   border: none
   border-radius: $border-radius-sm
-  background: #ef767a
+  background: $jp-kurenai
   color: $text-white
   white-space: nowrap
   font-weight: 500
@@ -675,16 +612,16 @@ h2
   transition: all 0.3s ease
 
   &:hover
-    background: #e6636a
-    box-shadow: 0 6px 15px rgba(239, 118, 122, 0.3)
+    background: rgba(220, 20, 60, 0.9)
+    box-shadow: 0 6px 15px rgba(220, 20, 60, 0.3)
     transform: translateY(-1px)
 
 .add-button
-  padding: $spacing-md $spacing-xl
   width: 100%
-  border: 2px solid rgba(230, 168, 107, 0.4)
+  padding: 8px
+  border: 2px solid rgba(230, 180, 34, 0.4)
   border-radius: $border-radius-sm
-  background: rgba(230, 168, 107, 0.15)
+  background: rgba(230, 180, 34, 0.15)
   color: $text-secondary
   letter-spacing: 0.5px
   font-weight: 500
@@ -694,9 +631,9 @@ h2
   backdrop-filter: blur(5px)
 
   &:hover
-    border-color: rgba(230, 168, 107, 0.6)
-    background: rgba(230, 168, 107, 0.25)
-    box-shadow: 0 8px 25px rgba(230, 168, 107, 0.25)
+    border-color: rgba(230, 180, 34, 0.6)
+    background: rgba(230, 180, 34, 0.25)
+    box-shadow: 0 8px 25px rgba(230, 180, 34, 0.25)
     transform: translateY(-2px)
 
 .update-button
@@ -705,8 +642,8 @@ h2
   width: 100%
   border: none
   border-radius: $border-radius-md
-  background: $primary-color
-  box-shadow: 0 10px 30px rgba(74, 85, 104, 0.3)
+  background: $jp-murasaki
+  box-shadow: 0 10px 30px rgba(136, 72, 152, 0.3)
   color: $text-white
   letter-spacing: 0.5px
   font-weight: 600
@@ -715,58 +652,7 @@ h2
   transition: all 0.3s ease
 
   &:hover
-    background: #2d3748
-    box-shadow: 0 15px 35px rgba(74, 85, 104, 0.4)
+    background: rgba(136, 72, 152, 0.9)
+    box-shadow: 0 15px 35px rgba(136, 72, 152, 0.4)
     transform: translateY(-3px)
-
-// ===================================
-// 響應式調整
-// ===================================
-
-// 手機版
-@include mobile-only
-  .foodwheel-container
-    padding: $spacing-md
-
-  .game-wrapper
-    padding: $spacing-lg
-
-  .game-content
-    flex-direction: column
-
-  .game-area
-    margin-right: 0
-    margin-bottom: $spacing-lg
-
-  .control-panel
-    min-width: auto
-    max-width: none
-    padding: $spacing-lg
-
-  .wheel-wrapper
-    margin-bottom: $spacing-xl
-
-  h1
-    font-size: 24px
-    margin-bottom: $spacing-xl
-
-  h2
-    font-size: 18px
-    margin-bottom: $spacing-md
-
-// 平板版
-@include tablet-only
-  .game-wrapper
-    max-width: 800px
-
-  .game-content
-    flex-direction: column
-
-  .game-area
-    margin-right: 0
-    margin-bottom: $spacing-lg
-
-  .control-panel
-    width: 100%
-    border-radius: 0 0 $border-radius-md $border-radius-md
 </style>

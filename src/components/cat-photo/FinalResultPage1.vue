@@ -1,14 +1,62 @@
 <template>
-
+  <!-- 成功提示 -->
+  <div v-if="showSuccessMessage" class="success-toast">
+    {{ successMessage }}
+  </div>
   <div class="final-result-page">
+    <!-- 分享按鈕區域 -->
+    <div class="share-section">
+      <div class="share-buttons">
+        <button class="share-button primary" @click="handleShare">
+          <div v-if="!isSharing" class="icon share-icon"></div>
+          <div v-else class="loading-spinner small"></div>
+          <span>{{ isSharing ? '分享中...' : '分享照片' }}</span>
+        </button>
+
+        <button class="share-button secondary" @click="handleDownload">
+          <div class="icon download-icon"></div>
+          <span>下載照片</span>
+        </button>
+      </div>
+    </div>
+    <button @click="handleShare">
+      <span>分享照片 =___=</span>
+    </button>
+    <button @click="handleDownload">
+      <span>下測試按鈕~~~~~~ @@</span>
+    </button>
+    <div class="button">測試按鈕~~~~~~ v1.3</div>
+    <div style="position: fixed; top: 100px; left: 10px; background: yellow; z-index: 9999;">
+      isProcessing: {{ isProcessing }}<br>
+      hasCanvas: {{ !!finalCanvas }}<br>
+      按鈕應該顯示: {{ !isSharing && !isProcessing }}
+    </div>
+    <!-- 調試面板 - 只在開發環境顯示 -->
+    <div v-if="isDev" class="debug-panel">
+      <h4>Debug Info</h4>
+      <div class="debug-item">isProcessing: {{ isProcessing }}</div>
+      <div class="debug-item">hasCanvas: {{ !!finalCanvas }}</div>
+      <div class="debug-item">photoData: {{ !!photoData }}</div>
+      <div class="debug-item">selectedCat: {{ !!selectedCat }}</div>
+      <div class="debug-item">Logs:</div>
+      <div class="debug-logs">
+        <div v-for="(log, index) in debugLogs" :key="index" class="log-item">
+          {{ log }}
+        </div>
+      </div>
+    </div>
     <!-- 返回按鈕 -->
     <button class="back-button" @click="handleClose">
       <div class="back-icon"></div>
     </button>
+    <!-- 成功標題 -->
+    <div class="success-header">
+    </div>
 
     <!-- 最終照片顯示 -->
     <div class="final-photo-section">
-      <div class="photo-container">
+      <div class="photo-frame">
+        <div class="testPic"></div>
         <canvas ref="finalCanvas" class="final-canvas"></canvas>
         <!-- 載入覆蓋層 -->
         <div v-if="isProcessing" class="processing-overlay">
@@ -18,32 +66,30 @@
       </div>
     </div>
 
-    <!-- 分享按鈕區域 -->
-    <div class="share-section">
-      <div class="action-buttons">
-        <button class="action-button primary" @click="handleShare" :disabled="isProcessing || isSharing">
-          <div v-if="!isSharing" class="button-icon"></div>
-          <div v-else class="loading-spinner"></div>
-          <span>{{ isSharing ? '分享中...' : '分享照片' }}</span>
-        </button>
-        <button class="action-button secondary" @click="handleDownload" :disabled="isProcessing">
-          <div class="button-icon"></div>
-          <span>下載照片</span>
-        </button>
-      </div>
-    </div>
+
   </div>
-  <!-- 成功提示 -->
-  <div v-if="showSuccessMessage" class="success-toast">
-    {{ successMessage }}
-  </div>
+
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import { useCatPhoto } from '../../composables/cat-photo/useCatPhoto'
 import { useCatOverlay } from '../../composables/cat-photo/useCatOverlay'
+import { useCatPhotoStore } from '../../stores/catPhotoStore'  // 添加這行
 
+// 調試相關
+const isDev = import.meta.env.DEV
+const debugLogs = ref<string[]>([])
+
+// 添加 log 的方法
+const addLog = (message: string) => {
+  const timestamp = new Date().toLocaleTimeString()
+  debugLogs.value.push(`${timestamp}: ${message}`)
+  if (debugLogs.value.length > 10) {
+    debugLogs.value.shift() // 只保留最新的 10 條
+  }
+  console.log(message) // 同時輸出到 console
+}
 // ===================================
 // Props & Emits
 // ===================================
@@ -77,6 +123,11 @@ const {
   downloadPhoto,
   preparePhotoForShare
 } = useCatOverlay()
+
+// 正確獲取 store 狀態
+const store = useCatPhotoStore()  // 這行要加
+const photoData = computed(() => store.photoData)
+const selectedCat = computed(() => store.selectedCat)
 
 // ===================================
 // 事件處理
@@ -145,14 +196,24 @@ const handleClose = () => {
  * 更新最終顯示
  */
 const updateFinalDisplay = async () => {
-  if (!finalCanvas.value) return
+  addLog('updateFinalDisplay 開始')
+
+  if (!finalCanvas.value) {
+    addLog('finalCanvas 為 null，直接返回')
+    return
+  }
 
   try {
+    addLog('調用 updatePhotoDisplay')
     const success = await updatePhotoDisplay(finalCanvas.value)
+    addLog(`updatePhotoDisplay 結果: ${success}`)
+
     if (!success) {
+      addLog('updatePhotoDisplay 失敗')
       showError('載入照片失敗')
     }
   } catch (error) {
+    addLog(`updatePhotoDisplay 錯誤: ${error}`)
     console.error('Update final display failed:', error)
     showError('載入照片失敗')
   }
@@ -175,27 +236,56 @@ const showSuccess = (message: string) => {
 // ===================================
 
 onMounted(async () => {
+  addLog('=== FinalResultPage onMounted START ===')
+  addLog(`初始狀態 - isProcessing: ${isProcessing.value}`)
+  addLog(`Store狀態 - hasPhoto: ${!!photoData.value}, hasCat: ${!!selectedCat.value}`)
+
   try {
     await nextTick()
+    addLog('nextTick 完成')
+
+    if (!finalCanvas.value) {
+      addLog('ERROR: finalCanvas 為 null')
+      return
+    }
+
+    addLog('開始 updateFinalDisplay')
     await updateFinalDisplay()
+    addLog('updateFinalDisplay 完成')
+
   } catch (error) {
+    addLog(`ERROR: ${error}`)
     console.error('Final result page initialization failed:', error)
     showError('頁面初始化失敗')
   }
+
+  addLog(`最終狀態 - isProcessing: ${isProcessing.value}`)
+  addLog('=== FinalResultPage onMounted END ===')
 })
 </script>
 
 <style lang="sass" scoped>
 @use '@/styles/variables' as *
 @use '@/styles/mixins' as *
+.force-debug
+  position: fixed
+  top: 50px
+  left: 0
+  right: 0
+  background: red !important
+  color: white !important
+  padding: 20px !important
+  z-index: 99999 !important
+  font-size: 16px !important
+  text-align: center !important
 
 .final-result-page
   display: flex
   overflow-y: auto
   flex-direction: column
   // 計算實際可用高度：扣除 Header(50px) 和 BreadcrumbNav(約50px)
-  min-height: calc(100vh - 260px)
-  background: $camera-pure
+  height: calc(100vh - 260px)
+  background: linear-gradient(135deg, #FFFFFB 0%, rgba(255, 255, 251, 0.9) 100%)
 
 // ===================================
 // 返回按鈕
@@ -211,11 +301,15 @@ onMounted(async () => {
   height: 40px
   border: none
   border-radius: 50%
-  background: $camera-bg-overlay
-  color: $camera-text-white
+  background: rgba(120, 124, 123, 0.8)
+  color: #ffffff
   cursor: pointer
   transition: all 0.2s ease
   backdrop-filter: blur(4px)
+
+  &:hover
+    background: rgba(120, 124, 123, 0.9)
+    transform: scale(1.1)
 
   @include tablet
     top: calc(20px + env(safe-area-inset-top, 0px))
@@ -239,9 +333,11 @@ onMounted(async () => {
 // ===================================
 // 最終照片區域
 // ===================================
+
 .final-photo-section
   @include flex-center
-  flex: 1
+  flex: 1 1 0
+  overflow-y: auto
   flex-direction: column
   padding: $spacing-lg $spacing-sm $spacing-md
   margin-top: 60px
@@ -249,7 +345,7 @@ onMounted(async () => {
   @include tablet
     padding: $spacing-xl $spacing-md $spacing-lg
 
-.photo-container
+.photo-frame
   position: relative
   overflow: hidden
   margin-bottom: $spacing-lg
@@ -258,6 +354,12 @@ onMounted(async () => {
   border-radius: $border-radius-xl
   background: #ffffff
   box-shadow: 0 8px 32px rgba(28, 28, 28, 0.12), 0 2px 8px rgba(28, 28, 28, 0.08)
+  transition: all 0.3s ease
+
+  // Hover 效果 - 適度增強
+  &:hover
+    transform: translateY(-3px)
+    box-shadow: 0 12px 48px rgba(28, 28, 28, 0.16), 0 4px 12px rgba(28, 28, 28, 0.12)
 
   @include tablet
     max-width: 500px
@@ -269,6 +371,11 @@ onMounted(async () => {
   display: block
   width: 100%
   height: auto
+
+.testPic
+  width: 100%
+  height: 200px
+  background: url('@/assets/img/minigame/stone/body_01.png')
 
 .processing-overlay
   @include absolute-center
@@ -305,17 +412,22 @@ onMounted(async () => {
 // ===================================
 
 .share-section
-  flex-shrink: 0
-  padding: $spacing-md $spacing-md calc($spacing-md + env(safe-area-inset-bottom, 16px))
+  flex: 0 0 auto
+  // flex-shrink: 0
+  padding: $spacing-md $spacing-sm calc($spacing-lg + env(safe-area-inset-bottom, 16px))
   border-top: 1px solid rgba(155, 155, 130, 0.2)
-  background: rgba(255, 255, 251, 0.95)
+  background: #ffffff
+  background: red !important
+  border: 3px solid blue !important
+  min-height: 200px !important
 
   @include tablet
-    padding: $spacing-lg $spacing-lg calc($spacing-lg + env(safe-area-inset-bottom, 16px))
+    padding: $spacing-lg $spacing-md calc($spacing-xl + env(safe-area-inset-bottom, 16px))
 
-.action-buttons
+.share-buttons
   display: flex
-  margin: 0 auto
+  margin-top: 100px
+  // margin: 0 auto
   max-width: 320px
   gap: $spacing-sm
 
@@ -325,56 +437,50 @@ onMounted(async () => {
 
   @include desktop
     max-width: 500px
+    flex-direction: row
 
-.action-button
+.share-button
   @include flex-center
-  flex: 1
-  padding: $spacing-sm $spacing-md
-  min-height: 44px
-  border: none
-  border-radius: $border-radius-md
+  // flex: 1
+  padding: $spacing-md
+  height: 52px
+  border: 3px solid green
+  border-radius: $border-radius-lg
   font-weight: 600
   font-size: 14px
   cursor: pointer
-  gap: $spacing-xs
+  transition: all 0.2s ease
+  // gap: $spacing-xs
 
-  // 按鈕圖示樣式
-  .button-icon
-    flex-shrink: 0
-    width: 16px
-    height: 16px
+  // 分享和下載按鈕圖片
+  .icon
+    // flex-shrink: 0
+    width: 18px
+    height: 18px
     background-position: center
     background-size: contain
     background-repeat: no-repeat
 
-  // 分享按鈕圖示
-  &.primary .button-icon
-    background-image: url('@/assets/img/icon/share.png')
+  .loading-spinner.small
+    width: 18px
+    height: 18px
+    border: 2px solid rgba(255, 255, 255, 0.3)
+    border-top: 2px solid #ffffff
+    border-radius: 50%
+    animation: spin 1s linear infinite
 
-  // 下載按鈕圖示
-  &.secondary .button-icon
-    background-image: url('@/assets/img/icon/download.png')
-
-  // 完成按鈕 - 直接使用顏色值
+  // 分享按鈕
   &.primary
-    background: $camera-btn-primary // 洗朱色
-    color: #ffffff       // 白色文字
-    box-shadow: 0 4px 12px rgba(236, 109, 81, 0.3)
+    background: #EC6D51  // 洗朱色
+    box-shadow: 0 6px 20px rgba(236, 109, 81, 0.3)
+    color: #ffffff
 
-    &:hover:not(:disabled)
-      background: rgba(236, 109, 81, 0.9)
-      transform: translateY(-1px)
-      box-shadow: 0 4px 12px rgba(236, 109, 81, 0.4)
-
-  // 重拍按鈕 - 直接使用顏色值
+  // 下載按鈕
   &.secondary
     border: 1px solid rgba(155, 155, 130, 0.3)
-    background: $camera-btn-secondary  // 鉛色
-    color: #FFFFFF      // 深色文字
-
-    &:hover:not(:disabled)
-      background: rgba(255, 255, 251, 0.8)
-      transform: translateY(-1px)
+    background: #FFFFFB  // 純白背景
+    box-shadow: 0 2px 6px rgba(28, 28, 28, 0.06)
+    color: #1C1C1C      // 深色文字
 
   &:disabled
     opacity: 0.6
@@ -382,29 +488,23 @@ onMounted(async () => {
     transform: none
 
   @include tablet
-    padding: $spacing-md $spacing-lg
-    min-height: 48px
+    padding: $spacing-lg
+    min-height: 56px
     font-size: 16px
 
-    .button-icon
-      width: 18px
-      height: 18px
+    .icon
+      width: 20px
+      height: 20px
 
-// ===================================
-// 桌面版調整
-// ===================================
+    .loading-spinner.small
+      width: 20px
+      height: 20px
 
-@include desktop
-  .final-photo-section
-    padding: $spacing-2xl $spacing-lg
+.share-icon
+  background-image: url('@/assets/img/icon/share.png')
 
-  .action-buttons
-    justify-content: center
-    gap: $spacing-lg
-
-  .action-button
-    flex: none
-    min-width: 120px
+.download-icon
+  background-image: url('@/assets/img/icon/download.png')
 
 // ===================================
 // 成功提示
@@ -446,6 +546,4 @@ onMounted(async () => {
   to
     opacity: 1
     transform: translateX(-50%) translateY(0)
-
-
 </style>

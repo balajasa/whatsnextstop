@@ -148,7 +148,6 @@ onMounted(() => {
   height: 130px
   background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%)
   color: #ffffff
-  font-family: inherit
   position: relative
   overflow-x: hidden
   overflow-y: hidden  // 修改：所有版本都禁止Y軸滾動

@@ -1,27 +1,19 @@
 <template>
   <div class="take-me-travel">
-    <!-- 麵包屑 -->
     <BreadcrumbNav />
-    <!-- 錯誤提示 -->
-    <div v-if="error" class="error-toast" @click="clearError">
+
+    <div v-if="error && currentPage !== 'camera'" class="error-toast" @click="clearError">
       {{ error }}
     </div>
 
-    <!-- 載入提示 -->
-    <div v-if="isLoading" class="loading-overlay">
+    <div v-if="isLoading && currentPage !== 'camera'" class="loading-overlay">
       <div class="loading-spinner"></div>
       <p>{{ getLoadingMessage() }}</p>
     </div>
 
-    <!-- ========== 主頁面區域 ========== -->
+    <!-- 主頁面區域 -->
     <div v-if="currentPage === 'main'" class="main-section">
       <div class="main-content">
-        <!-- 標題區域 -->
-        <div class="title-section">
-          <h1 class="main-title">隨機貓咪拍照</h1>
-          <p class="subtitle">拍張照片，讓可愛的貓咪加入你的世界</p>
-        </div>
-
         <!-- 相機圖示按鈕 -->
         <div class="camera-section">
           <button class="camera-button" @click="handleStartPhoto" :disabled="isLoading">
@@ -35,111 +27,44 @@
           </button>
         </div>
 
-        <!-- 功能介紹 -->
-        <div class="features-section">
-          <div class="feature-item">
-            <div class="feature-icon">📸</div>
-            <h3>拍攝照片</h3>
-            <p>使用相機拍攝你喜歡的場景</p>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🐱</div>
-            <h3>隨機貓咪</h3>
-            <p>系統會隨機添加可愛的貓咪</p>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✨</div>
-            <h3>即時分享</h3>
-            <p>完成後立即分享給朋友</p>
-          </div>
-        </div>
-
-        <!-- 開發模式：位置測試 -->
-        <div v-if="isDevelopmentMode" style="margin-top: 20px; padding: 20px; border: 2px dashed #ccc;">
-          <h3>🧪 開發模式 - 貓咪位置測試</h3>
-
-          <div style="display: flex; gap: 30px; justify-content: center; align-items: flex-start; margin: 20px 0">
-            <!-- 直式照片 -->
-            <div style="text-align: center;">
-              <h4>直式照片 (Portrait)</h4>
-              <div
-                style="position: relative; width: 200px; height: 350px; border: 1px solid #999; background: #f5f5f5; overflow: hidden;">
-                <img v-for="cat in testCats" :key="cat.id + '-portrait'" :src="cat.image"
-                  :style="getCatImageStyle('portrait', cat)" style="position: absolute; object-fit: contain;" />
-              </div>
-              <p style="font-size: 12px; margin: 5px 0;">{{ getCurrentCatPortraitInfo() }}</p>
-            </div>
-
-            <!-- 橫式照片 -->
-            <div style="text-align: center;">
-              <h4>橫式照片 (Landscape)</h4>
-              <div
-                style="position: relative; width: 300px; height: 200px; border: 1px solid #999; background: #f5f5f5; overflow: hidden;">
-                <img v-for="cat in testCats" :key="cat.id + '-landscape'" :src="cat.image"
-                  :style="getCatImageStyle('landscape', cat)" style="position: absolute; object-fit: contain;" />
-              </div>
-              <p style="font-size: 12px; margin: 5px 0;">{{ getCurrentCatLandscapeInfo() }}</p>
-            </div>
-          </div>
-
-          <!-- 貓咪切換控制 -->
-          <div style="text-align: center; margin: 20px 0;">
-            <p style="margin-bottom: 10px;">當前顯示: <strong>{{ currentTestCat.name }}</strong></p>
-            <button v-for="cat in testCats" :key="cat.id" @click="setCurrentTestCat(cat)" :style="{
-              background: currentTestCat.id === cat.id ? '#91B500' : '#e0e0e0',
-              color: currentTestCat.id === cat.id ? 'white' : 'black',
-              border: 'none',
-              padding: '6px 12px',
-              margin: '0 5px',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }">
-              {{ cat.name }}
-            </button>
-          </div>
-
-          <button @click="toggleDevelopmentMode"
-            style="background: #91B500; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-            隱藏開發模式
-          </button>
-        </div>
-
-        <!-- 開發模式切換按鈕 -->
-        <div v-else style="margin-top: 20px; text-align: center;">
-          <button @click="toggleDevelopmentMode"
-            style="background: #91B500; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-            🧪 顯示開發模式 (測試貓咪位置)
-          </button>
-        </div>
-      </div>
-
-      <!-- 底部說明 -->
-      <div class="bottom-info">
-        <p class="info-text">
+        <!-- 底部資訊 -->
+        <div class="bottom-info">
           <span class="info-icon">💡</span>
-          建議使用後鏡頭拍攝效果更佳
-        </p>
+          <div class="info-text">
+            <div>建議使用直式拍攝&後鏡頭效果更佳</div>
+            <div>除非把螢幕鎖定打開，讓手機真的倒下來</div>
+            <div>我也不知道為什麼</div>
+          </div>
+        </div>
       </div>
+
+
     </div>
 
-    <!-- ========== 其他頁面組件 ========== -->
-    <CameraPage v-if="currentPage === 'camera'" @photo-captured="handlePhotoCaptured" @close="returnToMain" />
-
-    <ResultPage v-if="currentPage === 'result'" @retake="handleRetake" @change-cat="handleChangeCat"
-      @complete="handleComplete" @close="returnToMain" />
+    <!-- 其他頁面組件 -->
+    <ResultPage v-if="currentPage === 'result'" @retake="handleRetake" @complete="handleComplete"
+      @close="returnToMain" />
 
     <FinalResultPage v-if="currentPage === 'final'" @share="handleShare" @close="returnToMain" />
   </div>
+
+  <!-- 使用 Teleport 將相機頁面傳送到 body -->
+  <Teleport to="body" v-if="currentPage === 'camera'">
+    <CameraPage @photo-captured="handlePhotoCaptured" @close="returnToMain" />
+
+    <!-- 相機頁面的錯誤提示 -->
+    <div v-if="error" class="camera-error-toast" @click="clearError">
+      {{ error }}
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, Teleport } from 'vue'
 import { useCatPhoto } from '../../composables/cat-photo/useCatPhoto'
 import CameraPage from '@/components/cat-photo/CameraPage.vue'
 import ResultPage from '@/components/cat-photo/ResultPage.vue'
 import FinalResultPage from '@/components/cat-photo/FinalResultPage.vue'
-import { DEFAULT_CAT_CONFIGS } from '../../constants/catPhotoConfig'
-import { calculateCatSizeAndPosition } from '../../utils/photoUtils'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
 // ===================================
@@ -147,88 +72,18 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 // ===================================
 
 const {
-  // 響應式狀態
   currentPage,
   isLoading,
   error,
-  // 方法
   startPhotoProcess,
   returnToMain,
   selectRandomCat,
-  changeCat,
   completePhoto,
   clearError,
   initializeApp,
   resetApp,
   navigateToPage
 } = useCatPhoto()
-
-// ===================================
-// 開發模式
-// ===================================
-
-const isDevelopmentMode = ref(false)
-const currentTestCat = ref(DEFAULT_CAT_CONFIGS[0])
-
-// 測試用的貓咪清單
-const testCats = computed(() => DEFAULT_CAT_CONFIGS)
-
-const toggleDevelopmentMode = () => {
-  isDevelopmentMode.value = !isDevelopmentMode.value
-}
-
-const setCurrentTestCat = (cat: any) => {
-  currentTestCat.value = cat
-}
-
-// 獲取貓咪圖片樣式（使用新的位置配置）
-const getCatImageStyle = (orientation: 'portrait' | 'landscape', cat: any) => {
-  // 只顯示當前選中的貓咪
-  if (cat.id !== currentTestCat.value.id) {
-    return { display: 'none' }
-  }
-
-  // 使用貓咪自己的位置配置
-  if (!cat.positions || !cat.positions[orientation]) {
-    console.warn(`Cat ${cat.id} missing position config for ${orientation}`)
-    return { display: 'none' }
-  }
-
-  const position = cat.positions[orientation]
-  const containerWidth = orientation === 'portrait' ? 200 : 300
-  const containerHeight = orientation === 'portrait' ? 350 : 200
-
-  // 計算實際像素位置和尺寸
-  const calculated = calculateCatSizeAndPosition(
-    cat,
-    position,
-    containerWidth,
-    containerHeight
-  )
-
-  return {
-    left: `${calculated.actualX}px`,
-    top: `${calculated.actualY}px`,
-    width: `${calculated.width}px`,
-    height: `${calculated.height}px`,
-    display: 'block'
-  }
-}
-
-// 獲取當前貓咪的位置資訊
-const getCurrentCatPortraitInfo = () => {
-  const cat = currentTestCat.value
-  if (!cat.positions?.portrait) return '無位置配置'
-  const pos = cat.positions.portrait
-  return `位置: (${(pos.x * 100).toFixed(0)}%, ${(pos.y * 100).toFixed(0)}%) | 最大: ${pos.maxWidth}×${pos.maxHeight}`
-}
-
-const getCurrentCatLandscapeInfo = () => {
-  const cat = currentTestCat.value
-  if (!cat.positions?.landscape) return '無位置配置'
-  const pos = cat.positions.landscape
-  return `位置: (${(pos.x * 100).toFixed(0)}%, ${(pos.y * 100).toFixed(0)}%) | 最大: ${pos.maxWidth}×${pos.maxHeight}`
-}
 
 // ===================================
 // 主頁面事件處理
@@ -274,17 +129,6 @@ const handleRetake = async () => {
     await startPhotoProcess()
   } catch (error) {
     console.error('Retake photo failed:', error)
-  }
-}
-
-/**
- * 處理更換貓咪
- */
-const handleChangeCat = () => {
-  try {
-    changeCat()
-  } catch (error) {
-    console.error('Change cat failed:', error)
   }
 }
 
@@ -370,11 +214,9 @@ onUnmounted(() => {
 
 .take-me-travel
   position: relative
-  width: 100%
-  height: 100vh
   overflow: hidden
-  background: $warm-white
-  font-family: 'Microsoft JhengHei', sans-serif
+  width: 100%
+  // 移除 min-height，讓內容決定高度
 
 // ===================================
 // 錯誤提示
@@ -384,57 +226,102 @@ onUnmounted(() => {
   position: fixed
   top: 20px
   left: 50%
-  transform: translateX(-50%)
-  background: rgba($caramel-orange, 0.95)
-  color: white
-  padding: 12px 24px
-  border-radius: $border-radius-lg
-  font-size: 14px
-  font-weight: 500
   z-index: $z-modal
-  cursor: pointer
-  box-shadow: 0 4px 12px rgba($caramel-orange, 0.3)
-  animation: slideInFromTop 0.3s ease-out
+  // Mobile First - 較小內距
+  padding: 10px 20px
   max-width: 90%
+  border-radius: $border-radius-lg
+  background: rgba(211, 47, 47, 0.95)
+  box-shadow: $camera-shadow-strong
+  color: $camera-text-white
   text-align: center
-
-  @include tablet
-    max-width: 400px
-    font-size: 16px
+  font-weight: 500
+  // Mobile First - 較小文字
+  font-size: 13px
+  cursor: pointer
+  transform: translateX(-50%)
+  animation: slideInFromTop 0.3s ease-out
 
   &:hover
-    background: rgba($caramel-orange, 1)
+    background: rgba(211, 47, 47, 1)
     transform: translateX(-50%) scale(1.02)
+
+  @include tablet
+    padding: 12px 24px
+    max-width: 400px
+    font-size: 14px
+
+  @include desktop
+    font-size: 16px
+
+// 相機頁面的錯誤提示
+.camera-error-toast
+  position: fixed
+  top: calc(80px + env(safe-area-inset-top, 0px))
+  left: 50%
+  z-index: calc($z-camera + 1)
+  // Mobile First - 較小內距
+  padding: 10px 20px
+  max-width: 90%
+  border-radius: $border-radius-lg
+  background: rgba(211, 47, 47, 0.95)
+  box-shadow: $camera-shadow-strong
+  color: $camera-text-white
+  text-align: center
+  font-weight: 500
+  // Mobile First - 較小文字
+  font-size: 13px
+  cursor: pointer
+  transform: translateX(-50%)
+  animation: slideInFromTop 0.3s ease-out
+
+  &:hover
+    background: rgba(211, 47, 47, 1)
+    transform: translateX(-50%) scale(1.02)
+
+  @include tablet
+    padding: 12px 24px
+    max-width: 400px
+    font-size: 14px
 
 // ===================================
 // 載入覆蓋層
 // ===================================
 
 .loading-overlay
+  @include flex-center
   position: fixed
   top: 0
   left: 0
+  z-index: $z-modal
+  flex-direction: column
   width: 100%
   height: 100%
-  background: rgba($warm-white, 0.95)
-  @include flex-center
-  flex-direction: column
-  z-index: $z-modal
+  background: rgba(255, 255, 251, 0.95)
   backdrop-filter: blur(4px)
 
   p
-    margin-top: 16px
-    color: $text-dark
-    font-size: 16px
+    margin-top: $spacing-md
+    color: $camera-text-primary
     font-weight: 500
+    // Mobile First - 較小文字
+    font-size: 14px
+
+    @include tablet
+      font-size: 16px
 
 .loading-spinner
-  width: 40px
-  height: 40px
-  border: 3px solid rgba($matcha-bright, 0.2)
-  border-top: 3px solid $matcha-bright
+  // Mobile First - 較小 spinner
+  width: 36px
+  height: 36px
+  border: 3px solid rgba(236, 109, 81, 0.2)
+  border-top: 3px solid $camera-accent
   border-radius: 50%
   animation: spin 1s linear infinite
+
+  @include tablet
+    width: 40px
+    height: 40px
 
 // ===================================
 // 主頁面區域
@@ -442,72 +329,58 @@ onUnmounted(() => {
 
 .main-section
   @include flex-center
-  flex-direction: column
-  min-height: 100vh
-  padding: $spacing-lg $spacing-md
-  background: linear-gradient(135deg, $matcha-soft 0%, $almond-soft 100%)
+  // 計算實際可用高度：扣除 Header(50px) 和 BreadcrumbNav(約50px)
+  min-height: calc(100vh - 260px)
+  // Mobile First - 較小內距
+  padding: $spacing-md $spacing-sm
+  background: linear-gradient(135deg, $camera-bg-primary 0%, rgba(255, 255, 251, 0.8) 100%)
+
+  @include tablet
+    padding: $spacing-lg $spacing-md
+
+  @include desktop
+    padding: $spacing-xl $spacing-lg
 
 .main-content
-  flex: 1
   @include flex-center
   flex-direction: column
-  max-width: 400px
+  // Mobile First - 較小最大寬度
+  max-width: 320px
   width: 100%
 
-// ===================================
-// 標題區域
-// ===================================
-
-.title-section
-  text-align: center
-  margin-bottom: $spacing-2xl
-
-.main-title
-  font-size: 28px
-  font-weight: 700
-  color: $text-dark
-  margin-bottom: $spacing-sm
-  letter-spacing: 0.5px
-
   @include tablet
-    font-size: 32px
+    max-width: 400px
 
-.subtitle
-  font-size: 16px
-  color: $warm-text-light
-  line-height: 1.5
-  margin: 0
-
-  @include tablet
-    font-size: 18px
+  @include desktop
+    max-width: 500px
 
 // ===================================
 // 相機按鈕
 // ===================================
 
 .camera-section
-  margin-bottom: $spacing-2xl
+  margin-bottom: $spacing-xl
+
+  @include tablet
+    margin-bottom: $spacing-2xl
 
 .camera-button
   @include flex-center
   flex-direction: column
-  width: 160px
-  height: 160px
-  background: $matcha-bright
+  // Mobile First - 較小按鈕
+  width: 140px
+  height: 140px
   border: none
   border-radius: 50%
-  color: white
+  background: $camera-accent
+  box-shadow: $camera-shadow-accent
+  color: $camera-text-white
   cursor: pointer
   transition: all 0.3s ease
-  box-shadow: 0 8px 25px rgba($matcha-bright, 0.3)
-
-  @include tablet
-    width: 180px
-    height: 180px
 
   &:hover:not(:disabled)
+    box-shadow: 0 12px 30px rgba(236, 109, 81, 0.4)
     transform: scale(1.05)
-    box-shadow: 0 12px 35px rgba($matcha-bright, 0.4)
 
   &:active:not(:disabled)
     transform: scale(0.98)
@@ -516,25 +389,42 @@ onUnmounted(() => {
     opacity: 0.7
     cursor: not-allowed
 
+  @include tablet
+    width: 160px
+    height: 160px
+
+  @include desktop
+    width: 180px
+    height: 180px
+
 .camera-icon
-  width: 60px
-  height: 60px
   margin-bottom: $spacing-sm
+  // Mobile First - 較小圖示
+  width: 50px
+  height: 50px
+  background-image: url('@/assets/img/icon/camera.png')
+  background-position: center
+  background-size: contain
+  background-repeat: no-repeat
 
   @include tablet
+    width: 60px
+    height: 60px
+
+  @include desktop
     width: 70px
     height: 70px
 
-  svg
-    width: 100%
-    height: 100%
-
 .button-text
-  font-size: 14px
-  font-weight: 600
   text-align: center
+  font-weight: 600
+  // Mobile First - 較小文字
+  font-size: 13px
 
   @include tablet
+    font-size: 14px
+
+  @include desktop
     font-size: 16px
 
 // ===================================
@@ -542,56 +432,109 @@ onUnmounted(() => {
 // ===================================
 
 .features-section
-  display: grid
-  grid-template-columns: 1fr
-  gap: $spacing-lg
-  margin-bottom: $spacing-2xl
+  display: flex
   width: 100%
-
-  @include tablet
-    grid-template-columns: repeat(3, 1fr)
-    gap: $spacing-xl
+  margin-bottom: $spacing-lg
 
 .feature-item
-  text-align: center
-  padding: $spacing-lg
-  background: rgba(white, 0.7)
+  // Mobile First - 較小內距
+  padding: $spacing-md
   border-radius: $border-radius-lg
+  background: rgba(255, 255, 255, 0.7)
+  text-align: center
   backdrop-filter: blur(10px)
 
+  @include tablet
+    padding: $spacing-lg
+
 .feature-icon
-  font-size: 32px
+  // Mobile First - 較小圖示
+  font-size: 36px
   margin-bottom: $spacing-sm
 
+  @include tablet
+    font-size: 48px
+
 .feature-item h3
-  font-size: 16px
-  font-weight: 600
-  color: $text-dark
   margin-bottom: $spacing-xs
+  color: $camera-text-primary
+  font-weight: 600
+  // Mobile First - 較小標題
+  font-size: 15px
+
+  @include tablet
+    font-size: 16px
+
+  @include desktop
+    font-size: 18px
 
 .feature-item p
-  font-size: 14px
-  color: $warm-text-light
-  line-height: 1.4
   margin: 0
+  color: $camera-text-light
+  // Mobile First - 較小文字
+  font-size: 13px
+  line-height: 1.4
+
+  @include tablet
+    font-size: 14px
 
 // ===================================
 // 底部資訊
 // ===================================
 
 .bottom-info
+  display: flex
+  align-items: flex-start
   margin-top: auto
-  padding-top: $spacing-lg
-
-.info-text
-  @include flex-center
-  font-size: 14px
-  color: $warm-text-light
-  margin: 0
+  padding: $spacing-lg $spacing-md
+  border-radius: $border-radius-lg
+  background: rgba(255, 255, 255, 0.8)
+  backdrop-filter: blur(10px)
+  gap: $spacing-md
 
 .info-icon
-  margin-right: $spacing-xs
+  flex-shrink: 0
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 32px
+  height: 32px
+  border-radius: 50%
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%)
+  box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3)
+  // Mobile First - 較小文字
   font-size: 16px
+  animation: pulse-glow 2s infinite
+
+  @include tablet
+    width: 36px
+    height: 36px
+    font-size: 18px
+
+.info-text
+  flex: 1
+  display: flex
+  flex-direction: column
+  gap: $spacing-xs
+
+  div
+    color: $camera-text-secondary
+    // Mobile First - 較小文字
+    font-size: 13px
+    line-height: 1.5
+
+    @include tablet
+      font-size: 14px
+
+
+// 燈泡發光動畫
+@keyframes pulse-glow
+  0%, 100%
+    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3)
+    transform: scale(1)
+  50%
+    box-shadow: 0 4px 16px rgba(255, 165, 0, 0.5)
+    transform: scale(1.05)
 
 // ===================================
 // 動畫定義
@@ -610,22 +553,4 @@ onUnmounted(() => {
     transform: rotate(0deg)
   to
     transform: rotate(360deg)
-
-// ===================================
-// 響應式調整
-// ===================================
-
-@include mobile-only
-  .main-section
-    padding: $spacing-md $spacing-sm
-
-  .main-title
-    font-size: 24px
-
-  .feature-item
-    padding: $spacing-md
-
-@include desktop
-  .main-content
-    max-width: 500px
 </style>

@@ -1,6 +1,30 @@
 // src/types/cat-photo.ts
 // 貓咪拍照功能型別定義
 
+// 相機約束類型（支援 min, max, ideal, exact）
+export interface MediaTrackConstraintSet {
+  min?: number
+  max?: number
+  ideal?: number
+  exact?: number
+}
+
+// 視頻約束介面
+export interface VideoConstraints {
+  facingMode?: 'user' | 'environment'
+  width?: number | MediaTrackConstraintSet
+  height?: number | MediaTrackConstraintSet
+  frameRate?: number | MediaTrackConstraintSet
+  aspectRatio?: number | MediaTrackConstraintSet
+  deviceId?: string | { exact: string }
+}
+
+// 相機配置介面
+export interface CameraConfig {
+  video: VideoConstraints | boolean
+  audio?: boolean
+}
+
 // 貓咪配置介面
 export interface CatConfig {
   id: string
@@ -41,12 +65,6 @@ export interface CatPhotoState {
   error: string | null
 }
 
-// 固定位置配置（已移除，現在每隻貓咪有自己的位置）
-// export interface FixedPositions {
-//   portrait: Position
-//   landscape: Position
-// }
-
 // 計算後的貓咪尺寸
 export interface CalculatedCatSize {
   width: number
@@ -61,15 +79,6 @@ export interface DrawCatParams {
   calculatedSize: CalculatedCatSize
   canvasWidth: number
   canvasHeight: number
-}
-
-// 相機配置
-export interface CameraConfig {
-  video: {
-    facingMode: 'user' | 'environment'
-    width: { ideal: number }
-    height: { ideal: number }
-  }
 }
 
 // 分享選項

@@ -8,6 +8,7 @@ import Itinerary from '../views/itinerary/Itinerary.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel/TravelMap.vue'
 import TravelTrace from '../views/travel/TravelTrace.vue'
+import FinalResultPage from '../components/cat-photo/FinalResultPage.vue'
 
 const routes = [
   {
@@ -99,6 +100,10 @@ const routes = [
           showBreadcrumb: true,
           breadcrumb: [{ text: '帶我去旅行', icon: '📸' }]
         }
+      },
+      {
+        path: 'final',
+        component: FinalResultPage,
       }
     ]
   },

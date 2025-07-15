@@ -179,8 +179,6 @@ export function useCatOverlay() {
       // 檢查原生分享支援
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: SHARE_CONFIG.title,
-          text: SHARE_CONFIG.text,
           files: [file]
         })
         return true

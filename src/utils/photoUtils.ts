@@ -43,8 +43,8 @@ export function calculateCatSizeAndPosition(
   const finalWidth = Math.round(originalWidth * scale)
   const finalHeight = Math.round(originalHeight * scale)
 
-  // 計算實際像素位置（相對位置轉為絕對位置）
-  const actualX = Math.round(position.x * canvasWidth - finalWidth / 2) // 居中對齊
+  // 計算實際像素位置（左下角錨點）
+  const actualX = Math.round(position.x * canvasWidth) // 左邊對齊
   const actualY = Math.round(position.y * canvasHeight - finalHeight) // 底部對齊
 
   return {
