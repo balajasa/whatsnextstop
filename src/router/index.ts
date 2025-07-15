@@ -128,16 +128,14 @@ const router = createRouter({
   }
 })
 
-// 全域路由守衛 - 設定頁面標題
 router.beforeEach((to, _from, next) => {
-  const title = to.meta?.title || '溫暖旅程'
+  const title = to.meta?.title || '暖心的旅程'
   const randomSubtitle = getRandomTitle()
   document.title = `${title} | ${randomSubtitle}`
 
   next()
 })
 
-// 隨機文案陣列
 const randomTitles = [
   '目前位置：沙發上，夢想著下一個目的地',
   '收集回憶中...進度：永遠不夠',
@@ -145,10 +143,12 @@ const randomTitles = [
   '小小的世界地圖，記錄著我去過的地方',
   '旅行夥伴：咖啡、相機、還有我的方向感',
   '世界很大，腳步很小，故事很多',
-  '旅の途中'
+  '旅の途中',
+  '為什麼出發？因為有空',
+  '這是我的旅行人生，方向感一條都沒有，但還是走了很遠',
+  '這裡是一張沒有盡頭的備忘錄，歡迎加入我亂走人生的現場直播'
 ]
 
-// 取得隨機文案的函數
 const getRandomTitle = () => {
   const randomIndex = Math.floor(Math.random() * randomTitles.length)
   return randomTitles[randomIndex]
