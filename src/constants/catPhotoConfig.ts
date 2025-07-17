@@ -72,8 +72,8 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
       height: 500
     },
     positions: {
-      portrait: { x: 1.0, y: 1.0, maxWidth: 297, maxHeight: 500 },
-      landscape: { x: 1.0, y: 1.0, maxWidth: 297, maxHeight: 500 }
+      portrait: { x: 1.0, y: 1.1, maxWidth: 297, maxHeight: 500 },
+      landscape: { x: 1.0, y: 1.1, maxWidth: 297, maxHeight: 500 }
     }
   },
   {
