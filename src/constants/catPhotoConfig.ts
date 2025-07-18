@@ -6,6 +6,8 @@ import eatCatImg from '@/assets/img/minigame/cat/eat_cat.png'
 import lazyCatImg from '@/assets/img/minigame/cat/lazy_cat.png'
 import travelCatImg from '@/assets/img/minigame/cat/travel_cat.png'
 import wallCatImg from '@/assets/img/minigame/cat/wall_cat.png'
+import sleepCatImg from '@/assets/img/minigame/cat/sleep_cat.png'
+import swimCatImg from '@/assets/img/minigame/cat/swim_cat.png'
 
 // 相機配置
 export const CAMERA_CONFIG: CameraConfig = {
@@ -40,7 +42,7 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
   {
     id: 'sleep_cat',
     name: '趴著貓貓',
-    image: lazyCatImg,
+    image: sleepCatImg,
     originalSize: {
       width: 500,
       height: 332
@@ -68,12 +70,12 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     name: '門邊貓貓',
     image: wallCatImg,
     originalSize: {
-      width: 297,
+      width: 282,
       height: 500
     },
     positions: {
-      portrait: { x: 1.0, y: 1.1, maxWidth: 297, maxHeight: 500 },
-      landscape: { x: 1.0, y: 1.1, maxWidth: 297, maxHeight: 500 }
+      portrait: { x: 1.0, y: 1.0, maxWidth: 282, maxHeight: 500 },
+      landscape: { x: 1.0, y: 1.0, maxWidth: 282, maxHeight: 500 }
     }
   },
   {
@@ -87,6 +89,19 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     positions: {
       portrait: { x: 0.05, y: 0.25, maxWidth: 500, maxHeight: 378 },
       landscape: { x: 1.0, y: 0.8, maxWidth: 500, maxHeight: 378 }
+    }
+  },
+  {
+    id: 'swim_cat',
+    name: '游泳貓貓',
+    image: swimCatImg,
+    originalSize: {
+      width: 380,
+      height: 500
+    },
+    positions: {
+      portrait: { x: 0.5, y: 1.0, maxWidth: 380, maxHeight: 500 },
+      landscape: { x: 0.05, y: 1.0, maxWidth: 380, maxHeight: 500 }
     }
   }
 ]

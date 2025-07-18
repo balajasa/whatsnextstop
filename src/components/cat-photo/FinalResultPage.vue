@@ -373,7 +373,7 @@ onMounted(async () => {
     color: #FFFFFF      // 深色文字
 
     &:hover:not(:disabled)
-      background: rgba(255, 255, 251, 0.8)
+      background: rgba(155, 155, 130, 0.9)
       transform: translateY(-1px)
 
   &:disabled

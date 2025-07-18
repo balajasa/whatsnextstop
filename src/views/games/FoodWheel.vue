@@ -30,8 +30,8 @@
 
         <div class="control-panel">
           <div class="input-group">
-            <label>新增美食類型</label>
-            <input type="text" v-model="newItem" placeholder="例如：北歐料理、地中海美食" @keyup.enter="addItem" />
+            <label>要吃什麼？</label>
+            <input type="text" v-model="newItem" placeholder="例如：烤黑豬肉、韓式炸雞、人參雞湯" @keyup.enter="addItem" />
             <button class="add-button" @click="addItem">新增項目</button>
           </div>
           <div class="items-list">
@@ -57,12 +57,12 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 const wheelRef: Ref<HTMLElement | null> = ref(null)
 const pawAnimated: Ref<boolean> = ref(false)
 const wheelItems: Ref<string[]> = ref([
-  '中式料理',
-  '日式料理',
-  '韓式料理',
-  '義式料理',
-  '美式料理',
-  '泰式料理'
+  '烤黑豬肉',
+  '豬肉湯麵',
+  '水拌生魚片',
+  '白帶魚料理',
+  '辣炒年糕',
+  '紫菜包飯'
 ])
 const wheelRotation: Ref<number> = ref(0)
 const isSpinning: Ref<boolean> = ref(false)
@@ -289,10 +289,10 @@ const updateWheel = (): void => {
   background: rgba(255, 255, 255, 0.9)
   border: 1px solid rgba(255, 255, 255, 0.2)
   backdrop-filter: blur(10px)
-  border-radius: $border-radius-md
+  border-radius: 0
 
   @include tablet
-    padding: $spacing-xl
+    padding: 32px 22px 12px
 
   @include desktop
     flex: 1
@@ -554,10 +554,11 @@ const updateWheel = (): void => {
   max-height: 260px
 
   @include desktop
-    display: grid
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
+    display: flex
+    flex-direction: column
+    // grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
     gap: $spacing-md
-    max-height: 280px
+    max-height: 468px
 
 .list-item
   display: flex
@@ -572,12 +573,13 @@ const updateWheel = (): void => {
 
   @include desktop
     margin-bottom: 0
+    padding: 12px
 
   &:hover
     border-color: rgba(230, 180, 34, 0.4)
     background: $bg-card
     box-shadow: 0 8px 25px rgba(230, 180, 34, 0.2)
-    transform: translateY(-2px)
+    // transform: translateY(-2px)
 
 .item-input
   flex: 1
@@ -609,12 +611,12 @@ const updateWheel = (): void => {
   font-weight: 500
   font-size: 14px
   cursor: pointer
-  transition: all 0.3s ease
+  // transition: all 0.3s ease
 
   &:hover
     background: rgba(220, 20, 60, 0.9)
     box-shadow: 0 6px 15px rgba(220, 20, 60, 0.3)
-    transform: translateY(-1px)
+    // transform: translateY(-1px)
 
 .add-button
   width: 100%
@@ -634,7 +636,7 @@ const updateWheel = (): void => {
     border-color: rgba(230, 180, 34, 0.6)
     background: rgba(230, 180, 34, 0.25)
     box-shadow: 0 8px 25px rgba(230, 180, 34, 0.25)
-    transform: translateY(-2px)
+    // transform: translateY(-2px)
 
 .update-button
   margin-top: $spacing-lg
@@ -649,10 +651,8 @@ const updateWheel = (): void => {
   font-weight: 600
   font-size: 17px
   cursor: pointer
-  transition: all 0.3s ease
 
   &:hover
     background: rgba(136, 72, 152, 0.9)
     box-shadow: 0 15px 35px rgba(136, 72, 152, 0.4)
-    transform: translateY(-3px)
 </style>
