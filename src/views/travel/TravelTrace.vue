@@ -22,7 +22,12 @@
             <div class="date">{{ formatDateRange(travel.startDate, travel.endDate) }}</div>
             <div class="days">{{ calculateDays(travel.startDate, travel.endDate) }}天</div>
             <div class="country">{{ formatCountries(travel.country) }}</div>
-            <div class="location">{{ formatLocations(travel) }}</div>
+            <div class="location location-paws">
+              <span v-for="(location, index) in getLocationArray(travel)" :key="index" class="location-item">
+                {{ location }}
+                <span v-if="index < getLocationArray(travel).length - 1" class="paw-separator"></span>
+              </span>
+            </div>
             <div class="expand-btn" :class="{ rotated: expandedItems.has(index) }">▼</div>
           </div>
 
@@ -71,6 +76,10 @@ function getPhotoUrl(travel: TravelData, photoName: string): string {
 // 使用 composables (傳入 getPhotoUrl 函數)
 const { loadedPhotos, loadingPhotos, loadPhoto, loadPhotosWithDelay } = useTravelPhotos(getPhotoUrl)
 const { expandedItems, toggleDetails: toggleDetailsBase } = useTravelList()
+
+function getLocationArray(travel: TravelData): string[] {
+  return formatLocations(travel).split('、')
+}
 
 // 格式化國家顯示 (這個函數依賴於 countryTranslation，所以保留在組件中)
 function formatCountries(countries: string[], withFlag: boolean = true): string {
@@ -380,6 +389,30 @@ onMounted(async () => {
     &::before
       content: '📍 '
       margin-right: $spacing-xs
+
+.location-paws
+  .location-item
+    display: inline
+
+  .paw-separator
+    display: inline-block
+    width: 16px
+    height: 16px
+    margin: 0 8px
+    vertical-align: middle
+    background-image: url('@/assets/img/icon/paw.png')
+    background-size: contain
+    background-repeat: no-repeat
+    background-position: center
+    opacity: 0.7
+ㄋ
+    @include tablet
+      width: 18px
+      height: 18px
+
+    @include desktop
+      width: 16px
+      height: 16px
 
 .expand-btn
   background: $matcha-bright

@@ -49,7 +49,7 @@ const collectedCount = computed(() =>
 
 // 目標國家清單
 const TARGET_COUNTRIES = [
-  'norway', 'finland', 'australia', 'switzerland',
+  'norway', 'finland', 'sweden', 'australia', 'new zealand', 'egypt', 'switzerland', 'united kingdom'
 ]
 
 /**

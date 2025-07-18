@@ -2,7 +2,7 @@
 import countries from 'i18n-iso-countries'
 import zhTW from 'i18n-iso-countries/langs/zh.json'
 import enLocale from 'i18n-iso-countries/langs/en.json'
-import { COUNTRY_NAME_VARIANTS } from '../constants/regionConfig'
+import { COUNTRY_NAME_VARIANTS, MAP_ENGLISH_NAMES } from '../constants/regionConfig'
 import { TRADITIONAL_CHINESE_OVERRIDES } from '../constants/countryNameTWConfig'
 
 // 初始化語言包（只初始化一次）
@@ -162,9 +162,14 @@ export const countryTranslation = () => {
       }
 
       // 獲取英文正式名稱
-      const englishName = countries.getName(countryCode, 'en')
-      if (englishName) {
-        english = englishName
+      const mapEnglishName = MAP_ENGLISH_NAMES[countryCode]
+      if (mapEnglishName) {
+        english = mapEnglishName
+      } else {
+        const englishName = countries.getName(countryCode, 'en')
+        if (englishName) {
+          english = englishName
+        }
       }
 
       // 生成國旗

@@ -24,8 +24,9 @@ import { countryTranslation } from '../../composables/countryTranslation'
 import { useTravelStore } from '../../stores/useTravelStore'
 import { storeToRefs } from 'pinia'
 import type { TravelData, ProcessedPin, MapPinProps } from '../../types/travel-map'
+import { getManualCoordinates } from '../../constants/regionConfig'
 
-const { getCountryChineseName } = countryTranslation()
+const { getCountryInfo } = countryTranslation()
 const travelStore = useTravelStore()
 const { travels } = storeToRefs(travelStore)
 
@@ -102,39 +103,56 @@ const processedPins = computed((): ProcessedPin[] => {
   const pins: ProcessedPin[] = []
 
   Object.entries(countryGroups).forEach(([country, trips]) => {
-    // 直接嘗試找到對應的國家 feature
+    // 取得國家資訊
+    const countryInfo = getCountryInfo(country)
+    const correctEnglishName = countryInfo.english.toLowerCase()
+
+    // 嘗試在地圖資料中找到對應的國家 feature
     const countryFeature = props.worldData.features.find((f: any) => {
       const featureName = (f.properties.name || f.properties.NAME || '').toLowerCase()
-      return featureName === country.toLowerCase()
+      return featureName === correctEnglishName || featureName.includes(correctEnglishName)
     })
 
+    let x: number, y: number, centroid: [number, number]
+
     if (countryFeature) {
-      // 計算國家中心點
-      const centroid = d3.geoCentroid(countryFeature)
-      const [x, y] = props.projection(centroid)
-
-      // 處理數據
-      const sortedTrips = trips.sort(
-        (a, b) =>
-          new Date(`${a.year}-${a.startDate}`).getTime() -
-          new Date(`${b.year}-${b.startDate}`).getTime()
-      )
-
-      const latestTrip = sortedTrips[sortedTrips.length - 1]
-      const cities = [...new Set(trips.map(trip => trip.cityTW || trip.city))].join('、')
-
-      pins.push({
-        country,
-        displayName: getCountryChineseName(country),
-        visitCount: trips.length,
-        latestVisit: `${latestTrip.year}/${latestTrip.startDate} - ${latestTrip.endDate}`,
-        cities,
-        x,
-        y,
-        centroid,
-        trips // 保存完整的旅遊數據供面板使用
-      })
+      centroid = d3.geoCentroid(countryFeature)
+        ;[x, y] = props.projection(centroid)
+    } else {
+      const manualCoords = getManualCoordinates(country)
+      if (manualCoords) {
+        const [lng, lat] = manualCoords
+        centroid = [lng, lat]
+          ;[x, y] = props.projection(centroid)
+      } else {
+        // 找不到對應，跳過這個國家
+        console.warn(`❌ 無法找到國家座標: ${country}`)
+        return
+      }
     }
+
+    // 處理旅遊數據
+    const sortedTrips = trips.sort(
+      (a, b) =>
+        new Date(`${a.year}-${a.startDate}`).getTime() -
+        new Date(`${b.year}-${b.startDate}`).getTime()
+    )
+
+    const latestTrip = sortedTrips[sortedTrips.length - 1]
+    const cities = [...new Set(trips.map(trip => trip.cityTW || trip.city))].join('、')
+
+    // 建立圖釘
+    pins.push({
+      country,
+      displayName: countryInfo.chinese,
+      visitCount: trips.length,
+      latestVisit: `${latestTrip.year}/${latestTrip.startDate} - ${latestTrip.endDate}`,
+      cities,
+      x,
+      y,
+      centroid,
+      trips
+    })
   })
 
   return pins

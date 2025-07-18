@@ -1,6 +1,16 @@
 // constants/regionConfig.ts
 
 /**
+ * 地圖資料中的國家名稱對應表
+ * 處理正式國名與地圖資料名稱不一致的問題
+ */
+export const MAP_ENGLISH_NAMES: Record<string, string> = {
+  'CN': 'China',           // 而不是 People's Republic of China
+  'TR': 'Turkey',          // 而不是 Türkiye
+  'GU': 'Guam',           // 關島
+}
+
+/**
  * 國家名稱變體對應表
  * 處理各種國家名稱的變體和 ISO 代碼對應
  */
@@ -51,6 +61,34 @@ export const COUNTRY_NAME_VARIANTS: Record<string, string> = {
   gu: 'GU',
   guam: 'GU',
   tr: 'TR'
+}
+
+/**
+ * 手動座標配置 - 處理地圖資料中不存在的地區
+ */
+export const MANUAL_COORDINATES: Record<string, [number, number]> = {
+  // 美國領土
+  'guam': [144.7937, 13.4443],
+  'puerto rico': [-66.590149, 18.220833],
+  'us virgin islands': [-64.896335, 17.7539],
+  'american samoa': [-170.132217, -14.270972],
+
+  // 英國領土
+  'bermuda': [-64.7505, 32.3078],
+  'cayman islands': [-81.2546, 19.3133],
+  'british virgin islands': [-64.639968, 18.420695],
+
+  // 法國領土
+  'french polynesia': [-149.406843, -17.679742],
+  'new caledonia': [165.618042, -20.904305],
+
+  // 荷蘭領土
+  'aruba': [-69.968338, 12.52111],
+  'curacao': [-68.99002, 12.169570],
+
+  // 其他特殊地區
+  'gibraltar': [-5.353585, 36.140751],
+  'faroe islands': [-6.911806, 61.892635],
 }
 
 /**
@@ -133,4 +171,18 @@ export const getSpecialCityInfo = (city: string): RegionDisplayInfo | null => {
 export const getCountryCode = (countryName: string): string | null => {
   const normalizedName = countryName.toLowerCase().trim()
   return COUNTRY_NAME_VARIANTS[normalizedName] || null
+}
+
+/**
+ * 檢查是否需要使用手動座標
+ */
+export const needsManualCoordinates = (country: string): boolean => {
+  return country.toLowerCase() in MANUAL_COORDINATES
+}
+
+/**
+ * 獲取手動座標
+ */
+export const getManualCoordinates = (country: string): [number, number] | null => {
+  return MANUAL_COORDINATES[country.toLowerCase()] || null
 }
