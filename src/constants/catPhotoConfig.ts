@@ -52,16 +52,7 @@ export const CAT_POSITION_RULES: Record<string, string[]> = {
     'lower_center',
     'lower_right'
   ],
-  swim_cat: [
-    'top_left',
-    'top_center',
-    'top_right',
-    'upper_left',
-    'middle_right',
-    'lower_left',
-    'lower_center',
-    'lower_right'
-  ]
+  swim_cat: ['upper_left', 'middle_right', 'lower_left', 'lower_center', 'lower_right']
 }
 
 // 獲取貓咪的隨機位置
@@ -106,16 +97,6 @@ export const applyCatRandomPosition = (catConfig: CatConfig): CatConfig => {
   }
 }
 
-// 🆕 檢查貓咪是否有隨機位置配置
-export const hasRandomPositions = (catId: string): boolean => {
-  return catId in CAT_POSITION_RULES && CAT_POSITION_RULES[catId].length > 0
-}
-
-// 🆕 獲取貓咪可用的位置列表（除錯用）
-export const getCatAvailablePositions = (catId: string): string[] => {
-  return CAT_POSITION_RULES[catId] || []
-}
-
 // 預設的貓咪配置
 export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
   {
@@ -123,8 +104,8 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     name: '吃飯貓貓',
     image: eatCatImg,
     originalSize: {
-      width: 500,
-      height: 513
+      width: 439,
+      height: 450
     }
   },
   {
