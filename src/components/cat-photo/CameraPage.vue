@@ -27,14 +27,27 @@
         <p>相機準備中...</p>
       </div>
 
+      <!-- 📸 照片處理中覆蓋層 -->
+      <div v-if="isProcessingPhoto" class="photo-processing-overlay">
+        <div class="processing-content">
+          <div class="dots-spinner">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <p class="processing-text">正在處理照片...</p>
+        </div>
+      </div>
+
       <!-- 拍照指引 -->
-      <div v-if="isCameraReady && !isCapturing" class="camera-guide">
+      <div v-if="isCameraReady && !isCapturing && !isProcessingPhoto" class="camera-guide">
         <div class="guide-frame"></div>
         <p class="guide-text">將相機對準想要拍攝的場景</p>
       </div>
 
       <!-- 拍照按鈕 -->
-      <button v-if="isCameraReady" class="capture-button" @click="handleCapture" :disabled="isCapturing || isLoading">
+      <button v-if="isCameraReady && !isProcessingPhoto" class="capture-button" @click="handleCapture"
+        :disabled="isCapturing || isLoading">
         <div class="capture-inner" :class="{ capturing: isCapturing }"></div>
       </button>
     </div>
@@ -65,6 +78,7 @@ const emit = defineEmits<{
 const videoElement = ref<HTMLVideoElement | null>(null)
 const canvasElement = ref<HTMLCanvasElement | null>(null)
 const isCapturing = ref(false)
+const isProcessingPhoto = ref(false) // 🆕 照片處理狀態
 
 // ===================================
 // Composables
@@ -92,7 +106,7 @@ const {
 // ===================================
 
 /**
- * 處理拍照
+ * 處理拍照 - 動態調整處理時間版本
  */
 const handleCapture = async () => {
   if (isCapturing.value || !isCameraReady.value) return
@@ -101,18 +115,66 @@ const handleCapture = async () => {
   clearError()
 
   try {
+    // 1. 執行拍照
     const photoData = await capturePhoto()
 
     if (photoData) {
-      // 短暫延遲讓使用者看到拍照效果
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // 2. 拍照完成，立即顯示處理動畫
+      isCapturing.value = false
+      isProcessingPhoto.value = true
+
+      // 3. 記錄開始時間
+      const startTime = Date.now()
+
+      // 4. 🔥 實際的照片處理邏輯
+      await performPhotoProcessing(photoData)
+
+      // 5. 計算已經過的時間
+      const elapsedTime = Date.now() - startTime
+      const minDisplayTime = 1200 // 最少顯示 1.2 秒
+
+      // 6. 如果處理太快，延長顯示時間
+      if (elapsedTime < minDisplayTime) {
+        await new Promise(resolve =>
+          setTimeout(resolve, minDisplayTime - elapsedTime)
+        )
+      }
+
+      // 7. 完成後跳轉
       emit('photoCaptured')
     }
   } catch (error) {
     console.error('Capture failed:', error)
     showError('拍照失敗，請重試')
   } finally {
-    isCapturing.value = false
+    // 8. 重置狀態
+    isProcessingPhoto.value = false
+  }
+}
+
+/**
+ * 🆕 實際的照片處理邏輯
+ * 處理照片並準備合成
+ */
+const performPhotoProcessing = async (photoData: any) => {
+  try {
+    // 這裡放實際的照片處理邏輯
+    // 例如：照片壓縮、格式轉換、儲存到狀態等
+
+    // 如果你有照片壓縮函數
+    // const compressedPhoto = await compressImage(photoData)
+
+    // 如果需要儲存到全域狀態
+    // await savePhotoToState(photoData)
+
+    // 如果需要預處理
+    // await preparePhotoForCatOverlay(photoData)
+
+    console.log('Photo processing completed')
+    return photoData
+  } catch (error) {
+    console.error('Photo processing failed:', error)
+    throw error
   }
 }
 
@@ -225,8 +287,7 @@ onUnmounted(() => {
 .switch-camera-button
   @include flex-center
   position: absolute
-  z-index: 10
-  // Mobile First - 小尺寸按鈕
+  z-index: 10鈕
   width: 40px
   height: 40px
   border: none
@@ -250,7 +311,6 @@ onUnmounted(() => {
     height: 44px
 
 .close-button
-  // Mobile First - 較小間距
   top: 15px
   left: 15px
 
@@ -259,7 +319,6 @@ onUnmounted(() => {
     left: 20px
 
 .switch-camera-button
-  // Mobile First - 較小間距
   top: 15px
   right: 15px
 
@@ -269,7 +328,6 @@ onUnmounted(() => {
 
 // 關閉按鈕圖片
 .close-icon
-  // Mobile First - 較小圖示
   width: 20px
   height: 20px
   background-image: url('@/assets/img/icon/close_w.png')
@@ -283,7 +341,6 @@ onUnmounted(() => {
 
 // 同步/旋轉按鈕圖片
 .sync-icon
-  // Mobile First - 較小圖示
   width: 20px
   height: 20px
   background-image: url('@/assets/img/icon/cached.png')
@@ -323,8 +380,7 @@ onUnmounted(() => {
   color: $camera-text-white
 
 .loading-spinner
-  margin-bottom: $spacing-md
-  // Mobile First - 較小 spinner
+  margin-bottom: $spacing-mdpinner
   width: 36px
   height: 36px
   border: 3px solid rgba(255, 255, 255, 0.2)
@@ -338,7 +394,6 @@ onUnmounted(() => {
 
 .error-icon
   margin-bottom: $spacing-md
-  // Mobile First - 較小圖示
   font-size: 40px
 
   @include tablet
@@ -348,11 +403,62 @@ onUnmounted(() => {
 .camera-error p
   margin: 0
   text-align: center
-  // Mobile First - 較小文字
   font-size: 14px
 
   @include tablet
     font-size: 16px
+
+// ===================================
+// 🆕 照片處理中覆蓋層
+// ===================================
+
+.photo-processing-overlay
+  @include absolute-center
+  @include flex-center
+  z-index: 15
+  width: 100%
+  height: 100%
+  background: rgba(0, 0, 0, 0.85)
+  backdrop-filter: blur(8px)
+
+.processing-content
+  @include flex-center
+  flex-direction: column
+  text-align: center
+
+.dots-spinner
+  @include flex-center
+  margin-bottom: $spacing-lg
+  gap: 8px
+
+  @include tablet
+    gap: 10px
+
+.dot
+  width: 12px
+  height: 12px
+  background: $camera-btn-primary // 使用主題色 #EC6D51
+  border-radius: 50%
+  animation: bounce 1.4s ease-in-out infinite
+
+  @include tablet
+    width: 14px
+    height: 14px
+
+  &:nth-child(2)
+    animation-delay: 0.2s
+
+  &:nth-child(3)
+    animation-delay: 0.4s
+
+.processing-text
+  margin: 0
+  color: $camera-text-white
+  font-size: 16px
+  font-weight: 500
+
+  @include tablet
+    font-size: 18px
 
 // ===================================
 // 拍照指引
@@ -368,7 +474,6 @@ onUnmounted(() => {
 
 .guide-frame
   margin-bottom: $spacing-md
-  // Mobile First - 較小框架
   width: 180px
   height: 180px
   border: 2px solid rgba(255, 255, 255, 0.6)
@@ -385,7 +490,6 @@ onUnmounted(() => {
   background: $camera-bg-modal
   color: $camera-text-white
   text-align: center
-  // Mobile First - 較小文字
   font-size: 13px
   backdrop-filter: blur(4px)
 
@@ -399,7 +503,6 @@ onUnmounted(() => {
 .capture-button
   position: absolute
   z-index: 10
-  // Mobile First - 較小按鈕
   width: 70px
   height: 70px
   border: 4px solid rgba(255, 255, 255, 0.7)
@@ -450,9 +553,15 @@ onUnmounted(() => {
 // 動畫
 // ===================================
 
-// @keyframes spin
-//   from
-//     transform: rotate(0deg)
-//   to
-//     transform: rotate(360deg)
+@keyframes spin
+  from
+    transform: rotate(0deg)
+  to
+    transform: rotate(360deg)
+
+@keyframes bounce
+  0%, 100%
+    transform: translateY(0)
+  50%
+    transform: translateY(-12px)
 </style>

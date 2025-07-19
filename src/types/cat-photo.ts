@@ -34,7 +34,7 @@ export interface CatConfig {
     width: number
     height: number
   }
-  positions: {
+  positions?: {
     portrait: Position
     landscape: Position
   }
@@ -48,7 +48,7 @@ export interface Position {
   maxHeight: number
 }
 
-// 照片方向（移除 square）
+// 照片方向
 export type PhotoOrientation = 'portrait' | 'landscape'
 
 // 頁面狀態
@@ -79,28 +79,4 @@ export interface DrawCatParams {
   calculatedSize: CalculatedCatSize
   canvasWidth: number
   canvasHeight: number
-}
-
-// 分享選項
-export interface ShareOptions {
-  title: string
-  text: string
-  files?: File[]
-}
-
-// API 回應格式（如果未來需要）
-export interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-  message?: string
-}
-
-// 事件類型
-export interface CatPhotoEvents {
-  'page-change': PageState
-  'photo-captured': string
-  'cat-selected': CatConfig
-  'share-photo': string
-  error: string
 }

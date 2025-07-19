@@ -24,6 +24,98 @@ export const ORIENTATION_THRESHOLDS = {
   portrait: 0.8 // 寬高比 < 0.8 為直式
 }
 
+// 預設位置定義
+export const POSITION_PRESETS = {
+  top_left: { x: 0.15, y: 0.2 },
+  top_center: { x: 0.5, y: 0.2 },
+  top_right: { x: 0.85, y: 0.2 },
+  upper_left: { x: 0.15, y: 0.4 },
+  middle_right: { x: 0.85, y: 0.6 },
+  lower_left: { x: 0.15, y: 0.8 },
+  lower_center: { x: 0.5, y: 0.8 },
+  lower_right: { x: 0.85, y: 0.8 }
+}
+
+// 貓咪隨機位置規則
+export const CAT_POSITION_RULES: Record<string, string[]> = {
+  eat_cat: ['lower_left', 'lower_center', 'lower_right'],
+  sleep_cat: ['top_left', 'top_right', 'lower_center', 'lower_right', 'middle_right'],
+  travel_cat: ['lower_left', 'lower_right'],
+  wall_cat: ['lower_left', 'lower_right'],
+  lazy_cat: [
+    'top_left',
+    'top_center',
+    'top_right',
+    'upper_left',
+    'middle_right',
+    'lower_left',
+    'lower_center',
+    'lower_right'
+  ],
+  swim_cat: [
+    'top_left',
+    'top_center',
+    'top_right',
+    'upper_left',
+    'middle_right',
+    'lower_left',
+    'lower_center',
+    'lower_right'
+  ]
+}
+
+// 獲取貓咪的隨機位置
+export const getRandomPositionForCat = (catId: string): { x: number; y: number } | null => {
+  const positionNames = CAT_POSITION_RULES[catId]
+  if (!positionNames || positionNames.length === 0) {
+    return POSITION_PRESETS.lower_left // 沒有隨機位置配置，預設左下角
+  }
+
+  // 隨機選擇一個位置名稱
+  const randomIndex = Math.floor(Math.random() * positionNames.length)
+  const selectedPositionName = positionNames[randomIndex]
+
+  // 返回對應的座標
+  return POSITION_PRESETS[selectedPositionName as keyof typeof POSITION_PRESETS]
+}
+
+// 為貓咪配置應用隨機位置
+export const applyCatRandomPosition = (catConfig: CatConfig): CatConfig => {
+  const randomPosition = getRandomPositionForCat(catConfig.id)
+
+  if (!randomPosition) {
+    // 沒有隨機配置，返回原配置
+    return catConfig
+  }
+
+  return {
+    ...catConfig,
+    positions: {
+      // 統一應用到 portrait 和 landscape
+      portrait: {
+        ...randomPosition,
+        maxWidth: catConfig.originalSize.width,
+        maxHeight: catConfig.originalSize.height
+      },
+      landscape: {
+        ...randomPosition,
+        maxWidth: catConfig.originalSize.width,
+        maxHeight: catConfig.originalSize.height
+      }
+    }
+  }
+}
+
+// 🆕 檢查貓咪是否有隨機位置配置
+export const hasRandomPositions = (catId: string): boolean => {
+  return catId in CAT_POSITION_RULES && CAT_POSITION_RULES[catId].length > 0
+}
+
+// 🆕 獲取貓咪可用的位置列表（除錯用）
+export const getCatAvailablePositions = (catId: string): string[] => {
+  return CAT_POSITION_RULES[catId] || []
+}
+
 // 預設的貓咪配置
 export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
   {
@@ -33,10 +125,6 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     originalSize: {
       width: 500,
       height: 513
-    },
-    positions: {
-      portrait: { x: 0.25, y: 1.0, maxWidth: 500, maxHeight: 513 },
-      landscape: { x: 0.05, y: 1.0, maxWidth: 500, maxHeight: 513 }
     }
   },
   {
@@ -46,10 +134,6 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     originalSize: {
       width: 500,
       height: 332
-    },
-    positions: {
-      portrait: { x: 0.75, y: 1.0, maxWidth: 500, maxHeight: 332 },
-      landscape: { x: 0.75, y: 1.0, maxWidth: 500, maxHeight: 332 }
     }
   },
   {
@@ -59,10 +143,6 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     originalSize: {
       width: 325,
       height: 500
-    },
-    positions: {
-      portrait: { x: 0.03, y: 1.0, maxWidth: 325, maxHeight: 500 },
-      landscape: { x: 0.05, y: 1.0, maxWidth: 325, maxHeight: 500 }
     }
   },
   {
@@ -72,10 +152,6 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     originalSize: {
       width: 282,
       height: 500
-    },
-    positions: {
-      portrait: { x: 1.0, y: 1.0, maxWidth: 282, maxHeight: 500 },
-      landscape: { x: 1.0, y: 1.0, maxWidth: 282, maxHeight: 500 }
     }
   },
   {
@@ -85,10 +161,6 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     originalSize: {
       width: 500,
       height: 378
-    },
-    positions: {
-      portrait: { x: 0.05, y: 0.25, maxWidth: 500, maxHeight: 378 },
-      landscape: { x: 1.0, y: 0.8, maxWidth: 500, maxHeight: 378 }
     }
   },
   {
@@ -98,13 +170,14 @@ export const DEFAULT_CAT_CONFIGS: CatConfig[] = [
     originalSize: {
       width: 380,
       height: 500
-    },
-    positions: {
-      portrait: { x: 0.5, y: 1.0, maxWidth: 380, maxHeight: 500 },
-      landscape: { x: 0.05, y: 1.0, maxWidth: 380, maxHeight: 500 }
     }
   }
 ]
+
+// 獲取應用隨機位置的貓咪配置
+export const getCatConfigsWithRandomPositions = (): CatConfig[] => {
+  return DEFAULT_CAT_CONFIGS.map(config => applyCatRandomPosition(config))
+}
 
 // 分享配置
 export const SHARE_CONFIG = {
@@ -130,7 +203,7 @@ export const ERROR_MESSAGES = {
   CANVAS_NOT_SUPPORTED: '您的瀏覽器不支援 Canvas'
 }
 
-// Z-index 層級（配合現有設計系統）
+// Z-index 層級
 export const Z_INDEX = {
   debugInfo: 1000,
   closeButton: 100,
