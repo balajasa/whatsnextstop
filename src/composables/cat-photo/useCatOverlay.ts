@@ -66,7 +66,7 @@ export function useCatOverlay() {
       const catImg = await loadImage(cat.image)
 
       // 獲取貓咪的位置配置
-      const position = cat.positions[orientation]
+      const position = cat.positions?.[orientation]
       if (!position) {
         throw new Error(`貓咪 ${cat.id} 缺少 ${orientation} 方向的位置配置`)
       }
@@ -243,7 +243,7 @@ export function useCatOverlay() {
     canvasWidth: number,
     canvasHeight: number
   ) => {
-    const position = cat.positions[orientation]
+    const position = cat.positions?.[orientation]
     if (!position) {
       console.warn(`Cat ${cat.id} missing position config for ${orientation}`)
       return null
@@ -269,7 +269,7 @@ export function useCatOverlay() {
     canvasWidth: number,
     canvasHeight: number
   ): CalculatedCatSize | null => {
-    const position = cat.positions[orientation]
+    const position = cat.positions?.[orientation]
     if (!position) return null
 
     return calculateCatSizeAndPosition(cat, position, canvasWidth, canvasHeight)

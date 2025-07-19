@@ -21,7 +21,7 @@ export interface VideoConstraints {
 
 // 相機配置介面
 export interface CameraConfig {
-  video: VideoConstraints | boolean
+  video: VideoConstraints
   audio?: boolean
 }
 

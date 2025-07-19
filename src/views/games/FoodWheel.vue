@@ -260,7 +260,7 @@ const updateWheel = (): void => {
 
 .game-bg
   width: 100%
-  background: url('@/assets/img/minigame/wheel/wheel_bg.png') center
+  background: url('@/assets/img/bg/wheel_bg.jpg') center
   background-repeat: no-repeat
   // background-position: center
   background-size: cover

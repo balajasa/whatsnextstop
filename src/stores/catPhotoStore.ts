@@ -6,7 +6,8 @@ import type { CatPhotoState, PageState, CatConfig, PhotoOrientation } from '../t
 import {
   DEFAULT_CAT_CONFIGS,
   ERROR_MESSAGES,
-  ANIMATION_DURATIONS
+  ANIMATION_DURATIONS,
+  getCatConfigsWithRandomPositions
 } from '../constants/catPhotoConfig'
 import { detectPhotoOrientation, getRandomCat } from '../utils/photoUtils'
 
@@ -202,7 +203,8 @@ export const useCatPhotoStore = defineStore('catPhoto', {
      * 隨機選擇貓咪
      */
     selectRandomCat(): CatConfig {
-      const randomCat = getRandomCat(DEFAULT_CAT_CONFIGS)
+      const randomizedCats = getCatConfigsWithRandomPositions()
+      const randomCat = getRandomCat(randomizedCats)
       this.selectedCat = randomCat
       return randomCat
     },
@@ -211,11 +213,10 @@ export const useCatPhotoStore = defineStore('catPhoto', {
      * 更換貓咪
      */
     changeCat(): CatConfig {
-      // 確保不會選到相同的貓咪
-      const availableCats = DEFAULT_CAT_CONFIGS.filter(cat => cat.id !== this.selectedCat?.id)
+      const randomizedCats = getCatConfigsWithRandomPositions()
+      const availableCats = randomizedCats.filter(cat => cat.id !== this.selectedCat?.id)
 
       if (availableCats.length === 0) {
-        // 如果只有一隻貓咪，就選同一隻
         return this.selectRandomCat()
       }
 
@@ -228,7 +229,8 @@ export const useCatPhotoStore = defineStore('catPhoto', {
      * 選擇特定貓咪
      */
     selectCat(catId: string): CatConfig | null {
-      const cat = DEFAULT_CAT_CONFIGS.find(c => c.id === catId)
+      const randomizedCats = getCatConfigsWithRandomPositions()
+      const cat = randomizedCats.find(c => c.id === catId)
       if (cat) {
         this.selectedCat = cat
         return cat

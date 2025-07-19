@@ -26,14 +26,14 @@ export const ORIENTATION_THRESHOLDS = {
 
 // 預設位置定義
 export const POSITION_PRESETS = {
-  top_left: { x: 0.15, y: 0.2 },
-  top_center: { x: 0.5, y: 0.2 },
-  top_right: { x: 0.85, y: 0.2 },
+  top_left: { x: 0.15, y: 0.25 },
+  top_center: { x: 0.5, y: 0.25 },
+  top_right: { x: 0.85, y: 0.25 },
   upper_left: { x: 0.15, y: 0.4 },
   middle_right: { x: 0.85, y: 0.6 },
-  lower_left: { x: 0.15, y: 0.8 },
-  lower_center: { x: 0.5, y: 0.8 },
-  lower_right: { x: 0.85, y: 0.8 }
+  lower_left: { x: 0.03, y: 1.0 },
+  lower_center: { x: 0.5, y: 1.0 },
+  lower_right: { x: 1.0, y: 1.0 }
 }
 
 // 貓咪隨機位置規則
@@ -41,7 +41,7 @@ export const CAT_POSITION_RULES: Record<string, string[]> = {
   eat_cat: ['lower_left', 'lower_center', 'lower_right'],
   sleep_cat: ['top_left', 'top_right', 'lower_center', 'lower_right', 'middle_right'],
   travel_cat: ['lower_left', 'lower_right'],
-  wall_cat: ['lower_left', 'lower_right'],
+  wall_cat: ['lower_right'],
   lazy_cat: [
     'top_left',
     'top_center',

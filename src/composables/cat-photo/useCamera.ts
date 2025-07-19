@@ -55,7 +55,7 @@ export function useCamera() {
           resolve()
         }
 
-        const onError = (error: Event) => {
+        const onError = (_error: Event) => {
           videoEl.removeEventListener('loadedmetadata', onLoadedMetadata)
           videoEl.removeEventListener('error', onError)
           reject(new Error('Video loading failed'))

@@ -380,7 +380,7 @@ onUnmounted(() => {
   color: $camera-text-white
 
 .loading-spinner
-  margin-bottom: $spacing-mdpinner
+  margin-bottom: 16px
   width: 36px
   height: 36px
   border: 3px solid rgba(255, 255, 255, 0.2)
