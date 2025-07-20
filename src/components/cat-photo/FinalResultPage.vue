@@ -121,12 +121,19 @@ const handleDownload = async () => {
       return
     }
 
-    const success = downloadPhoto(blob)
-    if (success) {
-      showSuccess('請在新頁面中儲存照片！')
-    } else {
-      showError('下載失敗，請重試')
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result as string
+
+      // 🚀 就這一行！直接導頁到照片
+      window.location.href = dataUrl
     }
+
+    reader.onerror = () => {
+      showError('處理照片失敗，請重試')
+    }
+
+    reader.readAsDataURL(blob)
   } catch (error) {
     console.error('Download failed:', error)
     showError('下載失敗，請重試')

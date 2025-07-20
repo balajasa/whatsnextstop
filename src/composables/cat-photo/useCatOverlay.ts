@@ -183,8 +183,7 @@ export function useCatOverlay() {
         })
         return true
       } else {
-        // 備用方案：下載
-        return downloadPhoto(blob)
+        return false
       }
     } catch (error) {
       console.error('Share photo failed:', error)
