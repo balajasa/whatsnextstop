@@ -72,7 +72,7 @@ function setCachedCoordinates(cityName: string, coordinates: Coordinates): void 
  */
 async function queryNominatimAPI(cityName: string): Promise<Coordinates | null> {
   try {
-    console.log(`🌍 查詢城市座標: ${cityName}`)
+    // console.log(`🌍 查詢城市座標: ${cityName}`)
 
     const response = await axios.get<NominatimResponse[]>(
       'https://nominatim.openstreetmap.org/search',
@@ -175,7 +175,7 @@ export function clearCoordinatesCache(cityName?: string): void {
       // 清除所有座標快取
       const keys = Object.keys(localStorage).filter(key => key.startsWith(CACHE_PREFIX))
       keys.forEach(key => localStorage.removeItem(key))
-      console.log(`🗑️ 已清除所有座標快取 (${keys.length} 個項目)`)
+      // console.log(`🗑️ 已清除所有座標快取 (${keys.length} 個項目)`)
     }
   } catch (error) {
     console.warn('清除座標快取失敗:', error)
@@ -187,7 +187,7 @@ export function clearCoordinatesCache(cityName?: string): void {
  * @param cities - 城市名稱陣列
  */
 export async function preloadCityCoordinates(cities: string[]): Promise<void> {
-  console.log('🔥 開始預熱城市座標...')
+  // console.log('🔥 開始預熱城市座標...')
 
   const promises = cities.map(async city => {
     try {
@@ -198,7 +198,7 @@ export async function preloadCityCoordinates(cities: string[]): Promise<void> {
   })
 
   await Promise.allSettled(promises)
-  console.log('✅ 城市座標預熱完成')
+  // console.log('✅ 城市座標預熱完成')
 }
 
 export default {

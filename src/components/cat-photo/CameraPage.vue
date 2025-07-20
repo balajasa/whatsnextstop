@@ -170,7 +170,6 @@ const performPhotoProcessing = async (photoData: any) => {
     // 如果需要預處理
     // await preparePhotoForCatOverlay(photoData)
 
-    console.log('Photo processing completed')
     return photoData
   } catch (error) {
     console.error('Photo processing failed:', error)

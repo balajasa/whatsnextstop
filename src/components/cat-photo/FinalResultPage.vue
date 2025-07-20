@@ -74,7 +74,6 @@ const {
   isProcessing,
   updatePhotoDisplay,
   sharePhoto,
-  downloadPhoto,
   preparePhotoForShare
 } = useCatOverlay()
 
@@ -98,7 +97,7 @@ const handleShare = async () => {
       emit('share')
     } else {
       // 用戶取消分享或其他非錯誤情況
-      console.log('Share cancelled or failed silently')
+      // console.log('Share cancelled or failed silently')
     }
   } catch (error) {
     console.error('Share failed:', error)
@@ -112,18 +111,31 @@ const handleShare = async () => {
  * 處理下載
  */
 const handleDownload = async () => {
+  if (isProcessing.value) return
+
   try {
     const blob = await preparePhotoForShare()
-    if (blob) {
-      const success = downloadPhoto(blob)
-      if (success) {
-        showSuccess('照片已下載到您的裝置！')
-      } else {
-        showError('下載失敗，請重試')
-      }
-    } else {
-      showError('準備下載失敗')
+    if (!blob) {
+      showError('準備下載失敗，請重試')
+      return
     }
+
+    // 創建下載連結
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'cat-photo.jpg'
+
+    // 添加到 DOM 並點擊下載
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    // 清理 URL
+    URL.revokeObjectURL(url)
+
+    showSuccess('下載完成！')
+
   } catch (error) {
     console.error('Download failed:', error)
     showError('下載失敗，請重試')

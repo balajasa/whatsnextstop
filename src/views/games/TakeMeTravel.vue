@@ -147,7 +147,7 @@ const handleComplete = async () => {
  * 處理分享
  */
 const handleShare = () => {
-  console.log('Share initiated')
+  // console.log('Share initiated')
 }
 
 // ===================================
