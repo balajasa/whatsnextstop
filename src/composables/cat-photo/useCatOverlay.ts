@@ -204,18 +204,13 @@ export function useCatOverlay() {
    */
   const downloadPhoto = (blob: Blob): boolean => {
     try {
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
+      // 統一處理：都是另開頁面讓用戶自行下載
+      const imageUrl = URL.createObjectURL(blob)
+      window.open(imageUrl, '_blank')
 
-      link.href = url
-      link.download = SHARE_CONFIG.filename
-      link.style.display = 'none'
+      // 清理 URL
+      setTimeout(() => URL.revokeObjectURL(imageUrl), 5000)
 
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-
-      URL.revokeObjectURL(url)
       return true
     } catch (error) {
       console.error('Download photo failed:', error)

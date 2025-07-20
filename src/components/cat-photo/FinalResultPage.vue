@@ -112,17 +112,20 @@ const handleShare = async () => {
  * 處理下載
  */
 const handleDownload = async () => {
+  if (isProcessing.value) return
+
   try {
     const blob = await preparePhotoForShare()
-    if (blob) {
-      const success = downloadPhoto(blob)
-      if (success) {
-        showSuccess('照片已下載到您的裝置！')
-      } else {
-        showError('下載失敗，請重試')
-      }
+    if (!blob) {
+      showError('準備下載失敗，請重試')
+      return
+    }
+
+    const success = downloadPhoto(blob)
+    if (success) {
+      showSuccess('請在新頁面中儲存照片！')
     } else {
-      showError('準備下載失敗')
+      showError('下載失敗，請重試')
     }
   } catch (error) {
     console.error('Download failed:', error)
