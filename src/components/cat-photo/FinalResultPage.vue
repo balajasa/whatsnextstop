@@ -74,7 +74,6 @@ const {
   isProcessing,
   updatePhotoDisplay,
   sharePhoto,
-  downloadPhoto,
   preparePhotoForShare
 } = useCatOverlay()
 
@@ -98,7 +97,7 @@ const handleShare = async () => {
       emit('share')
     } else {
       // 用戶取消分享或其他非錯誤情況
-      console.log('Share cancelled or failed silently')
+      // console.log('Share cancelled or failed silently')
     }
   } catch (error) {
     console.error('Share failed:', error)
@@ -121,19 +120,28 @@ const handleDownload = async () => {
       return
     }
 
-    const reader = new FileReader()
-    reader.onload = () => {
-      const dataUrl = reader.result as string
+    // console.log('blob 準備成功，大小:', blob.size)
 
-      // 🚀 就這一行！直接導頁到照片
-      window.location.href = dataUrl
+    // 🔧 使用 blob URL 而不是 data URL
+    const blobUrl = URL.createObjectURL(blob)
+    // console.log('blobUrl:', blobUrl)
+
+    const newWindow = window.open(blobUrl, '_blank')
+
+    if (newWindow) {
+      // console.log('新視窗開啟成功')
+      showSuccess('請在新頁面中長按照片儲存！')
+
+      // 清理 URL
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl)
+        // console.log('清理 blobUrl')
+      }, 5000)
+    } else {
+      // console.log('新視窗被阻擋')
+      showError('無法開啟預覽，請檢查瀏覽器彈出視窗設定')
     }
 
-    reader.onerror = () => {
-      showError('處理照片失敗，請重試')
-    }
-
-    reader.readAsDataURL(blob)
   } catch (error) {
     console.error('Download failed:', error)
     showError('下載失敗，請重試')
