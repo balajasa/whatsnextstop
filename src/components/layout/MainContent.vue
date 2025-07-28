@@ -29,9 +29,16 @@
         <div class="section-title">📅 每日詳細行程</div>
         <div class="daily-grid">
           <div class="daily-block">
-
-            <div v-for="day in totalDays" :key="day" class="daily-card" @click="navigateToDay(day)">
+            <!-- 有行程時顯示天數卡片 -->
+            <div v-if="hasItinerary" v-for="day in totalDays" :key="day" class="daily-card" @click="navigateToDay(day)">
               Day{{ day }}
+            </div>
+
+            <!-- 沒有行程時顯示 Coming Soon -->
+            <div v-else class="coming-soon-card">
+              <div class="coming-soon-icon">🚀</div>
+              <div class="coming-soon-text">Coming Soon</div>
+              <div class="coming-soon-subtitle">敬請期待精彩行程</div>
             </div>
           </div>
         </div>
@@ -103,6 +110,9 @@ const router = useRouter()
 // Swiper 模組註冊
 const modules = [Navigation, Pagination, Autoplay, EffectFade]
 
+// 行程開關控制 - 這是新增的控制項
+const hasItinerary: Ref<boolean> = ref(false) // 設為 false 顯示 Coming Soon，設為 true 顯示天數卡片
+
 // 封面圖片數據
 const coverImages: Ref<CoverImage[]> = ref([
   {
@@ -163,7 +173,20 @@ const mainCards: Ref<MainCard[]> = ref([
 
 // 導航方法
 const navigateToSection = (routeName: string, section?: string): void => {
-  const routeConfig: { name: string; hash?: string } = { name: routeName }
+  if (!hasItinerary.value) {
+    // 沒有行程時，統一導向基本頁面，並傳遞狀態
+    router.push({
+      name: routeName,
+      query: { hasItinerary: 'false' }
+    })
+    return
+  }
+
+  // 有行程時使用原本邏輯
+  const routeConfig: { name: string; hash?: string; query: any } = {
+    name: routeName,
+    query: { hasItinerary: 'true' }
+  }
   if (section) {
     routeConfig.hash = `#${section}`
   }
@@ -171,9 +194,19 @@ const navigateToSection = (routeName: string, section?: string): void => {
 }
 
 const navigateToDay = (day: number): void => {
+  if (!hasItinerary.value) {
+    // 沒有行程時，統一導向基本頁面
+    router.push({
+      name: 'ItineraryDetail',
+      query: { hasItinerary: 'false' }
+    })
+    return
+  }
+
   router.push({
     name: 'ItineraryDetail',
-    hash: `#day${day}`
+    hash: `#day${day}`,
+    query: { hasItinerary: 'true' }
   })
 }
 </script>
@@ -260,7 +293,7 @@ const navigateToDay = (day: number): void => {
     object-position: center
 
 // ===================================
-// Swiper 自訂樣式 (合併重複區塊)
+// Swiper 自訂樣式
 // ===================================
 
 // 導航按鈕
@@ -444,7 +477,7 @@ const navigateToDay = (day: number): void => {
   padding: $spacing-lg
   min-height: 80px
   border-radius: $border-radius-md
-  background: linear-gradient(135deg, #6366F1, #4F46E5) // 預設：調暗的薰衣草紫
+  background: linear-gradient(135deg, #6366F1, #4F46E5)
   box-shadow: 0 4px 12px $shadow-city
   color: $text-white
   text-decoration: none
@@ -461,11 +494,54 @@ const navigateToDay = (day: number): void => {
 
   // 每日卡片顏色變化
   &:nth-child(odd)
-    background: linear-gradient(135deg, #22C55E, #16A34A) // 奇數：調暗的薄荷綠
+    background: linear-gradient(135deg, #22C55E, #16A34A)
 
   &:nth-child(3n)
-    background: linear-gradient(135deg, #EC4899, #DB2777) // 3的倍數：調暗的粉紅
+    background: linear-gradient(135deg, #EC4899, #DB2777)
 
+// ===================================
+// Coming Soon 卡片樣式
+// ===================================
+.coming-soon-card
+  display: flex
+  align-items: center
+  flex-direction: column
+  justify-content: center
+  padding: $spacing-xl
+  min-height: 200px
+  border-radius: $border-radius-lg
+  background: linear-gradient(135deg, #F3F4F6, #E5E7EB)
+  box-shadow: 0 4px 12px $shadow-light
+  color: $text-secondary
+  grid-column: 1 / -1 // 佔滿整行
+
+  @include tablet
+    min-height: 240px
+    padding: $spacing-2xl
+
+.coming-soon-icon
+  margin-bottom: $spacing-md
+  font-size: 48px
+  opacity: 0.8
+
+  @include tablet
+    font-size: 64px
+
+.coming-soon-text
+  margin-bottom: $spacing-sm
+  font-weight: 600
+  font-size: 24px
+
+  @include tablet
+    font-size: 28px
+
+.coming-soon-subtitle
+  font-size: 14px
+  opacity: 0.7
+  text-align: center
+
+  @include tablet
+    font-size: 16px
 
 // ===================================
 // 小遊戲元件
@@ -501,6 +577,19 @@ const navigateToDay = (day: number): void => {
   .daily-card
     min-height: 70px
     font-size: 14px
+
+  .coming-soon-card
+    min-height: 160px
+    padding: $spacing-lg
+
+  .coming-soon-icon
+    font-size: 40px
+
+  .coming-soon-text
+    font-size: 20px
+
+  .coming-soon-subtitle
+    font-size: 12px
 
 // 大桌面版優化
 @include large-desktop

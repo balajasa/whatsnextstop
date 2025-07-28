@@ -3,55 +3,59 @@
     <!-- 麵包屑 -->
     <BreadcrumbNav />
 
-    <!-- 浮動導航目錄 -->
-    <nav class="itinerary-detail-floating-nav" :class="{ 'itinerary-detail-nav-hidden': !showNav }">
-      <div class="itinerary-detail-nav-toggle" @click="toggleNav">
-        <span class="itinerary-detail-nav-icon">📋</span>
+    <!-- 沒有行程時的 Coming Soon 頁面 -->
+    <div v-if="!hasItinerary" class="coming-soon-container">
+      <div class="coming-soon-content">
+        <img src="@/assets/img/sym/cat_soon.png" alt="Coming Soon" class="coming-soon-image" />
+        <p class="coming-soon-description">下一趟旅程正在擲飛鏢決定中...</p>
       </div>
-      <div class="itinerary-detail-nav-menu" v-show="navOpen">
-        <div class="itinerary-detail-nav-section">
-          <h4>📋 行程資訊</h4>
-          <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`"
-            @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
-            {{ section.name }}
-          </a>
-        </div>
-        <div class="itinerary-detail-nav-section">
-          <h4>📅 每日行程</h4>
-          <a v-for="section in dailySections" :key="section.id" :href="`#${section.id}`"
-            @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
-            {{ section.name }}
-          </a>
-        </div>
-      </div>
-    </nav>
-
-    <!-- 主要內容區域 -->
-    <div class="itinerary-detail-schedule-content">
-      <!-- 所有區域統一渲染 -->
-      <section v-for="section in allSections" :key="section.id" :id="section.id"
-        :class="`itinerary-detail-schedule-section ${getSectionClass(section)}`">
-        <div class="itinerary-detail-section-container">
-          <!-- 顯示圖片 -->
-          <div v-for="(image, index) in generateImages(section)" :key="index" class="itinerary-detail-image-container">
-            <img :src="image.src" :alt="image.alt" class="itinerary-detail-schedule-image" />
-          </div>
-
-          <!-- iframe 區域（如果有的話） -->
-          <!-- <div v-if="section.iframe" class="itinerary-detail-iframe-container">
-            <iframe :src="section.iframe.src" :title="section.iframe.title || section.name"
-              :width="section.iframe.width || '100%'" :height="section.iframe.height || '600px'"
-              :frameborder="section.iframe.frameborder || '0'"
-              :allowfullscreen="section.iframe.allowfullscreen || false" class="itinerary-detail-iframe"></iframe>
-          </div> -->
-        </div>
-      </section>
     </div>
 
-    <!-- 回到頂部按鈕 -->
-    <button class="itinerary-detail-back-to-top" @click="scrollToTop" v-show="showBackToTop">
-      ↑
-    </button>
+    <!-- 有行程時的完整頁面 -->
+    <template v-else>
+      <!-- 浮動導航目錄 -->
+      <nav class="itinerary-detail-floating-nav" :class="{ 'itinerary-detail-nav-hidden': !showNav }">
+        <div class="itinerary-detail-nav-toggle" @click="toggleNav">
+          <span class="itinerary-detail-nav-icon">📋</span>
+        </div>
+        <div class="itinerary-detail-nav-menu" v-show="navOpen">
+          <div class="itinerary-detail-nav-section">
+            <h4>📋 行程資訊</h4>
+            <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`"
+              @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
+              {{ section.name }}
+            </a>
+          </div>
+          <div class="itinerary-detail-nav-section">
+            <h4>📅 每日行程</h4>
+            <a v-for="section in dailySections" :key="section.id" :href="`#${section.id}`"
+              @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
+              {{ section.name }}
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- 主要內容區域 -->
+      <div class="itinerary-detail-schedule-content">
+        <!-- 所有區域統一渲染 -->
+        <section v-for="section in allSections" :key="section.id" :id="section.id"
+          :class="`itinerary-detail-schedule-section ${getSectionClass(section)}`">
+          <div class="itinerary-detail-section-container">
+            <!-- 顯示圖片 -->
+            <div v-for="(image, index) in generateImages(section)" :key="index"
+              class="itinerary-detail-image-container">
+              <img :src="image.src" :alt="image.alt" class="itinerary-detail-schedule-image" />
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 回到頂部按鈕 -->
+      <button class="itinerary-detail-back-to-top" @click="scrollToTop" v-show="showBackToTop">
+        ↑
+      </button>
+    </template>
   </div>
 </template>
 
@@ -68,17 +72,14 @@ interface SectionConfig {
   name: string
   pages: string[]
   day?: number
-  iframe?: {
-    src: string
-    title?: string
-    width?: string
-    height?: string
-    frameborder?: string
-    allowfullscreen?: boolean
-  }
 }
 
 const route = useRoute()
+
+// 從 URL 參數獲取行程狀態
+const hasItinerary = computed(() => {
+  return route.query.hasItinerary === 'true'
+})
 
 // 響應式數據
 const showNav: Ref<boolean> = ref(true)
@@ -110,9 +111,6 @@ const infoSections = computed(() =>
 const dailySections = computed(() =>
   allSections.value.filter(section => section.type === 'daily')
 )
-
-// 計算屬性：總天數
-// const totalDays = computed(() => dailySections.value.length)
 
 // 計算屬性：所有區域ID供滾動檢測使用
 const allSectionIds = computed(() =>
@@ -210,12 +208,16 @@ const handleRouteHash = (): void => {
 
 // 在組件載入時執行
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-  handleRouteHash() // 處理錨點跳轉
+  if (hasItinerary.value) {
+    window.addEventListener('scroll', handleScroll)
+    handleRouteHash() // 處理錨點跳轉
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  if (hasItinerary.value) {
+    window.removeEventListener('scroll', handleScroll)
+  }
 })
 </script>
 
@@ -224,7 +226,7 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 主容器 (Mobile First)
+// 主容器
 // ===================================
 .itinerary-detail-container
   width: 100%
@@ -242,29 +244,70 @@ onUnmounted(() => {
     max-width: 900px
 
 // ===================================
-// 頁面標題 (Mobile First)
+// Coming Soon 頁面樣式
 // ===================================
-.itinerary-detail-title
-  margin: $spacing-md 0 $spacing-lg
-  padding: 0 $spacing-md
-  color: $text-primary
-  text-align: center
-  font-weight: 700
-  font-size: 20px
+.coming-soon-container
+  @include flex-center
+  width: 100%
+  min-height: 80vh
+  padding: $spacing-xl
+  border-radius: $border-radius-md
+  background: $bg-card
+  box-shadow: 0 4px 16px $shadow-light
 
   @include tablet
-    margin: $spacing-lg 0 $spacing-xl
-    font-size: 28px
+    padding: $spacing-2xl
+    border-radius: $border-radius-lg
+    box-shadow: 0 6px 24px $shadow-medium
+
+.coming-soon-content
+  display: flex
+  align-items: center
+  flex-direction: column
+  text-align: center
+  max-width: 500px
+
+.coming-soon-image
+  width: 200px
+  height: 200px
+  margin-bottom: $spacing-xl
+  object-fit: contain
+  opacity: 0.8
+
+  @include tablet
+    width: 250px
+    height: 250px
 
   @include desktop
-    margin: $spacing-xl 0 $spacing-2xl
-    font-size: 32px
+    width: 300px
+    height: 300px
 
-  @include large-desktop
-    font-size: 36px
+.coming-soon-title
+  margin-bottom: $spacing-lg
+  color: $text-primary
+  font-weight: 700
+  font-size: 32px
+
+  @include tablet
+    font-size: 40px
+
+  @include desktop
+    font-size: 48px
+
+.coming-soon-description
+  margin: 0
+  color: $text-secondary
+  font-size: 16px
+  line-height: 1.6
+
+  @include tablet
+    font-size: 18px
+
+  @include desktop
+    font-size: 20px
 
 // ===================================
-// 主要內容區域 (Mobile First)
+// 主要內容區域 (原有樣式保持不變)
 // ===================================
 .itinerary-detail-schedule-content
   width: 100%
@@ -280,7 +323,7 @@ onUnmounted(() => {
     padding: 0 $spacing-xl $spacing-2xl
 
 // ===================================
-// 內容區塊 (Mobile First)
+// 內容區塊
 // ===================================
 .itinerary-detail-schedule-section
   margin-bottom: $spacing-lg
@@ -298,7 +341,7 @@ onUnmounted(() => {
   width: 100%
 
 // ===================================
-// 圖片容器 (Mobile First)
+// 圖片容器
 // ===================================
 .itinerary-detail-image-container
   overflow: hidden
@@ -331,39 +374,7 @@ onUnmounted(() => {
       transform: scale(1.02)
 
 // ===================================
-// iframe 區域 (Mobile First)
-// ===================================
-.itinerary-detail-iframe-container
-  position: relative
-  min-height: 300px
-  width: 100%
-  overflow: hidden
-  border-radius: $border-radius-md
-  background: $bg-card
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
-
-  @include tablet
-    min-height: 500px
-    border-radius: $border-radius-lg
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12)
-
-  @include desktop
-    min-height: 700px
-    border-radius: $border-radius-xl
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15)
-
-  @include large-desktop
-    min-height: 800px
-
-.itinerary-detail-iframe
-  display: block
-  min-height: inherit
-  width: 100%
-  height: 100%
-  border: none
-
-// ===================================
-// 浮動導航 (Mobile First)
+// 浮動導航 (原有樣式保持不變)
 // ===================================
 .itinerary-detail-floating-nav
   position: fixed
@@ -391,7 +402,7 @@ onUnmounted(() => {
     @include tablet
       transform: translateY(-50%) translateX(100px)
 
-// 導航切換按鈕 (Mobile First)
+// 導航切換按鈕
 .itinerary-detail-nav-toggle
   @include flex-center
   width: 40px
@@ -427,7 +438,7 @@ onUnmounted(() => {
   @include desktop
     font-size: 22px
 
-// 導航選單 (Mobile First)
+// 導航選單
 .itinerary-detail-nav-menu
   position: absolute
   top: 50%
@@ -525,7 +536,7 @@ onUnmounted(() => {
       font-weight: 500
 
 // ===================================
-// 回到頂部按鈕 (Mobile First)
+// 回到頂部按鈕
 // ===================================
 .itinerary-detail-back-to-top
   @include flex-center
@@ -574,7 +585,7 @@ onUnmounted(() => {
       transform: translateY(-2px) scale(1.05)
 
 // ===================================
-// 特殊區塊樣式 (Mobile First)
+// 特殊區塊樣式 (原有樣式保持不變)
 // ===================================
 
 // 封面區塊
