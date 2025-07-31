@@ -120,27 +120,21 @@ const handleDownload = async () => {
       return
     }
 
-    // console.log('blob 準備成功，大小:', blob.size)
+    // 創建下載連結
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'cat-photo.jpg'
 
-    // 🔧 使用 blob URL 而不是 data URL
-    const blobUrl = URL.createObjectURL(blob)
-    // console.log('blobUrl:', blobUrl)
+    // 添加到 DOM 並點擊下載
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
 
-    const newWindow = window.open(blobUrl, '_blank')
+    // 清理 URL
+    URL.revokeObjectURL(url)
 
-    if (newWindow) {
-      // console.log('新視窗開啟成功')
-      showSuccess('請在新頁面中長按照片儲存！')
-
-      // 清理 URL
-      setTimeout(() => {
-        URL.revokeObjectURL(blobUrl)
-        // console.log('清理 blobUrl')
-      }, 5000)
-    } else {
-      // console.log('新視窗被阻擋')
-      showError('無法開啟預覽，請檢查瀏覽器彈出視窗設定')
-    }
+    showSuccess('下載完成！')
 
   } catch (error) {
     console.error('Download failed:', error)

@@ -1,6 +1,6 @@
 // ===================================
 // src/composables/cat-photo/useCatOverlay.ts
-// 貓咪疊加功能 Composable
+// 貓咪疊加功能 Composable - 修改後版本
 // ===================================
 
 import { ref, computed } from 'vue'
@@ -164,7 +164,7 @@ export function useCatOverlay() {
   }
 
   /**
-   * 分享照片
+   * 分享照片 - 純分享功能，不包含下載降級
    */
   const sharePhoto = async (): Promise<boolean> => {
     try {
@@ -183,6 +183,7 @@ export function useCatOverlay() {
         })
         return true
       } else {
+        // 如果不支援原生分享，直接回傳 false
         return false
       }
     } catch (error) {
@@ -194,25 +195,6 @@ export function useCatOverlay() {
       }
 
       store.setError('分享照片失敗')
-      return false
-    }
-  }
-
-  /**
-   * 下載照片（備用分享方案）
-   */
-  const downloadPhoto = (blob: Blob): boolean => {
-    try {
-      // 統一處理：都是另開頁面讓用戶自行下載
-      const imageUrl = URL.createObjectURL(blob)
-      window.open(imageUrl, '_blank')
-
-      // 清理 URL
-      setTimeout(() => URL.revokeObjectURL(imageUrl), 5000)
-
-      return true
-    } catch (error) {
-      console.error('Download photo failed:', error)
       return false
     }
   }
@@ -316,26 +298,18 @@ export function useCatOverlay() {
     isProcessing.value = false
   }
 
-  // ===================================
-  // 返回 API
-  // ===================================
-
   return {
     // 響應式狀態
     overlayCanvas,
     isProcessing,
     lastProcessedPhoto,
-
     // 核心功能
     addCatToPhoto,
     addCurrentCatToPhoto,
     updatePhotoDisplay,
-
     // 分享功能
     sharePhoto,
-    downloadPhoto,
     preparePhotoForShare,
-
     // 工具方法
     setOverlayCanvasRef,
     getCatPreviewPosition,

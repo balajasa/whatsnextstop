@@ -5,34 +5,31 @@
       <div class="games-section">
         <div class="game-linklist">
           <div class="nav-links">
-            <router-link to="/" class="nav-link">
+            <router-link to="/dropblock" class="nav-link">
               <div class="link-card dropblock-card mini-card">
                 <div class="card-icon">🧊</div>
                 <div class="card-title">從天而降</div>
                 <p>天上會掉下來什麼呢？</p>
-                <p>Coming Soon...</p>
                 <div class="card-decoration"></div>
               </div>
             </router-link>
           </div>
           <div class="nav-links">
-            <router-link to="/" class="nav-link">
+            <router-link to="/foodwheel" class="nav-link">
               <div class="link-card foodwheel-card mini-card">
                 <div class="card-icon">🍽️</div>
                 <div class="card-title">濟州島輪盤</div>
                 <p>3 2 1...什麼時候停止呢？</p>
-                <p>Coming Soon...</p>
                 <div class="card-decoration"></div>
               </div>
             </router-link>
           </div>
           <div class="nav-links">
-            <router-link to="/" class="nav-link">
+            <router-link to="/takemetravel" class="nav-link">
               <div class="link-card takemetravel-card mini-card">
                 <div class="card-icon">📸</div>
                 <div class="card-title">帶我去旅行</div>
                 <p>記錄旅行的每一刻</p>
-                <p>Coming Soon...</p>
                 <div class="card-decoration"></div>
               </div>
             </router-link>

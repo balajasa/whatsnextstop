@@ -88,19 +88,19 @@ const sidebarList: SidebarItem[] = [
     category: '小小樂趣',
     name: '從天而降',
     icon: '🧊',
-    path: '/'
+    path: '/dropblock'
   },
   {
     category: '小小樂趣',
     name: '濟州島輪盤',
     icon: '🍽️',
-    path: '/'
+    path: '/foodwheel'
   },
   {
     category: '小小樂趣',
     name: '帶我去旅行',
     icon: '📸',
-    path: '/'
+    path: '/takemetravel'
   },
 ]
 

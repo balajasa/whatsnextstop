@@ -8,14 +8,22 @@
       <!-- 行程內容 -->
       <section id="itinerary" class="schedule-section itinerary-section">
         <div class="section-container">
-          <div class="iframe-container">
+
+          <!-- 有連結時顯示 iframe -->
+          <div v-if="hasIframeLink" class="iframe-container">
             <div class="iframe-wrapper">
-              <iframe loading="lazy" class="canva-iframe"
-                src="https://www.canva.com/design/DAGo__QAg-I/ZUWMoq-agdfYIO8WE9nLhA/view?embed" allowfullscreen
-                allow="fullscreen">
+              <iframe loading="lazy" class="canva-iframe" :src="iframeUrl" allowfullscreen allow="fullscreen">
               </iframe>
             </div>
           </div>
+
+          <!-- 沒有連結時顯示 Coming Soon -->
+          <div v-else class="coming-soon-container">
+            <div class="coming-soon-content">
+              <div class="coming-soon-image"></div>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>
@@ -23,7 +31,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+
+// 控制是否有 iframe 連結的開關
+const hasIframeLink: Ref<boolean> = ref(false) // 設為 false 顯示 Coming Soon，true 顯示 iframe
+
+// iframe 連結
+const iframeUrl: Ref<string> = ref('')
+
 </script>
 
 <style lang="sass" scoped>
@@ -39,14 +56,14 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
   height: 100vh // 固定為視窗高度
   background: $bg-primary
   margin: 0 auto
-  padding: $spacing-xs
+  // padding: $spacing-xs
   display: flex
   flex-direction: column
 
   // 平板版本 (≥ 768px)
   @include tablet
     max-width: 750px
-    padding: $spacing-sm
+    // padding: $spacing-sm
     margin: 0 auto
     height: auto
     min-height: 100vh
@@ -54,12 +71,12 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
   // 桌面版本 (≥ 1024px)
   @include desktop
     max-width: 900px
-    padding: $spacing-md
+    // padding: $spacing-md
 
   // 大桌面版本 (≥ 1280px)
   @include large-desktop
     max-width: 1000px
-    padding: $spacing-lg
+    // padding: $spacing-lg
 
 // ===================================
 // 主要內容區域
@@ -166,6 +183,53 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
   margin: 0
 
 // ===================================
+// Coming Soon 容器樣式
+// ===================================
+.coming-soon-container
+  @include flex-center
+  width: 100%
+  flex: 1 // 填滿剩餘空間
+  border-radius: $border-radius-md
+  background: $bg-card
+  box-shadow: 0 4px 16px $shadow-light
+  padding: $spacing-xl
+
+  @include tablet
+    border-radius: $border-radius-lg
+    box-shadow: 0 6px 24px $shadow-medium
+    padding: $spacing-2xl
+
+  @include desktop
+    border-radius: $border-radius-xl
+    box-shadow: 0 8px 32px $shadow-strong
+
+.coming-soon-content
+  display: flex
+  align-items: center
+  flex-direction: column
+  text-align: center
+  max-width: 400px
+
+.coming-soon-image
+  width: 150px
+  height: 150px
+  margin-bottom: $spacing-lg
+  background-image: url('@/assets/img/sym/cat_soon.png')
+  background-size: contain
+  background-repeat: no-repeat
+  background-position: center
+  opacity: 0.8
+
+  @include tablet
+    width: 200px
+    height: 200px
+    margin-bottom: $spacing-xl
+
+  @include desktop
+    width: 250px
+    height: 250px
+
+// ===================================
 // 特殊情況處理
 // ===================================
 
@@ -173,6 +237,10 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 @media (max-width: 359px)
   .itinerary-container
     padding: $spacing-xs
+
+  .coming-soon-image
+    width: 120px
+    height: 120px
 
 // 橫向手機優化
 @media (max-width: 767px) and (orientation: landscape)
@@ -188,27 +256,12 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
     padding-top: 110%
 
 // ===================================
-// 手機版專用：確保不需滑動
-// ===================================
-@media (max-width: 767px)
-  // 確保整個頁面不會超出視窗高度
-  body, html
-    overflow-x: hidden
-
-  // 考慮 Header 高度的調整（如果有的話）
-  .itinerary-container
-    // 如果有 header，需要減去 header 高度
-    // height: calc(100vh - #{$header-height})
-
-    // 確保不產生垂直滾動條
-    overflow-y: hidden
-
-// ===================================
 // 效能優化
 // ===================================
 
 // 使用 GPU 加速
-.iframe-container
+.iframe-container,
+.coming-soon-container
   will-change: transform
   transform: translateZ(0)
 
@@ -218,4 +271,7 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
   // 提升渲染效能
   will-change: contents
+
+.coming-soon-image
+  loading: lazy
 </style>
