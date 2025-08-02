@@ -5,9 +5,9 @@
  * 處理正式國名與地圖資料名稱不一致的問題
  */
 export const MAP_ENGLISH_NAMES: Record<string, string> = {
-  'CN': 'China',           // 而不是 People's Republic of China
-  'TR': 'Turkey',          // 而不是 Türkiye
-  'GU': 'Guam',           // 關島
+  CN: 'China', // 而不是 People's Republic of China
+  TR: 'Turkey', // 而不是 Türkiye
+  GU: 'Guam' // 關島
 }
 
 /**
@@ -30,6 +30,7 @@ export const COUNTRY_NAME_VARIANTS: Record<string, string> = {
   taiwan: 'TW',
   china: 'CN',
   'hong kong': 'HK',
+  hongkong: 'HK',
   macau: 'MO',
   'united states': 'US',
   usa: 'US',
@@ -64,17 +65,17 @@ export const COUNTRY_NAME_VARIANTS: Record<string, string> = {
 }
 
 /**
- * 手動座標配置 - 處理地圖資料中不存在的地區
+ * 手動座標配置(地圖標示用)
  */
 export const MANUAL_COORDINATES: Record<string, [number, number]> = {
   // 美國領土
-  'guam': [144.7937, 13.4443],
+  guam: [144.7937, 13.4443],
   'puerto rico': [-66.590149, 18.220833],
   'us virgin islands': [-64.896335, 17.7539],
   'american samoa': [-170.132217, -14.270972],
 
   // 英國領土
-  'bermuda': [-64.7505, 32.3078],
+  bermuda: [-64.7505, 32.3078],
   'cayman islands': [-81.2546, 19.3133],
   'british virgin islands': [-64.639968, 18.420695],
 
@@ -83,12 +84,16 @@ export const MANUAL_COORDINATES: Record<string, [number, number]> = {
   'new caledonia': [165.618042, -20.904305],
 
   // 荷蘭領土
-  'aruba': [-69.968338, 12.52111],
-  'curacao': [-68.99002, 12.169570],
+  aruba: [-69.968338, 12.52111],
+  curacao: [-68.99002, 12.16957],
 
   // 其他特殊地區
-  'gibraltar': [-5.353585, 36.140751],
+  gibraltar: [-5.353585, 36.140751],
   'faroe islands': [-6.911806, 61.892635],
+
+  // 特別行政區-為了讓地圖能顯示，所以硬改
+  hongkong: [113, 22.3193], // 正確經緯度: (114.1694, 22.3193)
+  macao: [108, 22.1987] // 正確經緯度: (113.5439, 22.1987)
 }
 
 /**

@@ -219,7 +219,9 @@ export function getTripMilestones(tripDate: string) {
  * @returns 格式化後的日期範圍字符串
  */
 export function formatDateRange(startDate: string, endDate: string): string {
-  return `${startDate.replace('-', '/')}/${endDate.replace('-', '/')}`
+  const formattedStart = startDate.replace('-', '/')
+  const formattedEnd = endDate.replace('-', '/')
+  return `${formattedStart} - ${formattedEnd}`
 }
 
 /**

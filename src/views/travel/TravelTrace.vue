@@ -21,7 +21,7 @@
             <div class="year">{{ travel.year }}</div>
             <div class="date">{{ formatDateRange(travel.startDate, travel.endDate) }}</div>
             <div class="days">{{ calculateDays(travel.startDate, travel.endDate) }}天</div>
-            <div class="country">{{ formatCountries(travel.country) }}</div>
+            <div class="country">{{ formatCountries(travel.country, travel.city) }}</div>
             <div class="location location-paws">
               <span v-for="(location, index) in getLocationArray(travel)" :key="index" class="location-item">
                 {{ location }}
@@ -63,6 +63,7 @@ import { formatLocations, openPhoto } from '../../utils/travelUtils'
 import { formatDateRange, calculateDays } from '../../utils/dateUtils'
 import { useTravelPhotos } from '../../composables/useTravelPhotos'
 import { useTravelList } from '../../composables/useTravelList'
+import { RegionUtils } from '../../utils/regionUtils'
 
 const travelStore = useTravelStore()
 const { travels, loading } = storeToRefs(travelStore)
@@ -81,8 +82,31 @@ function getLocationArray(travel: TravelData): string[] {
   return formatLocations(travel).split('、')
 }
 
-// 格式化國家顯示 (這個函數依賴於 countryTranslation，所以保留在組件中)
-function formatCountries(countries: string[], withFlag: boolean = true): string {
+// 格式化國家顯示 (處理特殊地區邏輯)
+function formatCountries(countries: string[], cities: string[] = [], withFlag: boolean = true): string {
+  // 檢查是否有特殊城市（如香港、澳門）
+  const specialCities: { flagCode: string; displayName: string }[] = []
+
+  cities.forEach(city => {
+    const specialCityInfo = RegionUtils.getSpecialCityInfo(city)
+    if (specialCityInfo) {
+      specialCities.push(specialCityInfo)
+    }
+  })
+
+  if (specialCities.length > 0) {
+    // 如果有特殊城市，使用 countryTranslation 的 generateFlag 方法
+    const { generateFlag } = countryTranslation()
+
+    return specialCities
+      .map(cityInfo => {
+        const flag = withFlag ? generateFlag(cityInfo.flagCode) : ''
+        return withFlag ? `${flag} ${cityInfo.displayName}` : cityInfo.displayName
+      })
+      .join('、') // 用頓號分隔多個特殊城市
+  }
+
+  // 如果沒有特殊城市，按原邏輯處理國家
   return countries
     .map(country => {
       const info = getCountryInfo(country)

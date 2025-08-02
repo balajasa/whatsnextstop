@@ -36,6 +36,7 @@ export const cityCoordinates = {
   'Bangkok, Thailand': { lat: 13.7563, lon: 100.5018 },
   Singapore: { lat: 1.3521, lon: 103.8198 },
   'Hong Kong': { lat: 22.3193, lon: 114.1694 },
+  Macau: { lat: 22.1987, lon: 113.5439 },
   'Taipei, Taiwan': { lat: 25.033, lon: 121.5654 },
 
   // 美洲
