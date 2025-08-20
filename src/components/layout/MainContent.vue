@@ -45,10 +45,10 @@
       </div>
 
       <!-- 小遊戲區域 -->
-      <div class="minigame-section">
-        <div class="section-title">🎮 休閒小遊戲</div>
+      <!-- <div class="minigame-section">
+        <div class="section-title">🎮 小小樂趣</div>
         <MiniGame />
-      </div>
+      </div> -->
 
       <!-- 倒數計時區域 -->
       <div class="countdown-section">
@@ -63,8 +63,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Ref } from 'vue'
-import TravelCountdown from '@/components/layout/TravelCountdown.vue'
-import MiniGame from '@/views/games/MiniGame.vue'
+import TravelCountdown from '@/components/layout/travel-countdown/TravelCountdown.vue'
+// import MiniGame from '@/views/games/MiniGame.vue'
 
 // 導入 Swiper 組件和模組
 import { Swiper, SwiperSlide } from 'swiper/vue'

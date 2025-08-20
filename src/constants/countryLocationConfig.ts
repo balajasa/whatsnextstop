@@ -12,7 +12,6 @@ export const countryLocationConfig = {
   options: {
     showSeconds: true, // 是否顯示秒數
     showWeather: true, // 是否顯示天氣
-    showProgress: true // 是否顯示進度條
   }
 }
 

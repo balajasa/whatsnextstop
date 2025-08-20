@@ -75,7 +75,6 @@ export class travelHttpClient {
    */
   static setDevelopmentMode(isDev: boolean): void {
     this.isDev = isDev
-    console.log(`🔄 環境已切換為: ${isDev ? '開發' : '生產'}`)
   }
 
   /**

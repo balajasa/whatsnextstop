@@ -1,77 +1,77 @@
 // ===================================
 // src/types/travel-countdown.ts
-// 旅行倒數元件類型定義
+// 旅行倒數相關類型定義
 // ===================================
 
-// 座標介面
+// 座標類型
 export interface Coordinates {
   lat: number
   lon: number
 }
 
-// 天氣資料介面
+// 天氣代碼對應
+export interface WeatherCodeMap {
+  [key: number]: {
+    code: string
+    description: string
+  }
+}
+
+// 天氣 API 回應
+export interface WeatherApiResponse {
+  current: {
+    temperature_2m: number
+    weather_code: number
+    is_day: number
+  }
+}
+
+// 單一國家天氣資料
 export interface WeatherData {
   temperature: number
   weatherCode: number
-  code: string // 天氣圖片代碼，例如: 'sunny', 'rain', 'snow'
+  code: string
   description: string
   isDay: boolean
 }
 
-// 倒數資料介面
+// 國家天氣資料（包含國家資訊）
+export interface CountryWeatherData extends WeatherData {
+  country: string
+  coordinates: Coordinates
+}
+
+// 多國天氣資料
+export interface MultiCountryWeatherData {
+  countries: CountryWeatherData[]
+  primaryWeather: WeatherData
+}
+
+// 倒數資料
 export interface CountdownData {
   days: number
   hours: number
   minutes: number
   seconds: number
   totalDays: number
-  progress: number // 從現在到旅行日期的百分比 (0-100)
 }
 
-// 元件 props 介面
-export interface TravelCountdownProps {
-  destination: string
-  tripDate: string // ISO 8601 格式: '2026-12-25'
-  coordinates: Coordinates
-  countryFlag: string
-  title?: string // 可選的自訂標題
-  showSeconds?: boolean // 是否顯示秒數，預設 true
-  showWeather?: boolean // 是否顯示天氣，預設 true
-  showProgress?: boolean // 是否顯示進度條，預設 true
-}
-
-// Open-Meteo 天氣 API 響應介面
-export interface WeatherApiResponse {
-  current: {
-    temperature_2m: number
-    is_day: number
-    weather_code: number
-  }
-}
-
-// 錯誤狀態介面
-export interface ErrorState {
-  hasError: boolean
-  message: string
-}
-
-// 載入狀態介面
+// 載入狀態
 export interface LoadingState {
   weather: boolean
   countdown: boolean
 }
 
-// 天氣代碼對應表類型
-export type WeatherCodeMap = {
-  [key: number]: {
-    code: string // 圖片檔名代碼
-    description: string
-  }
+// 錯誤狀態
+export interface ErrorState {
+  hasError: boolean
+  message: string
 }
 
-// Store 狀態介面
+// 旅行倒數完整狀態
 export interface TravelCountdownState {
   weatherData: WeatherData | null
+  multiCountryWeatherData: MultiCountryWeatherData | null
   countdownData: CountdownData | null
   loading: LoadingState
   error: ErrorState

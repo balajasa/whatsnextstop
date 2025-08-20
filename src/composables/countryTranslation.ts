@@ -35,6 +35,21 @@ export const countryTranslation = () => {
   >()
 
   /**
+   * 根據中文國家名稱查找國家代碼
+   * @param chineseName 中文國家名稱
+   * @returns ISO 國家代碼或 null
+   */
+  const findCountryCodeFromChinese = (chineseName: string): string | null => {
+    // 遍歷 TRADITIONAL_CHINESE_OVERRIDES 找到匹配的中文名稱
+    for (const [code, chinese] of Object.entries(TRADITIONAL_CHINESE_OVERRIDES)) {
+      if (chinese === chineseName) {
+        return code
+      }
+    }
+    return null
+  }
+
+  /**
    * 根據國家英文名稱自動查找國家代碼
    * @param countryName 國家英文名稱
    * @returns ISO 國家代碼或 null
@@ -135,8 +150,8 @@ export const countryTranslation = () => {
   }
 
   /**
-   * 獲取國家完整資訊（完全自動查詢）
-   * @param country 國家名稱（英文）
+   * 獲取國家完整資訊（支援中英文輸入）
+   * @param country 國家名稱（中文或英文）
    * @returns 國家完整資訊
    */
   const getCountryInfo = (country: string) => {
@@ -147,8 +162,14 @@ export const countryTranslation = () => {
       return countryCache.get(cacheKey)!
     }
 
-    // 查找國家代碼
-    const countryCode = findCountryCode(country)
+    // 優先嘗試中文查找
+    let countryCode = findCountryCodeFromChinese(country)
+    
+    // 如果中文查找失敗，嘗試英文查找
+    if (!countryCode) {
+      countryCode = findCountryCode(country)
+    }
+
     // console.log(`🔍 查找國家: ${country} -> 代碼: ${countryCode}`)
     let chinese = country
     let english = country
