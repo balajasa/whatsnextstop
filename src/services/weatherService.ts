@@ -8,7 +8,9 @@ import type {
   Coordinates,
   WeatherData,
   WeatherApiResponse,
-  WeatherCodeMap
+  WeatherCodeMap,
+  CountryWeatherData,
+  MultiCountryWeatherData
 } from '../types/travel-countdown'
 
 // 天氣代碼對應表 (基於 Open-Meteo 文檔)
@@ -114,9 +116,76 @@ function getDefaultWeather(): WeatherData {
   }
 }
 
+// 取得多國天氣資料 (新功能)
+async function fetchMultiCountryWeatherData(
+  countries: string[],
+  getCountryCoordinates: (country: string) => Promise<Coordinates>,
+  getCountryFlag: (country: string) => string
+): Promise<MultiCountryWeatherData | null> {
+  try {
+    
+    // 並行載入所有國家的座標和天氣
+    const countryWeatherPromises = countries.map(async (country): Promise<CountryWeatherData | null> => {
+      try {
+        // 取得國家座標
+        const coordinates = await getCountryCoordinates(country)
+        
+        // 取得天氣資料
+        const weather = await fetchWeatherData(coordinates)
+        
+        if (!weather) {
+          console.warn(`⚠️ 無法取得 ${country} 的天氣資料，使用預設值`)
+          const defaultWeather = getDefaultWeather()
+          return {
+            country,
+            coordinates,
+            ...defaultWeather // 展開預設天氣屬性到根層級
+          }
+        }
+        
+        return {
+          country,
+          coordinates,
+          ...weather // 展開 weather 屬性到根層級
+        }
+      } catch (error) {
+        console.warn(`❌ ${country} 天氣載入失敗:`, error)
+        return null
+      }
+    })
+    
+    // 等待所有請求完成
+    const results = await Promise.all(countryWeatherPromises)
+    
+    // 過濾掉失敗的結果
+    const validCountries = results.filter((result): result is CountryWeatherData => result !== null)
+    
+    if (validCountries.length === 0) {
+      console.warn('❌ 所有國家天氣載入都失敗了')
+      return null
+    }
+    
+    
+    return {
+      countries: validCountries,
+      primaryWeather: {
+        temperature: validCountries[0].temperature,
+        weatherCode: validCountries[0].weatherCode,
+        code: validCountries[0].code,
+        description: validCountries[0].description,
+        isDay: validCountries[0].isDay
+      } // 第一個國家作為主要天氣
+    }
+  } catch (error) {
+    console.error('❌ 多國天氣載入失敗:', error)
+    return null
+  }
+}
+
 // 導出天氣服務
 export const weatherService = {
   fetchWeatherData,
+  fetchMultiCountryWeatherData, // 新增多國天氣功能
   getDefaultWeather,
   getWeatherInfo
 }

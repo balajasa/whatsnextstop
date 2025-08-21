@@ -83,10 +83,7 @@ async function queryNominatimAPI(cityName: string): Promise<Coordinates | null> 
           limit: 1,
           'accept-language': 'en' // 統一使用英文回應
         },
-        timeout: 8000,
-        headers: {
-          'User-Agent': 'TravelCountdown/1.0'
-        }
+        timeout: 8000
       }
     )
 
@@ -97,7 +94,6 @@ async function queryNominatimAPI(cityName: string): Promise<Coordinates | null> 
         lon: parseFloat(result.lon)
       }
 
-      console.log(`✅ 查詢成功:`, coordinates)
       return coordinates
     } else {
       console.warn(`❌ 找不到城市: ${cityName}`)
