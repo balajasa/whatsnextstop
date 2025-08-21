@@ -204,7 +204,6 @@ onUnmounted(() => {
   top: 100%
   left: 0
   right: 0
-  z-index: 1000
   border: 1px solid $border-light
   border-top: none
   border-radius: 0 0 $border-radius-md $border-radius-md
@@ -212,6 +211,7 @@ onUnmounted(() => {
   box-shadow: $shadow-medium
   max-height: 200px
   overflow-y: auto
+  z-index: 1
 
 .option
   padding: $spacing-md

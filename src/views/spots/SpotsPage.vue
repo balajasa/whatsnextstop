@@ -1,36 +1,23 @@
 <template>
   <div class="spots-page">
-    <!-- 頁面標題區 -->
-    <div class="page-header">
-      <h1 class="page-title">景點探索</h1>
-      <p class="page-subtitle">發現世界各地的美麗景點</p>
-    </div>
-    
     <!-- 搜尋和篩選區 -->
-    <SpotsFilter
-      v-model:search-keyword="searchKeyword"
-      v-model:selected-country="selectedCountry"
-      v-model:selected-category="selectedCategory"
-      :countries="countries"
-      :category-options="categoryOptions"
-      :total-results="totalResults"
-      :has-active-filters="hasActiveFilters"
-      @clear-filters="clearFilters"
-    />
-    
+    <SpotsFilter v-model:search-keyword="searchKeyword" v-model:selected-country="selectedCountry"
+      v-model:selected-category="selectedCategory" :countries="countries" :category-options="categoryOptions"
+      :total-results="totalResults" :has-active-filters="hasActiveFilters" @clear-filters="clearFilters" />
+
     <!-- 載入狀態 -->
     <div v-if="loading" class="loading-section">
       <div class="loading-spinner"></div>
       <p>載入中...</p>
     </div>
-    
+
     <!-- 錯誤狀態 -->
     <div v-if="error" class="error-section">
       <div class="error-icon">⚠️</div>
       <p class="error-message">{{ error }}</p>
       <button @click="loadSpots" class="retry-btn">重試</button>
     </div>
-    
+
     <!-- 景點列表 -->
     <div v-if="!loading && !error" class="spots-list">
       <div v-if="filteredSpots.length === 0" class="empty-state">
@@ -38,25 +25,15 @@
         <h3>沒有找到符合條件的景點</h3>
         <p>試試調整搜尋條件或清除篩選</p>
       </div>
-      
+
       <div v-else class="spots-grid">
-        <SpotCard 
-          v-for="spot in paginatedSpots" 
-          :key="spot.id" 
-          :spot="spot"
-          class="spot-item"
-        />
+        <SpotCard v-for="spot in paginatedSpots" :key="spot.id" :spot="spot" class="spot-item" />
       </div>
-      
+
       <!-- 分頁控制 -->
-      <BasePagination
-        :current-page="currentPage"
-        :total-items="totalResults"
-        :items-per-page="itemsPerPage"
-        @update:current-page="currentPage = $event"
-        @update:items-per-page="itemsPerPage = $event"
-        @change="handlePaginationChange"
-      />
+      <BasePagination :current-page="currentPage" :total-items="totalResults" :items-per-page="itemsPerPage"
+        @update:current-page="currentPage = $event" @update:items-per-page="itemsPerPage = $event"
+        @change="handlePaginationChange" />
     </div>
   </div>
 </template>
@@ -95,7 +72,7 @@ const categoryOptions = computed(() => {
 
 const filteredSpots = computed(() => {
   let result = spots.value
-  
+
   // 關鍵字搜尋
   if (searchKeyword.value.trim()) {
     const keyword = searchKeyword.value.toLowerCase()
@@ -106,17 +83,17 @@ const filteredSpots = computed(() => {
       spot.notes.toLowerCase().includes(keyword)
     )
   }
-  
+
   // 國家篩選
   if (selectedCountry.value) {
     result = result.filter(spot => spot.country === selectedCountry.value)
   }
-  
+
   // 類別篩選
   if (selectedCategory.value) {
     result = result.filter(spot => spot.category === selectedCategory.value)
   }
-  
+
   return result
 })
 
@@ -131,9 +108,9 @@ const paginatedSpots = computed(() => {
 
 
 const hasActiveFilters = computed(() => {
-  return searchKeyword.value.trim() !== '' || 
-         selectedCountry.value !== '' || 
-         selectedCategory.value !== ''
+  return searchKeyword.value.trim() !== '' ||
+    selectedCountry.value !== '' ||
+    selectedCategory.value !== ''
 })
 
 // 方法
@@ -181,40 +158,17 @@ onMounted(() => {
 
 .spots-page
   min-height: 100vh
-  background: $spot-card-bg
+  background: $spot-bg
   padding: $spacing-xl
-  
+
   @include mobile-only
     padding: $spacing-lg
-
-// 頁面標題區
-.page-header
-  text-align: center
-  margin-bottom: $spacing-2xl
-  
-.page-title
-  font-size: 36px
-  font-weight: 700
-  color: $spot-text-primary
-  margin: 0 0 $spacing-md 0
-  
-  @include mobile-only
-    font-size: 28px
-  
-.page-subtitle
-  font-size: 18px
-  color: rgba($spot-text-primary, 0.7)
-  margin: 0
-  
-  @include mobile-only
-    font-size: 16px
-
 
 // 載入和錯誤狀態
 .loading-section, .error-section
   text-align: center
   padding: $spacing-2xl
-  
+
 .loading-spinner
   width: 40px
   height: 40px
@@ -243,7 +197,7 @@ onMounted(() => {
   border: none
   border-radius: $border-radius-md
   cursor: pointer
-  
+
   &:hover
     background: rgba($spot-text-primary, 0.9)
 
@@ -255,15 +209,15 @@ onMounted(() => {
 .empty-state
   text-align: center
   padding: $spacing-2xl
-  
+
   .empty-icon
     font-size: 64px
     margin-bottom: $spacing-lg
-  
+
   h3
     color: $spot-text-primary
     margin-bottom: $spacing-md
-  
+
   p
     color: rgba($spot-text-primary, 0.6)
 
@@ -272,7 +226,7 @@ onMounted(() => {
   grid-template-columns: 1fr
   gap: $spacing-xl
   margin-bottom: $spacing-2xl
-  
+
   @include mobile-only
     gap: $spacing-lg
 

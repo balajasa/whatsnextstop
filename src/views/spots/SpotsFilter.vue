@@ -13,13 +13,13 @@
 
     <!-- 搜尋和篩選區 -->
     <div class="search-filter-row">
-      <SearchInput :model-value="searchKeyword" @update:model-value="$emit('update:searchKeyword', $event)"
-        @search="$emit('update:searchKeyword', $event)" placeholder="搜尋景點名稱、描述..." class="search-input-wrapper" />
-
       <SimpleSelect :model-value="selectedCategory" @update:model-value="handleCategoryChange"
         :options="selectCategoryOptions" placeholder="請選擇類別" class="category-select-wrapper" />
 
-      <button @click="$emit('clear-filters')" class="clear-btn">清除篩選</button>
+      <SearchInput :model-value="searchKeyword" @update:model-value="$emit('update:searchKeyword', $event)"
+        @search="$emit('update:searchKeyword', $event)" placeholder="搜尋景點名稱、描述..." class="search-input-wrapper" />
+
+      <button @click="$emit('clear-filters')" class="clear-btn">重設</button>
     </div>
 
     <!-- 結果統計 -->
@@ -43,7 +43,7 @@ interface Props {
   selectedCountry: string
   selectedCategory: SpotCategory | ''
   countries: string[]
-  categoryOptions: Array<{ value: SpotCategory | '', label: string, icon: string }>
+  categoryOptions: Array<{ value: SpotCategory | '', label: string }>
   totalResults: number
   hasActiveFilters: boolean
 }
@@ -62,7 +62,7 @@ const selectCategoryOptions = computed(() => [
   { value: '', label: '全部類別' },
   ...props.categoryOptions.map(option => ({
     value: option.value,
-    label: `${option.icon} ${option.label}`
+    label: option.label
   }))
 ])
 
@@ -77,40 +77,47 @@ const handleCategoryChange = (value: string) => {
 @use '@/styles/mixins' as *
 
 .spots-filter
-  max-width: 800px
+  max-width: 100%
   margin: 0 auto $spacing-xl auto
+  background: $filter-bg
+  border-radius: $border-radius-lg
+  padding: $spacing-lg
+  border: 1px solid $search-input-border
+  box-shadow: 0 4px 20px rgba(23, 24, 75, 0.08)
 
 // 國家頁籤
 .country-tabs
   display: flex
-  gap: $spacing-xs
+  gap: 12px
   flex-wrap: wrap
   justify-content: center
   margin-bottom: $spacing-lg
 
   @include mobile-only
-    gap: $spacing-xs
+    gap: 4px
 
 .country-tab
   padding: $spacing-sm $spacing-md
-  border: 1px solid rgba($spot-text-primary, 0.2)
+  border: 1px solid $country-tab-border
   background: white
-  color: $spot-text-primary
+  color: $country-tab-text
   border-radius: $border-radius-md
   cursor: pointer
-  transition: all 0.2s ease
+  transition: all 0.3s ease
   font-size: 14px
   white-space: nowrap
+  font-weight: 500
 
   &:hover
-    background: rgba($spot-text-primary, 0.05)
-    border-color: rgba($spot-text-primary, 0.3)
+    background: $country-tab-hover
+    border-color: $country-tab-border
+    transform: translateY(-1px)
 
   &.active
-    background: $spot-text-primary
-    color: white
-    border-color: $spot-text-primary
-    box-shadow: 0 2px 4px rgba($spot-text-primary, 0.2)
+    background: $country-tab-active-bg
+    color: $country-tab-active-text
+    border-color: $country-tab-active-bg
+    box-shadow: 0 3px 12px rgba(0, 92, 175, 0.3)
 
   @include mobile-only
     flex: 1
@@ -124,10 +131,12 @@ const handleCategoryChange = (value: string) => {
   gap: $spacing-md
   align-items: center
   margin-bottom: $spacing-lg
+  height: 50px
 
   @include mobile-only
     flex-direction: column
     align-items: stretch
+    height: auto
 
 .search-input-wrapper
   flex: 2
@@ -135,6 +144,16 @@ const handleCategoryChange = (value: string) => {
   @include mobile-only
     flex: none
     margin-bottom: $spacing-sm
+
+  // 覆蓋 SearchInput 組件的高度和樣式
+  :deep(.search-input),
+  :deep(input)
+    height: 46px
+    border-color: $search-input-border
+
+    &:focus
+      border-color: $search-input-focus
+      box-shadow: 0 0 0 3px rgba(0, 92, 175, 0.1)
 
 .category-select-wrapper
   flex: 1
@@ -145,17 +164,37 @@ const handleCategoryChange = (value: string) => {
     min-width: 100%
     margin-bottom: $spacing-sm
 
+  // 覆蓋 SimpleSelect 組件的高度和樣式
+  :deep(.select-display),
+  :deep(.option)
+    height: 46px
+    border-color: $search-input-border
+
+  :deep(.select-display)
+    &:hover
+      border-color: $search-input-focus
+
+    &.is-open
+      border-color: $search-input-focus
+      box-shadow: 0 0 0 3px rgba(0, 92, 175, 0.1)
+
 .clear-btn
   padding: $spacing-sm $spacing-lg
-  background: rgba($spot-text-primary, 0.1)
-  border: 1px solid rgba($spot-text-primary, 0.2)
+  background: $clear-btn-bg
+  border: 1px solid $country-tab-border
   border-radius: $border-radius-md
-  color: $spot-text-primary
+  color: $clear-btn-text
   cursor: pointer
-  transition: all 0.2s ease
+  transition: all 0.3s ease
+  height: 46px
+  min-width: 100px
+  font-weight: 500
 
   &:hover
-    background: rgba($spot-text-primary, 0.15)
+    background: rgba(0, 92, 175, 0.15)
+    border-color: $country-tab-border
+    transform: translateY(-1px)
+    box-shadow: 0 2px 8px rgba(0, 92, 175, 0.2)
 
 // 結果統計
 .results-info
@@ -164,8 +203,9 @@ const handleCategoryChange = (value: string) => {
 .results-count
   font-size: 16px
   color: $spot-text-primary
+  font-weight: 500
 
 .filter-indicator
-  color: rgba($spot-text-primary, 0.6)
+  color: $spot-text-secondary
   font-style: italic
 </style>

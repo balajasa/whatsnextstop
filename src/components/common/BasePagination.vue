@@ -29,7 +29,6 @@
       </div>
 
       <div class="pagination-info">
-        <span class="total-items">共 {{ totalItems }} 筆</span>
         <div class="page-size-selector">
           <div class="page-size-text">每頁</div>
           <SimpleSelect v-model="selectedPageSize" :options="pageSizeOptions" @change="handlePageSizeChange" />
@@ -40,22 +39,38 @@
 
     <!-- 手機版分頁 -->
     <div class="pagination-mobile">
-      <div class="pagination-nav-mobile">
-        <button class="pagination-btn-mobile" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">
-          <div class="nav-icon prev-icon"></div>
+      <div class="pagination-nav">
+        <button class="pagination-btn" :disabled="currentPage === 1" @click="goToPage(1)">
+          <div class="pagination-icon first-page-icon"></div>
         </button>
 
-        <div class="pagination-current">
-          第 {{ currentPage }} 頁，共 {{ totalPages }} 頁
+        <button class="pagination-btn" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">
+          <div class="pagination-icon prev-page-icon"></div>
+        </button>
+
+        <div class="pagination-pages">
+          <button v-for="page in visiblePages" :key="page" class="pagination-page"
+            :class="{ 'active': page === currentPage, 'ellipsis': page === '...' }" :disabled="page === '...'"
+            @click="page !== '...' && goToPage(page as number)">
+            {{ page }}
+          </button>
         </div>
 
-        <button class="pagination-btn-mobile" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">
-          <div class="nav-icon next-icon"></div>
+        <button class="pagination-btn" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">
+          <div class="pagination-icon next-page-icon"></div>
+        </button>
+
+        <button class="pagination-btn" :disabled="currentPage === totalPages" @click="goToPage(totalPages)">
+          <div class="pagination-icon last-page-icon"></div>
         </button>
       </div>
 
       <div class="pagination-info-mobile">
-        共 {{ totalItems }} 筆，每頁 {{ itemsPerPage }} 筆
+        <div class="page-size-selector">
+          <div class="page-size-text">每頁</div>
+          <SimpleSelect v-model="selectedPageSize" :options="pageSizeOptions" @change="handlePageSizeChange" />
+          <div class="page-size-text">筆</div>
+        </div>
       </div>
     </div>
   </div>
@@ -234,10 +249,6 @@ watch(() => props.itemsPerPage, (newSize) => {
   position: absolute
   right: 0
 
-.total-items
-  font-size: 14px
-  color: $text-secondary
-
 .page-size-selector
   display: flex
   flex-direction: row
@@ -278,56 +289,54 @@ watch(() => props.itemsPerPage, (newSize) => {
   .pagination-mobile
     display: flex
     flex-direction: column
-    gap: $spacing-sm
+    gap: $spacing-md
     width: 100%
-
-  .pagination-nav-mobile
-    display: flex
-    justify-content: space-between
     align-items: center
 
-  .pagination-btn-mobile
-    width: 44px
-    height: 44px
-    border: 1px solid $border-light
-    background: $bg-primary
-    border-radius: $border-radius-sm
-    cursor: pointer
-    display: flex
-    align-items: center
+  .pagination-nav
+    gap: $spacing-xs
+    flex-wrap: wrap
     justify-content: center
-    transition: all 0.2s ease
 
-    &:hover:not(:disabled)
-      border-color: $primary-color
-      background: rgba($primary-color, 0.1)
+  .pagination-pages
+    gap: 2px
+    margin: 0 $spacing-xs
 
-    &:disabled
-      opacity: 0.5
-      cursor: not-allowed
-
-  .nav-icon
-    width: 16px
-    height: 16px
-    background-size: contain
-    background-repeat: no-repeat
-    background-position: center
-
-  .prev-icon
-    background-image: url('@/assets/img/icon/common/arrow_left_key.png')
-
-  .next-icon
-    background-image: url('@/assets/img/icon/common/arrow_right_key.png')
-
-  .pagination-current
-    font-size: 16px
-    font-weight: 500
-    color: $text-primary
+  .pagination-btn,
+  .pagination-page
+    width: 28px
+    height: 28px
+    font-size: 12px
 
   .pagination-info-mobile
-    text-align: center
-    font-size: 14px
-    color: $text-secondary
+    display: flex
+    justify-content: center
+
+    .page-size-selector
+      display: flex
+      align-items: center
+      gap: $spacing-xs
+      font-size: 14px
+      color: $text-secondary
+
+      .page-size-text
+        white-space: nowrap
+
+      :deep(.simple-select)
+        height: 28px
+        min-width: 50px
+
+        .select-display
+          height: 28px
+          min-height: 28px
+          padding: 4px $spacing-xs
+          font-size: 12px
+
+          .selected-text
+            font-size: 12px
+
+          .dropdown-arrow
+            font-size: 8px
 
 // 分頁圖標樣式
 .pagination-icon

@@ -24,12 +24,12 @@ const COLLECTION_NAME = 'spots'
 
 // 景點類別選項配置
 export const CATEGORY_OPTIONS: CategoryOption[] = [
-  { value: '', label: '全部類別', icon: '📂' },
-  { value: '景點', label: '景點', icon: '🏛️' },
-  { value: '美食', label: '美食', icon: '🍽️' },
-  { value: '住宿', label: '住宿', icon: '🏨' },
-  { value: '購物', label: '購物', icon: '🛍️' },
-  { value: '交通', label: '交通', icon: '🚌' }
+  { value: '', label: '全部類別' },
+  { value: '景點', label: '景點' },
+  { value: '美食', label: '美食' },
+  { value: '住宿', label: '住宿' },
+  { value: '購物', label: '購物' },
+  { value: '交通', label: '交通' }
 ]
 
 /**
@@ -181,9 +181,15 @@ export async function getCountryOptions(): Promise<CountryOption[]> {
  */
 export function formatSpotForDisplay(spot: Spot): FormattedSpot {
   // 格式化價格顯示
-  const displayPrice = spot.ticketPrice === 0 
-    ? '免費' 
-    : `${spot.currency} ${spot.ticketPrice}`
+  let displayPrice = '未設定'
+  
+  if (spot.ticketPrice === 0) {
+    displayPrice = '免費'
+  } else if (spot.ticketPrice && spot.currency) {
+    displayPrice = `${spot.currency} ${spot.ticketPrice}`
+  } else if (spot.ticketPrice && !spot.currency) {
+    displayPrice = `${spot.ticketPrice}`
+  }
   
   // 格式化營業時間
   const displayHours = spot.businessHours === '24hr' 

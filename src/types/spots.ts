@@ -26,7 +26,6 @@ export type SpotCategory = '景點' | '美食' | '住宿' | '購物' | '交通'
 export interface CategoryOption {
   value: SpotCategory | ''
   label: string
-  icon: string
 }
 
 // 國家選項
