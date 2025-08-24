@@ -88,25 +88,32 @@ const handleCategoryChange = (value: string) => {
 // 國家頁籤
 .country-tabs
   display: flex
-  gap: 12px
+  gap: 4px
   flex-wrap: wrap
   justify-content: center
   margin-bottom: $spacing-lg
 
-  @include mobile-only
-    gap: 4px
+  @include tablet
+    gap: 12px
 
 .country-tab
-  padding: $spacing-sm $spacing-md
+  flex: 1
+  min-width: 0
+  padding: $spacing-sm $spacing-xs
+  font-size: 12px
   border: 1px solid $country-tab-border
   background: white
   color: $country-tab-text
   border-radius: $border-radius-md
   cursor: pointer
   transition: all 0.3s ease
-  font-size: 14px
   white-space: nowrap
   font-weight: 500
+
+  @include tablet
+    flex: none
+    padding: $spacing-sm $spacing-md
+    font-size: 14px
 
   &:hover
     background: $country-tab-hover
@@ -119,31 +126,24 @@ const handleCategoryChange = (value: string) => {
     border-color: $country-tab-active-bg
     box-shadow: 0 3px 12px rgba(0, 92, 175, 0.3)
 
-  @include mobile-only
-    flex: 1
-    min-width: 0
-    padding: $spacing-sm $spacing-xs
-    font-size: 12px
-
 // 搜尋和篩選區
 .search-filter-row
   display: flex
-  gap: $spacing-md
-  align-items: center
-  margin-bottom: $spacing-lg
-  height: 50px
+  flex-direction: column  // 手機版預設垂直排列
+  align-items: stretch
+  gap: $spacing-sm
+  margin-bottom: 12px
 
-  @include mobile-only
-    flex-direction: column
-    align-items: stretch
-    height: auto
+  // 平板以上：水平排列
+  @include tablet
+    flex-direction: row
+    align-items: center
+    gap: $spacing-md
+    height: 50px
 
 .search-input-wrapper
-  flex: 2
-
-  @include mobile-only
-    flex: none
-    margin-bottom: $spacing-sm
+  @include tablet
+    flex: 2
 
   // 覆蓋 SearchInput 組件的高度和樣式
   :deep(.search-input),
@@ -156,13 +156,9 @@ const handleCategoryChange = (value: string) => {
       box-shadow: 0 0 0 3px rgba(0, 92, 175, 0.1)
 
 .category-select-wrapper
-  flex: 1
-  min-width: 180px
-
-  @include mobile-only
-    flex: none
-    min-width: 100%
-    margin-bottom: $spacing-sm
+  @include tablet
+    flex: 1
+    min-width: 180px
 
   // 覆蓋 SimpleSelect 組件的高度和樣式
   :deep(.select-display),
@@ -201,7 +197,7 @@ const handleCategoryChange = (value: string) => {
   text-align: center
 
 .results-count
-  font-size: 16px
+  font-size: 12px
   color: $spot-text-primary
   font-weight: 500
 

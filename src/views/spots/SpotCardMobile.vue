@@ -23,12 +23,17 @@
 
     <!-- 描述區域 -->
     <div class="description-section" v-if="spot.description">
-      <p class="description-text" :class="{ 'expanded': isExpanded }">
-        {{ spot.description }}
-      </p>
-      <button v-if="isLongDescription" @click="toggleDescription" class="expand-btn">
-        {{ isExpanded ? '收合' : '展開' }}
-      </button>
+      <div class="description-container">
+        <p class="description-text" :class="{ 'expanded': isExpanded }">
+          {{ spot.description }}
+        </p>
+        <button v-if="isLongDescription && !isExpanded" @click="toggleDescription" class="floating-expand-btn">
+          <span class="floating-expand-icon">▼</span>
+        </button>
+        <button v-if="isLongDescription && isExpanded" @click="toggleDescription" class="collapse-btn">
+          <span class="collapse-icon">▲</span>
+        </button>
+      </div>
     </div>
 
     <!-- 詳細資訊網格 -->
@@ -50,10 +55,10 @@
       </div>
     </div>
 
-    <!-- 備註區域 -->
-    <div v-if="spot.notes" class="notes-section">
+    <!-- Note區域 -->
+    <div class="notes-section">
       <div class="notes-icon"></div>
-      <div class="notes-text">{{ spot.notes }}</div>
+      <div class="notes-text">{{ spot.notes || '' }}</div>
     </div>
   </div>
 </template>
@@ -73,7 +78,8 @@ const isExpanded = ref(false)
 const formattedSpot = computed(() => formatSpotForDisplay(props.spot))
 
 const isLongDescription = computed(() => {
-  return props.spot.description && props.spot.description.length > 100
+  // 更積極的折疊策略：超過40字元就折疊
+  return props.spot.description && props.spot.description.length > 40
 })
 
 // 中文類別轉英文類別映射
@@ -101,8 +107,8 @@ const toggleDescription = () => {
 .spot-card-mobile
   background: $spot-bg
   border-radius: $border-radius-lg
-  padding: $spacing-lg
-  margin-bottom: $spacing-md
+  padding: $spacing-lg  // 恢復較大的內邊距
+  // margin-bottom: $spacing-md
   border: 1px solid $spot-border
   box-shadow: 0 4px 20px rgba(23, 24, 75, 0.1)
   transition: all 0.3s ease
@@ -116,7 +122,7 @@ const toggleDescription = () => {
   display: flex
   justify-content: space-between
   align-items: center
-  margin-bottom: $spacing-md
+  margin-bottom: $spacing-md  // 恢復適中間距
 
 .spot-name
   font-size: 18px
@@ -184,8 +190,8 @@ const toggleDescription = () => {
   display: flex
   justify-content: space-between
   align-items: center
-  margin-bottom: $spacing-md
-  padding-bottom: $spacing-sm
+  margin-bottom: $spacing-md  // 恢復適中間距
+  padding-bottom: $spacing-sm  // 恢復適中內邊距
   border-bottom: 1px solid $border-muted
 
 .location-info
@@ -225,15 +231,19 @@ const toggleDescription = () => {
 
 // 描述區域
 .description-section
-  margin-bottom: $spacing-md
+  margin-bottom: $spacing-sm
+
+.description-container
+  position: relative
 
 .description-text
   font-size: 14px
-  color: rgba($spot-text-primary, 0.8)
-  line-height: 1.6
-  margin: 0 0 $spacing-xs 0
+  color: rgba(74, 85, 104, 0.8)
+  line-height: 1.5
+  margin: 0
+  padding-right: 30px  // 為右下角按鈕預留空間
   display: -webkit-box
-  -webkit-line-clamp: 3
+  -webkit-line-clamp: 2
   -webkit-box-orient: vertical
   overflow: hidden
 
@@ -241,30 +251,82 @@ const toggleDescription = () => {
     display: block
     -webkit-line-clamp: unset
     overflow: visible
+    padding-right: 0  // 展開時不需要預留空間
 
-.expand-btn
+// 浮動展開按鈕（浮在文字右下角）
+.floating-expand-btn
+  position: absolute
+  bottom: 0
+  right: 0
   background: none
   border: none
-  color: $spot-text-primary
-  font-size: 14px
-  font-weight: 500
   cursor: pointer
-  padding: 0
-  text-decoration: underline
+  padding: 2px 6px
+  z-index: 1
+
+.floating-expand-icon
+  font-size: 12px
+  font-weight: 500
+  color: #4a5568
+  background: rgba(255, 255, 255, 0.95)
+  border: 1px solid rgba(74, 85, 104, 0.15)
+  border-radius: 50%
+  width: 20px
+  height: 20px
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: all 0.2s ease
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+
+  &:hover
+    background: rgba(255, 255, 255, 1)
+    border-color: rgba(74, 85, 104, 0.3)
+    color: #2d3748
+
+// 折疊按鈕（展開狀態時顯示）
+.collapse-btn
+  background: none
+  border: none
+  cursor: pointer
+  padding: 2px 6px
+  margin-top: $spacing-xs
+  display: flex
+  align-items: center
+  justify-content: flex-end
+
+.collapse-icon
+  font-size: 12px
+  font-weight: 500
+  color: #4a5568
+  background: rgba(74, 85, 104, 0.08)
+  border: 1px solid rgba(74, 85, 104, 0.15)
+  border-radius: 50%
+  width: 20px
+  height: 20px
+  display: flex
+  align-items: center
+  justify-content: center
+  transition: all 0.2s ease
+
+  &:hover
+    background: rgba(74, 85, 104, 0.12)
+    border-color: rgba(74, 85, 104, 0.25)
+    color: #2d3748
 
 // 詳細資訊網格
 .details-grid
   display: grid
   grid-template-columns: 1fr 1fr
-  gap: $spacing-sm
-  margin-bottom: $spacing-md
+  gap: $spacing-sm  // 恢復適中網格間距
+  margin-bottom: $spacing-md  // 恢復適中下方間距
 
 .detail-card
   border-radius: $border-radius-sm
-  padding: $spacing-sm
+  padding: $spacing-sm  // 恢復適中內邊距
   display: flex
   align-items: center
-  gap: $spacing-sm
+  gap: $spacing-sm  // 恢復適中內部間距
   transition: all 0.2s ease
 
 // 浮世繪風配色
@@ -306,11 +368,11 @@ const toggleDescription = () => {
   color: $spot-text-primary
   font-weight: 500
 
-// 備註區域
+// Note區域
 .notes-section
   display: flex
   align-items: flex-start
-  padding: $spacing-sm
+  padding: 6px
   background: $spot-notes-bg
   border-radius: $border-radius-sm
   border: 1px solid rgba(199, 178, 222, 0.3)
@@ -331,5 +393,4 @@ const toggleDescription = () => {
   font-size: 14px
   color: rgba($spot-text-primary, 0.7)
   line-height: 1.4
-  font-style: italic
 </style>

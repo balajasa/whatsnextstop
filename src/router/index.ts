@@ -10,6 +10,7 @@ import TravelMap from '../views/travel/TravelMap.vue'
 import TravelTrace from '../views/travel/TravelTrace.vue'
 import FinalResultPage from '../components/cat-photo/FinalResultPage.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
+import TripsPage from '../views/trips/TripsPage.vue'
 
 const routes = [
   {
@@ -104,7 +105,30 @@ const routes = [
       },
       {
         path: 'final',
-        component: FinalResultPage,
+        component: FinalResultPage
+      },
+      {
+        path: 'trips',
+        name: 'TripsPage',
+        component: TripsPage,
+        meta: {
+          title: '旅程列表',
+          showBreadcrumb: true,
+          breadcrumb: [{ text: '旅程列表', icon: '✈️' }]
+        }
+      },
+      {
+        path: 'trips/:shortId/spots',
+        name: 'TripSpotsPage',
+        component: SpotsPage,
+        meta: {
+          title: '景點探索',
+          showBreadcrumb: true,
+          breadcrumb: [
+            { text: '旅程列表', icon: '✈️', path: '/trips' },
+            { text: '景點探索', icon: '🗺️' }
+          ]
+        }
       },
       {
         path: 'spots',

@@ -2,18 +2,13 @@
 // 景點資料服務 - 連接 Firebase 資料
 // ===================================
 
-import {
-  collection,
-  getDocs,
-  query,
-  where
-} from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebase'
 import { countryTranslation } from '../composables/countryTranslation'
-import type { 
-  Spot, 
-  SpotFilters, 
-  SpotsResponse, 
+import type {
+  Spot,
+  SpotFilters,
+  SpotsResponse,
   SpotSearchParams,
   FormattedSpot,
   CategoryOption,
@@ -33,14 +28,13 @@ export const CATEGORY_OPTIONS: CategoryOption[] = [
 ]
 
 /**
- * 取得所有景點資料
+ * 根據旅程 ID 取得景點資料
  */
-export async function getAllSpots(): Promise<Spot[]> {
+export async function getSpotsByTrip(tripId: string): Promise<Spot[]> {
   try {
-    
-    // 暫時移除複合排序，避免索引問題
-    const querySnapshot = await getDocs(collection(db, COLLECTION_NAME))
-    
+    const spotsRef = collection(db, 'trips', tripId, 'spots')
+    const querySnapshot = await getDocs(spotsRef)
+
     const spots: Spot[] = []
     querySnapshot.docs.forEach(doc => {
       spots.push({
@@ -48,7 +42,7 @@ export async function getAllSpots(): Promise<Spot[]> {
         ...doc.data()
       } as Spot)
     })
-    
+
     // 客戶端排序
     spots.sort((a, b) => {
       if (a.country !== b.country) {
@@ -56,7 +50,39 @@ export async function getAllSpots(): Promise<Spot[]> {
       }
       return a.name.localeCompare(b.name)
     })
-    
+
+    return spots
+  } catch (error) {
+    console.error(`❌ 取得旅程 ${tripId} 的景點資料失敗:`, error)
+    throw error
+  }
+}
+
+/**
+ * 取得所有景點資料（向下相容用，從所有旅程聚合）
+ */
+export async function getAllSpots(): Promise<Spot[]> {
+  try {
+    // 這個函數現在需要先取得所有旅程，再聚合景點
+    // 暫時保留原邏輯，但建議改用 getSpotsByTrip
+    const querySnapshot = await getDocs(collection(db, COLLECTION_NAME))
+
+    const spots: Spot[] = []
+    querySnapshot.docs.forEach(doc => {
+      spots.push({
+        id: doc.id,
+        ...doc.data()
+      } as Spot)
+    })
+
+    // 客戶端排序
+    spots.sort((a, b) => {
+      if (a.country !== b.country) {
+        return a.country.localeCompare(b.country)
+      }
+      return a.name.localeCompare(b.name)
+    })
+
     return spots
   } catch (error) {
     console.error('❌ 取得景點資料失敗:', error)
@@ -69,14 +95,10 @@ export async function getAllSpots(): Promise<Spot[]> {
  */
 export async function getSpotsByCountry(country: string): Promise<Spot[]> {
   try {
-    
-    const q = query(
-      collection(db, COLLECTION_NAME),
-      where('country', '==', country)
-    )
-    
+    const q = query(collection(db, COLLECTION_NAME), where('country', '==', country))
+
     const querySnapshot = await getDocs(q)
-    
+
     const spots: Spot[] = []
     querySnapshot.docs.forEach(doc => {
       spots.push({
@@ -84,10 +106,10 @@ export async function getSpotsByCountry(country: string): Promise<Spot[]> {
         ...doc.data()
       } as Spot)
     })
-    
+
     // 客戶端排序
     spots.sort((a, b) => a.name.localeCompare(b.name))
-    
+
     return spots
   } catch (error) {
     console.error(`❌ 取得 ${country} 景點資料失敗:`, error)
@@ -102,30 +124,31 @@ export async function searchSpots(params: SpotSearchParams): Promise<SpotsRespon
   try {
     // 先取得所有資料，再進行客戶端篩選
     const allSpots = await getAllSpots()
-    
+
     let filteredSpots = allSpots
-    
+
     // 國家篩選
     if (params.country) {
       filteredSpots = filteredSpots.filter(spot => spot.country === params.country)
     }
-    
+
     // 類別篩選
     if (params.category) {
       filteredSpots = filteredSpots.filter(spot => spot.category === params.category)
     }
-    
+
     // 關鍵字搜尋
     if (params.keyword) {
       const keyword = params.keyword.toLowerCase()
-      filteredSpots = filteredSpots.filter(spot =>
-        spot.name.toLowerCase().includes(keyword) ||
-        spot.description.toLowerCase().includes(keyword) ||
-        spot.region.toLowerCase().includes(keyword) ||
-        spot.notes.toLowerCase().includes(keyword)
+      filteredSpots = filteredSpots.filter(
+        spot =>
+          spot.name.toLowerCase().includes(keyword) ||
+          spot.description.toLowerCase().includes(keyword) ||
+          spot.region.toLowerCase().includes(keyword) ||
+          spot.notes.toLowerCase().includes(keyword)
       )
     }
-    
+
     // 分頁處理
     const totalCount = filteredSpots.length
     if (params.limit && params.offset !== undefined) {
@@ -133,10 +156,10 @@ export async function searchSpots(params: SpotSearchParams): Promise<SpotsRespon
       const end = start + params.limit
       filteredSpots = filteredSpots.slice(start, end)
     }
-    
+
     // 取得所有國家列表
     const countries = [...new Set(allSpots.map(spot => spot.country))].sort()
-    
+
     return {
       spots: filteredSpots,
       countries,
@@ -156,11 +179,9 @@ export async function getCountryOptions(): Promise<CountryOption[]> {
     const spots = await getAllSpots()
     const countries = [...new Set(spots.map(spot => spot.country))].sort()
     const { getCountryFlag } = countryTranslation()
-    
-    const options: CountryOption[] = [
-      { value: '', label: '全部國家', flag: '🌍' }
-    ]
-    
+
+    const options: CountryOption[] = [{ value: '', label: '全部國家', flag: '🌍' }]
+
     countries.forEach(country => {
       options.push({
         value: country,
@@ -168,7 +189,7 @@ export async function getCountryOptions(): Promise<CountryOption[]> {
         flag: getCountryFlag(country) // 現在支援中文輸入
       })
     })
-    
+
     return options
   } catch (error) {
     console.error('❌ 取得國家選項失敗:', error)
@@ -182,7 +203,7 @@ export async function getCountryOptions(): Promise<CountryOption[]> {
 export function formatSpotForDisplay(spot: Spot): FormattedSpot {
   // 格式化價格顯示
   let displayPrice = '未設定'
-  
+
   if (spot.ticketPrice === 0) {
     displayPrice = '免費'
   } else if (spot.ticketPrice && spot.currency) {
@@ -190,12 +211,10 @@ export function formatSpotForDisplay(spot: Spot): FormattedSpot {
   } else if (spot.ticketPrice && !spot.currency) {
     displayPrice = `${spot.ticketPrice}`
   }
-  
+
   // 格式化營業時間
-  const displayHours = spot.businessHours === '24hr' 
-    ? '24小時開放' 
-    : spot.businessHours || '未設定'
-  
+  const displayHours = spot.businessHours === '24hr' ? '24小時開放' : spot.businessHours || '未設定'
+
   return {
     ...spot,
     displayPrice,
@@ -213,12 +232,12 @@ export function filterSpotsLocally(spots: Spot[], filters: SpotFilters): Spot[] 
     if (filters.country && spot.country !== filters.country) {
       return false
     }
-    
+
     // 類別篩選
     if (filters.category && spot.category !== filters.category) {
       return false
     }
-    
+
     // 關鍵字搜尋
     if (filters.keyword) {
       const keyword = filters.keyword.toLowerCase()
@@ -229,7 +248,7 @@ export function filterSpotsLocally(spots: Spot[], filters: SpotFilters): Spot[] 
         spot.notes.toLowerCase().includes(keyword)
       )
     }
-    
+
     return true
   })
 }

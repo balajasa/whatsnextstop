@@ -40,16 +40,22 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { getAllSpots, CATEGORY_OPTIONS } from '../../services/spotsService'
+import { useRoute } from 'vue-router'
+import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spotsService'
+import { findTripByShortId } from '../../services/tripsService'
 import SpotCard from './SpotCard.vue'
 import SpotsFilter from './SpotsFilter.vue'
 import BasePagination from '../../components/common/BasePagination.vue'
 import type { Spot, SpotCategory } from '../../types/spots'
+import type { Trip } from '../../services/tripsService'
+
+const route = useRoute()
 
 // 響應式資料
 const spots = ref<Spot[]>([])
 const loading = ref(true)
 const error = ref('')
+const currentTrip = ref<Trip | null>(null)
 
 // 搜尋和篩選
 const searchKeyword = ref('')
@@ -118,7 +124,25 @@ const loadSpots = async () => {
   try {
     loading.value = true
     error.value = ''
-    spots.value = await getAllSpots()
+
+    // 檢查是否有路由參數（短 ID）
+    const shortId = route.params.shortId as string
+
+    if (shortId) {
+      // 通過短 ID 找到完整旅程資料
+      const trip = await findTripByShortId(shortId)
+      if (!trip) {
+        throw new Error('找不到指定的旅程')
+      }
+
+      currentTrip.value = trip
+      // 載入特定旅程的景點
+      spots.value = await getSpotsByTrip(trip.id)
+    } else {
+      // 沒有路由參數，載入所有景點（向下相容）
+      currentTrip.value = null
+      spots.value = await getAllSpots()
+    }
   } catch (err: any) {
     error.value = err.message || '載入景點資料失敗'
   } finally {
@@ -144,6 +168,11 @@ const handlePaginationChange = (page: number, pageSize: number) => {
 // 監聽篩選條件變化，重設頁面
 watch([searchKeyword, selectedCountry, selectedCategory], () => {
   currentPage.value = 1
+})
+
+// 監聽路由變化，重新載入景點
+watch(() => route.params.shortId, () => {
+  loadSpots()
 })
 
 // 生命週期
@@ -225,7 +254,7 @@ onMounted(() => {
   display: grid
   grid-template-columns: 1fr
   gap: $spacing-xl
-  margin-bottom: $spacing-2xl
+  // margin-bottom: $spacing-2xl
 
   @include mobile-only
     gap: $spacing-lg

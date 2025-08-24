@@ -1,18 +1,10 @@
 <template>
   <div class="spot-card-wrapper">
     <!-- 桌面版卡片 (≥ 1024px) -->
-    <SpotCardDesktop 
-      v-if="isDesktop" 
-      :spot="spot" 
-      class="desktop-card"
-    />
-    
+    <SpotCardDesktop v-if="isDesktop" :spot="spot" class="desktop-card" />
+
     <!-- 手機版卡片 (< 1024px) -->
-    <SpotCardMobile 
-      v-else 
-      :spot="spot" 
-      class="mobile-card"
-    />
+    <SpotCardMobile v-else :spot="spot" class="mobile-card" />
   </div>
 </template>
 
@@ -50,7 +42,7 @@ onUnmounted(() => {
 <style lang="sass" scoped>
 .spot-card-wrapper
   width: 100%
-  
+
   // 確保卡片切換時的平滑過渡
   .desktop-card,
   .mobile-card

@@ -30,6 +30,7 @@
           {{ isExpanded ? '收合' : '展開' }}
         </button>
       </div>
+
     </div>
 
     <!-- 右側詳細資訊區域 -->
@@ -46,15 +47,15 @@
           <div class="square-value">{{ formattedSpot.displayPrice }}</div>
         </div>
       </div>
+    </div>
 
-      <!-- 備註區域 -->
-      <div class="notes-section">
-        <div class="notes-header">
-          <div class="notes-icon"></div>
-          <div class="notes-label">備註</div>
-        </div>
-        <div class="notes-text">{{ spot.notes || '' }}</div>
+    <!-- Note區域 -->
+    <div class="notes-section">
+      <div class="notes-header">
+        <div class="notes-icon"></div>
+        <div class="notes-label">Note</div>
       </div>
+      <div class="notes-text">{{ spot.notes || '' }}</div>
     </div>
   </div>
 </template>
@@ -103,7 +104,7 @@ const toggleDescription = () => {
   background: $spot-bg
   border-radius: $border-radius-lg
   padding: $spacing-lg
-  margin-bottom: $spacing-lg
+  margin-bottom: 4px
   border: 1px solid $spot-border
   box-shadow: 0 4px 20px rgba(23, 24, 75, 0.1)
   transition: all 0.3s ease
@@ -235,6 +236,7 @@ const toggleDescription = () => {
 // 描述區域
 .description-section
   flex: 1
+  padding-left: 24px
 
 .description-text
   font-size: 15px
@@ -287,29 +289,14 @@ const toggleDescription = () => {
   text-align: center
   transition: all 0.2s ease
 
-  &:hover
-    transform: translateY(-1px)
-
 // 浮世繪風配色
 .time-card
   background: $spot-time-card
   border: 1px solid rgba(250, 218, 221, 0.6)
 
-  &:hover
-    background: rgba(250, 218, 221, 0.5)
-    border-color: rgba(250, 218, 221, 0.8)
-    transform: translateY(-2px)
-    box-shadow: 0 4px 12px rgba(250, 218, 221, 0.4)
-
 .price-card
   background: $spot-price-card
   border: 1px solid rgba(184, 210, 0, 0.4)
-
-  &:hover
-    background: rgba(184, 210, 0, 0.3)
-    border-color: rgba(184, 210, 0, 0.6)
-    transform: translateY(-2px)
-    box-shadow: 0 4px 12px rgba(184, 210, 0, 0.3)
 
 .square-icon
   width: 24px
@@ -333,12 +320,14 @@ const toggleDescription = () => {
   line-height: 1.3
   word-break: break-word
 
-// 備註區域
+// 筆記區域
 .notes-section
   background: $spot-notes-bg
   border-radius: $border-radius-md
-  padding: $spacing-lg
+  padding: 20px
   border: 1px solid rgba(199, 178, 222, 0.3)
+  grid-column: 1 / -1  // 佔滿整個 grid 寬度
+  margin-top: $spacing-sm
 
 .notes-header
   display: flex
@@ -365,7 +354,6 @@ const toggleDescription = () => {
   font-size: 14px
   color: $spot-text-secondary
   line-height: 1.5
-  font-style: italic
 
 // 響應式調整 - 較小的桌面螢幕
 @include tablet
