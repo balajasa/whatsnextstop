@@ -9,7 +9,7 @@ import type {
   AlertDialogOptions,
   CustomDialogOptions,
   DialogResult
-} from '../types/dialog'
+} from '../types/common/dialog'
 
 // ===================================
 // 全域狀態

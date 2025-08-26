@@ -56,7 +56,7 @@ import { useTravelStore } from '../../stores/useTravelStore'
 import { storeToRefs } from 'pinia'
 import { countryTranslation } from '../../composables/countryTranslation'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
-import type { TravelData } from '../../types/response'
+import type { TravelData } from '../../types/history-travel/travel-history'
 
 // 導入工具函數和 composables
 import { formatLocations, openPhoto } from '../../utils/travelUtils'

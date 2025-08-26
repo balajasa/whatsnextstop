@@ -3,8 +3,8 @@
 // ===================================
 
 import { collection, getDocs, query, where } from 'firebase/firestore'
-import { db } from '../firebase'
-import { countryTranslation } from '../composables/countryTranslation'
+import { db } from '../../firebase'
+import { countryTranslation } from '../../composables/countryTranslation'
 import type {
   Spot,
   SpotFilters,
@@ -13,7 +13,7 @@ import type {
   FormattedSpot,
   CategoryOption,
   CountryOption
-} from '../types/spots'
+} from '../../types/spots/spots'
 
 const COLLECTION_NAME = 'spots'
 
@@ -254,4 +254,4 @@ export function filterSpotsLocally(spots: Spot[], filters: SpotFilters): Spot[] 
 }
 
 // 匯出類型供其他檔案使用
-export type { Spot, SpotFilters, SpotsResponse, FormattedSpot } from '../types/spots'
+export type { Spot, SpotFilters, SpotsResponse, FormattedSpot } from '../../types/spots/spots'

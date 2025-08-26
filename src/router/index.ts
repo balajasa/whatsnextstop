@@ -88,9 +88,9 @@ const routes = [
         name: 'FoodWheel',
         component: FoodWheel,
         meta: {
-          title: '濟州島輪盤',
+          title: '命運輪盤',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '濟州島輪盤', icon: '🍽️' }]
+          breadcrumb: [{ text: '命運輪盤', icon: '🍽️' }]
         }
       },
       {
@@ -128,16 +128,6 @@ const routes = [
             { text: '旅程列表', icon: '✈️', path: '/trips' },
             { text: '景點探索', icon: '🗺️' }
           ]
-        }
-      },
-      {
-        path: 'spots',
-        name: 'SpotsPage',
-        component: SpotsPage,
-        meta: {
-          title: '景點探索',
-          showBreadcrumb: true,
-          breadcrumb: [{ text: '景點探索', icon: '🗺️' }]
         }
       }
     ]

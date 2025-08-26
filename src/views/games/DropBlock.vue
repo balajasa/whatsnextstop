@@ -77,7 +77,7 @@
 import { reactive, nextTick, ref } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import taskConfig from '../../constants/taskConfig.json'
-import { GameState } from '../../types/minigame'
+import type { GameState } from '../../types/games/drop-block-game'
 // 圖片預載
 import body01 from '@/assets/img/minigame/stone/body_01.png'
 import body02 from '@/assets/img/minigame/stone/body_02.png'

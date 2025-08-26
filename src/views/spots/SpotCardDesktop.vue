@@ -62,8 +62,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { formatSpotForDisplay } from '../../services/spotsService'
-import type { SpotCardProps } from '../../types/spots'
+import { formatSpotForDisplay } from '../../services/spots/spotsService'
+import type { SpotCardProps } from '../../types/spots/spots'
 
 // Props
 const props = defineProps<SpotCardProps>()

@@ -2,7 +2,7 @@
 // 貓咪拍照功能 Pinia Store
 
 import { defineStore } from 'pinia'
-import type { CatPhotoState, PageState, CatConfig, PhotoOrientation } from '../types/cat-photo'
+import type { CatPhotoState, PageState, CatConfig, PhotoOrientation } from '../types/games/cat-photo'
 import {
   DEFAULT_CAT_CONFIGS,
   ERROR_MESSAGES,

@@ -5,7 +5,7 @@
 
 import { ref, computed } from 'vue'
 import { useCatPhotoStore } from '../../stores/catPhotoStore'
-import type { CatConfig, PhotoOrientation, CalculatedCatSize } from '../../types/cat-photo'
+import type { CatConfig, PhotoOrientation, CalculatedCatSize } from '../../types/games/cat-photo'
 import { SHARE_CONFIG } from '../../constants/catPhotoConfig'
 import { calculateCatSizeAndPosition, loadImage, canvasToBlob } from '../../utils/photoUtils'
 

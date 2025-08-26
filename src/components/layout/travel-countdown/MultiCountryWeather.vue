@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { MultiCountryWeatherData, WeatherData } from '../../../types/travel-countdown'
+import type { MultiCountryWeatherData, WeatherData } from '../../../types/next-travel/travel-countdown'
 
 // ===================================
 // Props

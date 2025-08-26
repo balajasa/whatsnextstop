@@ -43,8 +43,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getAllTripsWithShortId, generateTripSpotsUrl } from '../../services/tripsService'
-import type { TripWithShortId } from '../../services/tripsService'
+import { getAllTripsWithShortId, generateTripSpotsUrl } from '../../services/spots/tripsService'
+import type { TripWithShortId } from '../../services/spots/tripsService'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 
 const router = useRouter()

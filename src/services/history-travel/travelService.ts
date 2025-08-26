@@ -1,9 +1,9 @@
 // services/travelService.ts
-import { travelHttpClient } from './travelHttpClient'
-import { TravelData, TravelsResponse } from '../types/response'
-import { RegionUtils } from '../utils/regionUtils'
-import { RegionDisplayInfo } from '../constants/regionConfig'
-import { countryTranslation } from '../composables/countryTranslation'
+import { travelHttpClient } from '../history-travel/travelHttpClient'
+import { RegionUtils } from '../../utils/regionUtils'
+import type { TravelData, TravelsResponse } from '../../types/history-travel/travel-history'
+import type { RegionDisplayInfo } from '../../constants/regionConfig'
+import { countryTranslation } from '../../composables/countryTranslation'
 
 export class TravelService {
   // 獲取所有旅遊資料

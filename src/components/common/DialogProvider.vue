@@ -59,7 +59,7 @@ import type {
   ConfirmDialogOptions,
   AlertDialogOptions,
   CustomDialogOptions
-} from '../../types/dialog'
+} from '../../types/common/dialog'
 
 // ===================================
 // 對話框服務整合

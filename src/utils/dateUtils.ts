@@ -3,7 +3,7 @@
 // 日期相關工具函數
 // ===================================
 
-import type { CountdownData } from '../types/travel-countdown'
+import type { CountdownData } from '../types/next-travel/travel-countdown'
 
 /**
  * 驗證日期字串格式 (ISO 8601)

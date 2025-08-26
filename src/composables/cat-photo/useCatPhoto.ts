@@ -3,7 +3,7 @@
 
 import { computed, onMounted, onUnmounted } from 'vue'
 import { useCatPhotoStore } from '../../stores/catPhotoStore'
-import type { PageState } from '../../types/cat-photo'
+import type { PageState } from '../../types/games/cat-photo'
 
 export function useCatPhoto() {
   const store = useCatPhotoStore()

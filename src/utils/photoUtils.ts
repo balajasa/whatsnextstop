@@ -1,7 +1,7 @@
 // utils/photoUtils.ts
 // 貓咪拍照工具函式
 
-import type { CatConfig, Position, CalculatedCatSize } from '../types/cat-photo'
+import type { CatConfig, Position, CalculatedCatSize } from '../types/games/cat-photo'
 
 /**
  * 偵測照片方向（只分直式和橫式）

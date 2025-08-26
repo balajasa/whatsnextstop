@@ -41,13 +41,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spotsService'
-import { findTripByShortId } from '../../services/tripsService'
+import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
+import { findTripByShortId } from '../../services/spots/tripsService'
 import SpotCard from './SpotCard.vue'
 import SpotsFilter from './SpotsFilter.vue'
 import BasePagination from '../../components/common/BasePagination.vue'
-import type { Spot, SpotCategory } from '../../types/spots'
-import type { Trip } from '../../services/tripsService'
+import type { Spot, SpotCategory } from '../../types/spots/spots'
+import type { Trip } from '../../services/spots/tripsService'
 
 const route = useRoute()
 

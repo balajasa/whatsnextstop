@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import type { FrontendTravelConfig } from '../../../services/backendTravelService'
+import type { FrontendTravelConfig } from '../../../services/next-travel/nextTravelService'
 
 // ===================================
 // Props
@@ -54,7 +54,7 @@ let timer: number | null = null
 // 計算這個旅行的倒數資料
 const countdownData = computed(() => {
   if (!props.travelData.tripDate) return null
- const now = currentTime.value
+  const now = currentTime.value
   const trip = new Date(props.travelData.tripDate)
   const diffMs = trip.getTime() - now.getTime()
 

@@ -1,7 +1,7 @@
 // constants/catPhotoConfig.ts
 // 貓咪拍照功能基礎配置
 
-import type { CameraConfig, CatConfig } from '../types/cat-photo'
+import type { CameraConfig, CatConfig } from '../types/games/cat-photo'
 import eatCatImg from '@/assets/img/minigame/cat/eat_cat.png'
 import lazyCatImg from '@/assets/img/minigame/cat/lazy_cat.png'
 import travelCatImg from '@/assets/img/minigame/cat/travel_cat.png'

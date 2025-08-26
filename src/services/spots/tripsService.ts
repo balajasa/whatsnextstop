@@ -3,7 +3,7 @@
 // ===================================
 
 import { collection, getDocs, query, orderBy, where } from 'firebase/firestore'
-import { db } from '../firebase'
+import { db } from '../../firebase'
 
 // 旅程介面定義
 export interface Trip {

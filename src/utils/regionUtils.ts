@@ -1,11 +1,11 @@
 // utils/regionUtils.ts
 import {
   CITY_TO_FLAG_MAP,
-  RegionDisplayInfo,
   getSpecialCities,
   isSpecialCity as checkIsSpecialCity,
   getSpecialCityInfo
 } from '../constants/regionConfig'
+import type { RegionDisplayInfo } from '../constants/regionConfig'
 
 /**
  * 特殊地區工具類

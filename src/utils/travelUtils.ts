@@ -1,4 +1,4 @@
-import type { TravelData } from '../types/response'
+import type { TravelData } from '../types/history-travel/travel-history'
 
 /**
  * 格式化地點顯示

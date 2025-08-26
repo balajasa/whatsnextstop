@@ -48,8 +48,8 @@ import { onMounted, onUnmounted } from 'vue'
 import { useTravelCountdownStore } from '../../../stores/travelCountdownStore'
 import CountdownTimer from './CountdownTimer.vue'
 import MultiCountryWeather from './MultiCountryWeather.vue'
-import type { FrontendTravelConfig } from '../../../services/backendTravelService'
-import type { MultiCountryWeatherData, WeatherData } from '../../../types/travel-countdown'
+import type { FrontendTravelConfig } from '../../../services/next-travel/nextTravelService'
+import type { MultiCountryWeatherData, WeatherData } from '../../../types/next-travel/travel-countdown'
 
 // ===================================
 // Store 和響應式資料

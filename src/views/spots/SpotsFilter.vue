@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SpotCategory } from '../../types/spots'
+import type { SpotCategory } from '../../types/spots/spots'
 import SearchInput from '../../components/common/SearchInput.vue'
 import SimpleSelect from '../../components/common/SimpleSelect.vue'
 

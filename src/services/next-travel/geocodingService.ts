@@ -4,8 +4,8 @@
 // ===================================
 
 import axios from 'axios'
-import { cityCoordinates } from '../constants/countryLocationConfig'
-import type { Coordinates } from '../types/travel-countdown'
+import { cityCoordinates } from '../../constants/countryLocationConfig'
+import type { Coordinates } from '../../types/next-travel/travel-countdown'
 
 // Nominatim API 回應格式
 interface NominatimResponse {

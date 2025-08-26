@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { TravelData } from '../types/response'
+import type { TravelData } from '../types/history-travel/travel-history'
 
 /**
  * 旅行照片管理 Composable

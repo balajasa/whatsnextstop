@@ -1,9 +1,9 @@
 // stores/useTravelStore.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { TravelData } from '../types/response'
-import { TravelService } from '../services/travelService'
-import { RegionDisplayInfo } from '../constants/regionConfig'
+import { TravelService } from '../services/history-travel/travelService'
+import type { TravelData } from '../types/history-travel/travel-history'
+import type { RegionDisplayInfo } from '../constants/regionConfig'
 
 export const useTravelStore = defineStore('travel', () => {
   // State

@@ -18,7 +18,7 @@
             <router-link to="/foodwheel" class="nav-link">
               <div class="link-card foodwheel-card mini-card">
                 <div class="card-icon">🍽️</div>
-                <div class="card-title">濟州島輪盤</div>
+                <div class="card-title">命運輪盤</div>
                 <p>3 2 1...什麼時候停止呢？</p>
                 <div class="card-decoration"></div>
               </div>
@@ -208,7 +208,7 @@
   &:hover
     box-shadow: 0 12px 40px rgba(56, 178, 172, 0.2)
 
-// 濟州島輪盤卡片
+// 輪盤卡片
 .foodwheel-card
   border-left: 4px solid $accent-color-2
 

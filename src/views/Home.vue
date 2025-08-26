@@ -36,7 +36,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Ref } from 'vue'
 import Sidebar from '@/components/layout/Sidebar.vue'
 import Footer from '@/components/layout/Footer.vue'
-import { SidebarRef } from '../types/layout'
+import type { SidebarRef } from '../types/common/ui-layout'
 
 const sidebarRef: Ref<SidebarRef | null> = ref(null)
 const isMobile: Ref<boolean> = ref(false)

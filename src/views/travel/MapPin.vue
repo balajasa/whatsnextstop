@@ -23,7 +23,7 @@ import type { Ref } from 'vue'
 import { countryTranslation } from '../../composables/countryTranslation'
 import { useTravelStore } from '../../stores/useTravelStore'
 import { storeToRefs } from 'pinia'
-import type { TravelData, ProcessedPin, MapPinProps } from '../../types/travel-map'
+import type { TravelData, ProcessedPin, MapPinProps } from '../../types/travel-map/travel-map'
 import { getManualCoordinates } from '../../constants/regionConfig'
 
 const { getCountryInfo } = countryTranslation()

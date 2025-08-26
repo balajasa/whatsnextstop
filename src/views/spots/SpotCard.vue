@@ -12,7 +12,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import SpotCardMobile from './SpotCardMobile.vue'
 import SpotCardDesktop from './SpotCardDesktop.vue'
-import type { SpotCardProps } from '../../types/spots'
+import type { SpotCardProps } from '../../types/spots/spots'
 
 // Props
 defineProps<SpotCardProps>()

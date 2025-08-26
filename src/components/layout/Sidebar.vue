@@ -40,7 +40,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
-import { SidebarItem, SidebarProps } from '../../types/layout'
+import { SidebarItem, SidebarProps } from '../../types/common/ui-layout'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   isMobile: false,
@@ -98,7 +98,7 @@ const sidebarList: SidebarItem[] = [
   },
   {
     category: '小小樂趣',
-    name: '濟州島輪盤',
+    name: '命運輪盤',
     icon: '🍽️',
     path: '/foodwheel'
   },

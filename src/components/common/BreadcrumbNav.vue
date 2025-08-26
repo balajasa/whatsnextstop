@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { BreadcrumbItem, BreadcrumbProps } from '../../types/layout'
+import type { BreadcrumbItem, BreadcrumbProps } from '../../types/common/ui-layout'
 
 const route = useRoute()
 

@@ -4,10 +4,10 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import weatherService from '../services/weatherService'
-import { getCityCoordinates } from '../services/geocodingService'
+import weatherService from '../services/next-travel/weatherService'
+import { getCityCoordinates } from '../services/next-travel/geocodingService'
 import { countryLocationConfig } from '../constants/countryLocationConfig'
-import { getUpcomingTripsForFrontend, type FrontendTravelConfig } from '../services/backendTravelService'
+import { getUpcomingTripsForFrontend, type FrontendTravelConfig } from '../services/next-travel/nextTravelService'
 import { countryTranslation } from '../composables/countryTranslation'
 import type {
   WeatherData,
@@ -17,7 +17,7 @@ import type {
   ErrorState,
   TravelCountdownState,
   MultiCountryWeatherData
-} from '../types/travel-countdown'
+} from '../types/next-travel/travel-countdown'
 
 export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   // ===================================

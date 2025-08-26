@@ -9,8 +9,8 @@ import {
   orderBy,
   Timestamp
 } from 'firebase/firestore'
-import { db } from '../firebase'
-import { countryTranslation } from '../composables/countryTranslation'
+import { db } from '../../firebase'
+import { countryTranslation } from '../../composables/countryTranslation'
 
 // 後台資料結構定義
 interface TripOptions {
@@ -18,7 +18,7 @@ interface TripOptions {
   showWeather?: boolean
 }
 
-interface BackendTripCountdown {
+interface NextTripCountdown {
   id?: string
   countries: string[]
   tripDate: string
@@ -53,15 +53,15 @@ const COLLECTION_NAME = 'trip_countdowns'
 /**
  * 資料轉換：後台 → 前台格式
  */
-function convertBackendToFrontend(trip: BackendTripCountdown): FrontendTravelConfig {
+function convertBackendToFrontend(trip: NextTripCountdown): FrontendTravelConfig {
   const { getCountryFlag } = countryTranslation()
-  
+
   // 取第一個國家作為主要目的地
   const primaryCountry = trip.countries[0] || 'Unknown'
-  
+
   // 建立目的地字串 - 統一為所有國家添加國旗
   const destination = trip.countries.map(country => `${getCountryFlag(country)} ${country}`).join(', ')
-  
+
   return {
     destination,
     tripDate: trip.tripDate,
@@ -82,40 +82,40 @@ function convertBackendToFrontend(trip: BackendTripCountdown): FrontendTravelCon
 export async function getUpcomingTripsForFrontend(): Promise<FrontendTravelConfig[]> {
   try {
     const today = new Date().toISOString().split('T')[0]
-    
-    
+
+
     // 簡化查詢：只按日期排序
     const q = query(
       collection(db, COLLECTION_NAME),
       orderBy('tripDate', 'asc')
     )
-    
+
     const querySnapshot = await getDocs(q)
-    
+
     // 客戶端過濾和排序
-    const validTrips: BackendTripCountdown[] = []
-    
+    const validTrips: NextTripCountdown[] = []
+
     querySnapshot.docs.forEach(doc => {
       const tripData = {
         id: doc.id,
         ...doc.data()
-      } as BackendTripCountdown
-      
+      } as NextTripCountdown
+
       // 過濾條件：日期未過期 且 狀態為規劃中、即將到來或進行中
       const isValidDate = tripData.tripDate >= today
       const isValidStatus = ['planning', 'upcoming', 'ongoing'].includes(tripData.status)
-      
+
       if (isValidDate && isValidStatus) {
         validTrips.push(tripData)
       }
     })
-    
+
     if (validTrips.length > 0) {
-      
+
       // 轉換為前台格式
       return validTrips.map(trip => convertBackendToFrontend(trip))
     }
-    
+
     return []
   } catch (error) {
     console.error('❌ 取得即將到來的旅行失敗:', error)
@@ -140,20 +140,20 @@ export async function getAllTripsForFrontend(): Promise<FrontendTravelConfig[]> 
       collection(db, COLLECTION_NAME),
       orderBy('tripDate', 'asc')
     )
-    
+
     const querySnapshot = await getDocs(q)
-    
+
     const trips: FrontendTravelConfig[] = []
-    
+
     querySnapshot.docs.forEach(doc => {
       const tripData = {
         id: doc.id,
         ...doc.data()
-      } as BackendTripCountdown
-      
+      } as NextTripCountdown
+
       trips.push(convertBackendToFrontend(tripData))
     })
-    
+
     return trips
   } catch (error) {
     console.error('❌ 取得所有旅行失敗:', error)
@@ -162,4 +162,4 @@ export async function getAllTripsForFrontend(): Promise<FrontendTravelConfig[]> 
 }
 
 // 匯出類型供其他檔案使用
-export type { FrontendTravelConfig, BackendTripCountdown, TripOptions }
+export type { FrontendTravelConfig, NextTripCountdown, TripOptions }

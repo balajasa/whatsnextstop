@@ -63,7 +63,7 @@ import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import WorldMap from './WorldMap.vue'
 import MapPin from './MapPin.vue'
 import InfoPanel from './InfoPanel.vue'
-import type { Transform, ProcessedPin } from '../../types/travel-map'
+import type { Transform, ProcessedPin } from '../../types/travel-map/travel-map'
 import { countryTranslation } from '../../composables/countryTranslation'
 
 // Refs

@@ -1,5 +1,6 @@
 // services/travelHttpClient.ts
-import axios, { AxiosResponse, AxiosError } from 'axios'
+import axios from 'axios'
+import type { AxiosResponse, AxiosError } from 'axios'
 
 export class travelHttpClient {
   // true: 本機 | false: 線上
