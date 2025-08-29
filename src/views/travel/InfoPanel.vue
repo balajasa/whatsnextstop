@@ -148,7 +148,7 @@ const handleClose = () => {
   top: 50%
   left: 50%
   transform: translate(-50%, -50%)
-  z-index: 990
+  z-index: 1001
   overflow: hidden
   // max-width: calc(100% - 16px)
   max-height: calc(100% - 40px)

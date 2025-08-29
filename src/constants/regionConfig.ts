@@ -65,35 +65,38 @@ export const COUNTRY_NAME_VARIANTS: Record<string, string> = {
 }
 
 /**
- * 手動座標配置(地圖標示用)
+ * 手動座標配置(地圖標示用) - 格式：[緯度, 經度]
  */
 export const MANUAL_COORDINATES: Record<string, [number, number]> = {
   // 美國領土
-  guam: [144.7937, 13.4443],
-  'puerto rico': [-66.590149, 18.220833],
-  'us virgin islands': [-64.896335, 17.7539],
-  'american samoa': [-170.132217, -14.270972],
+  guam: [13.4443, 144.7937],
+  'puerto rico': [18.220833, -66.590149],
+  'us virgin islands': [17.7539, -64.896335],
+  'american samoa': [-14.270972, -170.132217],
 
   // 英國領土
-  bermuda: [-64.7505, 32.3078],
-  'cayman islands': [-81.2546, 19.3133],
-  'british virgin islands': [-64.639968, 18.420695],
+  bermuda: [32.3078, -64.7505],
+  'cayman islands': [19.3133, -81.2546],
+  'british virgin islands': [18.420695, -64.639968],
 
   // 法國領土
-  'french polynesia': [-149.406843, -17.679742],
-  'new caledonia': [165.618042, -20.904305],
+  'french polynesia': [-17.679742, -149.406843],
+  'new caledonia': [-20.904305, 165.618042],
 
   // 荷蘭領土
-  aruba: [-69.968338, 12.52111],
-  curacao: [-68.99002, 12.16957],
+  aruba: [12.52111, -69.968338],
+  curacao: [12.16957, -68.99002],
 
   // 其他特殊地區
-  gibraltar: [-5.353585, 36.140751],
-  'faroe islands': [-6.911806, 61.892635],
+  gibraltar: [36.140751, -5.353585],
+  'faroe islands': [61.892635, -6.911806],
 
-  // 特別行政區-為了讓地圖能顯示，所以硬改
-  hongkong: [113, 22.3193], // 正確經緯度: (114.1694, 22.3193)
-  macao: [108, 22.1987] // 正確經緯度: (113.5439, 22.1987)
+  // 特別行政區-使用市中心座標而非地理中心
+  hongkong: [22.2783, 114.1747], // 香港島中心
+  macao: [22.1987, 113.5439], // 澳門市中心
+
+  // 城市國家-使用市中心座標
+  singapore: [1.3521, 103.8198] // 新加坡市中心
 }
 
 /**
@@ -190,4 +193,141 @@ export const needsManualCoordinates = (country: string): boolean => {
  */
 export const getManualCoordinates = (country: string): [number, number] | null => {
   return MANUAL_COORDINATES[country.toLowerCase()] || null
+}
+
+/**
+ * 從 GeoJSON Feature 計算幾何中心點
+ * @param feature GeoJSON Feature 物件
+ * @returns [lat, lng] 座標或 null (為了統一專案格式，緯度在前)
+ */
+export const calculateFeatureCentroid = (feature: any): [number, number] | null => {
+  if (!feature || !feature.geometry) {
+    return null
+  }
+
+  try {
+    // 注意：GeoJSON 原始格式是 [lng, lat]，但這裡為了統一專案格式回傳 [lat, lng]
+    const geometry = feature.geometry
+    
+    if (geometry.type === 'Polygon') {
+      return calculatePolygonCentroid(geometry.coordinates[0])
+    } else if (geometry.type === 'MultiPolygon') {
+      // 取最大的 Polygon 來計算中心點
+      let largestPolygon = geometry.coordinates[0][0]
+      let largestArea = 0
+      
+      geometry.coordinates.forEach((polygon: number[][][]) => {
+        const area = calculatePolygonArea(polygon[0])
+        if (area > largestArea) {
+          largestArea = area
+          largestPolygon = polygon[0]
+        }
+      })
+      
+      return calculatePolygonCentroid(largestPolygon)
+    }
+    
+    return null
+  } catch (error) {
+    console.warn('計算幾何中心點失敗:', error)
+    return null
+  }
+}
+
+/**
+ * 計算 Polygon 的中心點（重心）
+ * @param coordinates Polygon 座標陣列 [[lng, lat], ...] (GeoJSON 標準格式)
+ * @returns [lat, lng] 座標 (為了統一專案格式，改為緯度在前)
+ */
+function calculatePolygonCentroid(coordinates: number[][]): [number, number] {
+  let x = 0
+  let y = 0
+  let area = 0
+  
+  for (let i = 0, j = coordinates.length - 1; i < coordinates.length; j = i++) {
+    const xi = coordinates[i][0]  // 經度 (GeoJSON 格式)
+    const yi = coordinates[i][1]  // 緯度 (GeoJSON 格式)
+    const xj = coordinates[j][0]
+    const yj = coordinates[j][1]
+    
+    const a = xi * yj - xj * yi
+    area += a
+    x += (xi + xj) * a
+    y += (yi + yj) * a
+  }
+  
+  area *= 0.5
+  x /= (6.0 * area)  // 計算得出的是經度
+  y /= (6.0 * area)  // 計算得出的是緯度
+  
+  // 注意：為了統一專案格式 [lat, lng]，這裡故意交換順序回傳
+  return [y, x]  // [緯度, 經度] - 與 GeoJSON 標準 [lng, lat] 相反
+}
+
+/**
+ * 計算 Polygon 面積（用於找出 MultiPolygon 中最大的 Polygon）
+ * @param coordinates Polygon 座標陣列
+ * @returns 面積值
+ */
+function calculatePolygonArea(coordinates: number[][]): number {
+  let area = 0
+  
+  for (let i = 0, j = coordinates.length - 1; i < coordinates.length; j = i++) {
+    const xi = coordinates[i][0]
+    const yi = coordinates[i][1]
+    const xj = coordinates[j][0]
+    const yj = coordinates[j][1]
+    
+    area += xi * yj - xj * yi
+  }
+  
+  return Math.abs(area) / 2
+}
+
+/**
+ * 從 WorldData 中查找國家並計算中心點
+ * @param countryName 國家名稱
+ * @param worldData GeoJSON 世界地圖資料
+ * @returns [lat, lng] 座標或 null (為了統一專案格式，緯度在前)
+ */
+export const getCountryCoordinatesFromGeoJSON = (
+  countryName: string, 
+  worldData: any
+): [number, number] | null => {
+  if (!worldData || !worldData.features) {
+    return null
+  }
+
+  // 先嘗試從手動座標取得 (已經是 [lat, lng] 格式)
+  const manualCoords = getManualCoordinates(countryName)
+  if (manualCoords) {
+    return manualCoords
+  }
+
+  // 標準化國家名稱進行比對
+  const normalizedCountryName = countryName.toLowerCase().trim()
+  
+  // 在 GeoJSON 中查找對應的國家 Feature
+  const countryFeature = worldData.features.find((feature: any) => {
+    const featureName = (feature.properties?.name || feature.properties?.NAME || '').toLowerCase()
+    
+    // 完全匹配
+    if (featureName === normalizedCountryName) {
+      return true
+    }
+    
+    // 部分匹配（處理國家名稱變體）
+    if (featureName.includes(normalizedCountryName) || normalizedCountryName.includes(featureName)) {
+      return true
+    }
+    
+    return false
+  })
+
+  if (countryFeature) {
+    return calculateFeatureCentroid(countryFeature)
+  }
+
+  console.warn(`❌ 無法在 GeoJSON 中找到國家: ${countryName}`)
+  return null
 }

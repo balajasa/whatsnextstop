@@ -5,7 +5,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import weatherService from '../services/next-travel/weatherService'
-import { getCityCoordinates } from '../services/next-travel/geocodingService'
+import { getCityCoordinates } from '../services/next-travel/cityCoordinatesService'
 import { countryLocationConfig } from '../constants/countryLocationConfig'
 import { getUpcomingTripsForFrontend, type FrontendTravelConfig } from '../services/next-travel/nextTravelService'
 import { countryTranslation } from '../composables/countryTranslation'
