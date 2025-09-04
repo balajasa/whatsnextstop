@@ -5,13 +5,9 @@
 import type { HistoryTrip } from '@/types/history-travel/travel-history'
 
 // Repository 配置
-const PHOTOS_OWNER = import.meta.env.VITE_OWNER
-const PHOTOS_REPO = import.meta.env.VITE_REPO
+const REPO_OWNER = import.meta.env.VITE_REPO_OWNER
+const REPO_NAME = import.meta.env.VITE_REPO_NAME
 const PHOTOS_BASE_PATH = 'images/photo'
-
-// 照片索引檔案配置
-const INDEX_OWNER = import.meta.env.VITE_OWNER
-const INDEX_REPO = import.meta.env.VITE_REPO
 const INDEX_FILE_PATH = 'data/folderData.json'
 
 // 照片索引資料介面
@@ -44,7 +40,7 @@ export class PhotoService {
     }
 
     try {
-      const indexUrl = `https://raw.githubusercontent.com/${INDEX_OWNER}/${INDEX_REPO}/main/${INDEX_FILE_PATH}`
+      const indexUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${INDEX_FILE_PATH}`
 
       const response = await fetch(indexUrl)
 
@@ -117,7 +113,7 @@ export class PhotoService {
 
     const year = new Date(trip.date.startDate).getFullYear()
     const folderPath = `${PHOTOS_BASE_PATH}/${year}/${trip.folderName.trim()}`
-    const fullUrl = `https://raw.githubusercontent.com/${PHOTOS_OWNER}/${PHOTOS_REPO}/main/${folderPath}/${photoName.trim()}.jpg`
+    const fullUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${folderPath}/${photoName.trim()}.jpg`
 
     // 統一使用 .jpg 副檔名
     return fullUrl
