@@ -1,5 +1,3 @@
-// composables/countryNameTWConfig.ts
-
 /**
  * 繁體中文國家名稱覆蓋表
  * 用於確保顯示正確的繁體中文國家名稱

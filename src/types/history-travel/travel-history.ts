@@ -1,31 +1,23 @@
-// types/IResponse.ts
-import type { Ref } from 'vue'
+// ===================================
+// 歷史旅程資料型別
+// ===================================
 
-export interface TravelData {
-  year: string
+export interface HistoryTripDestination {
+  country: string
+  cities: string[]
+}
+
+export interface HistoryTripDate {
   startDate: string
   endDate: string
-  country: string[]
-  stateTW: string[]
-  city: string[]
-  cityTW?: string[]
+}
+
+export interface HistoryTrip {
+  id?: string
+  title: string
   folderName: string
-  photo: string[]
+  date: HistoryTripDate
+  destinations: HistoryTripDestination[]
+  createdAt?: string
 }
 
-export interface TravelsResponse {
-  data: TravelData[]
-}
-
-export interface GetTravels {
-  travels: Ref<TravelData[]>
-  loading: Ref<boolean>
-  loadTravels: () => Promise<void>
-  getImageUrl: (travel: TravelData, photoName: string) => string
-  getConfig: () => ConfigInfo
-}
-
-export interface ConfigInfo {
-  isDev: boolean
-  baseUrl: string
-}

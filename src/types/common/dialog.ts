@@ -1,17 +1,14 @@
-// src/types/dialog.ts
+// ===================================
 // 對話框系統型別定義
+// ===================================
 
-/** 對話框類型 */
+// 對話框類型
 export type DialogType = 'confirm' | 'alert' | 'custom'
 
-/** 對話框結果 */
+// 對話框結果
 export type DialogResult = boolean | any
 
-// ===================================
-// 確認對話框
-// ===================================
-
-/** 確認對話框選項 */
+// 確認對話框選項
 export interface ConfirmDialogOptions {
   /** 標題 */
   title?: string
@@ -27,11 +24,7 @@ export interface ConfirmDialogOptions {
   loading?: boolean
 }
 
-// ===================================
-// 警告對話框
-// ===================================
-
-/** 警告對話框選項 */
+// 警告對話框選項
 export interface AlertDialogOptions {
   /** 標題 */
   title?: string
@@ -43,11 +36,7 @@ export interface AlertDialogOptions {
   closeOnOverlay?: boolean
 }
 
-// ===================================
-// 自定義對話框
-// ===================================
-
-/** 自定義對話框選項 */
+// 自定義對話框選項
 export interface CustomDialogOptions {
   /** 要渲染的組件 */
   component: any
@@ -57,11 +46,7 @@ export interface CustomDialogOptions {
   closeOnOverlay?: boolean
 }
 
-// ===================================
 // 對話框實例
-// ===================================
-
-/** 對話框實例 */
 export interface DialogInstance {
   /** 唯一識別碼 */
   id: string
@@ -79,11 +64,7 @@ export interface DialogInstance {
   loading: boolean
 }
 
-// ===================================
-// 對話框狀態
-// ===================================
-
-/** 對話框狀態管理 */
+// 對話框狀態管理
 export interface DialogState {
   /** 當前活躍的對話框實例 */
   dialogs: DialogInstance[]
@@ -91,11 +72,7 @@ export interface DialogState {
   hasOpenDialog: boolean
 }
 
-// ===================================
-// 對話框服務介面
-// ===================================
-
-/** 對話框服務 */
+// 對話框服務
 export interface DialogService {
   /** 確認對話框 */
   confirm(options: ConfirmDialogOptions): Promise<boolean>
@@ -109,11 +86,7 @@ export interface DialogService {
   close(id: string): void
 }
 
-// ===================================
-// 事件型別
-// ===================================
-
-/** 對話框事件 */
+// 對話框事件
 export interface DialogEvents {
   /** 確認事件 */
   confirm: (id: string, result?: any) => void
@@ -123,11 +96,7 @@ export interface DialogEvents {
   close: (id: string) => void
 }
 
-// ===================================
-// 工具型別
-// ===================================
-
-/** 提取對話框選項型別 */
+// 提取對話框選項型別
 export type ExtractDialogOptions<T extends DialogType> = T extends 'confirm'
   ? ConfirmDialogOptions
   : T extends 'alert'
@@ -136,7 +105,7 @@ export type ExtractDialogOptions<T extends DialogType> = T extends 'confirm'
       ? CustomDialogOptions
       : never
 
-/** 提取對話框結果型別 */
+// 提取對話框結果型別
 export type ExtractDialogResult<T extends DialogType> = T extends 'confirm'
   ? boolean
   : T extends 'alert'

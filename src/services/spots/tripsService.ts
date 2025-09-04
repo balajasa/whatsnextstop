@@ -1,5 +1,5 @@
 // ===================================
-// 旅程資料服務 - 連接 Firebase 旅程資料
+// 旅程資料服務
 // ===================================
 
 import { collection, getDocs, query, orderBy, where } from 'firebase/firestore'
@@ -9,8 +9,8 @@ import { db } from '../../firebase'
 export interface Trip {
   id: string
   name: string
-  startDate?: string // 旅行開始日期 (可選)
-  endDate?: string // 旅行結束日期 (可選)
+  startDate?: string // 旅行開始日期
+  endDate?: string // 旅行結束日期
   createdAt: string // 系統建立時間
   updatedAt?: string // 系統更新時間
   // 其他旅程相關欄位可以在這裡擴展
@@ -42,7 +42,7 @@ export async function getAllTrips(): Promise<Trip[]> {
 
     return trips
   } catch (error) {
-    console.error('❌ 取得旅程列表失敗:', error)
+    console.error('取得旅程列表失敗:', error)
     throw error
   }
 }
@@ -59,7 +59,7 @@ export async function getAllTripsWithShortId(): Promise<TripWithShortId[]> {
       shortId: generateShortId(trip.id)
     }))
   } catch (error) {
-    console.error('❌ 取得旅程列表失敗:', error)
+    console.error('取得旅程列表失敗:', error)
     throw error
   }
 }
@@ -90,7 +90,7 @@ export async function findTripByShortId(shortId: string): Promise<Trip | null> {
       ...doc.data()
     } as Trip
   } catch (error) {
-    console.error(`❌ 根據短 ID ${shortId} 查找旅程失敗:`, error)
+    console.error(`根據短 ID ${shortId} 查找旅程失敗:`, error)
     throw error
   }
 }
@@ -114,7 +114,7 @@ export async function getTripById(tripId: string): Promise<Trip | null> {
       ...doc.data()
     } as Trip
   } catch (error) {
-    console.error(`❌ 取得旅程 ${tripId} 失敗:`, error)
+    console.error(`取得旅程 ${tripId} 失敗:`, error)
     throw error
   }
 }

@@ -13,12 +13,12 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/whatsnextstop/' : '/',
   server: {
     proxy: {
-      '/api/usagi': {
+      '/api/coffeeisadog': {
         target: 'http://127.0.0.1:3000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => {
-          const newPath = path.replace(/^\/api\/usagi/, '')
+          const newPath = path.replace(/^\/api\/coffeeisadog/, '')
           return newPath
         }
       }

@@ -459,7 +459,6 @@ const updateWheel = (): void => {
 
   &:active
     background: #F4511E
-    transform: translateY(-1px)
 
   &:disabled
     background: #E5E5E5
@@ -611,12 +610,10 @@ const updateWheel = (): void => {
   font-weight: 500
   font-size: 14px
   cursor: pointer
-  // transition: all 0.3s ease
 
   &:hover
     background: rgba(220, 20, 60, 0.9)
     box-shadow: 0 6px 15px rgba(220, 20, 60, 0.3)
-    // transform: translateY(-1px)
 
 .add-button
   width: 100%
@@ -636,7 +633,6 @@ const updateWheel = (): void => {
     border-color: rgba(230, 180, 34, 0.6)
     background: rgba(230, 180, 34, 0.25)
     box-shadow: 0 8px 25px rgba(230, 180, 34, 0.25)
-    // transform: translateY(-2px)
 
 .update-button
   margin-top: $spacing-lg

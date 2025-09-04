@@ -1,10 +1,10 @@
 // ===================================
-// 景點資料服務 - 連接 Firebase 資料
+// 景點資料服務
 // ===================================
 
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../../firebase'
-import { countryTranslation } from '../../composables/countryTranslation'
+import { countryTranslation } from '../../translation/composables/countryTranslation'
 import type {
   Spot,
   SpotFilters,
@@ -53,7 +53,7 @@ export async function getSpotsByTrip(tripId: string): Promise<Spot[]> {
 
     return spots
   } catch (error) {
-    console.error(`❌ 取得旅程 ${tripId} 的景點資料失敗:`, error)
+    console.error(`取得旅程 ${tripId} 的景點資料失敗:`, error)
     throw error
   }
 }
@@ -85,7 +85,7 @@ export async function getAllSpots(): Promise<Spot[]> {
 
     return spots
   } catch (error) {
-    console.error('❌ 取得景點資料失敗:', error)
+    console.error('取得景點資料失敗:', error)
     throw error
   }
 }
@@ -112,7 +112,7 @@ export async function getSpotsByCountry(country: string): Promise<Spot[]> {
 
     return spots
   } catch (error) {
-    console.error(`❌ 取得 ${country} 景點資料失敗:`, error)
+    console.error(`取得 ${country} 景點資料失敗:`, error)
     throw error
   }
 }
@@ -166,7 +166,7 @@ export async function searchSpots(params: SpotSearchParams): Promise<SpotsRespon
       totalCount
     }
   } catch (error) {
-    console.error('❌ 搜尋景點失敗:', error)
+    console.error('搜尋景點失敗:', error)
     throw error
   }
 }
@@ -192,7 +192,7 @@ export async function getCountryOptions(): Promise<CountryOption[]> {
 
     return options
   } catch (error) {
-    console.error('❌ 取得國家選項失敗:', error)
+    console.error('取得國家選項失敗:', error)
     throw error
   }
 }

@@ -1,5 +1,8 @@
 <template>
   <div class="spots-page">
+    <!-- 麵包屑導航 -->
+    <BreadcrumbNav :manual-items="breadcrumbItems" :manual-show="true" />
+
     <!-- 搜尋和篩選區 -->
     <SpotsFilter v-model:search-keyword="searchKeyword" v-model:selected-country="selectedCountry"
       v-model:selected-category="selectedCategory" :countries="countries" :category-options="categoryOptions"
@@ -43,11 +46,13 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
 import { findTripByShortId } from '../../services/spots/tripsService'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import SpotCard from './SpotCard.vue'
 import SpotsFilter from './SpotsFilter.vue'
 import BasePagination from '../../components/common/BasePagination.vue'
 import type { Spot, SpotCategory } from '../../types/spots/spots'
 import type { Trip } from '../../services/spots/tripsService'
+import type { BreadcrumbItem } from '../../types/common/ui-layout'
 
 const route = useRoute()
 
@@ -119,6 +124,23 @@ const hasActiveFilters = computed(() => {
     selectedCategory.value !== ''
 })
 
+// 動態麵包屑
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
+  const items: BreadcrumbItem[] = [
+    { text: '旅程列表', path: '/trips' }
+  ]
+
+  if (currentTrip.value) {
+    // 有具體旅程時，顯示旅程名稱
+    items.push({ text: currentTrip.value.name })
+  } else {
+    // 沒有具體旅程時，顯示通用標題
+    items.push({ text: '景點探索' })
+  }
+
+  return items
+})
+
 // 方法
 const loadSpots = async () => {
   try {
@@ -188,15 +210,27 @@ onMounted(() => {
 .spots-page
   min-height: 100vh
   background: $spot-bg
-  padding: $spacing-xl
+  padding: 0 $spacing-lg $spacing-lg
 
-  @include mobile-only
-    padding: $spacing-lg
+  @include tablet
+    padding: 0 $spacing-lg $spacing-xl
 
-// 載入和錯誤狀態
+  @include desktop
+    padding: 0 $spacing-xl $spacing-xl
+
+// SpotsFilter 間距
+:deep(.spots-filter)
+  margin-top: $spacing-lg
+
+// 載入和錯誤狀態 (Mobile First)
 .loading-section, .error-section
   text-align: center
-  padding: $spacing-2xl
+  margin-top: $spacing-md
+  padding: $spacing-xl
+
+  @include tablet
+    margin-top: $spacing-lg
+    padding: $spacing-2xl
 
 .loading-spinner
   width: 40px
@@ -233,11 +267,14 @@ onMounted(() => {
 // 景點列表
 .spots-list
   max-width: 1400px
-  margin: 0 auto
+  margin: $spacing-md auto 0
 
 .empty-state
   text-align: center
-  padding: $spacing-2xl
+  padding: $spacing-xl
+
+  @include tablet
+    padding: $spacing-2xl
 
   .empty-icon
     font-size: 64px

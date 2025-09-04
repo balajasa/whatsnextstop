@@ -144,7 +144,6 @@ const handleCapture = async () => {
       emit('photoCaptured')
     }
   } catch (error) {
-    console.error('Capture failed:', error)
     showError('拍照失敗，請重試')
   } finally {
     // 8. 重置狀態
@@ -172,7 +171,6 @@ const performPhotoProcessing = async (photoData: any) => {
 
     return photoData
   } catch (error) {
-    console.error('Photo processing failed:', error)
     throw error
   }
 }
@@ -185,7 +183,6 @@ const handleClose = async () => {
     await stopCamera()
     emit('close')
   } catch (error) {
-    console.error('Close camera failed:', error)
     emit('close') // 即使失敗也要關閉頁面
   }
 }
@@ -197,7 +194,6 @@ const handleSwitchCamera = async () => {
   try {
     await switchCamera()
   } catch (error) {
-    console.error('Switch camera failed:', error)
     showError('切換鏡頭失敗')
   }
 }

@@ -132,7 +132,7 @@ const initializeWidget = async () => {
     startCountdownTimer()
 
   } catch (error) {
-    console.error('❌ TravelCountdown 元件初始化失敗:', error)
+    console.error('TravelCountdown 元件初始化失敗:', error)
   }
 }
 

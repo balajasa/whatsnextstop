@@ -1,7 +1,7 @@
 <template>
   <nav v-if="shouldShowBreadcrumb" class="breadcrumb-nav">
     <div class="breadcrumb-container">
-      <!-- 首頁鏈接 -->
+      <!-- 首頁連結 -->
       <router-link to="/home" class="breadcrumb-home">
         <span class="breadcrumb-icon">🏠</span>
         <span class="breadcrumb-text">{{ homeText }}</span>
@@ -11,13 +11,13 @@
       <template v-for="(item, index) in breadcrumbItems" :key="index">
         <span class="breadcrumb-separator">{{ separator }}</span>
 
-        <!-- 如果是最後一項且不是鏈接，顯示為當前頁面 -->
+        <!-- 如果是最後一項且不是連結，顯示為當前頁面 -->
         <span v-if="index === breadcrumbItems.length - 1 && !item.path" class="breadcrumb-current">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
         </span>
 
-        <!-- 如果有路徑，顯示為鏈接 -->
+        <!-- 如果有路徑，顯示為連結 -->
         <router-link v-else-if="item.path" :to="item.path" class="breadcrumb-link">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
@@ -99,7 +99,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
 // 麵包屑項目
 // ===================================
 
-// 首頁鏈接
+// 首頁連結
 .breadcrumb-home
   @include flex-center
   gap: $spacing-xs
@@ -113,13 +113,12 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   &:hover
     background: rgba(56, 178, 172, 0.1)
     color: $accent-color-1
-    transform: translateY(-1px)
 
   @include tablet
     padding: $spacing-sm
     gap: $spacing-sm
 
-// 一般鏈接
+// 一般連結
 .breadcrumb-link
   @include flex-center
   gap: $spacing-xs
@@ -133,7 +132,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   &:hover
     background: rgba(74, 85, 104, 0.1)
     color: $primary-color
-    transform: translateY(-1px)
 
   @include tablet
     padding: $spacing-sm
@@ -147,7 +145,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   font-weight: 600
   padding: $spacing-xs $spacing-sm
   background: rgba(230, 168, 107, 0.1)
-  border-radius: $border-radius-sm
+  border-radius: $border-radius-lg
 
   @include tablet
     padding: $spacing-sm
@@ -190,12 +188,12 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   color: $text-light
   font-weight: 300
   font-size: 14px
-  margin: 0 $spacing-xs
+  margin: 0 2px
   user-select: none
 
   @include tablet
     font-size: 16px
-    margin: 0 $spacing-sm
+    margin: 0 4px
 
 // ===================================
 // 響應式調整

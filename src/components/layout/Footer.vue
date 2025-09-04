@@ -29,8 +29,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useTravelStore } from '../../stores/useTravelStore'
-import { countryTranslation } from '../../composables/countryTranslation'
+import { useHistoryTripStore } from '../../stores/useHistoryTripStore'
+import { countryTranslation } from '../../translation/composables/countryTranslation'
 
 interface CountryCard {
   code: string
@@ -39,7 +39,7 @@ interface CountryCard {
   isCollected: boolean
 }
 
-const travelStore = useTravelStore()
+const historyTripStore = useHistoryTripStore()
 const { getCountryInfo } = countryTranslation()
 
 const displayCountries = ref<CountryCard[]>([])
@@ -61,31 +61,36 @@ const initCountries = () => {
   const visitedCountryCards: CountryCard[] = []
 
   // 處理已去過的地區
-  travelStore.travels.forEach((travel) => {
-    // 為每個城市檢查是否為特例
-    travel.city.forEach(city => {
-      // 創建只包含單一城市的 travel 物件來檢查
-      const singleCityTravel = { ...travel, city: [city] }
-      const regionInfo = travelStore.getDisplayRegion(singleCityTravel)
-
-      // 如果還沒有收集過這個地區
-      if (!visitedRegions.has(regionInfo.flagCode)) {
-        visitedRegions.add(regionInfo.flagCode)
-
-        try {
-          // 取得旗幟資訊
-          const flagInfo = getCountryInfo(regionInfo.flagCode)
-
-          visitedCountryCards.push({
-            code: regionInfo.flagCode,
-            name: regionInfo.displayName,
-            flag: flagInfo.flag,
-            isCollected: true
-          })
-        } catch (error) {
-          console.error(`❌ 處理地區 ${regionInfo.displayName} 時出錯:`, error)
+  historyTripStore.allTrips.forEach((trip) => {
+    // 為每個目的地的每個城市檢查是否為特例
+    trip.destinations.forEach(destination => {
+      destination.cities.forEach(city => {
+        // 創建臨時的 trip 物件來檢查特例城市
+        const tempTrip = {
+          ...trip,
+          destinations: [{ country: destination.country, cities: [city] }]
         }
-      }
+        const regionInfo = historyTripStore.getDisplayRegion(tempTrip)
+
+        // 如果還沒有收集過這個地區
+        if (!visitedRegions.has(regionInfo.flagCode)) {
+          visitedRegions.add(regionInfo.flagCode)
+
+          try {
+            // 取得旗幟資訊
+            const flagInfo = getCountryInfo(regionInfo.flagCode)
+
+            visitedCountryCards.push({
+              code: regionInfo.flagCode,
+              name: regionInfo.displayName,
+              flag: flagInfo.flag,
+              isCollected: true
+            })
+          } catch (error) {
+            console.error(`處理地區 ${regionInfo.displayName} 時出錯:`, error)
+          }
+        }
+      })
     })
   })
 
@@ -105,7 +110,7 @@ const initCountries = () => {
         })
       }
     } catch (error) {
-      console.error(`❌ 處理未去過的國家 ${countryName} 時出錯:`, error)
+      console.error(`處理未去過的國家 ${countryName} 時出錯:`, error)
     }
   })
 
@@ -119,12 +124,12 @@ const initCountries = () => {
 const loadData = async () => {
 
   try {
-    await travelStore.loadTravels()
+    await historyTripStore.loadAllTrips()  // 載入全部資料來統計所有國家
 
     initCountries()
 
   } catch (error) {
-    console.error('❌ 載入旅遊資料失敗:', error)
+    console.error('載入旅遊資料失敗:', error)
     // 即使載入失敗也要初始化基本清單
     initCountries()
   }
@@ -226,9 +231,9 @@ onMounted(() => {
   display: flex
   align-items: center
   justify-content: center
-  overflow: visible  // 保持 visible，讓卡片可以正常顯示
+  overflow: visible
   min-height: 0
-  max-height: 100%  // 添加：最大高度限制
+  max-height: 100%
 
 .cards-container
   display: flex
@@ -239,10 +244,9 @@ onMounted(() => {
   padding: 0 $spacing-sm
   width: 100%
   min-height: 60px
-  max-height: 80px  // 添加：最大高度限制，防止兩排卡片
-  flex-wrap: nowrap  // 確保不換行
-  // 添加移動端滾動優化
-  -webkit-overflow-scrolling: touch  // iOS 滑順滾動
+  max-height: 80px
+  flex-wrap: nowrap
+  -webkit-overflow-scrolling: touch
   scroll-behavior: smooth
   scrollbar-width: thin
   scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1)
@@ -254,7 +258,7 @@ onMounted(() => {
     padding-left: 20px
     padding-right: 20px
     box-sizing: border-box
-    max-height: 70px  // 手機版的最大高度
+    max-height: 70px
 
   @media (min-width: 768px)
     gap: 8px
@@ -270,7 +274,7 @@ onMounted(() => {
     min-height: 80px
 
 // ====================================
-// 卡片樣式 - 添加觸控優化
+// 卡片樣式
 // ====================================
 .card-holder
   flex-shrink: 0
@@ -281,7 +285,6 @@ onMounted(() => {
   width: 35px
   height: 45px
   position: relative
-  // 添加觸控優化
   touch-action: manipulation
 
   @media (min-width: 768px)
@@ -293,7 +296,7 @@ onMounted(() => {
     height: 70px
 
   &:has(.card-surface.collected):hover
-    transform: scale(1.05)  // 修改：移除translateY，只保留scale
+    transform: scale(1.05)
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
 
 .card-surface

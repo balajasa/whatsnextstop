@@ -118,7 +118,6 @@ const handleCategoryChange = (value: string) => {
   &:hover
     background: $country-tab-hover
     border-color: $country-tab-border
-    transform: translateY(-1px)
 
   &.active
     background: $country-tab-active-bg
@@ -189,7 +188,6 @@ const handleCategoryChange = (value: string) => {
   &:hover
     background: rgba(0, 92, 175, 0.15)
     border-color: $country-tab-border
-    transform: translateY(-1px)
     box-shadow: 0 2px 8px rgba(0, 92, 175, 0.2)
 
 // 結果統計

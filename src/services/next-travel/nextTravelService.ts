@@ -1,5 +1,5 @@
 // ===================================
-// 後台旅行服務 - 連接後台 Firebase 資料
+// 後台旅行服務
 // ===================================
 
 import {
@@ -10,7 +10,7 @@ import {
   Timestamp
 } from 'firebase/firestore'
 import { db } from '../../firebase'
-import { countryTranslation } from '../../composables/countryTranslation'
+import { countryTranslation } from '../../translation/composables/countryTranslation'
 
 // 後台資料結構定義
 interface TripOptions {
@@ -59,8 +59,8 @@ function convertBackendToFrontend(trip: NextTripCountdown): FrontendTravelConfig
   // 取第一個國家作為主要目的地
   const primaryCountry = trip.countries[0] || 'Unknown'
 
-  // 建立目的地字串 - 統一為所有國家添加國旗
-  const destination = trip.countries.map(country => `${getCountryFlag(country)} ${country}`).join(', ')
+  // 使用第一個國家作為 destination (向後兼容)
+  const destination = trip.countries[0] || 'Unknown'
 
   return {
     destination,
@@ -118,7 +118,7 @@ export async function getUpcomingTripsForFrontend(): Promise<FrontendTravelConfi
 
     return []
   } catch (error) {
-    console.error('❌ 取得即將到來的旅行失敗:', error)
+    console.error('取得即將到來的旅行失敗:', error)
     throw error
   }
 }
@@ -156,7 +156,7 @@ export async function getAllTripsForFrontend(): Promise<FrontendTravelConfig[]> 
 
     return trips
   } catch (error) {
-    console.error('❌ 取得所有旅行失敗:', error)
+    console.error('取得所有旅行失敗:', error)
     throw error
   }
 }

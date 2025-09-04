@@ -11,7 +11,7 @@
       <!-- 中間天氣內容 -->
       <div class="multi-country-weather">
         <div v-if="currentCountryWeather" class="current-country-weather">
-          <!-- 國家名稱與國旗 -->
+          <!-- 國家名稱 -->
           <div class="country-name">{{ currentCountryWeather.country }}</div>
           <!-- 天氣圖標 -->
           <div v-if="currentCountryWeather.code" class="weather-icon"
@@ -172,10 +172,17 @@ const checkImageExists = (code: string) => {
   background: rgba(255, 255, 255, 0.7)
   border: 2px solid $primary-color
   border-radius: 15px
-  padding: 6px
+  padding: 4px
   transform: rotate(0.5deg)
   @include flex-center
   flex-direction: column
+  height: 100%
+  max-height: 100%
+  overflow: hidden
+
+  @include mobile-only
+    padding: 4px
+    border-radius: 12px
 
   @include tablet
     padding: 10px
@@ -200,13 +207,18 @@ const checkImageExists = (code: string) => {
 .multi-country-weather
   @include flex-center
   flex-direction: column
-  gap: 4px
+  gap: 2px
   height: 100%
-  padding: 6px
+  padding: 4px
   transform: rotate(0.5deg)
+  overflow: hidden
+
+  @include mobile-only
+    gap: 1px
+    padding: 2px
 
   @include tablet
-  //   gap: 8px
+    gap: 4px
     padding: 2px
 
 // 導航按鈕（左右箭頭）

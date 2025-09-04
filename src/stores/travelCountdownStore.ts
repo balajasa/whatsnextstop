@@ -1,14 +1,13 @@
 // ===================================
-// src/stores/TravelCountdownStore.ts
+// 旅行倒數 Store
 // ===================================
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import weatherService from '../services/next-travel/weatherService'
 import { getCityCoordinates } from '../services/next-travel/cityCoordinatesService'
-import { countryLocationConfig } from '../constants/countryLocationConfig'
 import { getUpcomingTripsForFrontend, type FrontendTravelConfig } from '../services/next-travel/nextTravelService'
-import { countryTranslation } from '../composables/countryTranslation'
+import { countryTranslation } from '../translation/composables/countryTranslation'
 import type {
   WeatherData,
   CountdownData,
@@ -84,8 +83,17 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   // 檢查是否有多筆旅行資料
   const hasMultipleTravels = computed(() => travelConfigs.value.length > 0)
 
-  // 取得設定資料（優先使用後台資料，fallback 為靜態配置）
-  const config = computed(() => travelConfig.value || countryLocationConfig)
+  // 取得設定資料（只使用後台資料）
+  const config = computed(() => travelConfig.value || {
+    destination: 'Unknown',
+    tripDate: new Date().toISOString().split('T')[0],
+    countryFlag: '🏖️',
+    title: '旅行倒數',
+    options: {
+      showSeconds: false,
+      showWeather: false
+    }
+  })
 
   // ===================================
   // 動作 (Actions)
@@ -192,14 +200,14 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
         // 同時更新主要天氣數據（向後兼容）
         weatherData.value = multiWeatherData.primaryWeather
       } else {
-        console.warn('⚠️ 多國天氣載入失敗，使用預設天氣')
+        console.warn('多國天氣載入失敗，使用預設天氣')
         multiCountryWeatherData.value = null
         weatherData.value = weatherService.getDefaultWeather()
       }
 
       error.value = { hasError: false, message: '' }
     } catch (err) {
-      console.warn('❌ 多國天氣載入錯誤:', err)
+      console.warn('多國天氣載入錯誤:', err)
       multiCountryWeatherData.value = null
       weatherData.value = weatherService.getDefaultWeather()
     } finally {
@@ -235,7 +243,7 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
           }
         }
       } catch (error) {
-        console.warn(`❌ 第${index + 1}筆旅行天氣載入失敗:`, error)
+        console.warn(`第${index + 1}筆旅行天氣載入失敗:`, error)
         // 使用預設天氣
         travelWeatherMap.value.set(index, weatherService.getDefaultWeather())
       }
@@ -286,46 +294,24 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
 
       } else {
 
-        // Fallback 到靜態配置
-        await initializeFromStaticConfig()
+        // 沒有後台資料時清空狀態
+        console.warn('沒有找到任何旅行配置資料')
+        travelConfigs.value = []
+        travelConfig.value = null
+        weatherData.value = null
+        coordinates.value = null
       }
     } catch (err) {
-      console.error('❌ 後台資料載入失敗，使用靜態配置:', err)
+      console.error('後台資料載入失敗:', err)
 
-      // 發生錯誤時 fallback 到靜態配置
-      await initializeFromStaticConfig()
-    }
-  }
-
-  // 從靜態設定檔初始化 (保留作為 fallback)
-  async function initializeFromStaticConfig() {
-    try {
-
-      // 清除後台配置，使用靜態配置
+      // 發生錯誤時清空狀態
       travelConfigs.value = []
       travelConfig.value = null
-
-      // 取得城市座標
-      const coords = await getCityCoordinates(countryLocationConfig.destination)
-      coordinates.value = coords
-
-      // 並行處理天氣和倒數
-      await Promise.all([
-        loadWeatherData(coords),
-        new Promise<void>(resolve => {
-          updateCountdown(countryLocationConfig.tripDate)
-          resolve()
-        })
-      ])
-
-    } catch (err) {
-      console.error('❌ 靜態配置初始化失敗:', err)
-      error.value = {
-        hasError: true,
-        message: '初始化失敗，請檢查網路連線'
-      }
+      weatherData.value = null
+      coordinates.value = null
     }
   }
+
 
   // 原有的初始化函數 (保留兼容性)
   async function initialize(tripDate: string, coords: Coordinates) {
@@ -378,7 +364,7 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
       await loadWeatherData(coords)
 
     } catch (err) {
-      console.error('❌ 目的地更新失敗:', err)
+      console.error('目的地更新失敗:', err)
       error.value = {
         hasError: true,
         message: '目的地更新失敗'
@@ -422,7 +408,6 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
     loadMultiCountryWeatherData, // 新增：載入多國天氣
     loadAllTravelWeatherData, // 新增：載入所有旅行天氣
     initializeFromBackend, // 新的主要初始化函數
-    initializeFromStaticConfig, // 靜態配置 fallback
     initialize, // 原有函數 (兼容性)
     reset,
     refreshWeather,

@@ -123,7 +123,6 @@ const updateDisplay = async () => {
       showError('更新顯示失敗')
     }
   } catch (error) {
-    console.error('Update display failed:', error)
     showError('更新顯示失敗')
   }
 }
@@ -137,7 +136,6 @@ onMounted(async () => {
     await nextTick()
     await updateDisplay()
   } catch (error) {
-    console.error('Result page initialization failed:', error)
     showError('頁面初始化失敗')
   }
 })
@@ -322,7 +320,6 @@ onMounted(async () => {
 
     &:hover:not(:disabled)
       background: rgba(236, 109, 81, 0.9)
-      transform: translateY(-1px)
       box-shadow: 0 4px 12px rgba(236, 109, 81, 0.4)
 
   // 重拍按鈕 - 直接使用顏色值
@@ -333,7 +330,6 @@ onMounted(async () => {
 
     &:hover:not(:disabled)
       background: rgba(255, 255, 251, 0.8)
-      transform: translateY(-1px)
 
   &:disabled
     opacity: 0.6

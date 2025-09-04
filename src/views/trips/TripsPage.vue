@@ -96,11 +96,6 @@ const formatTripDuration = (trip: TripWithShortId): string => {
     return `${formatDate(trip.startDate)} - 結束日期未定`
   }
 
-  // 只有結束日期 (不太可能，但防範)
-  if (trip.endDate) {
-    return `開始日期未定 - ${formatDate(trip.endDate)}`
-  }
-
   // 都沒有的話，顯示規劃狀態
   return "日期尚未決定"
 }
@@ -117,15 +112,23 @@ onMounted(() => {
 
 .trips-page
   min-height: 100vh
-  // padding: $spacing-xl
+  padding: 0 $spacing-lg $spacing-lg
 
-  @include mobile-only
-    padding: $spacing-lg
+  @include tablet
+    padding: 0 $spacing-lg $spacing-xl
+
+  @include desktop
+    padding: 0 $spacing-xl $spacing-xl
 
 // 載入和錯誤狀態
 .loading-section, .error-section
   text-align: center
-  padding: $spacing-2xl
+  margin-top: $spacing-lg
+  padding: $spacing-xl
+
+  @include tablet
+    margin-top: $spacing-lg
+    padding: $spacing-2xl
 
 .loading-spinner
   width: 40px
@@ -166,7 +169,10 @@ onMounted(() => {
 
 .empty-state
   text-align: center
-  padding: $spacing-2xl
+  padding: $spacing-xl
+
+  @include tablet
+    padding: $spacing-2xl
 
   .empty-icon
     font-size: 64px
@@ -181,7 +187,7 @@ onMounted(() => {
 
 .trips-grid
   display: grid
-  grid-template-columns: 1fr  // 手機版預設：單欄
+  grid-template-columns: 1fr
   gap: $spacing-lg
 
   // 平板以上：多欄佈局

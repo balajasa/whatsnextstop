@@ -209,7 +209,6 @@ const toggleDescription = () => {
   &:hover
     background-color: rgba(0, 92, 175, 0.1)
     border-color: $search-input-focus
-    transform: translateY(-1px)
     box-shadow: 0 2px 8px rgba(0, 92, 175, 0.15)
 
 // 位置資訊

@@ -1,9 +1,12 @@
-// composables/countryTranslation.ts
+// ===================================
+// 國家翻譯 Composable
+// ===================================
+
 import countries from 'i18n-iso-countries'
 import zhTW from 'i18n-iso-countries/langs/zh.json'
 import enLocale from 'i18n-iso-countries/langs/en.json'
-import { COUNTRY_NAME_VARIANTS, MAP_ENGLISH_NAMES } from '../constants/regionConfig'
-import { TRADITIONAL_CHINESE_OVERRIDES } from '../constants/countryNameTWConfig'
+import { COUNTRY_NAME_VARIANTS, MAP_ENGLISH_NAMES } from '../constants/countryNameMapping'
+import { TRADITIONAL_CHINESE_OVERRIDES } from '../constants/countryDisplay'
 
 // 初始化語言包（只初始化一次）
 let isInitialized = false
@@ -164,7 +167,7 @@ export const countryTranslation = () => {
 
     // 優先嘗試中文查找
     let countryCode = findCountryCodeFromChinese(country)
-    
+
     // 如果中文查找失敗，嘗試英文查找
     if (!countryCode) {
       countryCode = findCountryCode(country)

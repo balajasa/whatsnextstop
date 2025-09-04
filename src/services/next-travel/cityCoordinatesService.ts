@@ -1,10 +1,8 @@
 // ===================================
-// src/services/geocodingService.ts
 // 地理編碼服務 - 城市名稱轉座標
 // ===================================
 
 import axios from 'axios'
-import { cityCoordinates } from '../../constants/countryLocationConfig'
 import type { Coordinates } from '../../types/next-travel/travel-countdown'
 
 // Nominatim API 回應格式
@@ -15,8 +13,6 @@ interface NominatimResponse {
   type: string
 }
 
-// 城市座標字典類型
-type CityCoordinatesDict = Record<string, Coordinates>
 
 // 快取前綴
 const CACHE_PREFIX = 'travel_coords_'
@@ -96,7 +92,7 @@ async function queryNominatimAPI(cityName: string): Promise<Coordinates | null> 
 
       return coordinates
     } else {
-      console.warn(`❌ 找不到城市: ${cityName}`)
+      console.warn(`找不到城市: ${cityName}`)
       return null
     }
   } catch (error) {
@@ -126,21 +122,14 @@ export async function getCityCoordinates(cityName: string): Promise<Coordinates>
 
   // console.log(`🗺️ 開始查詢座標: ${normalizedCityName}`)
 
-  // 1. 優先查詢預設庫 (使用類型斷言)
-  const coords = (cityCoordinates as CityCoordinatesDict)[normalizedCityName]
-  if (coords) {
-    // console.log(`📚 從預設庫找到座標:`, coords)
-    return coords
-  }
-
-  // 2. 查詢快取
+  // 1. 查詢快取
   const cachedCoords = getCachedCoordinates(normalizedCityName)
   if (cachedCoords) {
     // console.log(`💾 從快取找到座標:`, cachedCoords)
     return cachedCoords
   }
 
-  // 3. 呼叫 API 查詢
+  // 2. 呼叫 API 查詢
   const apiCoords = await queryNominatimAPI(normalizedCityName)
   if (apiCoords) {
     // 存入快取
@@ -148,7 +137,7 @@ export async function getCityCoordinates(cityName: string): Promise<Coordinates>
     return apiCoords
   }
 
-  // 4. 所有方法都失敗，使用預設座標 (Taichung)
+  // 3. 所有方法都失敗，使用預設座標 (Taichung)
   // console.warn(`⚠️ 無法取得 ${normalizedCityName} 的座標，使用預設座標 (Taichung)`)
   const fallbackCoords = { lat: 120.6794, lon: 24.1439 }
 

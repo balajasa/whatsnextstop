@@ -319,5 +319,4 @@ onUnmounted(() => {
 
     &:hover:not(:disabled)
       background: rgba(56, 178, 172, 0.8)
-      transform: translateY(-1px)
 </style>

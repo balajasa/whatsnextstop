@@ -95,12 +95,8 @@ const handleShare = async () => {
     if (success) {
       showSuccess('分享成功！')
       emit('share')
-    } else {
-      // 用戶取消分享或其他非錯誤情況
-      // console.log('Share cancelled or failed silently')
     }
   } catch (error) {
-    console.error('Share failed:', error)
     showError('分享失敗，請嘗試下載照片')
   } finally {
     isSharing.value = false
@@ -137,7 +133,6 @@ const handleDownload = async () => {
     showSuccess('下載完成！')
 
   } catch (error) {
-    console.error('Download failed:', error)
     showError('下載失敗，請重試')
   }
 }
@@ -165,7 +160,6 @@ const updateFinalDisplay = async () => {
       showError('載入照片失敗')
     }
   } catch (error) {
-    console.error('Update final display failed:', error)
     showError('載入照片失敗')
   }
 }
@@ -191,7 +185,6 @@ onMounted(async () => {
     await nextTick()
     await updateFinalDisplay()
   } catch (error) {
-    console.error('Final result page initialization failed:', error)
     showError('頁面初始化失敗')
   }
 })
@@ -375,7 +368,6 @@ onMounted(async () => {
 
     &:hover:not(:disabled)
       background: rgba(236, 109, 81, 0.9)
-      transform: translateY(-1px)
       box-shadow: 0 4px 12px rgba(236, 109, 81, 0.4)
 
   // 重拍按鈕 - 直接使用顏色值
@@ -386,7 +378,6 @@ onMounted(async () => {
 
     &:hover:not(:disabled)
       background: rgba(155, 155, 130, 0.9)
-      transform: translateY(-1px)
 
   &:disabled
     opacity: 0.6

@@ -6,8 +6,8 @@ import DropBlock from '../views/games/DropBlock.vue'
 import TakeMeTravel from '../views/games/TakeMeTravel.vue'
 import Itinerary from '../views/itinerary/Itinerary.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
-import TravelMap from '../views/travel/TravelMap.vue'
-import TravelTrace from '../views/travel/TravelTrace.vue'
+import TravelMap from '../views/travel-map/TravelMap.vue'
+import TravelGallery from '../views/history-travel/TravelGallery.vue'
 import FinalResultPage from '../components/cat-photo/FinalResultPage.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
 import TripsPage from '../views/trips/TripsPage.vue'
@@ -19,7 +19,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: 'home'
+        redirect: 'home',
       },
       {
         path: 'home',
@@ -27,8 +27,8 @@ const routes = [
         component: MainContent,
         meta: {
           title: '首頁',
-          showBreadcrumb: false
-        }
+          showBreadcrumb: false,
+        },
       },
       {
         path: 'itinerary',
@@ -37,8 +37,8 @@ const routes = [
         meta: {
           title: '行程規劃',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '行程規劃', icon: '🗓️' }]
-        }
+          breadcrumb: [{ text: '行程規劃' }],
+        },
       },
       {
         path: 'itinerary-detail',
@@ -48,10 +48,10 @@ const routes = [
           title: '詳細行程',
           showBreadcrumb: true,
           breadcrumb: [
-            { text: '行程規劃', icon: '🗓️', path: '/itinerary' },
-            { text: '詳細行程', icon: '📋' }
-          ]
-        }
+            { text: '行程規劃', path: '/itinerary' },
+            { text: '詳細行程' },
+          ],
+        },
       },
       {
         path: 'travelmap',
@@ -60,18 +60,18 @@ const routes = [
         meta: {
           title: '旅行地圖',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '旅行地圖', icon: '🗺️' }]
-        }
+          breadcrumb: [{ text: '旅行地圖' }],
+        },
       },
       {
-        path: 'travel-trace',
-        name: 'TravelTrace',
-        component: TravelTrace,
+        path: 'travel-gallery',
+        name: 'TravelGallery',
+        component: TravelGallery,
         meta: {
-          title: '我的足跡',
+          title: '旅遊回憶',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '我的足跡', icon: '👣' }]
-        }
+          breadcrumb: [{ text: '旅遊回憶' }],
+        },
       },
       {
         path: 'dropblock',
@@ -80,8 +80,8 @@ const routes = [
         meta: {
           title: '從天而降',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '從天而降', icon: '🧊' }]
-        }
+          breadcrumb: [{ text: '從天而降' }],
+        },
       },
       {
         path: 'foodwheel',
@@ -90,8 +90,8 @@ const routes = [
         meta: {
           title: '命運輪盤',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '命運輪盤', icon: '🍽️' }]
-        }
+          breadcrumb: [{ text: '命運輪盤' }],
+        },
       },
       {
         path: 'takemetravel',
@@ -100,12 +100,12 @@ const routes = [
         meta: {
           title: '帶我去旅行',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '帶我去旅行', icon: '📸' }]
-        }
+          breadcrumb: [{ text: '帶我去旅行' }],
+        },
       },
       {
         path: 'final',
-        component: FinalResultPage
+        component: FinalResultPage,
       },
       {
         path: 'trips',
@@ -114,8 +114,8 @@ const routes = [
         meta: {
           title: '旅程列表',
           showBreadcrumb: true,
-          breadcrumb: [{ text: '旅程列表', icon: '✈️' }]
-        }
+          breadcrumb: [{ text: '旅程列表' }],
+        },
       },
       {
         path: 'trips/:shortId/spots',
@@ -125,17 +125,17 @@ const routes = [
           title: '景點探索',
           showBreadcrumb: true,
           breadcrumb: [
-            { text: '旅程列表', icon: '✈️', path: '/trips' },
-            { text: '景點探索', icon: '🗺️' }
-          ]
-        }
-      }
-    ]
+            { text: '旅程列表', path: '/trips' },
+            { text: '景點探索' },
+          ],
+        },
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/home'
-  }
+    redirect: '/home',
+  },
 ]
 
 const router = createRouter({
@@ -150,12 +150,12 @@ const router = createRouter({
       return {
         el: to.hash,
         behavior: 'smooth',
-        top: 80
+        top: 80,
       }
     }
 
     return { top: 0, behavior: 'smooth' }
-  }
+  },
 })
 
 router.beforeEach((to, _from, next) => {
@@ -176,7 +176,7 @@ const randomTitles = [
   '旅の途中',
   '為什麼出發？因為有空',
   '這是我的旅行人生，方向感一條都沒有，但還是走了很遠',
-  '這裡是一張沒有盡頭的備忘錄，歡迎加入我亂走人生的現場直播'
+  '這裡是一張沒有盡頭的備忘錄，歡迎加入我亂走人生的現場直播',
 ]
 
 const getRandomTitle = () => {

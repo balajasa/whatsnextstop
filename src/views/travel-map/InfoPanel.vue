@@ -36,16 +36,6 @@
           <div class="card-title">造訪地點</div>
         </div>
 
-        <!-- 省/州/市/邦/地區 -->
-        <div class="location-section" v-if="getStateList(selectedPin).length > 0">
-          <div class="location-label">省/州/市/邦/地區</div>
-          <div class="location-tags">
-            <span v-for="state in getStateList(selectedPin)" :key="state" class="location-tag state-tag">
-              {{ state }}
-            </span>
-          </div>
-        </div>
-
         <!-- 城市 -->
         <div class="location-section" v-if="getCityList(selectedPin).length > 0">
           <div class="location-label">城市</div>
@@ -79,16 +69,12 @@
 </template>
 
 <script setup lang="ts">
-import type { ProcessedPin } from '../../types/travel-map/travel-map'
-import { countryTranslation } from '../../composables/countryTranslation'
+import type { ProcessedPin, InfoPanelProps } from '../../types/travel-map/travel-map'
+import { countryTranslation } from '../../translation/composables/countryTranslation'
 
 const { getCountryFlag } = countryTranslation()
 
 // Props 定義
-interface InfoPanelProps {
-  selectedPin: ProcessedPin | null
-}
-
 const { selectedPin } = defineProps<InfoPanelProps>()
 
 // Emits 定義
@@ -105,29 +91,25 @@ const getVisitLevel = (count: number): string => {
   return 'level-novice'                     // 新手 (橘色)
 }
 
-// 獲取城市列表
+// 獲取城市列表 - 適配 HistoryTrip 格式
 const getCityList = (pin: ProcessedPin): string[] => {
   if (!pin.trips) return []
-  const allCities = pin.trips.flatMap(trip => trip.cityTW || [])
+  const allCities = pin.trips.flatMap(trip =>
+    trip.destinations.flatMap(dest => dest.cities)
+  )
   return [...new Set(allCities)]
 }
 
-// 獲取州省列表
-const getStateList = (pin: ProcessedPin): string[] => {
-  if (!pin.trips) return []
-  const allStates = pin.trips.flatMap(trip => trip.stateTW || [])
-  return [...new Set(allStates)]
-}
 
-// 獲取訪問歷史（按時間由近到遠）
+// 獲取訪問歷史（按時間由近到遠）- 適配 HistoryTrip 格式
 const getVisitHistory = (pin: ProcessedPin): string[] => {
   if (!pin.trips) return []
   const sortedTrips = [...pin.trips].sort((a, b) => {
-    const dateA = new Date(`${a.year}-${a.startDate}`)
-    const dateB = new Date(`${b.year}-${b.startDate}`)
+    const dateA = new Date(a.date.startDate)
+    const dateB = new Date(b.date.startDate)
     return dateB.getTime() - dateA.getTime()
   })
-  return sortedTrips.map(trip => `${trip.year}/${trip.startDate} - ${trip.endDate}`)
+  return sortedTrips.map(trip => `${trip.date.startDate} - ${trip.date.endDate}`)
 }
 
 // 關閉面板
@@ -141,6 +123,40 @@ const handleClose = () => {
 @use '@/styles/mixins' as *
 
 // ===================================
+// SASS 變數和 Mixins
+// ===================================
+$panel-shadow: 0 10px 25px rgba(0, 0, 0, 0.15)
+$panel-gradient: linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(234, 88, 12, 0.8) 100%)
+
+// 響應式尺寸 mixin
+@mixin responsive-size($mobile, $tablet: null, $desktop: null)
+  font-size: $mobile
+  @if $tablet
+    @include tablet
+      font-size: $tablet
+  @if $desktop
+    @include desktop
+      font-size: $desktop
+
+@mixin responsive-spacing($mobile, $tablet: null, $desktop: null)
+  padding: $mobile
+  @if $tablet
+    @include tablet
+      padding: $tablet
+  @if $desktop
+    @include desktop
+      padding: $desktop
+
+// 護照印章等級配置
+$badge-levels: (
+  'novice': (#ea580c, rgba(254, 243, 232, 0.8)),
+  'explorer': (#0ea5e9, rgba(240, 249, 255, 0.8)),
+  'veteran': (#059669, rgba(236, 253, 245, 0.8)),
+  'master': (#7c2d12, rgba(254, 252, 232, 0.8)),
+  'legend': (#7c3aed, rgba(250, 245, 255, 0.8))
+)
+
+// ===================================
 // 主容器
 // ===================================
 .info-panel
@@ -150,24 +166,23 @@ const handleClose = () => {
   transform: translate(-50%, -50%)
   z-index: 1001
   overflow: hidden
-  // max-width: calc(100% - 16px)
   max-height: calc(100% - 40px)
   width: calc(100% - 80px)
   border-radius: 16px
   background: $warm-cream
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15)
+  box-shadow: $panel-shadow
   pointer-events: auto
   display: flex
   flex-direction: column
 
-  @media (min-width: $tablet)
+  @include tablet
     max-width: calc(100% - 48px)
     max-height: calc(100% - 60px)
     width: 340px
     border-radius: 20px
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15)
 
-  @media (min-width: $desktop)
+  @include desktop
     max-width: calc(100% - 80px)
     max-height: calc(100% - 80px)
     width: 380px
@@ -181,38 +196,23 @@ const handleClose = () => {
   display: flex
   align-items: flex-start
   justify-content: space-between
-  padding: 12px 14px
-  background: linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(234, 88, 12, 0.8) 100%)
+  background: $panel-gradient
   color: white
   flex-shrink: 0
-
-  // Tablet 樣式
-  @media (min-width: $tablet)
-    padding: 16px 20px
-
-  // Desktop 樣式
-  @media (min-width: $desktop)
-    padding: 18px 24px
+  @include responsive-spacing(4px 14px, 8px 20px, 10px 24px)
 
 .country-section
   display: flex
   align-items: center
-  gap: 12px
   flex: 1
   min-width: 0
-
-  @media (min-width: $tablet)
+  gap: 12px
+  @include tablet
     gap: 16px
 
 .country-flag
-  font-size: 28px
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))
-
-  @media (min-width: $tablet)
-    font-size: 34px
-
-  @media (min-width: $desktop)
-    font-size: 38px
+  @include responsive-size(28px, 34px, 38px)
 
 .country-info
   flex: 1
@@ -221,21 +221,14 @@ const handleClose = () => {
 .country-name
   margin-top: 4px
   font-weight: 700
-  font-size: 18px
   line-height: 1.2
   color: white
-
-  @media (min-width: $tablet)
+  @include responsive-size(18px, 22px, 24px)
+  @include tablet
     margin-top: 6px
-    font-size: 22px
-
-  @media (min-width: $desktop)
-    font-size: 24px
 
 .close-btn
-  display: flex
-  align-items: center
-  justify-content: center
+  @include flex-center
   flex-shrink: 0
   width: 36px
   height: 36px
@@ -247,11 +240,11 @@ const handleClose = () => {
   cursor: pointer
   transition: all 0.2s ease
 
-  @media (min-width: $tablet)
+  @include tablet
     width: 32px
     height: 32px
 
-  @media (min-width: $desktop)
+  @include desktop
     width: 36px
     height: 36px
 
@@ -269,15 +262,8 @@ const handleClose = () => {
   flex: 1
   min-height: 0
   overflow-y: auto
-  padding: 12px
+  @include responsive-spacing(12px, 16px, 20px)
 
-  @media (min-width: $tablet)
-    padding: 16px
-
-  @media (min-width: $desktop)
-    padding: 20px
-
-  // 滾動條樣式（所有設備通用）
   &::-webkit-scrollbar
     width: 6px
 
@@ -300,12 +286,12 @@ const handleClose = () => {
   padding: 0 8px
   border-radius: 12px
 
-  @media (min-width: $tablet)
+  @include tablet
     margin-bottom: 18px
     padding: 0 12px
     border-radius: 16px
 
-  @media (min-width: $desktop)
+  @include desktop
     margin-bottom: 20px
     border-radius: 20px
 
@@ -318,39 +304,28 @@ const handleClose = () => {
   gap: 8px
   margin-bottom: 8px
 
-  @media (min-width: $tablet)
+  @include tablet
     gap: 12px
     margin-bottom: 12px
 
-  @media (min-width: $desktop)
+  @include desktop
     gap: 16px
     margin-bottom: 14px
 
 .card-icon
-  font-size: 18px
-
-  @media (min-width: $tablet)
-    font-size: 20px
-
-  @media (min-width: $desktop)
-    font-size: 24px
+  @include responsive-size(18px, 20px, 24px)
 
 .card-title
   margin: 0
   font-weight: 600
-  font-size: 18px
   color: $warm-text
-
-  @media (min-width: $tablet)
-    font-size: 20px
-
+  @include responsive-size(18px, 20px)
 
 // ===================================
 // 造訪次數 - 護照印章風格
 // ===================================
 .visit-section
   margin-bottom: 12px
-
   @include tablet
     margin-bottom: 16px
 
@@ -365,8 +340,6 @@ const handleClose = () => {
   transition: all 0.3s ease
   position: relative
   cursor: default
-  background-position: center
-  background-size: cover
   @include flex-center
   flex-direction: column
 
@@ -380,87 +353,46 @@ const handleClose = () => {
     height: 55px
 
 .visit-number
-  font-size: 16px
   font-weight: 900
   line-height: 1
-
-  @include tablet
-    font-size: 17px
-
-  @include desktop
-    font-size: 18px
+  @include responsive-size(16px, 17px, 18px)
 
 .visit-text
-  font-size: 8px
   font-weight: 600
   letter-spacing: 1px
   margin-top: 2px
+  @include responsive-size(8px, 8.5px, 9px)
 
-  @include tablet
-    font-size: 8.5px
+// 護照印章等級樣式
+@each $level, $colors in $badge-levels
+  $color: nth($colors, 1)
+  $bg: nth($colors, 2)
 
-  @include desktop
-    font-size: 9px
+  .visit-badge.level-#{$level}
+    border-color: $color
+    color: $color
+    background: radial-gradient(circle at 20% 80%, rgba($color, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba($color, 0.1) 0%, transparent 50%), $bg
 
-// 不同等級的配色 (所有斷點通用)
-.visit-badge
-  // 新手 (1-3次) - 橘色
-  &.level-novice
-    border-color: #ea580c
-    color: #ea580c
-    background: radial-gradient(circle at 20% 80%, rgba(234, 88, 12, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(234, 88, 12, 0.1) 0%, transparent 50%), rgba(254, 243, 232, 0.8)
+// 特殊效果
+.visit-badge.level-master::after
+  content: ''
+  position: absolute
+  inset: 0
+  background: radial-gradient(circle at 80% 20%, rgba(0,0,0,0.05) 20%, transparent 21%), radial-gradient(circle at 20% 80%, rgba(0,0,0,0.03) 15%, transparent 16%)
+  border-radius: 6px
+  pointer-events: none
 
-  // 探索者 (4-7次) - 藍色
-  &.level-explorer
-    border-color: #0ea5e9
-    color: #0ea5e9
-    background: radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), rgba(240, 249, 255, 0.8)
+.visit-badge.level-legend
+  overflow: hidden
+  &::before
+    content: ''
+    position: absolute
+    inset: -2px
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.8) 50%, transparent 70%)
+    z-index: -1
+    border-radius: 8px
+    animation: shimmer 3s ease-in-out infinite
 
-  // 老手 (8-15次) - 綠色
-  &.level-veteran
-    border-color: #059669
-    color: #059669
-    background: radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(5, 150, 105, 0.1) 0%, transparent 50%), rgba(236, 253, 245, 0.8)
-
-  // 大師 (16-25次) - 棕色 + 復古效果
-  &.level-master
-    border-color: #7c2d12
-    color: #7c2d12
-    background: radial-gradient(circle at 20% 80%, rgba(124, 45, 18, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(124, 45, 18, 0.1) 0%, transparent 50%), rgba(254, 252, 232, 0.8)
-
-    // 復古磨損效果
-    &::after
-      content: ''
-      position: absolute
-      top: 0
-      left: 0
-      right: 0
-      bottom: 0
-      background: radial-gradient(circle at 80% 20%, rgba(0,0,0,0.05) 20%, transparent 21%), radial-gradient(circle at 20% 80%, rgba(0,0,0,0.03) 15%, transparent 16%), radial-gradient(circle at 60% 60%, rgba(0,0,0,0.02) 25%, transparent 26%)
-      border-radius: 6px
-      pointer-events: none
-
-  // 傳奇 (25+次) - 紫色 + 光澤效果
-  &.level-legend
-    border-color: #7c3aed
-    color: #7c3aed
-    background: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%), rgba(250, 245, 255, 0.8)
-    overflow: hidden
-
-    // 光澤動畫效果
-    &::before
-      content: ''
-      position: absolute
-      top: -2px
-      left: -2px
-      right: -2px
-      bottom: -2px
-      background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.8) 50%, transparent 70%)
-      z-index: -1
-      border-radius: 8px
-      animation: shimmer 3s ease-in-out infinite
-
-// 光澤動畫
 @keyframes shimmer
   0%, 100%
     transform: translateX(-100%)
@@ -472,61 +404,47 @@ const handleClose = () => {
 // ===================================
 .location-section
   margin-bottom: 12px
-
-  @media (min-width: $tablet)
+  @include tablet
     margin-bottom: 16px
-
     &:last-child
       margin-bottom: 0
 
 .location-label
   margin-bottom: 6px
   font-weight: 500
-  font-size: 14px
   color: $warm-text-light
   text-transform: uppercase
   letter-spacing: 0.5px
-
-  @media (min-width: $tablet)
+  @include responsive-size(14px, 14px, 16px)
+  @include tablet
     margin-bottom: 8px
-    font-size: 14px
-
-  @media (min-width: $desktop)
-    font-size: 16px
 
 .location-tags
   display: flex
   flex-wrap: wrap
   gap: 6px
-
-  @media (min-width: $tablet)
+  @include tablet
     gap: 8px
-
-  @media (min-width: $desktop)
+  @include desktop
     gap: 10px
 
 .location-tag
   display: inline-block
-  padding: 4px 6px
   border-radius: 8px
   font-weight: bold
-  font-size: 14px
   cursor: default
+  padding: 4px 6px
+  font-size: 14px
 
-  @media (min-width: $tablet)
+  @include tablet
     padding: 6px 8px
     border-radius: 12px
     font-size: 12px
 
-  @media (min-width: $desktop)
+  @include desktop
     padding: 8px 12px
     border-radius: 14px
     font-size: 14px
-
-.state-tag
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.2) 100%)
-  color: rgba(255, 107, 107, 0.8)
-  border: 1px solid rgba(255, 107, 107, 0.3)
 
 .city-tag
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(52, 211, 153, 0.2) 100%)
@@ -538,11 +456,10 @@ const handleClose = () => {
 // ===================================
 .timeline-list
   position: relative
-  padding-left: 6px
   height: 80px
   overflow-y: scroll
-
-  @media (min-width: $tablet)
+  padding-left: 6px
+  @include tablet
     height: 100px
     padding-left: 8px
 
@@ -553,7 +470,7 @@ const handleClose = () => {
   margin-bottom: 8px
   padding-left: 20px
 
-  @media (min-width: $tablet)
+  @include tablet
     margin-bottom: 12px
     padding-left: 24px
 
@@ -564,7 +481,6 @@ const handleClose = () => {
     .timeline-dot
       background: $warm-coral
       box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.2)
-
     .timeline-date
       color: $warm-text
       font-weight: 600
@@ -577,29 +493,25 @@ const handleClose = () => {
   border-radius: 50%
   background: $warm-text-light
 
-  @media (min-width: $tablet)
+  @include tablet
     width: 10px
     height: 10px
 
-  @media (min-width: $desktop)
+  @include desktop
     width: 12px
     height: 12px
 
 .timeline-content
   display: flex
   align-items: center
-  gap: 8px
   flex: 1
-
-  @media (min-width: $tablet)
+  gap: 8px
+  @include tablet
     gap: 12px
 
 .timeline-date
-  font-size: 14px
   color: $warm-text-light
-
-  @media (min-width: $tablet)
-    font-size: 16px
+  @include responsive-size(14px, 16px)
 
 .timeline-label
   padding: 1px 6px
@@ -609,9 +521,8 @@ const handleClose = () => {
   font-weight: 500
   font-size: 12px
 
-  @media (min-width: $tablet)
+  @include tablet
     padding: 2px 8px
     border-radius: 8px
     font-size: 14px
-
 </style>

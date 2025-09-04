@@ -1,8 +1,17 @@
 <template>
   <div class="countdown-section">
     <div class="countdown-header">
-      <span class="flag">{{ travelData.countryFlag || '🏖️' }}</span>
-      <span class="destination">{{ travelData.destination || '未知目的地' }} Adventure!</span>
+      <div class="destination-container">
+        <span v-if="travelData.countries && travelData.countries.length > 1" class="destination">
+          <span v-for="(country, index) in travelData.countries" :key="country" class="country-item">
+            {{ getCountryFlag(country) }} {{ country }}
+          </span>
+        </span>
+        <span v-else class="destination">
+          <span class="flag">{{ travelData.countryFlag || '🏖️' }}</span>
+          {{ travelData.destination || '未知目的地' }}
+        </span>
+      </div>
     </div>
 
     <!-- 顯示完整倒數數字 -->
@@ -32,6 +41,10 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { FrontendTravelConfig } from '../../../services/next-travel/nextTravelService'
+import { countryTranslation } from '../../../translation/composables/countryTranslation'
+
+// 初始化 countryTranslation
+const { getCountryFlag } = countryTranslation()
 
 // ===================================
 // Props
@@ -91,6 +104,8 @@ const getCountdownDigits = () => {
   return days.toString().split('')
 }
 
+// getCountryFlag 已經從 countryTranslation() 解構出來了
+
 // ===================================
 // 生命週期
 // ===================================
@@ -115,7 +130,7 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 左側：倒數區域 (Mobile First)
+// 左側：倒數區域
 // ===================================
 .countdown-section
   @include flex-center
@@ -148,6 +163,15 @@ onUnmounted(() => {
 
     @include tablet
       font-size: 16px
+
+.destination-container
+  width: 100%
+
+.country-item
+  margin-right: 20px
+
+  &:last-child
+    margin-right: 0
 
   @include tablet
     font-size: 18px
@@ -228,7 +252,7 @@ onUnmounted(() => {
   border: 1px solid $border-light
 
 // ===================================
-// 載入狀態 (Mobile First)
+// 載入狀態
 // ===================================
 .countdown-loading
   @include flex-center
