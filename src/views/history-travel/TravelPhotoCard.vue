@@ -238,7 +238,7 @@ watch(() => shouldLoadPhotos, (newValue) => {
   if (newValue && photos.value.length === 0) {
     loadPhotos()
   }
-}, { immediate: true }) // immediate: true 讓它在組件掛載時就檢查一次
+}, { immediate: true }) // immediate: true 讓它在元件掛載時就檢查一次
 
 </script>
 

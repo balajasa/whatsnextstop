@@ -102,13 +102,13 @@ const canCloseOnOverlay = (dialog: DialogInstance): boolean => {
   return options.closeOnOverlay !== false
 }
 
-/** 獲取自定義組件 */
+/** 獲取自定義元件 */
 const getCustomComponent = (dialog: DialogInstance) => {
   const options = dialog.options as CustomDialogOptions
   return options.component
 }
 
-/** 獲取自定義組件 props */
+/** 獲取自定義元件 props */
 const getCustomProps = (dialog: DialogInstance): Record<string, any> => {
   const options = dialog.options as CustomDialogOptions
   return options.props || {}

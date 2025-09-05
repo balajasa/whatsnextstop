@@ -63,7 +63,7 @@ let photoObserver: IntersectionObserver | null = null // 用於照片懶加載
 // 設置卡片 ref
 const setTripCardRef = (el: any, tripId: string) => {
   if (el && tripId) {
-    // Vue 3 中 el 可能是組件實例或 DOM 元素
+    // Vue 3 中 el 可能是元件實例或 DOM 元素
     const element = el.$el || el
     tripCardRefs.value.set(tripId, element)
   } else if (!el && tripId) {

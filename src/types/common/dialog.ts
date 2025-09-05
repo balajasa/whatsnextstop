@@ -38,9 +38,9 @@ export interface AlertDialogOptions {
 
 // 自定義對話框選項
 export interface CustomDialogOptions {
-  /** 要渲染的組件 */
+  /** 要渲染的元件 */
   component: any
-  /** 傳遞給組件的 props */
+  /** 傳遞給元件的 props */
   props?: Record<string, any>
   /** 點擊遮罩是否關閉 */
   closeOnOverlay?: boolean

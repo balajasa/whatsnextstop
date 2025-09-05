@@ -12,7 +12,7 @@
         <!-- 背景遮罩 -->
         <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
 
-        <!-- InfoPanel 組件 -->
+        <!-- InfoPanel 元件 -->
         <InfoPanel v-if="selectedPin" :selected-pin="selectedPin" @close="handlePanelClose" />
       </div>
     </div>

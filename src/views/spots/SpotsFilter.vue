@@ -144,7 +144,7 @@ const handleCategoryChange = (value: string) => {
   @include tablet
     flex: 2
 
-  // 覆蓋 SearchInput 組件的高度和樣式
+  // 覆蓋 SearchInput 元件的高度和樣式
   :deep(.search-input),
   :deep(input)
     height: 46px
@@ -159,7 +159,7 @@ const handleCategoryChange = (value: string) => {
     flex: 1
     min-width: 180px
 
-  // 覆蓋 SimpleSelect 組件的高度和樣式
+  // 覆蓋 SimpleSelect 元件的高度和樣式
   :deep(.select-display),
   :deep(.option)
     height: 46px

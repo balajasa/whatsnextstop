@@ -63,7 +63,7 @@ const handleBlur = (): void => {
   isFocused.value = false
 }
 
-// 暴露方法給父組件
+// 暴露方法給父元件
 defineExpose({
   focus: () => inputRef.value?.focus()
 })

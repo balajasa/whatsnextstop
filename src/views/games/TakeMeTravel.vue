@@ -41,7 +41,7 @@
 
     </div>
 
-    <!-- 其他頁面組件 -->
+    <!-- 其他頁面元件 -->
     <ResultPage v-if="currentPage === 'result'" @retake="handleRetake" @complete="handleComplete"
       @close="returnToMain" />
 

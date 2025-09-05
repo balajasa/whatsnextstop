@@ -206,7 +206,7 @@ const handleRouteHash = (): void => {
   }
 }
 
-// 在組件載入時執行
+// 在元件載入時執行
 onMounted(() => {
   if (hasItinerary.value) {
     window.addEventListener('scroll', handleScroll)

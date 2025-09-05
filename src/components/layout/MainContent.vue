@@ -66,7 +66,7 @@ import type { Ref } from 'vue'
 import TravelCountdown from '@/components/layout/travel-countdown/TravelCountdown.vue'
 // import MiniGame from '@/views/games/MiniGame.vue'
 
-// 導入 Swiper 組件和模組
+// 導入 Swiper 元件和模組
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules'
 

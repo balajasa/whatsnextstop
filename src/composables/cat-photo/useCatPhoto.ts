@@ -167,12 +167,12 @@ export function useCatPhoto() {
   // ===================================
 
   onMounted(async () => {
-    // 組件掛載時初始化
+    // 元件掛載時初始化
     await initializeApp()
   })
 
   onUnmounted(async () => {
-    // 組件卸載時清理資源
+    // 元件卸載時清理資源
     await store.stopCamera()
   })
 
