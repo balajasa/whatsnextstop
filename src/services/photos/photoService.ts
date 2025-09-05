@@ -152,6 +152,42 @@ export class PhotoService {
   }
 
   /**
+   * 取得照片的 Base64 格式
+   * @param trip HistoryTrip 物件
+   * @param photoName 照片檔名（不含副檔名）
+   * @returns Promise<string> 照片的 Base64 資料或原始 URL（失敗時）
+   */
+  static async getPhotoBase64(trip: HistoryTrip, photoName: string): Promise<string> {
+    const photoUrl = this.getPhotoUrl(trip, photoName)
+    
+    if (!photoUrl) {
+      return ''
+    }
+
+    try {
+      const response = await fetch(photoUrl)
+      if (!response.ok) {
+        console.warn(`無法取得照片: ${response.status} ${photoUrl}`)
+        return photoUrl // 失敗時返回原始 URL
+      }
+      
+      const blob = await response.blob()
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = () => {
+          console.error(`Base64 轉換失敗: ${photoUrl}`)
+          resolve(photoUrl) // 失敗時返回原始 URL
+        }
+        reader.readAsDataURL(blob)
+      })
+    } catch (error) {
+      console.error(`取得照片 Base64 失敗: ${photoUrl}`, error)
+      return photoUrl // 失敗時返回原始 URL
+    }
+  }
+
+  /**
    * 批量預載照片
    * @param trip HistoryTrip 物件
    * @param photoNames 照片檔名清單

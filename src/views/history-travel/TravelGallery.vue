@@ -139,7 +139,7 @@ const setupInfiniteScroll = async () => {
 
 // 初始化載入資料
 onMounted(async () => {
-  await historyTripStore.loadTrips()
+  await historyTripStore.loadPhotoTrips()
   await setupInfiniteScroll()
   await setupPhotoLazyLoading()
 })

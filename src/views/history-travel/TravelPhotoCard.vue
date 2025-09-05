@@ -119,16 +119,19 @@ const loadPhotos = async () => {
     hasNoPhotos.value = false
 
     const photoNames = await PhotoService.getPhotoList(trip)
-    const photoUrls = photoNames.map(name => PhotoService.getPhotoUrl(trip, name)).filter(url => url !== '')
+    const photoUrls = await Promise.all(
+      photoNames.map(name => PhotoService.getPhotoBase64(trip, name))
+    )
+    const validPhotoUrls = photoUrls.filter(url => url !== '')
 
-    photos.value = photoUrls
+    photos.value = validPhotoUrls
 
-    if (photoUrls.length === 0) {
+    if (validPhotoUrls.length === 0) {
       hasNoPhotos.value = true
       displayedPhotos.value = []
     } else {
       // 初始只顯示前10張
-      displayedPhotos.value = photoUrls.slice(0, INITIAL_LOAD_COUNT)
+      displayedPhotos.value = validPhotoUrls.slice(0, INITIAL_LOAD_COUNT)
     }
 
     isInitialLoading.value = false

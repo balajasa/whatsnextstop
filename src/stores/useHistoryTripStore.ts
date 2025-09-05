@@ -27,7 +27,7 @@ export const useHistoryTripStore = defineStore('historyTrip', () => {
 
 
   // Actions
-  async function loadTrips(): Promise<void> {
+  async function loadPhotoTrips(): Promise<void> {
     // 如果已經載入過，直接返回
     if (initialized.value) {
       return
@@ -159,7 +159,7 @@ export const useHistoryTripStore = defineStore('historyTrip', () => {
     currentPage,
     pageSize,
     allTrips,
-    loadTrips,
+    loadPhotoTrips,
     loadAllTrips,
     loadMoreTrips,
     resetState,
