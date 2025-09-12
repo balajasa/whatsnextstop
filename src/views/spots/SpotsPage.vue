@@ -222,7 +222,7 @@ onMounted(() => {
 :deep(.spots-filter)
   margin-top: $spacing-lg
 
-// 載入和錯誤狀態 (Mobile First)
+// 載入和錯誤狀態
 .loading-section, .error-section
   text-align: center
   margin-top: $spacing-md

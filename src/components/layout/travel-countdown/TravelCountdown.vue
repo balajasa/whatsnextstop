@@ -1,8 +1,8 @@
 <template>
   <div class="travel-countdown-container">
     <!-- 多筆旅行資料 -->
-    <div v-if="store.hasMultipleTravels" class="multiple-travels">
-      <div v-for="(travel, index) in store.travelConfigs" :key="`travel-${index}`" class="travel-countdown-widget"
+    <div v-if="futureTrips.length > 0" class="multiple-travels">
+      <div v-for="(travel, index) in futureTrips.slice(0, 2)" :key="`travel-${index}`" class="travel-countdown-widget"
         :class="{ 'second-travel': index === 1 }">
 
         <!-- 元件標題 -->
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, computed } from 'vue'
 import { useTravelCountdownStore } from '../../../stores/travelCountdownStore'
 import CountdownTimer from './CountdownTimer.vue'
 import MultiCountryWeather from './MultiCountryWeather.vue'
@@ -58,6 +58,17 @@ const store = useTravelCountdownStore()
 
 // 定時器 ID
 let countdownInterval: number | null = null
+
+// 篩選未來的旅程
+const futureTrips = computed(() => {
+  const now = new Date()
+
+  return store.travelConfigs.filter(travel => {
+    if (!travel.tripDate) return false
+    const tripDate = new Date(travel.tripDate)
+    return tripDate > now
+  })
+})
 
 // ===================================
 // 方法
@@ -154,7 +165,7 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 主容器 (Mobile First)
+// 主容器
 // ===================================
 .travel-countdown-container
   width: 100%

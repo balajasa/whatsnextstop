@@ -59,7 +59,6 @@
             <div class="timeline-dot"></div>
             <div class="timeline-content">
               <div class="timeline-date">{{ visit }}</div>
-              <div v-if="index === 0" class="timeline-label">最近</div>
             </div>
           </div>
         </div>
@@ -513,16 +512,4 @@ $badge-levels: (
   color: $warm-text-light
   @include responsive-size(14px, 16px)
 
-.timeline-label
-  padding: 1px 6px
-  border-radius: 6px
-  background: rgba(234, 88, 12, 0.15)
-  color: $warm-coral
-  font-weight: 500
-  font-size: 12px
-
-  @include tablet
-    padding: 2px 8px
-    border-radius: 8px
-    font-size: 14px
 </style>

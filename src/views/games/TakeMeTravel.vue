@@ -227,7 +227,6 @@ onUnmounted(() => {
   top: 20px
   left: 50%
   z-index: $z-modal
-  // Mobile First - 較小內距
   padding: 10px 20px
   max-width: 90%
   border-radius: $border-radius-lg
@@ -236,7 +235,6 @@ onUnmounted(() => {
   color: $camera-text-white
   text-align: center
   font-weight: 500
-  // Mobile First - 較小文字
   font-size: 13px
   cursor: pointer
   transform: translateX(-50%)
@@ -260,7 +258,6 @@ onUnmounted(() => {
   top: calc(80px + env(safe-area-inset-top, 0px))
   left: 50%
   z-index: calc($z-camera + 1)
-  // Mobile First - 較小內距
   padding: 10px 20px
   max-width: 90%
   border-radius: $border-radius-lg
@@ -269,7 +266,6 @@ onUnmounted(() => {
   color: $camera-text-white
   text-align: center
   font-weight: 500
-  // Mobile First - 較小文字
   font-size: 13px
   cursor: pointer
   transform: translateX(-50%)
@@ -304,14 +300,12 @@ onUnmounted(() => {
     margin-top: $spacing-md
     color: $camera-text-primary
     font-weight: 500
-    // Mobile First - 較小文字
     font-size: 14px
 
     @include tablet
       font-size: 16px
 
 .loading-spinner
-  // Mobile First - 較小 spinner
   width: 36px
   height: 36px
   border: 3px solid rgba(236, 109, 81, 0.2)
@@ -331,7 +325,6 @@ onUnmounted(() => {
   @include flex-center
   // 計算實際可用高度：扣除 Header(50px) 和 BreadcrumbNav(約50px)
   min-height: calc(100vh - 260px)
-  // Mobile First - 較小內距
   padding: $spacing-md $spacing-sm
   background: linear-gradient(135deg, $camera-bg-primary 0%, rgba(255, 255, 251, 0.8) 100%)
 
@@ -344,7 +337,6 @@ onUnmounted(() => {
 .main-content
   @include flex-center
   flex-direction: column
-  // Mobile First - 較小最大寬度
   max-width: 320px
   width: 100%
 
@@ -367,7 +359,6 @@ onUnmounted(() => {
 .camera-button
   @include flex-center
   flex-direction: column
-  // Mobile First - 較小按鈕
   width: 140px
   height: 140px
   border: none
@@ -399,7 +390,6 @@ onUnmounted(() => {
 
 .camera-icon
   margin-bottom: $spacing-sm
-  // Mobile First - 較小圖示
   width: 50px
   height: 50px
   background-image: url('@/assets/img/icon/camera.png')
@@ -418,7 +408,6 @@ onUnmounted(() => {
 .button-text
   text-align: center
   font-weight: 600
-  // Mobile First - 較小文字
   font-size: 13px
 
   @include tablet
@@ -437,7 +426,6 @@ onUnmounted(() => {
   margin-bottom: $spacing-lg
 
 .feature-item
-  // Mobile First - 較小內距
   padding: $spacing-md
   border-radius: $border-radius-lg
   background: rgba(255, 255, 255, 0.7)
@@ -448,7 +436,6 @@ onUnmounted(() => {
     padding: $spacing-lg
 
 .feature-icon
-  // Mobile First - 較小圖示
   font-size: 36px
   margin-bottom: $spacing-sm
 
@@ -459,7 +446,6 @@ onUnmounted(() => {
   margin-bottom: $spacing-xs
   color: $camera-text-primary
   font-weight: 600
-  // Mobile First - 較小標題
   font-size: 15px
 
   @include tablet
@@ -471,7 +457,6 @@ onUnmounted(() => {
 .feature-item p
   margin: 0
   color: $camera-text-light
-  // Mobile First - 較小文字
   font-size: 13px
   line-height: 1.4
 
@@ -502,7 +487,6 @@ onUnmounted(() => {
   border-radius: 50%
   background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%)
   box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3)
-  // Mobile First - 較小文字
   font-size: 16px
   animation: pulse-glow 2s infinite
 
@@ -519,7 +503,6 @@ onUnmounted(() => {
 
   div
     color: $camera-text-secondary
-    // Mobile First - 較小文字
     font-size: 13px
     line-height: 1.5
 

@@ -92,17 +92,20 @@ onMounted(async () => {
 .world-map-wrap
   margin: 0 auto
   max-width: 1200px
-  padding: 0 $spacing-lg $spacing-lg
+  padding: 0 $spacing-lg
+  margin-bottom: 80px
   border-radius: $border-radius-lg
   // background: $bg-card
   // box-shadow: $shadow-medium
 
   @include tablet
     max-width: 1200px
-    padding: 0 $spacing-lg $spacing-xl
+    padding: 0 $spacing-lg
+    margin-bottom: 120px
 
   @include desktop
-    padding: 0 $spacing-xl $spacing-xl
+    padding: 0 $spacing-xl
+    margin-bottom: 120px
     border-radius: $border-radius-xl
 
   @include large-desktop
@@ -123,11 +126,9 @@ onMounted(async () => {
   border-radius: $border-radius-md
 
   @include tablet
-    height: 600px
+    height: 500px
     border-radius: $border-radius-lg
 
-  @include desktop
-    height: 700px
 
 // ===================================
 // InfoPanel 背景遮罩

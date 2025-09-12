@@ -166,7 +166,7 @@ const checkImageExists = (code: string) => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 右側：天氣區域 (Mobile First)
+// 右側：天氣區域
 // ===================================
 .weather-section
   background: rgba(255, 255, 255, 0.7)

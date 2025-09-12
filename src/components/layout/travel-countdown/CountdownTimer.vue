@@ -104,8 +104,6 @@ const getCountdownDigits = () => {
   return days.toString().split('')
 }
 
-// getCountryFlag 已經從 countryTranslation() 解構出來了
-
 // ===================================
 // 生命週期
 // ===================================
@@ -181,7 +179,7 @@ onUnmounted(() => {
     .flag
       font-size: 20px
 
-// 倒數數字 (下劃線分解) - Mobile First
+// 倒數數字 (下劃線分解)
 .countdown-numbers
   @include flex-center
   flex-direction: column
