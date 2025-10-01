@@ -147,12 +147,20 @@ $panel-gradient: linear-gradient(135deg, rgba(234, 88, 12, 0.9) 0%, rgba(234, 88
       padding: $desktop
 
 // 護照印章等級配置
-$badge-levels: (
-  'novice': (#ea580c, rgba(254, 243, 232, 0.8)),
-  'explorer': (#0ea5e9, rgba(240, 249, 255, 0.8)),
-  'veteran': (#059669, rgba(236, 253, 245, 0.8)),
-  'master': (#7c2d12, rgba(254, 252, 232, 0.8)),
-  'legend': (#7c3aed, rgba(250, 245, 255, 0.8))
+$badge-colors: (
+  'novice': #ea580c,
+  'explorer': #0ea5e9,
+  'veteran': #059669,
+  'master': #7c2d12,
+  'legend': #7c3aed
+)
+
+$badge-bgs: (
+  'novice': rgba(254, 243, 232, 0.8),
+  'explorer': rgba(240, 249, 255, 0.8),
+  'veteran': rgba(236, 253, 245, 0.8),
+  'master': rgba(254, 252, 232, 0.8),
+  'legend': rgba(250, 245, 255, 0.8)
 )
 
 // ===================================
@@ -363,14 +371,13 @@ $badge-levels: (
   @include responsive-size(8px, 8.5px, 9px)
 
 // 護照印章等級樣式
-@each $level, $colors in $badge-levels
-  $color: nth($colors, 1)
-  $bg: nth($colors, 2)
-
-  .visit-badge.level-#{$level}
-    border-color: $color
-    color: $color
-    background: radial-gradient(circle at 20% 80%, rgba($color, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba($color, 0.1) 0%, transparent 50%), $bg
+@each $level, $color in $badge-colors
+  @each $levelBg, $bg in $badge-bgs
+    @if $level == $levelBg
+      .visit-badge.level-#{$level}
+        border-color: $color
+        color: $color
+        background: radial-gradient(circle at 20% 80%, rgba($color, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba($color, 0.1) 0%, transparent 50%), $bg
 
 // 特殊效果
 .visit-badge.level-master::after
