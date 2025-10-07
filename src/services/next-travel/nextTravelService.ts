@@ -30,6 +30,7 @@ interface NextTripCountdown {
   notes?: string
   status: 'planning' | 'upcoming' | 'ongoing' | 'completed'
   options?: TripOptions
+  isPublished?: boolean
   createdAt?: Timestamp
   updatedAt?: Timestamp
   createdBy?: string
@@ -101,11 +102,12 @@ export async function getUpcomingTripsForFrontend(): Promise<FrontendTravelConfi
         ...doc.data()
       } as NextTripCountdown
 
-      // 過濾條件：日期未過期 且 狀態為規劃中、即將到來或進行中
+      // 過濾條件：日期未過期 且 狀態為規劃中、即將到來或進行中 且 已發布
       const isValidDate = tripData.tripDate >= today
       const isValidStatus = ['planning', 'upcoming', 'ongoing'].includes(tripData.status)
+      const isPublished = tripData.isPublished === true
 
-      if (isValidDate && isValidStatus) {
+      if (isValidDate && isValidStatus && isPublished) {
         validTrips.push(tripData)
       }
     })

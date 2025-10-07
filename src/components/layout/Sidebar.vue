@@ -91,6 +91,12 @@ const sidebarList: SidebarItem[] = [
     path: '/travel-gallery'
   },
   {
+    category: '踏踏腳印',
+    name: '旅程回顧',
+    icon: '📖',
+    path: '/travel-review'
+  },
+  {
     category: '小小樂趣',
     name: '從天而降',
     icon: '🧊',

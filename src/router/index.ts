@@ -8,6 +8,7 @@ import Itinerary from '../views/itinerary/Itinerary.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel-map/TravelMap.vue'
 import TravelGallery from '../views/history-travel/TravelGallery.vue'
+import TravelReview from '../views/history-travel/TravelReview.vue'
 import FinalResultPage from '../components/cat-photo/FinalResultPage.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
 import TripsPage from '../views/trips/TripsPage.vue'
@@ -71,6 +72,16 @@ const routes = [
           title: '旅遊回憶',
           showBreadcrumb: true,
           breadcrumb: [{ text: '旅遊回憶' }],
+        },
+      },
+      {
+        path: 'travel-review',
+        name: 'TravelReview',
+        component: TravelReview,
+        meta: {
+          title: '旅程回顧',
+          showBreadcrumb: true,
+          breadcrumb: [{ text: '旅程回顧' }],
         },
       },
       {
