@@ -171,7 +171,7 @@ $badge-bgs: (
   top: 50%
   left: 50%
   transform: translate(-50%, -50%)
-  z-index: 1001
+  z-index: 1000
   overflow: hidden
   max-height: calc(100% - 40px)
   width: calc(100% - 80px)

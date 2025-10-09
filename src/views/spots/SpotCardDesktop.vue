@@ -10,8 +10,8 @@
             {{ spot.category }}
           </span>
         </div>
-        <a v-if="formattedSpot.hasMap" :href="spot.googleMapUrl" target="_blank" class="map-link" @click.stop
-          title="在 Google Maps 中開啟">
+        <a v-if="formattedSpot.hasMap" :href="spot.googleMapUrl" target="_blank" class="map-link"
+          @click="handleMapClick" title="在 Google Maps 中開啟">
         </a>
       </div>
 
@@ -62,8 +62,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { event } from 'vue-gtag'
 import { formatSpotForDisplay } from '../../services/spots/spotsService'
 import type { SpotCardProps } from '../../types/spots/spots'
+
+const route = useRoute()
 
 // Props
 const props = defineProps<SpotCardProps>()
@@ -93,6 +97,18 @@ const getCategoryClass = computed(() => {
 // 方法
 const toggleDescription = () => {
   isExpanded.value = !isExpanded.value
+}
+
+// GA4 map 連結追蹤
+const handleMapClick = () => {
+  event('spot_map_clik', {
+    interaction_type: 'map',
+    action: 'open_map',
+    spot_name: props.spot.name,
+    spot_category: props.spot.category,
+    trip_id: route.params.shortId as string || 'all',
+    device: 'desktop'
+  })
 }
 </script>
 

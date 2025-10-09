@@ -2,7 +2,8 @@
   <nav v-if="shouldShowBreadcrumb" class="breadcrumb-nav">
     <div class="breadcrumb-container">
       <!-- 首頁連結 -->
-      <router-link to="/home" class="breadcrumb-home">
+      <router-link to="/home" class="breadcrumb-home"
+        @click="handleBreadcrumbClick({ text: homeText, path: '/home', isHome: true })">
         <span class="breadcrumb-icon">🏠</span>
         <span class="breadcrumb-text">{{ homeText }}</span>
       </router-link>
@@ -18,7 +19,8 @@
         </span>
 
         <!-- 如果有路徑，顯示為連結 -->
-        <router-link v-else-if="item.path" :to="item.path" class="breadcrumb-link">
+        <router-link v-else-if="item.path" :to="item.path" class="breadcrumb-link"
+          @click="handleBreadcrumbClick({ text: item.text, path: item.path })">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
         </router-link>
@@ -36,6 +38,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { event } from 'vue-gtag'
 import type { BreadcrumbItem, BreadcrumbProps } from '../../types/common/ui-layout'
 
 const route = useRoute()
@@ -65,6 +68,17 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   }
   return (route.meta?.breadcrumb as BreadcrumbItem[]) || []
 })
+
+// 追蹤麵包屑點擊
+const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: boolean }): void => {
+  event('breadcrumb_click', {
+    source: 'breadcrumb',
+    item_name: item.text,
+    item_path: item.path,
+    category: item.isHome ? '首頁' : '麵包屑',
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+}
 </script>
 
 <style lang="sass" scoped>

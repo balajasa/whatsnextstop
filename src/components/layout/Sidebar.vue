@@ -1,15 +1,13 @@
 <template>
   <aside class="sidebar" :class="sidebarClasses">
     <!-- 關閉按鈕 -->
-    <button class="sidebar-close" @click="closeSidebar" type="button">
-      <!-- <span class="close-icon">×</span> -->
-    </button>
+    <button class="sidebar-close" @click="closeSidebar" type="button"></button>
     <div class="sidebar-content">
       <ul class="sidebar-menu">
         <!-- 首頁 -->
         <li>
           <router-link to="/" class="sidebar-item home-item" :class="{ active: isActive('/') }"
-            @click="handleItemClick">
+            @click="handleItemClick({ name: '首頁', path: '/', category: '首頁' })">
             <div class="sidebar-icon">🏠</div>
             <span class="sidebar-text">首頁</span>
           </router-link>
@@ -39,6 +37,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { event } from 'vue-gtag'
 import type { Ref } from 'vue'
 import type { SidebarItem, SidebarProps } from '../../types/common/ui-layout'
 
@@ -136,27 +135,31 @@ const isActive = (path: string): boolean => {
 }
 
 // 處理側邊欄項目點擊
-const handleItemClick = (): void => {
-  // 點擊任何連結都關閉側邊欄
+const handleItemClick = (item: { name: string; path: string; category?: string }): void => {
+  // GA4 事件追蹤
+  event('sidebar_click', {
+    source: 'sidebar',
+    item_name: item.name,
+    item_path: item.path,
+    category: item.category || '首頁',
+    device: props.isMobile ? 'mobile' : 'desktop'
+  })
+
   closeSidebar()
 }
 
-// 切換側邊欄
 const toggleSidebar = (): void => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
 
-// 關閉側邊欄
 const closeSidebar = (): void => {
   isSidebarOpen.value = false
 }
 
-// 重置側邊欄狀態（當螢幕尺寸改變時使用）
 const resetSidebarState = (): void => {
   isSidebarOpen.value = false
 }
 
-// 暴露狀態和方法給父元件使用
 defineExpose({
   isSidebarOpen,
   toggleSidebar,
@@ -190,9 +193,6 @@ defineExpose({
     background: $bg-sidebar
     backdrop-filter: none
 
-// ===================================
-// 側邊欄內容
-// ===================================
 .sidebar-content
   position: relative
   overflow-y: auto
@@ -202,9 +202,6 @@ defineExpose({
   @include desktop
     padding: $spacing-xl 0
 
-// ===================================
-// 關閉按鈕（和漢堡選單相同位置和樣式）
-// ===================================
 .sidebar-close
   position: absolute
   top: 8px // 與 header 中的漢堡選單對齊
@@ -335,36 +332,5 @@ defineExpose({
   @include desktop
     font-size: 16px
 
-// ===================================
-// 響應式調整
-// ===================================
 
-// 手機版
-@include mobile-only
-  .sidebar-item
-    padding: $spacing-md
-
-  .category-title
-    padding: $spacing-sm $spacing-md
-
-  .category-item
-    margin-left: $spacing-sm
-    &::before
-      left: calc(#{$spacing-md} - 8px)
-
-// 平板版特殊調整
-@include tablet-only
-  .sidebar
-    box-shadow: 2px 0 8px $shadow-medium
-
-// 桌面版特殊效果
-@include desktop
-  .sidebar-item
-    margin-right: $spacing-md
-    border-radius: 0 24px 24px 0
-    &:hover
-      box-shadow: 2px 2px 8px $shadow-light
-
-  .category-item
-    margin-right: $spacing-lg
 </style>

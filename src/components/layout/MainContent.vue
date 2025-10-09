@@ -18,7 +18,7 @@
       <!-- 主要功能區域 -->
       <div class="schedule-main-grid">
         <div v-for="card in mainCards" :key="card.id" :class="['schedule-card', card.class]"
-          @click="navigateToSection(card.route, card.section)">
+          @click="navigateToSection(card.route, card.section, card.title)">
           <div class="schedule-icon">{{ card.icon }}</div>
           <h3>{{ card.title }}</h3>
         </div>
@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { event } from 'vue-gtag'
 import type { Ref } from 'vue'
 import TravelCountdown from '@/components/layout/travel-countdown/TravelCountdown.vue'
 // import MiniGame from '@/views/games/MiniGame.vue'
@@ -172,7 +173,20 @@ const mainCards: Ref<MainCard[]> = ref([
 ])
 
 // 導航方法
-const navigateToSection = (routeName: string, section?: string): void => {
+const navigateToSection = (routeName: string, section?: string, cardTitle?: string): void => {
+  // GA4 追蹤
+  if (cardTitle) {
+    event('home_card_click', {
+      source: 'home_card',
+      item_name: cardTitle,
+      item_path: routeName,
+      category: '首頁功能卡片',
+      section: section || '',
+      has_itinerary: hasItinerary.value,
+      device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+    })
+  }
+
   if (!hasItinerary.value) {
     // 沒有行程時，統一導向基本頁面，並傳遞狀態
     router.push({
@@ -194,6 +208,17 @@ const navigateToSection = (routeName: string, section?: string): void => {
 }
 
 const navigateToDay = (day: number): void => {
+  // GA4 追蹤
+  event('home_itinerary_card_click', {
+    source: 'home_itinerary_card',
+    item_name: `Day${day}`,
+    item_path: 'ItineraryDetail',
+    category: '首頁每日行程',
+    day_number: day,
+    has_itinerary: hasItinerary.value,
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
   if (!hasItinerary.value) {
     // 沒有行程時，統一導向基本頁面
     router.push({

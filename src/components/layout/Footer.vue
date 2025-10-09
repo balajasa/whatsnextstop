@@ -155,7 +155,7 @@ onMounted(() => {
   color: #ffffff
   position: relative
   overflow-x: hidden
-  overflow-y: hidden  // 修改：所有版本都禁止Y軸滾動
+  overflow-y: hidden
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15)
   // 添加觸控優化
   touch-action: pan-x pan-y

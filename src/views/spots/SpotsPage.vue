@@ -6,7 +6,8 @@
     <!-- 搜尋和篩選區 -->
     <SpotsFilter v-model:search-keyword="searchKeyword" v-model:selected-country="selectedCountry"
       v-model:selected-category="selectedCategory" :countries="countries" :category-options="categoryOptions"
-      :total-results="totalResults" :has-active-filters="hasActiveFilters" @clear-filters="clearFilters" />
+      :total-results="totalResults" :has-active-filters="hasActiveFilters" :trip-id="route.params.shortId as string"
+      @clear-filters="clearFilters" />
 
     <!-- 載入狀態 -->
     <div v-if="loading" class="loading-section">
@@ -44,6 +45,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { event } from 'vue-gtag'
 import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
 import { findTripByShortId } from '../../services/spots/tripsService'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
@@ -181,6 +183,15 @@ const clearFilters = () => {
 }
 
 const handlePaginationChange = (page: number, pageSize: number) => {
+  // GA4 追蹤
+  event('pagination_click', {
+    current_page: page,
+    items_per_page: pageSize,
+    total_items: totalResults.value,
+    trip_id: route.params.shortId as string || 'all',
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
   currentPage.value = page
   itemsPerPage.value = pageSize
   // 滾動到頂部

@@ -182,7 +182,7 @@ watch(() => props.modelValue, () => {
   top: 100%
   left: 0
   right: 0
-  z-index: 1000
+  z-index: 999
   border: 1px solid $border-light
   border-top: none
   border-radius: 0 0 $border-radius-md $border-radius-md

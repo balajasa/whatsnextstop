@@ -43,6 +43,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { event } from 'vue-gtag'
 import { getAllTripsWithShortId, generateTripSpotsUrl } from '../../services/spots/tripsService'
 import type { TripWithShortId } from '../../services/spots/tripsService'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
@@ -68,6 +69,16 @@ const loadTrips = async () => {
 }
 
 const navigateToTripSpots = (trip: TripWithShortId) => {
+  // GA4 追蹤
+  event('trips_list_click', {
+    source: 'trips_list',
+    item_name: trip.name,
+    item_path: `/trips/${trip.shortId}/spots`,
+    category: '旅程列表',
+    trip_id: trip.shortId,
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
   const url = generateTripSpotsUrl(trip)
   router.push(url)
 }

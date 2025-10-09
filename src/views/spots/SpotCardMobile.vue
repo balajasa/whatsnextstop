@@ -17,7 +17,7 @@
         <div class="location-icon"></div>
         <span class="location-text">{{ spot.region }}, {{ spot.country }}</span>
       </div>
-      <a v-if="formattedSpot.hasMap" :href="spot.googleMapUrl" target="_blank" class="map-link" @click.stop>
+      <a v-if="formattedSpot.hasMap" :href="spot.googleMapUrl" target="_blank" class="map-link" @click="handleMapClick">
       </a>
     </div>
 
@@ -65,8 +65,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { event } from 'vue-gtag'
 import { formatSpotForDisplay } from '../../services/spots/spotsService'
 import type { SpotCardProps } from '../../types/spots/spots'
+
+const route = useRoute()
 
 // Props
 const props = defineProps<SpotCardProps>()
@@ -94,9 +98,20 @@ const getCategoryClass = computed(() => {
   return categoryMap[props.spot.category] || 'attraction'
 })
 
-// 方法
 const toggleDescription = () => {
   isExpanded.value = !isExpanded.value
+}
+
+// GA4 Google Map 連結追蹤
+const handleMapClick = () => {
+  event('spot_map_clik', {
+    interaction_type: 'google_map',
+    action: 'open_map',
+    spot_name: props.spot.name,
+    spot_category: props.spot.category,
+    trip_id: route.params.shortId as string || 'all',
+    device: 'mobile'
+  })
 }
 </script>
 
@@ -108,7 +123,6 @@ const toggleDescription = () => {
   background: $spot-bg
   border-radius: $border-radius-lg
   padding: $spacing-lg  // 恢復較大的內邊距
-  // margin-bottom: $spacing-md
   border: 1px solid $spot-border
   box-shadow: 0 4px 20px rgba(23, 24, 75, 0.1)
   transition: all 0.3s ease

@@ -277,12 +277,11 @@ onUnmounted(() => {
 // ===================================
 // 控制按鈕（使用自定義圖片）
 // ===================================
-
 .close-button,
 .switch-camera-button
   @include flex-center
   position: absolute
-  z-index: 10鈕
+  z-index: 10
   width: 40px
   height: 40px
   border: none

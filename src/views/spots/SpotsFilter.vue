@@ -2,10 +2,10 @@
   <div class="spots-filter">
     <!-- 國家頁籤 -->
     <div class="country-tabs">
-      <button @click="$emit('update:selectedCountry', '')" :class="['country-tab', { active: selectedCountry === '' }]">
+      <button @click="handleCountryChange('')" :class="['country-tab', { active: selectedCountry === '' }]">
         全部國家
       </button>
-      <button v-for="country in countries" :key="country" @click="$emit('update:selectedCountry', country)"
+      <button v-for="country in countries" :key="country" @click="handleCountryChange(country)"
         :class="['country-tab', { active: selectedCountry === country }]">
         {{ country }}
       </button>
@@ -16,10 +16,10 @@
       <SimpleSelect :model-value="selectedCategory" @update:model-value="handleCategoryChange"
         :options="selectCategoryOptions" placeholder="請選擇類別" class="category-select-wrapper" />
 
-      <SearchInput :model-value="searchKeyword" @update:model-value="$emit('update:searchKeyword', $event)"
-        @search="$emit('update:searchKeyword', $event)" placeholder="搜尋景點名稱、描述..." class="search-input-wrapper" />
+      <SearchInput :model-value="searchKeyword" @update:model-value="handleSearch"
+        @search="handleSearch" placeholder="搜尋景點名稱、描述..." class="search-input-wrapper" />
 
-      <button @click="$emit('clear-filters')" class="clear-btn">重設</button>
+      <button @click="handleClearFilters" class="clear-btn">重設</button>
     </div>
 
     <!-- 結果統計 -->
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { event } from 'vue-gtag'
 import type { SpotCategory } from '../../types/spots/spots'
 import SearchInput from '../../components/common/SearchInput.vue'
 import SimpleSelect from '../../components/common/SimpleSelect.vue'
@@ -46,6 +47,7 @@ interface Props {
   categoryOptions: Array<{ value: SpotCategory | '', label: string }>
   totalResults: number
   hasActiveFilters: boolean
+  tripId?: string
 }
 
 const props = defineProps<Props>()
@@ -68,7 +70,54 @@ const selectCategoryOptions = computed(() => [
 
 // 處理類別選擇
 const handleCategoryChange = (value: string) => {
+  // GA4 追蹤
+  event('filter_interaction', {
+    filter_type: 'category',
+    filter_value: value || '全部類別',
+    trip_id: props.tripId || 'all',
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
   emit('update:selectedCategory', value as SpotCategory | '')
+}
+
+// 處理國家頁籤點擊
+const handleCountryChange = (country: string) => {
+  // GA4 追蹤
+  event('filter_interaction', {
+    filter_type: 'country',
+    filter_value: country || '全部國家',
+    trip_id: props.tripId || 'all',
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
+  emit('update:selectedCountry', country)
+}
+
+// 處理搜尋
+const handleSearch = (keyword: string) => {
+  // GA4 追蹤
+  event('search_interaction', {
+    search_keyword: keyword,
+    search_results: props.totalResults,
+    trip_id: props.tripId || 'all',
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
+  emit('update:searchKeyword', keyword)
+}
+
+// 處理重設
+const handleClearFilters = () => {
+  // GA4 追蹤
+  event('filter_interaction', {
+    filter_type: 'clear',
+    filter_value: 'reset',
+    trip_id: props.tripId || 'all',
+    device: window.innerWidth <= 768 ? 'mobile' : 'desktop'
+  })
+
+  emit('clear-filters')
 }
 </script>
 
