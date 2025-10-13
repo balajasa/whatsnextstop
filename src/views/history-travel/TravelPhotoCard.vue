@@ -79,6 +79,7 @@
 import { ref, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination, Keyboard } from 'swiper/modules'
+import { event } from 'vue-gtag'
 import { PhotoService } from '@/services/photos/photoService'
 import { countryTranslation } from '@/translation/composables/countryTranslation'
 import type { HistoryTrip } from '@/types/history-travel/travel-history'
@@ -202,6 +203,17 @@ const getCities = (trip: HistoryTrip): string[] => {
 // 滑動切換事件
 const onSlideChange = (swiper: any) => {
   currentSlide.value = swiper.activeIndex
+
+  // GA4 追蹤：照片瀏覽
+  event('photo_view', {
+    category: 'history_travel',
+    trip_id: trip.id,
+    trip_title: trip.title,
+    photo_index: currentSlide.value + 1,
+    total_photos: photos.value.length,
+    device: window.innerWidth < 768 ? 'mobile' : 'desktop'
+  })
+
   // 檢查是否需要預載更多照片
   checkPreload()
 }

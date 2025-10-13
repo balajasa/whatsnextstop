@@ -3,12 +3,13 @@ import { createPinia } from 'pinia'
 import { createGtag } from 'vue-gtag'
 import App from './App.vue'
 import router from './router/index'
+import { getGaId } from '@/config/ga.config'
 
 import './styles/index.sass'
 import '@monster/smeargle/style.css'
 
 const gtag = createGtag({
-  tagId: import.meta.env.VITE_GA_ID || 'G-CE53S045GX'
+  tagId: getGaId()
 })
 
 const app = createApp(App)

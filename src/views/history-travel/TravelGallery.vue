@@ -42,6 +42,7 @@
 import { onMounted, onUnmounted, ref, nextTick, reactive } from 'vue'
 import { useHistoryTripStore } from '@/stores/useHistoryTripStore'
 import { storeToRefs } from 'pinia'
+import { event } from 'vue-gtag'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
 import TravelPhotoCard from '../history-travel/TravelPhotoCard.vue'
 
@@ -121,6 +122,13 @@ const setupInfiniteScroll = async () => {
       const entry = entries[0]
       // 當觸發器進入視窗且還有更多資料時，載入更多
       if (entry.isIntersecting && hasMore.value && !loadingMore.value) {
+        // GA4 追蹤：載入更多旅程
+        event('load_more_trips', {
+          category: 'history_travel',
+          current_trips_count: trips.value.length,
+          has_more: hasMore.value
+        })
+
         historyTripStore.loadMoreTrips().then(() => {
           // 載入完成後重新設置觀察器
           setupInfiniteScroll()
