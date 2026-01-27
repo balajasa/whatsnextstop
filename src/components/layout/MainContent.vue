@@ -1,19 +1,8 @@
 <template>
   <div class="main-content-wrapper">
     <div class="schedule-section">
-      <!-- 封面圖片區域 -->
-      <div class="cover-image-area">
-        <swiper :modules="modules" :slides-per-view="1" :space-between="0" :loop="true"
-          :autoplay="{ delay: 4000, disableOnInteraction: false }"
-          :pagination="{ clickable: true, dynamicBullets: true }" :navigation="true" effect="fade"
-          :fade-effect="{ crossFade: true }" class="cover-swiper">
-          <swiper-slide v-for="image in coverImages" :key="image.id">
-            <div class="cover-slide">
-              <img :src="image.src" :alt="image.alt" />
-            </div>
-          </swiper-slide>
-        </swiper>
-      </div>
+      <!-- Banner 輪播區域 -->
+      <LobbyBanner />
 
       <!-- 主要功能區域 -->
       <div class="schedule-main-grid">
@@ -65,30 +54,10 @@ import { useRouter } from 'vue-router'
 import { event } from 'vue-gtag'
 import type { Ref } from 'vue'
 import TravelCountdown from '@/components/layout/travel-countdown/TravelCountdown.vue'
+import LobbyBanner from '@/components/common/LobbyBanner.vue'
 // import MiniGame from '@/views/games/MiniGame.vue'
 
-// 導入 Swiper 元件和模組
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules'
-
-// 導入 Swiper 樣式
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/pagination'
-import 'swiper/css/autoplay'
-import 'swiper/css/effect-fade'
-
-import banner01 from '@/assets/img/bg/banner_01.jpg'
-import banner02 from '@/assets/img/bg/banner_02.jpg'
-import banner03 from '@/assets/img/bg/banner_03.jpg'
-
 // 定義類型接口
-interface CoverImage {
-  id: number
-  src: string
-  alt?: string
-}
-
 interface MainCard {
   id: string
   route: string
@@ -108,30 +77,8 @@ defineProps<Props>()
 
 const router = useRouter()
 
-// Swiper 模組註冊
-const modules = [Navigation, Pagination, Autoplay, EffectFade]
-
-// 行程開關控制 - 這是新增的控制項
-const hasItinerary: Ref<boolean> = ref(false) // 設為 false 顯示 Coming Soon，設為 true 顯示天數卡片
-
-// 封面圖片數據
-const coverImages: Ref<CoverImage[]> = ref([
-  {
-    id: 1,
-    src: banner01,
-    alt: '旅程封面圖片 1'
-  },
-  {
-    id: 2,
-    src: banner02,
-    alt: '旅程封面圖片 2'
-  },
-  {
-    id: 3,
-    src: banner03,
-    alt: '旅程封面圖片 3'
-  }
-])
+// 行程開關控制
+const hasItinerary: Ref<boolean> = ref(false)
 
 // 總天數配置
 const totalDays: Ref<number> = ref(6)
@@ -248,10 +195,8 @@ const navigateToDay = (day: number): void => {
   padding: $spacing-md
   max-width: 1200px
   width: 100%
-
   @include tablet
     padding: 8px $spacing-lg
-
   @include desktop
     padding: 16px $spacing-xl
 
@@ -264,126 +209,17 @@ const navigateToDay = (day: number): void => {
 .schedule-header
   margin-bottom: $spacing-xl
   text-align: center
-
   @include tablet
     margin-bottom: $spacing-2xl
-
 .schedule-subtitle
   margin: 0
   color: $text-secondary
   font-weight: 500
   font-size: 18px
-
   @include tablet
     font-size: 22px
-
   @include desktop
     font-size: 24px
-
-// ===================================
-// 輪播圖區域
-// ===================================
-.cover-image-area
-  overflow: hidden
-  margin-bottom: $spacing-xl
-  border-radius: $border-radius-lg
-  box-shadow: 0 8px 32px $shadow-medium
-
-  @include tablet
-    margin-bottom: $spacing-2xl
-    border-radius: $border-radius-xl
-
-.cover-swiper
-  width: 100%
-  height: 250px
-
-  @include tablet
-    height: 350px
-
-  @include desktop
-    height: 400px
-
-  @include large-desktop
-    height: 450px
-
-.cover-slide
-  position: relative
-  width: 100%
-  height: 100%
-
-  img
-    width: 100%
-    height: 100%
-    object-fit: cover
-    object-position: center
-
-// ===================================
-// Swiper 自訂樣式
-// ===================================
-
-// 導航按鈕
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev)
-  margin-top: -22px
-  width: 44px
-  height: 44px
-  border-radius: 50%
-  background: rgba(255, 255, 255, 0.9)
-  box-shadow: 0 2px 8px $shadow-light
-  color: $primary-color
-  transition: all 0.2s ease
-
-  @include mobile-only
-    margin-top: -18px
-    width: 36px
-    height: 36px
-
-    &:after
-      font-size: 14px
-
-  &:after
-    font-weight: bold
-    font-size: 18px
-
-  &:hover
-    background: $accent-color-1
-    color: $text-white
-    transform: scale(1.1)
-
-:deep(.swiper-button-prev)
-  left: 15px
-
-  @include tablet
-    left: 20px
-
-:deep(.swiper-button-next)
-  right: 15px
-
-  @include tablet
-    right: 20px
-
-// 分頁指示器
-:deep(.swiper-pagination)
-  bottom: 15px
-
-  @include tablet
-    bottom: 20px
-
-:deep(.swiper-pagination-bullet)
-  width: 12px
-  height: 12px
-  background: rgba(255, 255, 255, 0.5)
-  opacity: 1
-  transition: all 0.3s ease
-
-  &:hover
-    background: rgba(255, 255, 255, 0.8)
-    transform: scale(1.2)
-
-:deep(.swiper-pagination-bullet-active)
-  background: $accent-color-2
-  box-shadow: 0 2px 8px rgba(230, 168, 107, 0.4)
-  transform: scale(1.3)
 
 // ===================================
 // 主要功能卡片區域
@@ -398,15 +234,12 @@ const navigateToDay = (day: number): void => {
     margin-bottom: $spacing-2xl
     grid-template-columns: repeat(2, 1fr)
     gap: $spacing-lg
-
   @include desktop
     grid-template-columns: repeat(3, 1fr)
-
   @include large-desktop
     grid-template-columns: repeat(5, 1fr)
 
 .schedule-card
-  @include card-hover
   display: flex
   align-items: center
   flex-direction: column
@@ -418,7 +251,7 @@ const navigateToDay = (day: number): void => {
   box-shadow: 0 2px 8px $shadow-light
   color: inherit
   text-decoration: none
-
+  @include card-hover
   @include tablet
     padding: $spacing-xl
     min-height: 140px
@@ -429,14 +262,11 @@ const navigateToDay = (day: number): void => {
     text-align: center
     font-weight: 600
     font-size: 16px
-
     @include tablet
       font-size: 18px
-
 .schedule-icon
   margin-bottom: $spacing-sm
   font-size: 32px
-
   @include tablet
     font-size: 36px
 
@@ -465,7 +295,6 @@ const navigateToDay = (day: number): void => {
   text-align: center
   font-weight: 600
   font-size: 20px
-
   @include tablet
     text-align: left
     font-size: 24px
@@ -483,19 +312,16 @@ const navigateToDay = (day: number): void => {
   display: grid
   grid-template-columns: repeat(2, 1fr)
   gap: $spacing-md
-
   @include tablet
     grid-template-columns: repeat(3, 1fr)
     gap: $spacing-lg
-
   @include desktop
     grid-template-columns: repeat(4, 1fr)
-
   @include large-desktop
     grid-template-columns: repeat(6, 1fr)
 
+
 .daily-card
-  @include card-hover
   display: flex
   align-items: center
   justify-content: center
@@ -509,6 +335,7 @@ const navigateToDay = (day: number): void => {
   font-weight: 600
   font-size: 16px
 
+  @include card-hover
   @include tablet
     min-height: 90px
     font-size: 18px
@@ -539,32 +366,26 @@ const navigateToDay = (day: number): void => {
   box-shadow: 0 4px 12px $shadow-light
   color: $text-secondary
   grid-column: 1 / -1 // 佔滿整行
-
   @include tablet
-    min-height: 240px
     padding: $spacing-2xl
+    min-height: 240px
 
 .coming-soon-icon
   margin-bottom: $spacing-md
   font-size: 48px
   opacity: 0.8
-
   @include tablet
     font-size: 64px
-
 .coming-soon-text
   margin-bottom: $spacing-sm
   font-weight: 600
   font-size: 24px
-
   @include tablet
     font-size: 28px
-
 .coming-soon-subtitle
+  text-align: center
   font-size: 14px
   opacity: 0.7
-  text-align: center
-
   @include tablet
     font-size: 16px
 
@@ -604,8 +425,8 @@ const navigateToDay = (day: number): void => {
     font-size: 14px
 
   .coming-soon-card
-    min-height: 160px
     padding: $spacing-lg
+    min-height: 160px
 
   .coming-soon-icon
     font-size: 40px
@@ -620,7 +441,4 @@ const navigateToDay = (day: number): void => {
 @include large-desktop
   .main-content-wrapper
     max-width: 1400px
-
-  .cover-swiper
-    height: 500px
 </style>
