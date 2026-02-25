@@ -1,31 +1,26 @@
 <template>
   <nav v-if="shouldShowBreadcrumb" class="breadcrumb-nav">
     <div class="breadcrumb-container">
-      <!-- 首頁連結 -->
       <router-link to="/home" class="breadcrumb-home"
         @click="handleBreadcrumbClick({ text: homeText, path: '/home', isHome: true })">
         <span class="breadcrumb-icon">🏠</span>
         <span class="breadcrumb-text">{{ homeText }}</span>
       </router-link>
 
-      <!-- 動態麵包屑項目 -->
       <template v-for="(item, index) in breadcrumbItems" :key="index">
         <span class="breadcrumb-separator">{{ separator }}</span>
 
-        <!-- 如果是最後一項且不是連結，顯示為當前頁面 -->
         <span v-if="index === breadcrumbItems.length - 1 && !item.path" class="breadcrumb-current">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
         </span>
 
-        <!-- 如果有路徑，顯示為連結 -->
         <router-link v-else-if="item.path" :to="item.path" class="breadcrumb-link"
           @click="handleBreadcrumbClick({ text: item.text, path: item.path })">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
         </router-link>
 
-        <!-- 純文字項目 -->
         <span v-else class="breadcrumb-item">
           <span v-if="item.icon" class="breadcrumb-icon">{{ item.icon }}</span>
           {{ item.text }}
@@ -43,9 +38,6 @@ import type { BreadcrumbItem, BreadcrumbProps } from '../../types/common/ui-layo
 
 const route = useRoute()
 
-// 定義 props 介面
-
-// 簡化的 props，移除不需要的配置
 const props = withDefaults(defineProps<BreadcrumbProps>(), {
   homeText: '首頁',
   separator: '›',
@@ -53,7 +45,6 @@ const props = withDefaults(defineProps<BreadcrumbProps>(), {
   manualShow: null
 })
 
-// 是否顯示麵包屑
 const shouldShowBreadcrumb = computed(() => {
   if (props.manualShow !== null) {
     return props.manualShow
@@ -61,7 +52,6 @@ const shouldShowBreadcrumb = computed(() => {
   return route.meta?.showBreadcrumb ?? false
 })
 
-// 麵包屑項目
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   if (props.manualItems) {
     return props.manualItems
@@ -69,7 +59,6 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   return (route.meta?.breadcrumb as BreadcrumbItem[]) || []
 })
 
-// 追蹤麵包屑點擊
 const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: boolean }): void => {
   event('breadcrumb_click', {
     source: 'breadcrumb',
@@ -85,9 +74,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
 @use '@/styles/variables' as *
 @use '@/styles/mixins' as *
 
-// ===================================
-// 麵包屑導航
-// ===================================
 .breadcrumb-nav
   padding: $spacing-sm 0
 
@@ -109,11 +95,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
   @include desktop
     padding: 0 $spacing-xl
 
-// ===================================
-// 麵包屑項目
-// ===================================
-
-// 首頁連結
 .breadcrumb-home
   @include flex-center
   gap: $spacing-xs
@@ -132,7 +113,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
     padding: $spacing-sm
     gap: $spacing-sm
 
-// 一般連結
 .breadcrumb-link
   @include flex-center
   gap: $spacing-xs
@@ -151,7 +131,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
     padding: $spacing-sm
     gap: $spacing-sm
 
-// 當前頁面
 .breadcrumb-current
   @include flex-center
   gap: $spacing-xs
@@ -165,7 +144,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
     padding: $spacing-sm
     gap: $spacing-sm
 
-// 純文字項目
 .breadcrumb-item
   @include flex-center
   gap: $spacing-xs
@@ -176,18 +154,12 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
     padding: $spacing-sm
     gap: $spacing-sm
 
-// ===================================
-// 麵包屑元素
-// ===================================
-
-// 圖標
 .breadcrumb-icon
   font-size: 16px
 
   @include tablet
     font-size: 18px
 
-// 文字
 .breadcrumb-text
   font-size: 14px
 
@@ -197,7 +169,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
   @include desktop
     font-size: 16px
 
-// 分隔符號
 .breadcrumb-separator
   color: $text-light
   font-weight: 300
@@ -208,10 +179,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
   @include tablet
     font-size: 16px
     margin: 0 4px
-
-// ===================================
-// 響應式調整
-// ===================================
 
 // 手機版特殊處理
 @include mobile-only
@@ -224,17 +191,13 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
     gap: 2px
 
   .breadcrumb-text
-    display: none // 手機版只顯示圖標
+    display: none
 
   .breadcrumb-home .breadcrumb-text
-    display: inline // 首頁文字保持顯示
+    display: inline
 
   .breadcrumb-separator
     margin: 0 4px
     font-size: 12px
 
-// 大桌面版優化
-@include large-desktop
-  .breadcrumb-container
-    max-width: 1400px
 </style>

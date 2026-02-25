@@ -57,11 +57,11 @@
 
     <div class="controls">
       <button @click="dropCube('A')" :disabled="gameState.aExpanded" class="btn btn-primary">
-        {{ gameState.aExpanded ? '已完成 A 區' : '掉落 A 區方塊' }}
+        {{ gameState.aExpanded ? '身體已降落' : '先按我一下' }}
       </button>
 
       <button @click="dropCube('B')" :disabled="!gameState.aExpanded || gameState.bExpanded" class="btn btn-primary">
-        {{ gameState.bExpanded ? '已完成 B 區' : '掉落 B 區方塊' }}
+        {{ gameState.bExpanded ? '大頭已降落' : '再按我一下' }}
       </button>
 
       <button @click="showMapResult" :disabled="!gameState.bExpanded" class="btn btn-primary">
@@ -120,46 +120,21 @@ const getStoneImage = (type: 'body' | 'head'): string => {
 }
 
 const dropCube = async (type: 'A' | 'B'): Promise<void> => {
-  const randomTask =
-    type === 'A'
-      ? taskConfig.bobyTasks[Math.floor(Math.random() * taskConfig.bobyTasks.length)]
-      : taskConfig.headTasks[Math.floor(Math.random() * taskConfig.headTasks.length)]
+  const taskPool = { A: taskConfig.bobyTasks, B: taskConfig.headTasks }
+  const stateKeys = {
+    A: { task: 'taskA', dropping: 'aDropping', expanded: 'aExpanded', showMap: 'aShowMap' },
+    B: { task: 'taskB', dropping: 'bDropping', expanded: 'bExpanded', showMap: 'bShowMap' }
+  } as const
 
-  if (type === 'A') {
-    gameState.taskA = randomTask
-    await nextTick()
+  const keys = stateKeys[type]
+  const pool = taskPool[type]
 
-    // 觸發掉落動畫
-    setTimeout(() => {
-      gameState.aDropping = true
-    }, 10)
+  gameState[keys.task] = pool[Math.floor(Math.random() * pool.length)]
+  await nextTick()
 
-    // 掉落完成後展開
-    setTimeout(() => {
-      gameState.aExpanded = true
-      // 稍微延遲後觸發地圖展開動畫
-      setTimeout(() => {
-        gameState.aShowMap = true
-      }, 200)
-    }, 500)
-  } else {
-    gameState.taskB = randomTask
-    await nextTick()
-
-    // 觸發掉落動畫
-    setTimeout(() => {
-      gameState.bDropping = true
-    }, 10)
-
-    // 掉落完成後展開
-    setTimeout(() => {
-      gameState.bExpanded = true
-      // 稍微延遲後觸發地圖展開動畫
-      setTimeout(() => {
-        gameState.bShowMap = true
-      }, 200)
-    }, 500)
-  }
+  setTimeout(() => { gameState[keys.dropping] = true }, 10)
+  setTimeout(() => { gameState[keys.expanded] = true }, 500)
+  setTimeout(() => { gameState[keys.showMap] = true }, 700)
 }
 
 const showMapResult = async (): Promise<void> => {

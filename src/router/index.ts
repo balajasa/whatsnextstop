@@ -3,13 +3,11 @@ import Home from '../views/Home.vue'
 import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
 import DropBlock from '../views/games/DropBlock.vue'
-import TakeMeTravel from '../views/games/TakeMeTravel.vue'
 import Itinerary from '../views/itinerary/Itinerary.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel-map/TravelMap.vue'
 import TravelGallery from '../views/history-travel/TravelGallery.vue'
 import TravelReview from '../views/history-travel/TravelReview.vue'
-import FinalResultPage from '../components/cat-photo/FinalResultPage.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
 import TripsPage from '../views/trips/TripsPage.vue'
 
@@ -103,20 +101,6 @@ const routes = [
           showBreadcrumb: true,
           breadcrumb: [{ text: '命運輪盤' }],
         },
-      },
-      {
-        path: 'takemetravel',
-        name: 'TakeMeTravel',
-        component: TakeMeTravel,
-        meta: {
-          title: '帶我去旅行',
-          showBreadcrumb: true,
-          breadcrumb: [{ text: '帶我去旅行' }],
-        },
-      },
-      {
-        path: 'final',
-        component: FinalResultPage,
       },
       {
         path: 'trips',

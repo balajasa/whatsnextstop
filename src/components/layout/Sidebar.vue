@@ -106,13 +106,7 @@ const sidebarList: SidebarItem[] = [
     name: '命運輪盤',
     icon: '🍽️',
     path: '/foodwheel'
-  },
-  {
-    category: '小小樂趣',
-    name: '帶我去旅行',
-    icon: '📸',
-    path: '/takemetravel'
-  },
+  }
 ]
 
 // 根據分類獲取項目

@@ -24,16 +24,7 @@
               </div>
             </router-link>
           </div>
-          <div class="nav-links">
-            <router-link to="/takemetravel" class="nav-link">
-              <div class="link-card takemetravel-card mini-card">
-                <div class="card-icon">📸</div>
-                <div class="card-title">帶我去旅行</div>
-                <p>記錄旅行的每一刻</p>
-                <div class="card-decoration"></div>
-              </div>
-            </router-link>
-          </div>
+
         </div>
       </div>
     </div>
@@ -220,19 +211,6 @@
 
   &:hover
     box-shadow: 0 12px 40px rgba(230, 168, 107, 0.2)
-
-// 放空自己卡片
-.takemetravel-card
-  border-left: 4px solid $primary-color
-
-  .card-icon
-    color: $primary-color
-
-  .card-decoration
-    background: $primary-color
-
-  &:hover
-    box-shadow: 0 12px 40px rgba(74, 85, 104, 0.2)
 
 // ===================================
 // 路由過渡動畫
