@@ -7,6 +7,13 @@ const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 
 /**
+ * Cloudinary 圖片最佳化 URL（縮小尺寸、自動格式與品質）
+ */
+export function optimizeImageUrl(url: string, width = 800): string {
+  return url.replace('/upload/', `/upload/w_${width},f_auto,q_auto/`)
+}
+
+/**
  * 用經緯度取得地址（BigDataCloud）
  */
 export async function fetchLocationName(lat: number, lng: number): Promise<string> {
@@ -52,6 +59,7 @@ export async function createCheckin(payload: {
   lat: number
   lng: number
   locationName: string
+  locationAddress: string
   timezone: string
   message: string
   hashtags: string[]
@@ -78,6 +86,7 @@ export async function fetchCheckins(): Promise<Checkin[]> {
       lat: data.lat,
       lng: data.lng,
       locationName: data.locationName ?? '',
+      locationAddress: data.locationAddress ?? '',
       timezone: data.timezone ?? 'Asia/Taipei',
       message: data.message ?? '',
       hashtags: data.hashtags ?? [],

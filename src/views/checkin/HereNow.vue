@@ -1,15 +1,23 @@
 <template>
   <div class="herenow">
 
+    <!-- 相簿按鈕 -->
+    <button class="album-btn" @click="$router.push({ name: 'NowAndThen' })">
+      <img src="@/assets/img/icon/sp/maple.png" class="maple-icon" alt="相簿" />
+      前往相簿
+    </button>
+
     <!-- 標題 -->
     <h2 class="page-title">Here, Now, in CANADA</h2>
 
     <!-- 照片區塊 -->
     <div class="photo-block">
-      <button class="photo-btn" @click="fileInput?.click()">
-        <img src="@/assets/img/icon/camera.png" class="btn-icon" alt="" />
-        {{ form.photo ? '重新選擇' : '選擇照片' }}
-      </button>
+      <div class="photo-block__toolbar">
+        <button class="photo-btn" @click="fileInput?.click()">
+          <img src="@/assets/img/icon/camera.png" class="btn-icon" alt="" />
+          {{ form.photo ? '重新選擇' : '選擇照片' }}
+        </button>
+      </div>
       <input type="file" accept="image/*" @change="onFileChange" ref="fileInput" class="file-input" />
       <img v-if="previewURL" :src="previewURL" class="photo-preview" alt="預覽" />
     </div>
@@ -133,6 +141,7 @@ const form = ref<CheckinFormData>({
   lat: null,
   lng: null,
   locationName: '',
+  locationAddress: '',
   timezone: '',
   photo: null,
 })
@@ -185,8 +194,10 @@ async function updateLocation(lat: number, lng: number) {
   form.value.lat = lat
   form.value.lng = lng
   locationAddress.value = ''
+  form.value.locationAddress = ''
   const name = await fetchLocationName(lat, lng)
   locationAddress.value = name
+  form.value.locationAddress = name
 }
 
 async function initMap() {
@@ -243,7 +254,7 @@ async function toggleLocation() {
 }
 
 function resetForm() {
-  form.value = { message: '', hashtags: [], lat: null, lng: null, locationName: '', timezone: '', photo: null }
+  form.value = { message: '', hashtags: [], lat: null, lng: null, locationName: '', locationAddress: '', timezone: '', photo: null }
   previewURL.value = null
   if (fileInput.value) fileInput.value.value = ''
   hashtagInput.value = ''
@@ -282,6 +293,7 @@ async function submit() {
       lat: form.value.lat,
       lng: form.value.lng,
       locationName: form.value.locationName,
+      locationAddress: form.value.locationAddress,
       timezone: '',
       photo: null,
     }
@@ -293,7 +305,7 @@ async function submit() {
       message: `${form.value.locationName || locationAddress.value || '未知地點'}\n${localTime}`,
       confirmText: '好的',
     })
-    // router.push({ name: 'NowAndThen' })
+    router.push({ name: 'NowAndThen' })
   } catch {
     // error 已由 store 處理
   }
@@ -312,17 +324,46 @@ onMounted(() => {
   display: flex
   flex-direction: column
   margin: 0 auto
-  padding: $spacing-lg
+  padding: 8px 20px
   min-height: 100%
   max-width: 480px
 
-  gap: $spacing-lg
+  gap: 14px
 
 // 照片區塊
 .photo-block
   display: flex
   flex-direction: column
   gap: $spacing-sm
+
+  &__toolbar
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+.album-btn
+  display: inline-flex
+  align-self: flex-start
+  align-items: center
+  padding: 6px 14px
+  border: 1.5px solid $camera-border-light
+  border-radius: $border-radius-lg
+  background: rgba(180, 30, 30, 0.05)
+  color: $camera-text-secondary
+  font-size: 13px
+  cursor: pointer
+  transition: border-color 0.2s, color 0.2s
+
+  gap: 6px
+
+  &:hover
+    border-color: rgba($country-tab-border, 0.4)
+    color: $country-tab-border
+
+.maple-icon
+  width: 18px
+  height: 18px
+  object-fit: contain
 
 .reset-btn
   display: inline-flex
@@ -352,10 +393,10 @@ onMounted(() => {
   display: none
 
 .photo-btn
-  display: inline-flex
+  display: flex
   align-items: center
-  align-self: flex-start
   justify-content: center
+  width: 100%
   padding: $spacing-sm $spacing-md
   border: none
   border-radius: $border-radius-lg
@@ -399,6 +440,7 @@ onMounted(() => {
   letter-spacing: 0.1em
   font-weight: 700
   font-size: 22px
+  text-align: center
 
 // 共用標題
 .field-group

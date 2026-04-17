@@ -4,6 +4,7 @@ export interface Checkin {
   lat: number
   lng: number
   locationName: string
+  locationAddress: string
   timezone: string
   message: string
   hashtags: string[]
@@ -16,6 +17,7 @@ export interface CheckinFormData {
   lat: number | null
   lng: number | null
   locationName: string
+  locationAddress: string
   timezone: string
   photo: File | null
 }

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchCheckins, createCheckin, uploadPhoto, fetchLocationName } from '@/services/checkin/checkinService'
+import { fetchCheckins, createCheckin, uploadPhoto } from '@/services/checkin/checkinService'
 import type { Checkin, CheckinFormData } from '@/types/checkin/checkin'
 
 export const useCheckinStore = defineStore('checkin', () => {
@@ -29,13 +29,13 @@ export const useCheckinStore = defineStore('checkin', () => {
     error.value = null
     try {
       const photoURL = await uploadPhoto(form.photo)
-      const locationName = form.locationName || await fetchLocationName(form.lat, form.lng)
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       await createCheckin({
         photoURL,
         lat: form.lat,
         lng: form.lng,
-        locationName,
+        locationName: form.locationName,
+        locationAddress: form.locationAddress,
         timezone,
         message: form.message,
         hashtags: form.hashtags,
