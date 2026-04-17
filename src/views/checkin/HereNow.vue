@@ -10,6 +10,11 @@
       <button @click="getLocation" :disabled="locating">定位</button>
     </div>
 
+    <!-- 手動地點 -->
+    <div class="location-input">
+      <input v-model="form.locationName" type="text" placeholder="Ex: 桃園機場第一航廈" maxlength="50" />
+    </div>
+
     <!-- Leaflet 地圖 -->
     <div v-if="form.lat !== null" ref="mapEl" class="map"></div>
 
@@ -128,7 +133,6 @@ async function updateLocation(lat: number, lng: number) {
   locationAddress.value = ''
   const name = await fetchLocationName(lat, lng)
   locationAddress.value = name
-  form.value.locationName = name
 }
 
 async function initMap() {
@@ -224,8 +228,11 @@ onMounted(() => {
 .location-status
   display: flex
   align-items: center
-
   gap: 8px
+
+  button
+    padding: 8px 12px
+    font-size: 12px
 
 .map
   overflow: hidden

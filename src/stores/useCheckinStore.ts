@@ -29,7 +29,7 @@ export const useCheckinStore = defineStore('checkin', () => {
     error.value = null
     try {
       const photoURL = await uploadPhoto(form.photo)
-      const locationName = await fetchLocationName(form.lat, form.lng)
+      const locationName = form.locationName || await fetchLocationName(form.lat, form.lng)
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       await createCheckin({
         photoURL,
