@@ -12,7 +12,7 @@ export default defineConfig({
     vueDevTools(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-icon.png'],
       manifest: {
         name: '咖豆旅行社',
         short_name: '小毅的遊學日記',
@@ -23,7 +23,7 @@ export default defineConfig({
         start_url: '/whatsnextstop/#/herenow',
         icons: [
           {
-            src: 'apple-touch-icon.png',
+            src: 'apple-icon.png',
             sizes: '180x180',
             type: 'image/png'
           }
