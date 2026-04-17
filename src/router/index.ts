@@ -10,6 +10,7 @@ import TravelGallery from '../views/history-travel/TravelGallery.vue'
 import TravelReview from '../views/history-travel/TravelReview.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
 import TripsPage from '../views/trips/TripsPage.vue'
+import HereNow from '../views/checkin/HereNow.vue'
 
 const routes = [
   {
@@ -110,6 +111,17 @@ const routes = [
           title: '旅程列表',
           showBreadcrumb: true,
           breadcrumb: [{ text: '旅程列表' }],
+        },
+      },
+      {
+        path: 'herenow',
+        name: 'HereNow',
+        component: HereNow,
+        meta: {
+          title: 'Here Now',
+          showBreadcrumb: true,
+          breadcrumb: [{ text: 'Here Now' }],
+          hideCards: true,
         },
       },
       {

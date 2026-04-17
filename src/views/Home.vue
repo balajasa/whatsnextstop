@@ -25,7 +25,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer v-if="!route.meta.hideFooter" class="footer">
       <Footer />
     </footer>
   </div>
@@ -33,12 +33,14 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
 import { event } from 'vue-gtag'
 import Sidebar from '@/components/layout/Sidebar.vue'
 import Footer from '@/components/layout/Footer.vue'
 import type { SidebarRef } from '../types/common/ui-layout'
 
+const route = useRoute()
 const sidebarRef: Ref<SidebarRef | null> = ref(null)
 const isMobile: Ref<boolean> = ref(false)
 

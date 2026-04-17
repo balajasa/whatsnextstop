@@ -1,0 +1,79 @@
+import { collection, addDoc, getDocs, query, orderBy, Timestamp } from 'firebase/firestore'
+import { db } from '@/firebase'
+import type { Checkin } from '@/types/checkin/checkin'
+
+const COLLECTION_NAME = 'checkins_sp'
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+
+/**
+ * 用經緯度取得地址（BigDataCloud）
+ */
+export async function fetchLocationName(lat: number, lng: number): Promise<string> {
+  const res = await fetch(
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=zh`
+  )
+  if (!res.ok) return ''
+  const data = await res.json()
+  const parts = [data.countryName, data.principalSubdivision, data.city, data.locality].filter(Boolean)
+  return parts.join(' ')
+}
+
+/**
+ * 上傳照片到 Cloudinary
+ */
+export async function uploadPhoto(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    { method: 'POST', body: formData }
+  )
+
+  if (!res.ok) throw new Error('照片上傳失敗')
+
+  const data = await res.json()
+  return data.secure_url as string
+}
+
+/**
+ * 新增一筆打卡記錄到 Firestore
+ */
+export async function createCheckin(payload: {
+  photoURL: string
+  lat: number
+  lng: number
+  locationName: string
+  timezone: string
+  message: string
+}): Promise<string> {
+  const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+    ...payload,
+    createdAt: Timestamp.now(),
+  })
+  return docRef.id
+}
+
+/**
+ * 取得所有打卡記錄（依時間降序）
+ */
+export async function fetchCheckins(): Promise<Checkin[]> {
+  const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'))
+  const snapshot = await getDocs(q)
+
+  return snapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      photoURL: data.photoURL,
+      lat: data.lat,
+      lng: data.lng,
+      locationName: data.locationName ?? '',
+      timezone: data.timezone ?? 'Asia/Taipei',
+      message: data.message,
+      createdAt: (data.createdAt as Timestamp).toDate(),
+    }
+  })
+}

@@ -21,6 +21,7 @@
         </div>
       </div>
       <div class="copy-section">
+        <div class="copy-text">咖豆旅行社 | 沒有營業沒有掛牌</div>
         <div class="copy-text">© 2025 OolongLatte</div>
       </div>
     </div>
@@ -149,28 +150,29 @@ onMounted(() => {
 @use '@/styles/mixins' as *
 
 .travel-collection-footer
-  width: 100%
-  height: 130px
-  background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%)
-  color: #ffffff
   position: relative
   overflow-x: hidden
   overflow-y: hidden
+  width: 100%
+  height: 160px
+  background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%)
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15)
+  color: #ffffff
   // 添加觸控優化
+
   touch-action: pan-x pan-y
 
   @media (min-width: 768px)
-    height: 160px
+    height: 190px
 
   &::before
-    content: ''
     position: absolute
     top: -50%
     left: -50%
     width: 200%
     height: 200%
     background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%)
+    content: ''
     animation: sparkle 8s linear infinite
     pointer-events: none
 
@@ -182,14 +184,14 @@ onMounted(() => {
       transform: rotate(360deg)
 
 .footer-container
-  max-width: 1200px
-  margin: 0 auto
-  height: 100%
-  padding: 12px $spacing-md 4px
   display: flex
+  overflow: hidden  // 添加：防止內容溢出
   flex-direction: column
   justify-content: space-between
-  overflow: hidden  // 添加：防止內容溢出
+  margin: 0 auto
+  padding: 12px $spacing-md 4px
+  max-width: 1200px
+  height: 100%
 
   @media (min-width: 768px)
     padding: 12px $spacing-lg 6px
@@ -200,22 +202,19 @@ onMounted(() => {
 .header-section
   display: flex
   align-items: center
-  margin-bottom: $spacing-xs
   flex-shrink: 0
 
-  @media (min-width: 768px)
-    margin-bottom: $spacing-sm
-
 .stats-badge
+  padding: 4px 8px
+  border: 1px solid rgba(255, 255, 255, 0.2)
+  border-radius: $border-radius-xl
   background: rgba(255, 255, 255, 0.15)
   color: $text-white
-  padding: 4px 8px
-  border-radius: $border-radius-xl
-  font-size: 12px
-  font-weight: 700
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2)
+  font-weight: 700
+  font-size: 12px
+
   backdrop-filter: blur(10px)
-  border: 1px solid rgba(255, 255, 255, 0.2)
 
   @media (min-width: 768px)
     padding: 6px 12px
@@ -227,51 +226,56 @@ onMounted(() => {
 // 卡片區域
 // ====================================
 .cards-section
-  flex: 1
   display: flex
-  align-items: center
-  justify-content: center
   overflow: visible
+  align-items: center
+  flex: 1
+  justify-content: center
+  margin-top: 24px
   min-height: 0
   max-height: 100%
 
 .cards-container
   display: flex
-  gap: 10px
   overflow-x: auto
   overflow-y: hidden
+  -webkit-overflow-scrolling: touch
   align-items: center
+  flex-wrap: nowrap
   padding: 0 $spacing-sm
-  width: 100%
   min-height: 60px
   max-height: 80px
-  flex-wrap: nowrap
-  -webkit-overflow-scrolling: touch
+  width: 100%
+
+  gap: 10px
   scroll-behavior: smooth
   scrollbar-width: thin
   scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.1)
 
   // 針對移動端優化觸控滾動
   @media (max-width: 767px)
-    gap: 8px
-    padding: 5px $spacing-sm
-    padding-left: 20px
-    padding-right: 20px
     box-sizing: border-box
+    padding: 5px $spacing-sm
+    padding-right: 20px
+    padding-left: 20px
     max-height: 70px
 
-  @media (min-width: 768px)
     gap: 8px
+
+  @media (min-width: 768px)
     padding: 10px $spacing-md
     min-height: 70px
+
+    gap: 8px
 
     &::-webkit-scrollbar
       height: 6px
 
   @media (min-width: 1024px)
-    gap: 12px
     padding: 0 $spacing-lg
     min-height: 80px
+
+    gap: 12px
 
 // ====================================
 // 卡片樣式
@@ -282,9 +286,10 @@ onMounted(() => {
     margin: 0 2px
 
 .travel-card
+  position: relative
   width: 35px
   height: 45px
-  position: relative
+
   touch-action: manipulation
 
   @media (min-width: 768px)
@@ -296,22 +301,22 @@ onMounted(() => {
     height: 70px
 
   &:has(.card-surface.collected):hover
-    transform: scale(1.05)
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
+    transform: scale(1.05)
 
 .card-surface
+  position: relative
+  display: flex
+  align-items: center
+  flex-direction: column
+  justify-content: center
+  padding: 3px
   width: 100%
   height: 100%
-  border-radius: $border-radius-md
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
-  text-align: center
-  padding: 3px
   border: 2px solid rgba(255, 255, 255, 0.3)
+  border-radius: $border-radius-md
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)
-  position: relative
+  text-align: center
 
   @media (min-width: 768px)
     padding: 4px
@@ -324,11 +329,11 @@ onMounted(() => {
 // 已收集的卡片
 // ====================================
 .card-surface.collected
+  border-color: #ffd93d
   background: linear-gradient(135deg,
       rgba(255, 229, 180, 0.95) 0%,
       rgba(255, 250, 205, 0.98) 50%,
       rgba(230, 243, 255, 0.95) 100%)
-  border-color: #ffd93d
   box-shadow: 0 4px 12px rgba(255, 217, 61, 0.4), 0 0 0 1px rgba(255, 217, 61, 0.6)
   animation: gentleGlow 3s ease-in-out infinite alternate
 
@@ -340,22 +345,22 @@ onMounted(() => {
       box-shadow: 0 6px 16px rgba(255, 217, 61, 0.5), 0 0 0 2px rgba(255, 217, 61, 0.7)
 
   &::before
-    content: '✨'
     position: absolute
     top: -3px
     right: -3px
+    content: '✨'
     font-size: 10px
     animation: sparkle-star 2s ease-in-out infinite
 
     @media (min-width: 768px)
-      font-size: 12px
       top: -4px
       right: -4px
+      font-size: 12px
 
     @media (min-width: 1024px)
-      font-size: 14px
       top: -6px
       right: -6px
+      font-size: 14px
 
   @keyframes sparkle-star
     0%,
@@ -371,30 +376,30 @@ onMounted(() => {
 // 未收集的卡片
 // ====================================
 .card-surface.locked
+  border: 2px dashed rgba(149, 165, 166, 0.8)
   background: linear-gradient(135deg,
       rgba(189, 195, 199, 0.9) 0%,
       rgba(232, 232, 232, 0.95) 100%)
-  border: 2px dashed rgba(149, 165, 166, 0.8)
   opacity: 0.8
 
   &::after
-    content: '🔒'
     position: absolute
     top: 50%
     left: 50%
-    transform: translate(-50%, -50%)
-    font-size: 12px
     z-index: 10
-    animation: lockShake 3s ease-in-out infinite
     margin-top: -4px
+    content: '🔒'
+    font-size: 12px
+    transform: translate(-50%, -50%)
+    animation: lockShake 3s ease-in-out infinite
 
     @media (min-width: 768px)
-      font-size: 14px
       margin-top: -5px
+      font-size: 14px
 
     @media (min-width: 1024px)
-      font-size: 16px
       margin-top: -6px
+      font-size: 16px
 
   @keyframes lockShake
     0%,
@@ -420,28 +425,28 @@ onMounted(() => {
 // 國家內容
 // ====================================
 .country-flag
-  font-size: 14px
-  margin-bottom: 2px
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
-  z-index: 5
   position: relative
+  z-index: 5
+  margin-bottom: 2px
+  font-size: 14px
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))
 
   @media (min-width: 768px)
-    font-size: 18px
     margin-bottom: 3px
+    font-size: 18px
 
   @media (min-width: 1024px)
-    font-size: 20px
     margin-bottom: 4px
+    font-size: 20px
 
 .country-text
-  font-size: 10px
-  font-weight: 700
+  position: relative
+  z-index: 5
   color: $text-primary
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8)
+  font-weight: 700
+  font-size: 10px
   line-height: 1.1
-  z-index: 5
-  position: relative
 
   @media (min-width: 768px)
     font-size: 11px
@@ -451,7 +456,12 @@ onMounted(() => {
 
 .copy-section
   display: flex
+  align-items: center
+  flex-direction: column
   justify-content: center
+  margin-top: 20px
   font-size: 10px
-  margin-top: 10px
+
+  gap: 2px
+
 </style>
