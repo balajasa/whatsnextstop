@@ -1,9 +1,5 @@
 <template>
   <div class="nowandthen">
-    <button class="back-btn" @click="$router.push({ name: 'HereNow' })">
-      <img src="@/assets/img/icon/sp/fortune-cookie.png" class="back-icon" alt="" />
-      返回打卡
-    </button>
     <h2 class="page-title">Then And Memory</h2>
 
     <div v-if="checkinStore.isLoading" class="status-msg">載入中...</div>
@@ -99,40 +95,16 @@ onMounted(() => {
   padding: 8px 20px
   max-width: 480px
 
-  gap: 14px
+  gap: 24px
 
 .page-title
   margin: 0
   color: $camera-text-primary
-  text-align: center
+  text-align: left
   letter-spacing: 0.15em
   font-weight: 700
   font-size: 20px
 
-.back-btn
-  display: inline-flex
-  align-items: center
-  align-self: flex-start
-  padding: 6px 14px
-  border: 1.5px solid rgba(210, 140, 40, 0.3)
-  border-radius: $border-radius-lg
-  background: rgba(245, 185, 60, 0.07)
-  color: $camera-text-secondary
-  font-size: 13px
-  cursor: pointer
-  transition: border-color 0.2s, color 0.2s
-
-  gap: 6px
-
-  &:hover
-    border-color: rgba($country-tab-border, 0.4)
-    color: $country-tab-border
-
-.back-icon
-  width: 18px
-  height: 18px
-
-  object-fit: contain
 
 .status-msg
   color: $camera-text-secondary

@@ -1,12 +1,6 @@
 <template>
   <div class="herenow">
 
-    <!-- 相簿按鈕 -->
-    <button class="album-btn" @click="$router.push({ name: 'NowAndThen' })">
-      <img src="@/assets/img/icon/sp/maple.png" class="maple-icon" alt="相簿" />
-      前往相簿
-    </button>
-
     <!-- 標題 -->
     <h2 class="page-title">Here, Now, in CANADA</h2>
 
@@ -110,6 +104,12 @@
     <!-- 重置按鈕 -->
     <button class="reset-btn" @click="resetForm">
       重置
+    </button>
+
+    <!-- 相簿按鈕 -->
+    <button class="album-btn" @click="$router.push({ name: 'NowAndThen' })">
+      <img src="@/assets/img/icon/sp/maple.png" class="maple-icon" alt="相簿" />
+      前往相簿
     </button>
 
   </div>
@@ -342,10 +342,11 @@ onMounted(() => {
     justify-content: space-between
 
 .album-btn
-  display: inline-flex
-  align-self: flex-start
+  display: flex
   align-items: center
-  padding: 6px 14px
+  justify-content: center
+  width: 100%
+  padding: $spacing-sm $spacing-md
   border: 1.5px solid $camera-border-light
   border-radius: $border-radius-lg
   background: rgba(180, 30, 30, 0.05)
@@ -437,10 +438,10 @@ onMounted(() => {
 .page-title
   margin: 0
   color: $camera-text-primary
-  letter-spacing: 0.1em
+  letter-spacing: 0.15em
   font-weight: 700
-  font-size: 22px
-  text-align: center
+  font-size: 20px
+  text-align: left
 
 // 共用標題
 .field-group
