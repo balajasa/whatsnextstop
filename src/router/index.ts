@@ -11,6 +11,7 @@ import TravelReview from '../views/history-travel/TravelReview.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
 import TripsPage from '../views/trips/TripsPage.vue'
 import HereNow from '../views/checkin/HereNow.vue'
+import NowAndThen from '../views/checkin/NowAndThen.vue'
 
 const routes = [
   {
@@ -111,6 +112,17 @@ const routes = [
           title: '旅程列表',
           showBreadcrumb: true,
           breadcrumb: [{ text: '旅程列表' }],
+        },
+      },
+      {
+        path: 'nowandthen',
+        name: 'NowAndThen',
+        component: NowAndThen,
+        meta: {
+          title: 'Now and Then',
+          showBreadcrumb: true,
+          breadcrumb: [{ text: 'Now and Then' }],
+          hideFooter: true,
         },
       },
       {

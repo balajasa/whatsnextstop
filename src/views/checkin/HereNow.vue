@@ -1,80 +1,131 @@
 <template>
   <div class="herenow">
-    <h2>Here, Now, in Canada</h2>
 
-    <!-- GPS 狀態 -->
-    <div class="location-status">
-      <span v-if="locating">定位中...</span>
-      <span v-else-if="form.lat !== null">📍 {{ locationAddress || '取得地址中...' }}</span>
-      <span v-else class="error">無法取得定位</span>
-      <button @click="getLocation" :disabled="locating">定位</button>
-    </div>
+    <!-- 標題 -->
+    <h2 class="page-title">Here, Now, in CANADA</h2>
 
-    <!-- 手動地點 -->
-    <div class="location-input">
-      <input v-model="form.locationName" type="text" placeholder="Ex: 桃園機場第一航廈" maxlength="50" />
-    </div>
-
-    <!-- Leaflet 地圖 -->
-    <div v-if="form.lat !== null" ref="mapEl" class="map"></div>
-
-    <!-- 地圖提示 -->
-    <p v-if="form.lat !== null" class="map-hint">每次打卡前請點擊「定位」確認目前位置</p>
-
-    <!-- 選照片 -->
-    <div class="photo-section">
-      <input type="file" accept="image/*" @change="onFileChange" ref="fileInput" />
-      <img v-if="previewURL" :src="previewURL" class="preview" alt="預覽" />
-    </div>
-
-    <!-- 留言 -->
-    <div class="message-section">
-      <textarea v-model="form.message" placeholder="現在的心情" maxlength="500" rows="4" />
-    </div>
-
-    <!-- Hashtag -->
-    <div class="hashtag-section">
-      <input v-model="hashtagInput" type="text" placeholder="#Hashtag" maxlength="100" />
-    </div>
-
-    <!-- 送出 -->
-    <div class="submit-section">
-      <p v-if="checkinStore.error" class="error">{{ checkinStore.error }}</p>
-      <button @click="submit" :disabled="checkinStore.isSubmitting || !form.photo || form.lat === null">
-        {{ checkinStore.isSubmitting ? '上傳中...' : '打卡！' }}
+    <!-- 照片區塊 -->
+    <div class="photo-block">
+      <button class="photo-btn" @click="fileInput?.click()">
+        <img src="@/assets/img/icon/camera.png" class="btn-icon" alt="" />
+        {{ form.photo ? '重新選擇' : '選擇照片' }}
       </button>
+      <input type="file" accept="image/*" @change="onFileChange" ref="fileInput" class="file-input" />
+      <img v-if="previewURL" :src="previewURL" class="photo-preview" alt="預覽" />
     </div>
 
-    <!-- 時間顯示 -->
-    <div class="time-card">
-      <div v-if="lastCheckin" class="time-row">
-        <span class="time-label">當地時間</span>
-        <span class="time-value">{{ lastCheckin.localTime }}</span>
+    <!-- 心情 + Hashtag -->
+    <div class="content-block">
+      <div class="field-group">
+        <label class="field-label">心情</label>
+        <textarea
+          v-model="form.message"
+          maxlength="500"
+          rows="3"
+          placeholder="分享此刻心情......"
+          class="mood-input"
+        />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Hashtag#</label>
+        <input
+          v-model="hashtagInput"
+          type="text"
+          maxlength="100"
+          placeholder="新增標籤"
+          class="hashtag-input"
+        />
+      </div>
+    </div>
+
+    <!-- 地點區塊 -->
+    <div class="location-block">
+      <button class="add-location-btn" @click="toggleLocation" :disabled="locating">
+        <span class="add-location-btn__left">
+          <img src="@/assets/img/icon/location_pin.png" class="neutral-icon" alt="" />
+          <span v-if="locating">定位中...</span>
+          <span v-else-if="locationExpanded">收起地點</span>
+          <span v-else>新增地點</span>
+        </span>
+        <img src="@/assets/img/icon/common/arrow_right_key.png" class="arrow-icon" :class="{ 'arrow-icon--open': locationExpanded }" alt="" />
+      </button>
+
+      <div v-if="locationExpanded" class="location-expanded">
+        <div v-if="form.lat !== null" ref="mapEl" class="map"></div>
+        <p v-if="form.lat !== null" class="map-hint">可拖曳標記微調位置</p>
+
+        <div class="field-group">
+          <label class="field-label">地點名稱</label>
+          <input
+            v-model="form.locationName"
+            type="text"
+            maxlength="50"
+            placeholder="輸入現在位置 (體諒免費仔)"
+            class="location-name-input"
+          />
+        </div>
+
+        <div v-if="locationAddress" class="address-row">
+          <img src="@/assets/img/icon/near_me.png" class="address-icon neutral-icon" alt="" />
+          <span class="address-text">{{ locationAddress }}</span>
+        </div>
+        <div v-else-if="form.lat !== null" class="address-row address-row--loading">
+          <span>取得地址中...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 時間區塊 -->
+    <div class="time-block">
+      <div class="time-row">
+        <span class="time-label">現在時間</span>
+        <span class="time-value">{{ localTime }}</span>
       </div>
       <div class="time-row">
         <span class="time-label">台灣時間</span>
         <span class="time-value">{{ taiwanTime }}</span>
       </div>
     </div>
+
+    <!-- 錯誤訊息 -->
+    <p v-if="checkinStore.error" class="error-msg">{{ checkinStore.error }}</p>
+
+    <!-- 打卡按鈕 -->
+    <button
+      class="submit-btn"
+      @click="submit"
+      :disabled="checkinStore.isSubmitting || !form.photo || form.lat === null"
+    >
+      {{ checkinStore.isSubmitting ? '上傳中...' : '打卡！' }}
+    </button>
+
+    <!-- 重置按鈕 -->
+    <button class="reset-btn" @click="resetForm">
+      重置
+    </button>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useCheckinStore } from '@/stores/useCheckinStore'
 import { fetchLocationName } from '@/services/checkin/checkinService'
+import { useDialog } from '@/composables/useDialog'
 import type { CheckinFormData } from '@/types/checkin/checkin'
 
-// 修正 Leaflet 預設圖示路徑問題
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 delete (L.Icon.Default.prototype as any)._getIconUrl
 L.Icon.Default.mergeOptions({ iconUrl: markerIcon, iconRetinaUrl: markerIcon2x, shadowUrl: markerShadow })
 
+const router = useRouter()
 const checkinStore = useCheckinStore()
+const dialog = useDialog()
 
 const form = ref<CheckinFormData>({
   message: '',
@@ -87,10 +138,9 @@ const form = ref<CheckinFormData>({
 })
 
 const hashtagInput = ref('')
-
-
 const locating = ref(false)
 const locationAddress = ref('')
+const locationExpanded = ref(false)
 const previewURL = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const mapEl = ref<HTMLElement | null>(null)
@@ -104,12 +154,15 @@ interface LastCheckin {
   timezone: string
 }
 const lastCheckin = ref<LastCheckin | null>(null)
-
 const taiwanTime = ref('')
+const localTime = ref('')
 let timer: ReturnType<typeof setInterval> | null = null
 
-function updateTaiwanTime() {
-  taiwanTime.value = formatTime(new Date(), 'Asia/Taipei')
+function updateTimes() {
+  const now = new Date()
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  localTime.value = formatTime(now, timezone)
+  taiwanTime.value = formatTime(now, 'Asia/Taipei')
 }
 
 onUnmounted(() => {
@@ -124,6 +177,7 @@ function formatTime(date: Date, timezone: string): string {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false,
   }).format(date)
 }
 
@@ -145,13 +199,11 @@ async function initMap() {
   }
 
   mapInstance = L.map(mapEl.value).setView([form.value.lat, form.value.lng], 16)
-
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap',
   }).addTo(mapInstance)
 
   marker = L.marker([form.value.lat, form.value.lng], { draggable: true }).addTo(mapInstance)
-
   marker.on('dragend', async () => {
     const pos = marker!.getLatLng()
     await updateLocation(pos.lat, pos.lng)
@@ -176,6 +228,31 @@ async function getLocation() {
   )
 }
 
+async function toggleLocation() {
+  if (locationExpanded.value) {
+    locationExpanded.value = false
+    return
+  }
+  locationExpanded.value = true
+  if (form.value.lat === null) {
+    await getLocation()
+  } else {
+    await nextTick()
+    await initMap()
+  }
+}
+
+function resetForm() {
+  form.value = { message: '', hashtags: [], lat: null, lng: null, locationName: '', timezone: '', photo: null }
+  previewURL.value = null
+  if (fileInput.value) fileInput.value.value = ''
+  hashtagInput.value = ''
+  locationAddress.value = ''
+  locationExpanded.value = false
+  lastCheckin.value = null
+  if (mapInstance) { mapInstance.remove(); mapInstance = null }
+}
+
 function onFileChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
@@ -192,152 +269,343 @@ async function submit() {
       .map(t => t.replace(/^#/, '').trim())
       .filter(t => t.length > 0)
     await checkinStore.submitCheckin(form.value)
-    const latest = checkinStore.checkins[0]
     const now = new Date()
+    const localTime = formatTime(now, timezone)
     lastCheckin.value = {
-      locationName: latest?.locationName || '',
-      localTime: formatTime(now, timezone),
+      locationName: form.value.locationName,
+      localTime,
       timezone,
     }
-    form.value = { message: '', hashtags: [], lat: form.value.lat, lng: form.value.lng, locationName: form.value.locationName, timezone: '', photo: null }
+    form.value = {
+      message: '',
+      hashtags: [],
+      lat: form.value.lat,
+      lng: form.value.lng,
+      locationName: form.value.locationName,
+      timezone: '',
+      photo: null,
+    }
     previewURL.value = null
     if (fileInput.value) fileInput.value.value = ''
     hashtagInput.value = ''
+    await dialog.alert({
+      title: '打卡成功',
+      message: `${form.value.locationName || locationAddress.value || '未知地點'}\n${localTime}`,
+      confirmText: '好的',
+    })
+    // router.push({ name: 'NowAndThen' })
   } catch {
     // error 已由 store 處理
   }
 }
 
 onMounted(() => {
-  getLocation()
-  updateTaiwanTime()
-  timer = setInterval(updateTaiwanTime, 1000)
+  updateTimes()
+  timer = setInterval(updateTimes, 1000)
 })
 </script>
 
 <style lang="sass" scoped>
+@use '@/styles/variables' as *
+
 .herenow
   display: flex
   flex-direction: column
   margin: 0 auto
-  padding: 24px
+  padding: $spacing-lg
+  min-height: 100%
   max-width: 480px
 
-  gap: 16px
+  gap: $spacing-lg
 
-.location-status
+// 照片區塊
+.photo-block
   display: flex
+  flex-direction: column
+  gap: $spacing-sm
+
+.reset-btn
+  display: inline-flex
   align-items: center
-  gap: 8px
+  justify-content: center
+  padding: $spacing-sm $spacing-md
+  border: 1.5px solid $camera-border-primary
+  border-radius: $border-radius-lg
+  background: transparent
+  color: $camera-neutral
+  font-weight: 500
+  font-size: 14px
+  cursor: pointer
+  transition: border-color 0.2s, color 0.2s
 
-  button
-    padding: 8px 12px
-    font-size: 12px
+  &:hover
+    border-color: $country-tab-border
+    color: $country-tab-border
 
-.map
-  overflow: hidden
+.reset-icon
+  width: 16px
+  height: 16px
+
+  object-fit: contain
+
+.file-input
+  display: none
+
+.photo-btn
+  display: inline-flex
+  align-items: center
+  align-self: flex-start
+  justify-content: center
+  padding: $spacing-sm $spacing-md
+  border: none
+  border-radius: $border-radius-lg
+  background: $country-tab-border
+  color: #fff
+  font-weight: 600
+  font-size: 14px
+  cursor: pointer
+  transition: background 0.2s
+
+  gap: $spacing-sm
+
+  &:hover
+    background: rgba(0, 92, 175, 0.85)
+
+.btn-icon
+  width: 18px
+  height: 18px
+  filter: brightness(0) invert(1)
+
+  object-fit: contain
+
+.neutral-icon
+  width: 18px
+  height: 18px
+  opacity: 0.75
+  filter: grayscale(1) brightness(0) invert(1) brightness(0.55)
+
+  object-fit: contain
+
+.photo-preview
+  max-height: 320px
   width: 100%
-  height: 250px
-  border-radius: 12px
-
-.preview
-  margin-top: 8px
-  max-height: 300px
-  width: 100%
-  border-radius: 8px
-
+  border-radius: $border-radius-lg
   object-fit: cover
 
-input[type="text"],
-textarea
-  padding: 8px 12px
-  width: 100%
-  border: 1px solid #ccc
-  border-radius: 8px
-  font-size: 14px
+// 頁面標題
+.page-title
+  margin: 0
+  color: $camera-text-primary
+  letter-spacing: 0.1em
+  font-weight: 700
+  font-size: 22px
+
+// 共用標題
+.field-group
+  display: flex
+  flex-direction: column
+  gap: 6px
+
+.field-label
+  color: $camera-text-primary
+  font-weight: 500
+  font-size: 13px
+
+// 心情 + Hashtag 區塊
+.content-block
+  display: flex
+  flex-direction: column
+  gap: $spacing-sm
+
+.mood-input
   box-sizing: border-box
+  padding: $spacing-md
+  width: 100%
+  border: 1.5px solid $camera-border-light
+  border-radius: $border-radius-lg
+  background: #ffffff
+  color: $camera-text-primary
+  font-size: 15px
+  line-height: 1.6
+  resize: none
+  transition: border-color 0.2s
 
-textarea
-  resize: vertical
+  &::placeholder
+    color: $camera-text-muted
 
-button
-  padding: 10px 20px
-  border: none
-  border-radius: 8px
-  background: #91B500
-  color: white
+  &:focus
+    outline: none
+    border-color: rgba($country-tab-border, 0.5)
+
+.hashtag-input
+  box-sizing: border-box
+  padding: $spacing-sm $spacing-md
+  width: 100%
+  border: 1.5px solid $camera-border-light
+  border-radius: $border-radius-lg
+  background: #ffffff
+  color: $camera-text-primary
+  font-size: 14px
+  transition: border-color 0.2s
+
+  &::placeholder
+    color: $camera-text-muted
+
+  &:focus
+    outline: none
+    border-color: rgba($country-tab-border, 0.5)
+
+// 地點區塊
+.location-block
+  display: flex
+  flex-direction: column
+
+  gap: $spacing-md
+
+.add-location-btn
+  display: flex
+  align-items: center
+  justify-content: space-between
+  box-sizing: border-box
+  padding: $spacing-sm $spacing-md
+  width: 100%
+  border: 1.5px solid $camera-border-light
+  border-radius: $border-radius-lg
+  background: #ffffff
+  color: $camera-neutral
+  font-weight: 600
+  font-size: 15px
   cursor: pointer
+  transition: border-color 0.2s, color 0.2s
+
+  &:hover:not(:disabled)
+    border-color: rgba($country-tab-border, 0.5)
+    color: $country-tab-border
+
   &:disabled
     opacity: 0.5
     cursor: not-allowed
 
+  &__left
+    display: flex
+    align-items: center
+
+    gap: $spacing-sm
+
+  &__left
+    display: flex
+    align-items: center
+
+    gap: $spacing-sm
+
+.arrow-icon
+  width: 18px
+  height: 18px
+  opacity: 0.4
+  transition: transform 0.2s
+  &--open
+    transform: rotate(90deg)
+
+.location-expanded
+  display: flex
+  flex-direction: column
+
+  gap: $spacing-sm
+
+.map
+  overflow: hidden
+  width: 100%
+  height: 220px
+  border-radius: $border-radius-lg
+
 .map-hint
-  margin-top: -8px
-  color: #888
+  margin: 0
+  color: $camera-text-light
   font-size: 12px
 
-.error
-  color: red
+.location-name-input
+  box-sizing: border-box
+  padding: $spacing-sm $spacing-md
+  width: 100%
+  border: 1.5px solid $camera-border-light
+  border-radius: $border-radius-lg
+  background: #ffffff
+  color: $camera-text-primary
+  font-size: 14px
+  transition: border-color 0.2s
+
+  &::placeholder
+    color: $camera-text-muted
+
+  &:focus
+    outline: none
+    border-color: rgba($country-tab-border, 0.5)
+
+.address-row
+  display: flex
+  align-items: center
+  color: $camera-text-secondary
   font-size: 13px
 
-.hashtag-section
+  gap: $spacing-sm
+
+  &--loading
+    color: $camera-text-muted
+
+.address-icon
+  flex-shrink: 0
+  width: 16px
+  height: 16px
+
+  object-fit: contain
+
+.address-text
+  line-height: 1.4
+
+// 時間區塊
+.time-block
   display: flex
   flex-direction: column
-  gap: 8px
 
-.hashtag-tags
-  display: flex
-  flex-wrap: wrap
-  gap: 6px
-
-.hashtag-tag
-  padding: 2px 10px
-  border-radius: 20px
-  background: #e8f5c8
-  color: #5a8000
-  font-size: 13px
-
-.time-card
-  display: flex
-  flex-direction: column
-  padding: 16px
-  border-radius: 12px
-  background: #f5f5f5
-  gap: 8px
+  gap: $spacing-xs
 
 .time-row
   display: flex
   align-items: center
-  gap: 8px
+  justify-content: space-between
 
 .time-label
-  color: #888
-  font-size: 12px
-  min-width: 60px
+  color: $camera-text-secondary
+  font-size: 13px
 
 .time-value
-  font-size: 15px
-  font-weight: 600
+  color: $camera-text-primary
+  font-size: 13px
 
-.time-tz
-  color: #aaa
-  font-size: 12px
+// 錯誤
+.error-msg
+  margin: 0
+  color: #D32F2F
+  font-size: 13px
 
-.success-card
-  display: flex
-  flex-direction: column
-  padding: 16px
-  border-radius: 12px
-  background: #f0f7e0
-
-  gap: 8px
-
-.success-title
+// 打卡按鈕
+.submit-btn
+  padding: $spacing-sm $spacing-md
+  width: 100%
+  border: none
+  border-radius: $border-radius-lg
+  background: $country-tab-border
+  color: #fff
+  letter-spacing: 0.5px
   font-weight: 700
   font-size: 16px
+  cursor: pointer
+  transition: background 0.2s, opacity 0.2s
 
-.success-row
-  color: #444
-  font-size: 14px
+  &:hover:not(:disabled)
+    background: rgba(0, 92, 175, 0.85)
 
+  &:disabled
+    opacity: 0.45
+    cursor: not-allowed
 </style>
