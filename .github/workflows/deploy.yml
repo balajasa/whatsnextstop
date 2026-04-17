@@ -42,6 +42,8 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_REPO_OWNER: ${{ secrets.VITE_REPO_OWNER }}
           VITE_REPO_NAME: ${{ secrets.VITE_REPO_NAME }}
+          VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
+          VITE_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.VITE_CLOUDINARY_UPLOAD_PRESET }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

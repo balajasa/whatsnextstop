@@ -12,20 +12,20 @@ export default defineConfig({
     vueDevTools(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: '咖豆旅行社',
-        short_name: '咖豆旅行',
-        description: '記錄你的旅行打卡足跡',
+        short_name: '小毅的遊學日記',
+        description: '記錄旅行足跡',
         theme_color: '#2d1b69',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/whatsnextstop/#/herenow',
         icons: [
           {
-            src: 'beanbean.ico',
-            sizes: '64x64',
-            type: 'image/x-icon'
+            src: 'apple-touch-icon.png',
+            sizes: '180x180',
+            type: 'image/png'
           }
         ]
       },

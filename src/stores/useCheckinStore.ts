@@ -38,6 +38,7 @@ export const useCheckinStore = defineStore('checkin', () => {
         locationName,
         timezone,
         message: form.message,
+        hashtags: form.hashtags,
       })
       await loadCheckins()
     } catch (e) {

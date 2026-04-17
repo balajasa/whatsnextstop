@@ -24,7 +24,12 @@
 
     <!-- 留言 -->
     <div class="message-section">
-      <input v-model="form.message" type="text" placeholder="留言（選填）" maxlength="100" />
+      <textarea v-model="form.message" placeholder="現在的心情" maxlength="500" rows="4" />
+    </div>
+
+    <!-- Hashtag -->
+    <div class="hashtag-section">
+      <input v-model="hashtagInput" type="text" placeholder="#Hashtag" maxlength="100" />
     </div>
 
     <!-- 送出 -->
@@ -35,17 +40,22 @@
       </button>
     </div>
 
-    <!-- 打卡成功結果 -->
-    <div v-if="lastCheckin" class="success-card">
-      <div class="success-title">✅ 打卡成功！</div>
-      <div class="success-row">📍 {{ lastCheckin.locationName || '未知地點' }}</div>
-      <div class="success-row">🕐 {{ lastCheckin.localTime }} ({{ lastCheckin.timezone }})</div>
+    <!-- 時間顯示 -->
+    <div class="time-card">
+      <div v-if="lastCheckin" class="time-row">
+        <span class="time-label">當地時間</span>
+        <span class="time-value">{{ lastCheckin.localTime }}</span>
+      </div>
+      <div class="time-row">
+        <span class="time-label">台灣時間</span>
+        <span class="time-value">{{ taiwanTime }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useCheckinStore } from '@/stores/useCheckinStore'
@@ -63,12 +73,16 @@ const checkinStore = useCheckinStore()
 
 const form = ref<CheckinFormData>({
   message: '',
+  hashtags: [],
   lat: null,
   lng: null,
   locationName: '',
   timezone: '',
   photo: null,
 })
+
+const hashtagInput = ref('')
+
 
 const locating = ref(false)
 const locationAddress = ref('')
@@ -85,6 +99,17 @@ interface LastCheckin {
   timezone: string
 }
 const lastCheckin = ref<LastCheckin | null>(null)
+
+const taiwanTime = ref('')
+let timer: ReturnType<typeof setInterval> | null = null
+
+function updateTaiwanTime() {
+  taiwanTime.value = formatTime(new Date(), 'Asia/Taipei')
+}
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
+})
 
 function formatTime(date: Date, timezone: string): string {
   return new Intl.DateTimeFormat('zh-TW', {
@@ -158,6 +183,10 @@ async function submit() {
   lastCheckin.value = null
   try {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    form.value.hashtags = hashtagInput.value
+      .split(/\s+/)
+      .map(t => t.replace(/^#/, '').trim())
+      .filter(t => t.length > 0)
     await checkinStore.submitCheckin(form.value)
     const latest = checkinStore.checkins[0]
     const now = new Date()
@@ -166,9 +195,10 @@ async function submit() {
       localTime: formatTime(now, timezone),
       timezone,
     }
-    form.value = { message: '', lat: form.value.lat, lng: form.value.lng, locationName: form.value.locationName, timezone: '', photo: null }
+    form.value = { message: '', hashtags: [], lat: form.value.lat, lng: form.value.lng, locationName: form.value.locationName, timezone: '', photo: null }
     previewURL.value = null
     if (fileInput.value) fileInput.value.value = ''
+    hashtagInput.value = ''
   } catch {
     // error 已由 store 處理
   }
@@ -176,6 +206,8 @@ async function submit() {
 
 onMounted(() => {
   getLocation()
+  updateTaiwanTime()
+  timer = setInterval(updateTaiwanTime, 1000)
 })
 </script>
 
@@ -209,12 +241,17 @@ onMounted(() => {
 
   object-fit: cover
 
-input[type="text"]
+input[type="text"],
+textarea
   padding: 8px 12px
   width: 100%
   border: 1px solid #ccc
   border-radius: 8px
   font-size: 14px
+  box-sizing: border-box
+
+textarea
+  resize: vertical
 
 button
   padding: 10px 20px
@@ -235,6 +272,49 @@ button
 .error
   color: red
   font-size: 13px
+
+.hashtag-section
+  display: flex
+  flex-direction: column
+  gap: 8px
+
+.hashtag-tags
+  display: flex
+  flex-wrap: wrap
+  gap: 6px
+
+.hashtag-tag
+  padding: 2px 10px
+  border-radius: 20px
+  background: #e8f5c8
+  color: #5a8000
+  font-size: 13px
+
+.time-card
+  display: flex
+  flex-direction: column
+  padding: 16px
+  border-radius: 12px
+  background: #f5f5f5
+  gap: 8px
+
+.time-row
+  display: flex
+  align-items: center
+  gap: 8px
+
+.time-label
+  color: #888
+  font-size: 12px
+  min-width: 60px
+
+.time-value
+  font-size: 15px
+  font-weight: 600
+
+.time-tz
+  color: #aaa
+  font-size: 12px
 
 .success-card
   display: flex

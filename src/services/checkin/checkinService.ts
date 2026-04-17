@@ -53,6 +53,7 @@ export async function createCheckin(payload: {
   locationName: string
   timezone: string
   message: string
+  hashtags: string[]
 }): Promise<string> {
   const docRef = await addDoc(collection(db, COLLECTION_NAME), {
     ...payload,
@@ -77,7 +78,8 @@ export async function fetchCheckins(): Promise<Checkin[]> {
       lng: data.lng,
       locationName: data.locationName ?? '',
       timezone: data.timezone ?? 'Asia/Taipei',
-      message: data.message,
+      message: data.message ?? '',
+      hashtags: data.hashtags ?? [],
       createdAt: (data.createdAt as Timestamp).toDate(),
     }
   })
