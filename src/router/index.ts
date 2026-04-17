@@ -121,7 +121,7 @@ const routes = [
           title: 'Here Now',
           showBreadcrumb: true,
           breadcrumb: [{ text: 'Here Now' }],
-          hideCards: true,
+          hideFooter: true,
         },
       },
       {

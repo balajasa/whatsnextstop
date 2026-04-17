@@ -20,7 +20,7 @@ export default defineConfig({
         theme_color: '#2d1b69',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: '/whatsnextstop/#/herenow',
         icons: [
           {
             src: 'beanbean.ico',

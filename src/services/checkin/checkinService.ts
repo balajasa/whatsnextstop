@@ -32,9 +32,14 @@ export async function uploadPhoto(file: File): Promise<string> {
     { method: 'POST', body: formData }
   )
 
-  if (!res.ok) throw new Error('照片上傳失敗')
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    console.error('Cloudinary 上傳失敗', res.status, errData)
+    throw new Error('照片上傳失敗')
+  }
 
   const data = await res.json()
+  console.log('Cloudinary 上傳成功', data.secure_url)
   return data.secure_url as string
 }
 
