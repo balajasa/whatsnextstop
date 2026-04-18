@@ -122,7 +122,6 @@ const routes = [
           title: 'Now and Then',
           showBreadcrumb: true,
           breadcrumb: [{ text: 'Now and Then' }],
-          hideFooter: true,
         },
       },
       {
@@ -133,7 +132,6 @@ const routes = [
           title: 'Here Now',
           showBreadcrumb: true,
           breadcrumb: [{ text: 'Here Now' }],
-          hideFooter: true,
         },
       },
       {
