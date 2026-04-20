@@ -1,7 +1,7 @@
 <template>
   <div class="site-footer">
     <div class="copy-section">
-      <div class="copy-text">咖豆旅行社 | 沒有營業，沒有立案，只為作夢</div>
+      <div class="copy-text">咖豆旅行社 | 沒有營業，沒有立案</div>
       <div class="copy-text">© 2026 OolongLatte</div>
     </div>
   </div>

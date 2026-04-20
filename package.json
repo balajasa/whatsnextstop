@@ -19,11 +19,9 @@
     "lodash": "^4.17.21",
     "pinia": "^3.0.3",
     "swiper": "^11.2.8",
-    "vite-plugin-pwa": "^1.2.0",
     "vue": "^3.5.20",
     "vue-gtag": "^3.6.2",
-    "vue-router": "^4.5.1",
-    "workbox-window": "^7.4.0"
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",

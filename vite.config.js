@@ -2,50 +2,11 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-icon.png'],
-      manifest: {
-        name: '咖豆旅行社',
-        short_name: '小毅的遊學日記',
-        description: '記錄旅行足跡',
-        theme_color: '#2d1b69',
-        background_color: '#ffffff',
-        display: 'standalone',
-        start_url: '/whatsnextstop/#/herenow',
-        icons: [
-          {
-            src: 'apple-icon.png',
-            sizes: '180x180',
-            type: 'image/png'
-          }
-        ]
-      },
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,svg}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
-            handler: 'NetworkFirst',
-            options: { cacheName: 'firestore-cache' }
-          },
-          {
-            urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: { cacheName: 'firebase-storage-cache' }
-          }
-        ]
-      }
-    }),
   ],
   base: process.env.NODE_ENV === 'production' ? '/whatsnextstop/' : '/',
   server: {

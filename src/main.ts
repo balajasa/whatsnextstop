@@ -1,13 +1,4 @@
 import { createApp } from 'vue'
-import { registerSW } from 'virtual:pwa-register'
-
-registerSW({
-  onRegisteredSW() {
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload()
-    })
-  }
-})
 import { createPinia } from 'pinia'
 import { createGtag } from 'vue-gtag'
 import App from './App.vue'
