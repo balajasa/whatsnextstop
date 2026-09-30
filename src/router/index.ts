@@ -153,12 +153,10 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to) => {
   const title = to.meta?.title || '暖心的旅程'
   const randomSubtitle = getRandomTitle()
   document.title = `${title} | ${randomSubtitle}`
-
-  next()
 })
 
 const randomTitles = [
