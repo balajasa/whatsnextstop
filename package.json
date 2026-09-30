@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@monster/smeargle": "^1.0.3",
+    "@monster/smeargle": "^1.1.0",
     "@types/leaflet": "^1.9.21",
     "axios": "^1.10.0",
     "firebase": "^12.1.0",

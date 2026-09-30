@@ -42,6 +42,7 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_REPO_OWNER: ${{ secrets.VITE_REPO_OWNER }}
           VITE_REPO_NAME: ${{ secrets.VITE_REPO_NAME }}
+          VITE_CARTO_API_KEY: ${{ secrets.VITE_CARTO_API_KEY }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

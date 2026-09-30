@@ -7,7 +7,12 @@
       <!-- 地圖容器 -->
       <div class="map-container" ref="mapContainer">
         <!-- Smeargle WorldMap -->
-        <WorldMap :visited-countries="visitedCountries" :pins="mapPins" @pin-click="handlePinClick" />
+        <WorldMap
+          :visited-countries="visitedCountries"
+          :pins="mapPins"
+          :tile-api-key="cartoApiKey"
+          @pin-click="handlePinClick"
+        />
 
         <!-- 背景遮罩 -->
         <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
@@ -27,6 +32,8 @@ import InfoPanel from './InfoPanel.vue'
 import { useMapDataConverter, type WorldMapPin } from '@/composables/useMapDataConverter'
 import { useHistoryTripStore } from '@/stores/useHistoryTripStore'
 import type { ProcessedPin } from '../../types/travel-map/travel-map'
+
+const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY
 
 const historyTripStore = useHistoryTripStore()
 const { visitedCountries, mapPins } = useMapDataConverter()
