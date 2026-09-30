@@ -4,12 +4,7 @@
     <BreadcrumbNav />
 
     <!-- 沒有行程時的 Coming Soon 頁面 -->
-    <div v-if="!hasItinerary" class="coming-soon-container">
-      <div class="coming-soon-content">
-        <img src="@/assets/img/sym/cat_soon.png" alt="Coming Soon" class="coming-soon-image" />
-        <p class="coming-soon-description">下一趟旅程正在擲飛鏢決定中...</p>
-      </div>
-    </div>
+    <StateView v-if="!hasItinerary" type="empty" title="下一趟旅程" message="正在擲飛鏢決定中..." class="state-block" />
 
     <!-- 有行程時的完整頁面 -->
     <template v-else>
@@ -64,6 +59,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import StateView from '@/components/common/StateView.vue'
 import { HAS_ITINERARY, ITINERARY_SECTIONS, type SectionConfig } from '@/constants/itinerary'
 
 const route = useRoute()
@@ -222,67 +218,10 @@ onUnmounted(() => {
     max-width: 900px
 
 // ===================================
-// Coming Soon 頁面樣式
+// 沒有行程時
 // ===================================
-.coming-soon-container
-  @include flex-center
-  width: 100%
-  min-height: 80vh
-  padding: $spacing-xl
-  border-radius: $border-radius-md
-  background: $bg-card
-  box-shadow: 0 4px 16px $shadow-light
-
-  @include tablet
-    padding: $spacing-2xl
-    border-radius: $border-radius-lg
-    box-shadow: 0 6px 24px $shadow-medium
-
-.coming-soon-content
-  display: flex
-  align-items: center
-  flex-direction: column
-  text-align: center
-  max-width: 500px
-
-.coming-soon-image
-  width: 200px
-  height: 200px
-  margin-bottom: $spacing-xl
-  object-fit: contain
-  opacity: 0.8
-
-  @include tablet
-    width: 250px
-    height: 250px
-
-  @include desktop
-    width: 300px
-    height: 300px
-
-.coming-soon-title
-  margin-bottom: $spacing-lg
-  color: $text-primary
-  font-weight: 700
-  font-size: 32px
-
-  @include tablet
-    font-size: 40px
-
-  @include desktop
-    font-size: 48px
-
-.coming-soon-description
-  margin: 0
-  color: $text-secondary
-  font-size: 16px
-  line-height: 1.6
-
-  @include tablet
-    font-size: 18px
-
-  @include desktop
-    font-size: 20px
+.state-block
+  margin: $spacing-lg auto
 
 // ===================================
 // 主要內容區域

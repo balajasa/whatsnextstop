@@ -4,25 +4,14 @@
     <BreadcrumbNav />
 
     <!-- 載入狀態 -->
-    <div v-if="loading" class="loading-section">
-      <div class="loading-spinner"></div>
-      <p>載入旅程中...</p>
-    </div>
+    <StateView v-if="loading" type="loading" message="載入旅程中..." class="state-block" />
 
     <!-- 錯誤狀態 -->
-    <div v-if="error" class="error-section">
-      <div class="error-icon">⚠️</div>
-      <p class="error-message">{{ error }}</p>
-      <button @click="loadTrips" class="retry-btn">重試</button>
-    </div>
+    <StateView v-if="error" type="error" :message="error" class="state-block" @action="loadTrips" />
 
     <!-- 旅程列表 -->
     <div v-if="!loading && !error" class="trips-list">
-      <div v-if="trips.length === 0" class="empty-state">
-        <div class="empty-icon">✈️</div>
-        <h3>暫無旅程資料</h3>
-        <p>還沒有建立任何旅程</p>
-      </div>
+      <StateView v-if="trips.length === 0" type="empty" title="還沒有旅程" message="下一趟旅程還在規劃中" />
 
       <div v-else class="trips-grid">
         <div v-for="trip in trips" :key="trip.id" class="trip-card" @click="navigateToTripSpots(trip)">
@@ -47,6 +36,7 @@ import { event } from 'vue-gtag'
 import { getAllTripsWithShortId, generateTripSpotsUrl } from '../../services/spots/tripsService'
 import type { TripWithShortId } from '../../services/spots/tripsService'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import StateView from '@/components/common/StateView.vue'
 
 const router = useRouter()
 
@@ -132,69 +122,13 @@ onMounted(() => {
     padding: 0 $spacing-xl $spacing-xl
 
 // 載入和錯誤狀態
-.loading-section, .error-section
-  text-align: center
+.state-block
   margin-top: $spacing-lg
-  padding: $spacing-xl
-
-  @include tablet
-    margin-top: $spacing-lg
-    padding: $spacing-2xl
-
-.loading-spinner
-  width: 40px
-  height: 40px
-  border: 3px solid rgba($spot-text-primary, 0.1)
-  border-top: 3px solid $spot-text-primary
-  border-radius: 50%
-  animation: spin 1s linear infinite
-  margin: 0 auto $spacing-lg auto
-
-@keyframes spin
-  to
-    transform: rotate(360deg)
-
-.error-icon
-  font-size: 48px
-  margin-bottom: $spacing-lg
-
-.error-message
-  color: $spot-text-primary
-  margin-bottom: $spacing-lg
-
-.retry-btn
-  padding: $spacing-md $spacing-xl
-  background: $spot-text-primary
-  color: white
-  border: none
-  border-radius: $border-radius-md
-  cursor: pointer
-
-  &:hover
-    background: rgba($spot-text-primary, 0.9)
 
 // 旅程列表
 .trips-list
   max-width: 1200px
   margin: 24px auto
-
-.empty-state
-  text-align: center
-  padding: $spacing-xl
-
-  @include tablet
-    padding: $spacing-2xl
-
-  .empty-icon
-    font-size: 64px
-    margin-bottom: $spacing-lg
-
-  h3
-    color: $spot-text-primary
-    margin-bottom: $spacing-md
-
-  p
-    color: rgba($spot-text-primary, 0.6)
 
 .trips-grid
   display: grid

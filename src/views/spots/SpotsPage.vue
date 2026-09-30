@@ -10,25 +10,18 @@
       @clear-filters="clearFilters" />
 
     <!-- 載入狀態 -->
-    <div v-if="loading" class="loading-section">
-      <div class="loading-spinner"></div>
-      <p>載入中...</p>
-    </div>
+    <StateView v-if="loading" type="loading" message="載入景點中..." class="state-block" />
 
     <!-- 錯誤狀態 -->
-    <div v-if="error" class="error-section">
-      <div class="error-icon">⚠️</div>
-      <p class="error-message">{{ error }}</p>
-      <button @click="loadSpots" class="retry-btn">重試</button>
-    </div>
+    <StateView v-if="error" type="error" :message="error" class="state-block" @action="loadSpots" />
 
     <!-- 景點列表 -->
     <div v-if="!loading && !error" class="spots-list">
-      <div v-if="filteredSpots.length === 0" class="empty-state">
-        <div class="empty-icon">🗺️</div>
-        <h3>沒有找到符合條件的景點</h3>
-        <p>試試調整搜尋條件或清除篩選</p>
-      </div>
+      <!-- 有篩選條件時才提供「清除篩選」 -->
+      <StateView v-if="filteredSpots.length === 0" type="empty"
+        :title="hasActiveFilters ? '找不到符合的景點' : '這趟旅程還沒有景點'"
+        :message="hasActiveFilters ? '試試調整搜尋條件' : ''" :action-text="hasActiveFilters ? '清除篩選' : ''"
+        @action="clearFilters" />
 
       <div v-else class="spots-grid">
         <SpotCard v-for="spot in paginatedSpots" :key="spot.id" :spot="spot" class="spot-item" />
@@ -49,6 +42,7 @@ import { event } from 'vue-gtag'
 import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
 import { findTripByShortId } from '../../services/spots/tripsService'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import StateView from '@/components/common/StateView.vue'
 import SpotCard from './SpotCard.vue'
 import SpotsFilter from './SpotsFilter.vue'
 import BasePagination from '../../components/common/BasePagination.vue'
@@ -234,69 +228,13 @@ onMounted(() => {
   margin-top: $spacing-lg
 
 // 載入和錯誤狀態
-.loading-section, .error-section
-  text-align: center
-  margin-top: $spacing-md
-  padding: $spacing-xl
-
-  @include tablet
-    margin-top: $spacing-lg
-    padding: $spacing-2xl
-
-.loading-spinner
-  width: 40px
-  height: 40px
-  border: 3px solid rgba($spot-text-primary, 0.1)
-  border-top: 3px solid $spot-text-primary
-  border-radius: 50%
-  animation: spin 1s linear infinite
-  margin: 0 auto $spacing-lg auto
-
-@keyframes spin
-  to
-    transform: rotate(360deg)
-
-.error-icon
-  font-size: 48px
-  margin-bottom: $spacing-lg
-
-.error-message
-  color: $spot-text-primary
-  margin-bottom: $spacing-lg
-
-.retry-btn
-  padding: $spacing-md $spacing-xl
-  background: $spot-text-primary
-  color: white
-  border: none
-  border-radius: $border-radius-md
-  cursor: pointer
-
-  &:hover
-    background: rgba($spot-text-primary, 0.9)
+.state-block
+  margin-top: $spacing-lg
 
 // 景點列表
 .spots-list
   max-width: 1400px
   margin: $spacing-md auto 0
-
-.empty-state
-  text-align: center
-  padding: $spacing-xl
-
-  @include tablet
-    padding: $spacing-2xl
-
-  .empty-icon
-    font-size: 64px
-    margin-bottom: $spacing-lg
-
-  h3
-    color: $spot-text-primary
-    margin-bottom: $spacing-md
-
-  p
-    color: rgba($spot-text-primary, 0.6)
 
 .spots-grid
   display: grid

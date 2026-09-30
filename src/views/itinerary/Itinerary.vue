@@ -18,11 +18,7 @@
           </div>
 
           <!-- 沒有連結時顯示 Coming Soon -->
-          <div v-else class="coming-soon-container">
-            <div class="coming-soon-content">
-              <div class="coming-soon-image"></div>
-            </div>
-          </div>
+          <StateView v-else type="empty" title="下一趟旅程" message="正在擲飛鏢決定中..." class="state-block" />
 
         </div>
       </section>
@@ -34,6 +30,7 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import StateView from '@/components/common/StateView.vue'
 
 // 控制是否有 iframe 連結的開關
 const hasIframeLink: Ref<boolean> = ref(false) // 設為 false 顯示 Coming Soon，true 顯示 iframe
@@ -183,51 +180,10 @@ const iframeUrl: Ref<string> = ref('')
   margin: 0
 
 // ===================================
-// Coming Soon 容器樣式
+// 沒有行程時
 // ===================================
-.coming-soon-container
-  @include flex-center
-  width: 100%
-  flex: 1 // 填滿剩餘空間
-  border-radius: $border-radius-md
-  background: $bg-card
-  box-shadow: 0 4px 16px $shadow-light
-  padding: $spacing-xl
-
-  @include tablet
-    border-radius: $border-radius-lg
-    box-shadow: 0 6px 24px $shadow-medium
-    padding: $spacing-2xl
-
-  @include desktop
-    border-radius: $border-radius-xl
-    box-shadow: 0 8px 32px $shadow-strong
-
-.coming-soon-content
-  display: flex
-  align-items: center
-  flex-direction: column
-  text-align: center
-  max-width: 400px
-
-.coming-soon-image
-  width: 150px
-  height: 150px
-  margin-bottom: $spacing-lg
-  background-image: url('@/assets/img/sym/cat_soon.png')
-  background-size: contain
-  background-repeat: no-repeat
-  background-position: center
-  opacity: 0.8
-
-  @include tablet
-    width: 200px
-    height: 200px
-    margin-bottom: $spacing-xl
-
-  @include desktop
-    width: 250px
-    height: 250px
+.state-block
+  margin: $spacing-lg auto
 
 // ===================================
 // 特殊情況處理
@@ -238,9 +194,6 @@ const iframeUrl: Ref<string> = ref('')
   .itinerary-container
     padding: $spacing-xs
 
-  .coming-soon-image
-    width: 120px
-    height: 120px
 
 // 橫向手機優化
 @media (max-width: 767px) and (orientation: landscape)
@@ -260,8 +213,7 @@ const iframeUrl: Ref<string> = ref('')
 // ===================================
 
 // 使用 GPU 加速
-.iframe-container,
-.coming-soon-container
+.iframe-container
   will-change: transform
   transform: translateZ(0)
 
@@ -272,6 +224,4 @@ const iframeUrl: Ref<string> = ref('')
   // 提升渲染效能
   will-change: contents
 
-.coming-soon-image
-  loading: lazy
 </style>

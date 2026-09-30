@@ -6,19 +6,34 @@
 
       <!-- 地圖容器 -->
       <div class="map-container" ref="mapContainer">
-        <!-- Smeargle WorldMap -->
-        <WorldMap
-          :visited-countries="visitedCountries"
-          :pins="mapPins"
-          :tile-api-key="cartoApiKey"
-          @pin-click="handlePinClick"
-        />
+        <!-- 旅程資料載入失敗：整塊換成錯誤狀態 -->
+        <div v-if="tripError" class="map-error">
+          <StateView type="error" title="地圖載不出來" :message="tripError" @action="loadTrips" />
+        </div>
 
-        <!-- 背景遮罩 -->
-        <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
+        <template v-else>
+          <!-- Smeargle WorldMap -->
+          <WorldMap
+            :visited-countries="visitedCountries"
+            :pins="mapPins"
+            :tile-api-key="cartoApiKey"
+            @pin-click="handlePinClick"
+          />
 
-        <!-- InfoPanel 元件 -->
-        <InfoPanel v-if="selectedPin" :selected-pin="selectedPin" @close="handlePanelClose" />
+          <!-- 載入中／沒資料：浮在地圖上，不擋住地圖操作 -->
+          <div v-if="tripLoading" class="map-overlay map-overlay--loading">
+            <StateView type="loading" message="載入足跡中..." />
+          </div>
+          <div v-else-if="hasLoaded && visitedCountries.length === 0" class="map-overlay">
+            <StateView type="empty" floating title="還沒有蓋任何章" message="去過的國家會在這裡上色" />
+          </div>
+
+          <!-- 背景遮罩 -->
+          <div v-if="selectedPin" class="panel-backdrop" @click="handlePanelClose"></div>
+
+          <!-- InfoPanel 元件 -->
+          <InfoPanel v-if="selectedPin" :selected-pin="selectedPin" @close="handlePanelClose" />
+        </template>
       </div>
     </div>
   </div>
@@ -27,6 +42,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import StateView from '@/components/common/StateView.vue'
+import { storeToRefs } from 'pinia'
 import { WorldMap } from '@monster/smeargle'
 import InfoPanel from './InfoPanel.vue'
 import { useMapDataConverter, type WorldMapPin } from '@/composables/useMapDataConverter'
@@ -36,6 +53,14 @@ import type { ProcessedPin } from '../../types/travel-map/travel-map'
 const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY
 
 const historyTripStore = useHistoryTripStore()
+const { loading: tripLoading, error: tripError } = storeToRefs(historyTripStore)
+
+// 第一次載入完成前不顯示「沒資料」，避免一打開就閃一下
+const hasLoaded = ref(false)
+const loadTrips = async () => {
+  await historyTripStore.loadAllTrips() // 載入全部資料給地圖使用
+  hasLoaded.value = true
+}
 const { visitedCountries, mapPins } = useMapDataConverter()
 
 // InfoPanel 狀態管理
@@ -88,7 +113,7 @@ const handlePanelClose = () => {
 
 // 生命週期
 onMounted(async () => {
-  await historyTripStore.loadAllTrips()  // 載入全部資料給地圖使用
+  await loadTrips()
 })
 </script>
 
@@ -136,6 +161,37 @@ onMounted(async () => {
     height: 500px
     border-radius: $border-radius-lg
 
+
+// ===================================
+// 載入中、沒資料：浮在地圖上
+// ===================================
+.map-overlay
+  position: absolute
+  inset: 0
+  z-index: $z-mapoverlay
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: $spacing-md
+  // 讓地圖照樣可以拖曳、縮放
+  pointer-events: none
+
+.map-overlay--loading
+  background: rgba($nb-paper, 0.6)
+
+// ===================================
+// 載入失敗：用格線底代替地圖
+// ===================================
+.map-error
+  display: flex
+  align-items: center
+  justify-content: center
+  height: 100%
+  padding: $spacing-md
+  border: 1px solid $nb-line
+  border-radius: inherit
+  background-color: $nb-card
+  background-image: repeating-linear-gradient(0deg, transparent 0 39px, $nb-line 39px 40px), repeating-linear-gradient(90deg, transparent 0 39px, $nb-line 39px 40px)
 
 // ===================================
 // InfoPanel 背景遮罩

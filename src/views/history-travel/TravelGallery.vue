@@ -4,9 +4,10 @@
     <BreadcrumbNav />
 
     <!-- 載入狀態 -->
-    <div v-if="loading" class="loading-container">
-      <div class="loading-text">載入旅程中...</div>
-    </div>
+    <StateView v-if="loading" type="loading" message="載入旅程中..." class="state-block" />
+
+    <!-- 錯誤狀態 -->
+    <StateView v-else-if="error" type="error" :message="error" class="state-block" @action="retry" />
 
     <!-- 旅程卡片列表 -->
     <div v-else class="cards-container">
@@ -15,10 +16,7 @@
         :ref="el => trip.id && setTripCardRef(el, trip.id)" class="gallery-card" />
 
       <!-- 載入更多指示器 -->
-      <div v-if="loadingMore" class="loading-more-container">
-        <div class="loading-more-spinner"></div>
-        <div class="loading-more-text">載入更多旅程中...</div>
-      </div>
+      <StateView v-if="loadingMore" type="loading" size="sm" message="載入更多旅程中..." />
 
       <!-- 已載入完全部資料 -->
       <div v-else-if="!hasMore && trips.length > 0" class="all-loaded-container">
@@ -26,11 +24,7 @@
       </div>
 
       <!-- 空狀態 -->
-      <div v-if="trips.length === 0" class="empty-state">
-        <div class="empty-icon">📸</div>
-        <div class="empty-title">還沒有旅程記錄</div>
-        <div class="empty-subtitle">開始你的第一段旅程吧！</div>
-      </div>
+      <StateView v-if="trips.length === 0" type="empty" title="相簿還是空的" message="等你帶照片回來" />
 
       <!-- 滾動監聽的觸發器 -->
       <div ref="loadMoreTrigger" class="load-more-trigger"></div>
@@ -44,11 +38,12 @@ import { useHistoryTripStore } from '@/stores/useHistoryTripStore'
 import { storeToRefs } from 'pinia'
 import { event } from 'vue-gtag'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import StateView from '@/components/common/StateView.vue'
 import TravelPhotoCard from '../history-travel/TravelPhotoCard.vue'
 
 // Store
 const historyTripStore = useHistoryTripStore()
-const { trips, loading, loadingMore, hasMore } = storeToRefs(historyTripStore)
+const { trips, loading, loadingMore, hasMore, error } = storeToRefs(historyTripStore)
 
 // Template refs
 const loadMoreTrigger = ref<HTMLElement | null>(null)
@@ -145,6 +140,13 @@ const setupInfiniteScroll = async () => {
   scrollObserver.observe(loadMoreTrigger.value)
 }
 
+// 載入失敗時重試
+const retry = async () => {
+  await historyTripStore.loadPhotoTrips()
+  await setupInfiniteScroll()
+  await setupPhotoLazyLoading()
+}
+
 // 初始化載入資料
 onMounted(async () => {
   await historyTripStore.loadPhotoTrips()
@@ -184,24 +186,10 @@ onUnmounted(() => {
     padding: 0 $spacing-xl $spacing-xl
 
 // ===================================
-// 載入狀態
+// 載入、錯誤狀態
 // ===================================
-.loading-container
-  @include flex-center
-  min-height: 200px
-  padding: $spacing-lg 0
-
-  @include tablet
-    min-height: 400px
-    padding: $spacing-xl 0
-
-.loading-text
-  font-size: 16px
-  color: $text-muted
-  text-align: center
-
-  @include tablet
-    font-size: 20px
+.state-block
+  margin-top: $spacing-lg
 
 // ===================================
 // 卡片容器
@@ -216,94 +204,27 @@ onUnmounted(() => {
   @include large-desktop
     max-width: 1000px
 
-// ===================================
-// 空狀態
-// ===================================
-.empty-state
-  text-align: center
-  padding: $spacing-xl 0
-  color: $text-muted
-
-  @include tablet
-    padding: $spacing-2xl 0
-
-.empty-icon
-  font-size: 48px
-  margin-bottom: $spacing-lg
-  opacity: 0.5
-
-  @include tablet
-    font-size: 80px
-
-.empty-title
-  font-size: 18px
-  font-weight: 600
-  margin-bottom: $spacing-sm
-  color: $text-primary
-
-  @include tablet
-    font-size: 20px
-
-.empty-subtitle
-  font-size: 16px
-  opacity: 0.7
-
-  @include tablet
-    font-size: 18px
-
-// ===================================
-// 載入更多狀態
-// ===================================
-.loading-more-container
-  @include flex-center
-  flex-direction: column
-  padding: $spacing-xl 0
-  color: $text-muted
-
-  @include tablet
-    padding: $spacing-2xl 0
-
-.loading-more-spinner
-  width: 24px
-  height: 24px
-  border: 2px solid rgba($accent-color-1, 0.3)
-  border-top: 2px solid $accent-color-1
-  border-radius: 50%
-  animation: spin 1s linear infinite
-  margin-bottom: $spacing-sm
-
-.loading-more-text
-  font-size: 14px
-  text-align: center
-
-  @include tablet
-    font-size: 16px
-
-// 已載入全部
+// 已載入全部：兩側虛線
 .all-loaded-container
-  text-align: center
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 12px
   padding: $spacing-lg 0
-  color: $text-muted
-
+  color: $nb-muted
   @include tablet
     padding: $spacing-xl 0
 
+  &::before, &::after
+    content: ''
+    width: 60px
+    border-top: 2px dashed $nb-dash
+
 .all-loaded-text
   font-size: 14px
-  opacity: 0.7
-
-  @include tablet
-    font-size: 16px
 
 // 滾動觸發器（不可見）
 .load-more-trigger
   height: 10px
   width: 100%
-
-// 載入動畫
-@keyframes spin
-  0%
-    transform: rotate(0deg)
-  100%
-    transform: rotate(360deg)
 </style>
