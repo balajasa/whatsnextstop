@@ -4,8 +4,48 @@
 // ===================================
 
 // 全域字型設定
+// 內文：Noto Sans TC；標題：霞鶩文楷 TC（用 $font-display）
+// 註：!important 是為了蓋過 @monster/smeargle 的 :root 字型設定，smeargle 移除後可拿掉
 :root
-  font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif !important
+  font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif !important
+
+// ===================================
+// 手帳主題（2026 改版）
+// 新元件請一律使用這一區的變數；舊配色保留到各頁遷移完成後再移除
+// ===================================
+
+// 字型
+$font-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif
+$font-display: 'LXGW WenKai TC', 'Noto Sans TC', 'PingFang TC', serif
+
+// 基底
+$nb-paper: #FBF6EC          // 頁面底色：米白紙
+$nb-card: #FFFDF8           // 卡片底色
+$nb-ink: #3A332C            // 主文字
+$nb-muted: #6E6357          // 次要文字
+$nb-line: #E9DFCF           // 卡片邊框
+$nb-dash: #E3D5BF           // 虛線、分隔線
+$nb-footer: #F1E6D3         // 頁尾底色
+$nb-card-shadow: 0 4px 0 #EFE4D2   // 卡片底部厚紙陰影
+$nb-float-shadow: 0 12px 28px rgba(58, 51, 44, 0.14)  // 浮層陰影
+
+// 強調色
+$nb-accent: #B9542B         // 主按鈕、重點數字（陶土橘，白字對比 ≥ 4.5）
+$nb-accent-hover: #8F3E1E
+$nb-tape-yellow: rgba(242, 201, 76, 0.55)   // 紙膠帶：黃
+$nb-tape-blue: rgba(143, 188, 219, 0.55)    // 紙膠帶：藍
+$nb-yellow: #F2C94C
+
+// 分類主題色（導覽色點、頁面標題色條）
+$nb-go: #2F7DB0             // 要去哪裡
+$nb-go-soft: #E4EFF7
+$nb-go-strong: #1F5F8B
+$nb-footprint: #D26A3F      // 踏踏腳印
+$nb-footprint-soft: #F7E3D6
+$nb-footprint-strong: #8F3E1E
+$nb-fun: #C99A1E            // 小小樂趣
+$nb-fun-soft: #F8EDC9
+$nb-fun-strong: #6B520C
 
 // -----------------------------------
 // 主要配色
@@ -226,9 +266,13 @@ $clear-btn-text: #005CAF             // 瑠璃色文字
 // -----------------------------------
 
 // Header
-$header-height: 50px
+$header-height: 56px            // 手機
+$header-height-desktop: 72px    // 平板以上
 $header-bg: $primary-color
 $header-text-color: $text-white
+
+// 手機底部 tab
+$bottom-tab-height: 72px
 
 // Footer
 $footer-height: 180px
@@ -258,6 +302,7 @@ $spacing-2xl: 48px
 
 // Z-index 層級
 $z-header: 1001
+$z-bottom-tab: 1001
 $z-mapoverlay: 800
 $z-overlay: 998
 $z-modal: 990

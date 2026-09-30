@@ -542,7 +542,8 @@ onUnmounted(() => {
   @include flex-center
   position: fixed
   right: $spacing-sm
-  bottom: $spacing-md
+  // 手機要避開底部 tab
+  bottom: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom) + #{$spacing-md})
   z-index: 99
   width: 40px
   height: 40px
