@@ -64,22 +64,12 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
 import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
-
-// 定義區域配置類型
-interface SectionConfig {
-  type: 'info' | 'daily'
-  id: string
-  name: string
-  pages: string[]
-  day?: number
-}
+import { HAS_ITINERARY, ITINERARY_SECTIONS, type SectionConfig } from '@/constants/itinerary'
 
 const route = useRoute()
 
-// 從 URL 參數獲取行程狀態
-const hasItinerary = computed(() => {
-  return route.query.hasItinerary === 'true'
-})
+// 行程開關
+const hasItinerary = HAS_ITINERARY
 
 // 響應式數據
 const showNav: Ref<boolean> = ref(true)
@@ -87,20 +77,8 @@ const navOpen: Ref<boolean> = ref(false)
 const showBackToTop: Ref<boolean> = ref(false)
 const activeSection: Ref<string> = ref('cover')
 
-// 統一的區域配置
-const allSections: Ref<SectionConfig[]> = ref([
-  { type: 'info', id: 'cover', name: '封面', pages: ['page1'] },
-  { type: 'info', id: 'flight', name: '航班資訊', pages: ['page2'] },
-  { type: 'info', id: 'packing', name: '必帶物品', pages: ['page3', 'page4'] },
-  { type: 'info', id: 'map', name: '路線地圖', pages: ['page5'] },
-  { type: 'info', id: 'overview', name: '行程總覽', pages: ['page6'] },
-  { type: 'daily', id: 'day1', day: 1, name: '第1天', pages: ['page7', 'page8'] },
-  { type: 'daily', id: 'day2', day: 2, name: '第2天', pages: ['page9'] },
-  { type: 'daily', id: 'day3', day: 3, name: '第3天', pages: ['page10'] },
-  { type: 'daily', id: 'day4', day: 4, name: '第4天', pages: ['page11'] },
-  { type: 'daily', id: 'day5', day: 5, name: '第5天', pages: ['page12'] },
-  { type: 'daily', id: 'day6', day: 6, name: '第6天', pages: ['page13'] }
-])
+// 統一區域配置
+const allSections: Ref<SectionConfig[]> = ref(ITINERARY_SECTIONS)
 
 // 計算屬性：行程資訊區域
 const infoSections = computed(() =>
@@ -208,14 +186,14 @@ const handleRouteHash = (): void => {
 
 // 在元件載入時執行
 onMounted(() => {
-  if (hasItinerary.value) {
+  if (hasItinerary) {
     window.addEventListener('scroll', handleScroll)
     handleRouteHash() // 處理錨點跳轉
   }
 })
 
 onUnmounted(() => {
-  if (hasItinerary.value) {
+  if (hasItinerary) {
     window.removeEventListener('scroll', handleScroll)
   }
 })
@@ -307,7 +285,7 @@ onUnmounted(() => {
     font-size: 20px
 
 // ===================================
-// 主要內容區域 (原有樣式保持不變)
+// 主要內容區域
 // ===================================
 .itinerary-detail-schedule-content
   width: 100%
@@ -374,7 +352,7 @@ onUnmounted(() => {
       transform: scale(1.02)
 
 // ===================================
-// 浮動導航 (原有樣式保持不變)
+// 浮動導航
 // ===================================
 .itinerary-detail-floating-nav
   position: fixed
@@ -586,7 +564,7 @@ onUnmounted(() => {
       transform: translateY(-2px) scale(1.05)
 
 // ===================================
-// 特殊區塊樣式 (原有樣式保持不變)
+// 特殊區塊樣式
 // ===================================
 
 // 封面區塊

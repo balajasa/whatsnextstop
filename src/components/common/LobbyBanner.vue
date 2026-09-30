@@ -125,16 +125,19 @@ onUnmounted(() => {
   overflow: hidden
   margin-bottom: $spacing-xl
   width: 100%
+  border: 4px solid $nb-card
   border-radius: $border-radius-lg
-  box-shadow: 0 8px 32px $shadow-medium
+  box-shadow: 0 6px 18px rgba(58, 51, 44, 0.12)
   @include tablet
     margin-bottom: $spacing-2xl
+    border-width: 6px
     border-radius: $border-radius-xl
+
 .banner-container
   position: relative
   padding-bottom: 33.33%
   width: 100%
-  background: #f5f5f5
+  background: $nb-paper
 
 .banner-slider
   position: absolute
@@ -152,26 +155,20 @@ onUnmounted(() => {
   opacity: 0
   transition: opacity 0.5s ease-in-out
   pointer-events: none
-
   &.active
     opacity: 1
     pointer-events: auto
-
-.banner-link,
-.banner-image
+.banner-link, .banner-image
   display: block
   width: 100%
   height: 100%
-
   img
     width: 100%
     height: 100%
-
     object-fit: cover
 
 .banner-link
   cursor: pointer
-
   &:hover img
     transition: transform 0.3s ease
     transform: scale(1.02)
@@ -184,7 +181,6 @@ onUnmounted(() => {
   z-index: 10
   display: flex
   transform: translateX(-50%)
-
   gap: $spacing-sm
 
 .indicator
@@ -196,10 +192,8 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.5)
   cursor: pointer
   transition: all 0.3s ease
-
   &:hover
     background: rgba(255, 255, 255, 0.8)
-
   &.active
     background: white
 
@@ -216,19 +210,16 @@ onUnmounted(() => {
   height: 40px
   border: none
   border-radius: 50%
-  background: rgba(0, 0, 0, 0.5)
-  color: white
+  background: rgba(58, 51, 44, 0.55)
+  color: $nb-card
   font-size: 24px
   cursor: pointer
   transition: all 0.3s ease
   transform: translateY(-50%)
-
   &:hover
-    background: rgba(0, 0, 0, 0.7)
-
+    background: rgba(58, 51, 44, 0.75)
   &.arrow-left
     left: $spacing-lg
-
   &.arrow-right
     right: $spacing-lg
 
@@ -236,21 +227,16 @@ onUnmounted(() => {
 @include mobile-tablet
   .banner-container
     padding-bottom: 50%
-
   .arrow
     width: 32px
     height: 32px
     font-size: 20px
-
     &.arrow-left
       left: $spacing-sm
-
     &.arrow-right
       right: $spacing-sm
-
   .banner-indicators
     bottom: $spacing-sm
-
   .indicator
     width: 10px
     height: 10px
@@ -258,7 +244,6 @@ onUnmounted(() => {
 @include mobile-only
   .banner-container
     padding-bottom: 60%
-
   .arrow
     display: none
 </style>

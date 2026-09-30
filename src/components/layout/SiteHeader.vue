@@ -1,9 +1,9 @@
 <template>
   <header class="site-header">
     <div class="site-header__inner">
-      <router-link to="/home" class="brand" aria-label="What's Next Stop 首頁">
+      <router-link to="/home" class="brand" aria-label="What's Next Stop? 首頁">
         <img src="@/assets/img/logo.png" alt="" class="brand__logo" />
-        <span class="brand__name">What's Next Stop</span>
+        <span class="brand__name">What's Next Stop?</span>
       </router-link>
 
       <!-- 桌機／平板：頂部導覽（手機改用底部 tab） -->
@@ -103,23 +103,21 @@ onUnmounted(() => {
   position: sticky
   top: 0
   z-index: $z-header
-  background: $nb-card
   border-bottom: 2px dashed $nb-dash
+  background: $nb-card
 
 .site-header__inner
-  height: $header-height
-  max-width: 1376px
-  margin: 0 auto
-  padding: 0 $spacing-md
   display: flex
   align-items: center
   justify-content: center
-
+  margin: 0 auto
+  padding: 0 $spacing-md
+  max-width: 1376px
+  height: $header-height
   @include tablet
-    height: $header-height-desktop
-    padding: 0 $spacing-lg
     justify-content: space-between
-
+    padding: 0 $spacing-lg
+    height: $header-height-desktop
   @include desktop
     padding: 0 $spacing-xl
 
@@ -128,30 +126,27 @@ onUnmounted(() => {
   display: flex
   align-items: center
   gap: 10px
-  text-decoration: none
   color: $nb-ink
+  text-decoration: none
 
 .brand__logo
   width: 34px
   height: 34px
-
   @include tablet
     width: 44px
     height: 44px
 
 .brand__name
-  font-family: $font-display
+  letter-spacing: 0.5px
   font-weight: 700
   font-size: 20px
-  letter-spacing: 0.5px
-
+  font-family: $font-display
   @include tablet
     font-size: 24px
 
 // 頂部導覽（手機隱藏）
 .top-nav
   display: none
-
   @include tablet
     display: flex
     align-items: center
@@ -164,25 +159,22 @@ onUnmounted(() => {
   display: flex
   align-items: center
   gap: 6px
-  min-height: 44px
   padding: 0 16px
+  min-height: 44px
   border: none
   border-radius: 999px
   background: transparent
   color: $nb-ink
-  font-size: 15px
-  font-weight: 500
   text-decoration: none
+  font-weight: 500
+  font-size: 15px
   cursor: pointer
   transition: background-color 0.2s ease
-
   &:hover
     background: $nb-paper
-
   &:focus-visible
     outline: 2px solid $nb-accent
     outline-offset: 2px
-
   // 首頁（無子項目）的 active：深色膠囊
   &.is-active:not(button)
     background: $nb-ink
@@ -214,8 +206,10 @@ onUnmounted(() => {
 
 .cat-go
   @include category-color($nb-go, $nb-go-soft, $nb-go-strong)
+
 .cat-footprint
   @include category-color($nb-footprint, $nb-footprint-soft, $nb-footprint-strong)
+
 .cat-fun
   @include category-color($nb-fun, $nb-fun-soft, $nb-fun-strong)
 
@@ -224,23 +218,21 @@ onUnmounted(() => {
   position: absolute
   top: 100%
   left: 0
-  min-width: 180px
   z-index: 1
   display: flex
   flex-direction: column
   gap: 2px
-  // 用 padding-top 取代 margin，滑鼠從按鈕移到選單時不會斷掉
   padding-top: 6px
-
+  min-width: 180px
   &::before
-    content: ''
     position: absolute
     inset: 6px 0 0
-    background: $nb-card
+    z-index: -1
     border: 1px solid $nb-line
     border-radius: 14px
+    background: $nb-card
     box-shadow: $nb-float-shadow
-    z-index: -1
+    content: ''
 
 .dropdown__item
   position: relative
@@ -248,14 +240,12 @@ onUnmounted(() => {
   padding: 12px 14px
   border-radius: 10px
   color: $nb-ink
-  font-size: 15px
   text-decoration: none
-
+  font-size: 15px
   &:first-child
     margin-top: 8px
   &:last-child
     margin-bottom: 8px
-
   &:hover
     background: $nb-paper
 </style>

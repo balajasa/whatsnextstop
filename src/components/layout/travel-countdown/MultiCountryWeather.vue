@@ -169,8 +169,8 @@ const checkImageExists = (code: string) => {
 // 右側：天氣區域
 // ===================================
 .weather-section
-  background: rgba(255, 255, 255, 0.7)
-  border: 2px solid $primary-color
+  background: $nb-paper
+  border: 2px solid $nb-dash
   border-radius: 15px
   padding: 4px
   transform: rotate(0.5deg)
@@ -179,18 +179,15 @@ const checkImageExists = (code: string) => {
   height: 100%
   max-height: 100%
   overflow: hidden
-
   @include mobile-only
     padding: 4px
     border-radius: 12px
-
   @include tablet
     padding: 10px
 
 // ===================================
 // 多國天氣按鈕切換樣式
 // ===================================
-
 // 天氣區域有導航按鈕時的布局
 .weather-section-with-navigation
   display: grid
@@ -199,7 +196,6 @@ const checkImageExists = (code: string) => {
   gap: 4px
   height: 100%
   width: 100%
-
   @include tablet
     gap: 6px
 
@@ -212,11 +208,9 @@ const checkImageExists = (code: string) => {
   padding: 4px
   transform: rotate(0.5deg)
   overflow: hidden
-
   @include mobile-only
     gap: 1px
     padding: 2px
-
   @include tablet
     gap: 4px
     padding: 2px
@@ -235,17 +229,14 @@ const checkImageExists = (code: string) => {
   @include flex-center
   transition: all 0.2s ease
   flex-shrink: 0 // 防止按鈕被壓縮
-
   &:hover:not(:disabled)
     background: rgba(255, 255, 255, 0.95)
     color: rgba(0, 0, 0, 0.7)
     border-color: rgba(0, 0, 0, 0.3)
     transform: scale(1.05)
-
   &:disabled
     opacity: 0.2
     cursor: not-allowed
-
   @include tablet
     width: 22px
     height: 22px
@@ -269,20 +260,16 @@ const checkImageExists = (code: string) => {
   width: 100%
   text-align: center
   height: 100%
-
   @include tablet
     gap: 6px
-
   .country-name
     font-size: 14px
     font-weight: 600
-    color: $primary-color
+    color: $nb-ink
     margin-bottom: 2px
-
     @include tablet
       font-size: 16px
       margin-bottom: 4px
-
   .weather-icon
     width: 40px
     height: 40px
@@ -290,40 +277,33 @@ const checkImageExists = (code: string) => {
     background-repeat: no-repeat
     background-position: center
     margin: 2px 0
-
     @include tablet
       width: 60px
       height: 60px
       margin: 4px 0
-
   .weather-temp
     font-size: 16px
     font-weight: 700
-    color: $primary-color
+    color: $nb-ink
     margin: 2px 0
-
     @include tablet
       font-size: 18px
       margin: 4px 0
-
   .weather-desc
     font-size: 12px
-    color: $text-secondary
+    color: $nb-muted
     margin: 1px 0
-
     @include tablet
       font-size: 14px
       margin: 2px 0
-
   .weather-tip
     font-size: 10px
-    color: $text-muted
-    background: rgba(255, 255, 255, 0.7)
+    color: $nb-muted
+    background: $nb-card
     padding: 4px 8px
     border-radius: 6px
-    border: 1px dashed $border-primary
+    border: 1px dashed $nb-dash
     margin-top: 2px
-
     @include tablet
       font-size: 12px
       padding: 6px 10px
@@ -338,47 +318,38 @@ const checkImageExists = (code: string) => {
   gap: 4px
   height: 100%
   text-align: center
-
   @include tablet
     gap: 8px
-
   .weather-icon
     width: 60px
     height: 60px
     background-size: contain
     background-repeat: no-repeat
     background-position: center
-
     @include tablet
       width: 70px
       height: 70px
-
   .weather-temp
     font-size: 18px
     font-weight: 700
-    color: $primary-color
-
+    color: $nb-ink
     @include tablet
       font-size: 22px
-
   .weather-desc
     font-size: 14px
-    color: $text-secondary
+    color: $nb-muted
     text-align: center
-
     @include tablet
       font-size: 18px
-
   .weather-tip
     font-size: 12px
-    color: $text-muted
+    color: $nb-muted
     text-align: center
-    background: rgba(255, 255, 255, 0.7)
+    background: $nb-card
     padding: 6px 12px
     border-radius: 8px
-    border: 1px dashed $border-primary
+    border: 1px dashed $nb-dash
     margin-top: 4px
-
     @include tablet
       font-size: 16px
       padding: 8px 16px
@@ -390,15 +361,13 @@ const checkImageExists = (code: string) => {
 .weather-loading
   @include flex-center
   height: 60px
-
   @include tablet
     height: 100px
 
 .loading-text
   font-size: 12px
-  color: $text-muted
+  color: $nb-muted
   animation: pulse 1.5s ease-in-out infinite
-
   @include tablet
     font-size: 16px
 
@@ -410,9 +379,8 @@ const checkImageExists = (code: string) => {
 
 .placeholder-text
   font-size: 12px
-  color: $text-muted
+  color: $nb-muted
   text-align: center
-
   @include tablet
     font-size: 16px
 

@@ -3,7 +3,7 @@
     <div class="countdown-header">
       <div class="destination-container">
         <span v-if="travelData.countries && travelData.countries.length > 1" class="destination">
-          <span v-for="(country, index) in travelData.countries" :key="country" class="country-item">
+          <span v-for="(country) in travelData.countries" :key="country" class="country-item">
             {{ getCountryFlag(country) }} {{ country }}
           </span>
         </span>
@@ -104,10 +104,6 @@ const getCountdownDigits = () => {
   return days.toString().split('')
 }
 
-// ===================================
-// 生命週期
-// ===================================
-
 onMounted(() => {
   // 每秒更新時間
   timer = setInterval(() => {
@@ -134,11 +130,10 @@ onUnmounted(() => {
   @include flex-center
   flex-direction: column
   background: rgba(255, 255, 255, 0.5)
-  border: 2px dashed $primary-color
+  border: 2px dashed $nb-dash-strong
   border-radius: 15px
   padding: 8px
   position: relative
-
   @include tablet
     padding: 12px
 
@@ -147,18 +142,15 @@ onUnmounted(() => {
   font-size: 16px
   font-weight: 600
   margin-bottom: 8px
-  color: $primary-color
-  border-bottom: 3px dashed $accent-color-1
+  color: $nb-ink
+  border-bottom: 2px dashed rgba($nb-go, 0.5)
   padding-bottom: 4px
   width: 100%
-
   .flag
     font-size: 18px
     margin-right: 6px
-
   .destination
     font-size: 14px
-
     @include tablet
       font-size: 16px
 
@@ -167,15 +159,12 @@ onUnmounted(() => {
 
 .country-item
   margin-right: 20px
-
   &:last-child
     margin-right: 0
-
   @include tablet
     font-size: 18px
     margin-bottom: 12px
     padding-bottom: 6px
-
     .flag
       font-size: 20px
 
@@ -184,7 +173,6 @@ onUnmounted(() => {
   @include flex-center
   flex-direction: column
   gap: 8px
-
   @include tablet
     gap: 10px
 
@@ -193,31 +181,29 @@ onUnmounted(() => {
   gap: 8px
   flex-wrap: wrap
   justify-content: center
-
   @include tablet
     gap: 10px
 
 .countdown-digit
+  font-family: $font-display
   font-size: 28px
   font-weight: 700
-  color: $primary-color
+  color: $nb-accent
+  // 文楷粗體筆畫偏細，加描邊讓數字更有份量
+  -webkit-text-stroke: 1px currentColor
   text-align: center
   border-bottom: 3px solid
   padding-bottom: 2px
   min-width: 28px
   transform: rotate(-0.8deg)
-
   &.digit-color-1
-    border-bottom-color: $accent-color-1
-
+    border-bottom-color: $nb-go
   &.digit-color-2
-    border-bottom-color: $accent-color-2
+    border-bottom-color: $nb-yellow
     transform: rotate(0.8deg)
-
   &.digit-color-3
-    border-bottom-color: $primary-color
+    border-bottom-color: $nb-footprint
     transform: rotate(-0.4deg)
-
   @include tablet
     font-size: 34px
     min-width: 34px
@@ -225,10 +211,9 @@ onUnmounted(() => {
 
 .countdown-label
   font-size: 16px
-  color: $text-secondary
+  color: $nb-muted
   margin-left: 4px
   font-weight: 600
-
   @include tablet
     font-size: 20px
     margin-left: 6px
@@ -237,17 +222,16 @@ onUnmounted(() => {
   @include flex-center
   gap: 8px
   font-size: 12px
-  color: $text-muted
-
+  color: $nb-muted
   @include tablet
     gap: 15px
     font-size: 16px
 
 .time-item
-  background: rgba(255, 255, 255, 0.7)
+  background: $nb-card
   padding: 4px 8px
   border-radius: 8px
-  border: 1px solid $border-light
+  border: 1px solid $nb-line
 
 // ===================================
 // 載入狀態
@@ -255,18 +239,15 @@ onUnmounted(() => {
 .countdown-loading
   @include flex-center
   height: 60px
-
   @include tablet
     height: 100px
 
 .loading-text
   font-size: 12px
-  color: $text-muted
+  color: $nb-muted
   animation: pulse 1.5s ease-in-out infinite
-
   @include tablet
     font-size: 16px
-
 
 // ===================================
 // 動畫
