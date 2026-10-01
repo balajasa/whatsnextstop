@@ -2,19 +2,15 @@
   <div class="trips-page">
     <PageHeader subtitle="點一趟旅程，看看這次要去哪些景點" />
 
-    <!-- 載入狀態 -->
     <StateView v-if="loading" type="loading" message="載入旅程中..." />
 
-    <!-- 錯誤狀態 -->
     <StateView v-if="error" type="error" :message="error" @action="loadTrips" />
 
-    <!-- 旅程列表 -->
     <template v-if="!loading && !error">
       <StateView v-if="trips.length === 0" type="empty" title="還沒有旅程" message="下一趟旅程還在規劃中" />
 
       <ul v-else class="trips-grid">
         <li v-for="trip in trips" :key="trip.id">
-          <!-- 票根造型卡片 -->
           <button type="button" class="ticket" @click="navigateToTripSpots(trip)">
             <span class="ticket__top">
               <span class="ticket__meta">
@@ -59,19 +55,17 @@ import StateView from '@/components/common/StateView.vue'
 
 const router = useRouter()
 
-// 響應式資料
 const trips = ref<TripWithShortId[]>([])
 const loading = ref(true)
 const error = ref('')
 
-// 方法
 const loadTrips = async () => {
   try {
     loading.value = true
     error.value = ''
     trips.value = await getAllTripsWithShortId()
-  } catch (err: any) {
-    error.value = err.message || '載入旅程列表失敗'
+  } catch (err) {
+    error.value = err instanceof Error && err.message ? err.message : '載入旅程列表失敗'
   } finally {
     loading.value = false
   }
@@ -106,21 +100,17 @@ const formatDate = (dateStr: string): string => {
 }
 
 const formatTripDuration = (trip: TripWithShortId): string => {
-  // 如果有 startDate 和 endDate 欄位
   if (trip.startDate && trip.endDate) {
     return `${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}`
   }
 
-  // 只有開始日期
   if (trip.startDate) {
     return `${formatDate(trip.startDate)} - 結束日期未定`
   }
 
-  // 都沒有的話，顯示規劃狀態
   return "日期尚未決定"
 }
 
-// 天數（含頭尾）
 const getDays = (trip: TripWithShortId): number | null => {
   if (!trip.startDate || !trip.endDate) return null
   const start = new Date(trip.startDate).getTime()
@@ -135,7 +125,6 @@ const getYear = (trip: TripWithShortId): string => {
   return Number.isNaN(year) ? '日期未定' : String(year)
 }
 
-// 最近一趟還沒出發的旅程，標上「即將出發」
 const upcomingTripId = computed(() => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -145,7 +134,6 @@ const upcomingTripId = computed(() => {
   return upcoming[0]?.id ?? null
 })
 
-// 生命週期
 onMounted(() => {
   loadTrips()
 })

@@ -7,7 +7,6 @@ import { ref, computed } from 'vue'
 import weatherService from '../services/next-travel/weatherService'
 import { getCityCoordinates } from '../services/next-travel/cityCoordinatesService'
 import { getUpcomingTripsForFrontend, type FrontendTravelConfig } from '../services/next-travel/nextTravelService'
-import { countryTranslation } from '../translation/composables/countryTranslation'
 import type {
   WeatherData,
   CountdownData,
@@ -28,11 +27,9 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   const countdownData = ref<CountdownData | null>(null)
   const coordinates = ref<Coordinates | null>(null)
 
-  // 新增：動態配置資料（支援多筆）
   const travelConfigs = ref<FrontendTravelConfig[]>([])
   const travelConfig = ref<FrontendTravelConfig | null>(null) // 保留單一資料兼容性
 
-  // 新增：每筆旅行的天氣資料（獨立儲存）
   const travelWeatherMap = ref<Map<number, WeatherData | MultiCountryWeatherData>>(new Map())
 
   const loading = ref<LoadingState>({
@@ -94,10 +91,6 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
       showWeather: false
     }
   })
-
-  // ===================================
-  // 動作 (Actions)
-  // ===================================
 
   // 計算倒數資料
   function calculateCountdown(tripDate: string): CountdownData {
@@ -185,14 +178,12 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
     }
 
     loading.value.weather = true
-    const { getCountryFlag } = countryTranslation()
 
     try {
 
       const multiWeatherData = await weatherService.fetchMultiCountryWeatherData(
         countries,
-        getCityCoordinates,
-        getCountryFlag
+        getCityCoordinates
       )
 
       if (multiWeatherData) {
@@ -219,8 +210,6 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   async function loadAllTravelWeatherData() {
     if (travelConfigs.value.length === 0) return
 
-    const { getCountryFlag } = countryTranslation()
-
     // 並行載入所有旅行的天氣
     const weatherPromises = travelConfigs.value.map(async (travel, index) => {
       try {
@@ -228,8 +217,7 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
           // 多國旅行
           const multiWeatherData = await weatherService.fetchMultiCountryWeatherData(
             travel.countries,
-            getCityCoordinates,
-            getCountryFlag
+            getCityCoordinates
           )
           if (multiWeatherData) {
             travelWeatherMap.value.set(index, multiWeatherData)
@@ -256,44 +244,35 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   async function initializeFromBackend() {
     try {
 
-      // 重置狀態
       reset()
 
-      // 1. 嘗試從後台載入多筆資料
       const backendDataList = await getUpcomingTripsForFrontend()
 
       if (backendDataList.length > 0) {
 
-        // 存儲多筆資料
         travelConfigs.value = backendDataList
 
-        // 為了向後兼容，將第一筆設為主要配置
         travelConfig.value = backendDataList[0]
 
-        // 2. 載入所有旅行的天氣資料（並行處理）
         await Promise.all([
-          loadAllTravelWeatherData(), // 載入所有旅行的天氣
+          loadAllTravelWeatherData(),
           new Promise<void>(resolve => {
             updateCountdown(backendDataList[0].tripDate)
             resolve()
           })
         ])
 
-        // 3. 設定第一筆旅行的主要天氣資料（向後兼容）
         const firstTravelWeather = getTravelWeather(0)
         if (firstTravelWeather) {
           if ('countries' in firstTravelWeather) {
-            // 多國天氣
             multiCountryWeatherData.value = firstTravelWeather as MultiCountryWeatherData
             weatherData.value = (firstTravelWeather as MultiCountryWeatherData).primaryWeather
           } else {
-            // 單國天氣
             weatherData.value = firstTravelWeather as WeatherData
           }
         }
 
       } else {
-
         // 沒有後台資料時清空狀態
         console.warn('沒有找到任何旅行配置資料')
         travelConfigs.value = []
@@ -313,9 +292,7 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   }
 
 
-  // 原有的初始化函數 (保留兼容性)
   async function initialize(tripDate: string, coords: Coordinates) {
-    // 同時載入天氣和計算倒數
     await Promise.all([
       loadWeatherData(coords),
       new Promise<void>(resolve => {
@@ -325,7 +302,6 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
     ])
   }
 
-  // 重置所有資料
   function reset() {
     weatherData.value = null
     multiCountryWeatherData.value = null // 新增清除多國天氣
@@ -344,7 +320,6 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
     }
   }
 
-  // 刷新天氣資料
   async function refreshWeather() {
     if (coordinates.value) {
       await loadWeatherData(coordinates.value)
@@ -353,24 +328,6 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
     }
   }
 
-  // 手動更新目的地 (可選功能)
-  async function updateDestination(newDestination: string) {
-
-    try {
-      const coords = await getCityCoordinates(newDestination)
-      coordinates.value = coords
-
-      // 重新載入天氣
-      await loadWeatherData(coords)
-
-    } catch (err) {
-      console.error('目的地更新失敗:', err)
-      error.value = {
-        hasError: true,
-        message: '目的地更新失敗'
-      }
-    }
-  }
 
   // ===================================
   // 回傳 Store
@@ -379,12 +336,12 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
   return {
     // 狀態
     weatherData,
-    multiCountryWeatherData, // 新增：多國天氣資料
+    multiCountryWeatherData,
     countdownData,
     coordinates,
-    travelConfigs, // 新增：多筆資料
+    travelConfigs,
     travelConfig,
-    travelWeatherMap, // 新增：旅行天氣對應表
+    travelWeatherMap,
     loading,
     error,
 
@@ -392,25 +349,24 @@ export const useTravelCountdownStore = defineStore('travelCountdown', () => {
     state,
     config,
     hasWeatherData,
-    hasMultiCountryWeatherData, // 新增：檢查多國天氣
+    hasMultiCountryWeatherData,
     hasCountdownData,
-    hasMultipleTravels, // 新增：是否有多筆資料
+    hasMultipleTravels,
     isLoading,
 
     // 工具函數
-    getTravelWeather, // 新增：取得特定旅行天氣
-    hasTravelWeather, // 新增：檢查特定旅行天氣
+    getTravelWeather,
+    hasTravelWeather,
 
     // 動作
     calculateCountdown,
     updateCountdown,
     loadWeatherData,
-    loadMultiCountryWeatherData, // 新增：載入多國天氣
-    loadAllTravelWeatherData, // 新增：載入所有旅行天氣
-    initializeFromBackend, // 新的主要初始化函數
-    initialize, // 原有函數 (兼容性)
+    loadMultiCountryWeatherData,
+    loadAllTravelWeatherData,
+    initializeFromBackend,
+    initialize,
     reset,
-    refreshWeather,
-    updateDestination // 新增功能
+    refreshWeather
   }
 })

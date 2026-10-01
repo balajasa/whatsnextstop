@@ -7,7 +7,6 @@ import {
   getDocs,
   query,
   orderBy,
-  where,
   Timestamp
 } from 'firebase/firestore'
 import { db } from '../../firebase'
@@ -52,9 +51,8 @@ export async function getPublishedJournals(): Promise<HistoryJournal[]> {
   }
 }
 
-/**
- * 取得所有旅程回顧（包含未發布，管理後台用）
- */
+
+// 取得所有旅程回顧（包含未發布，管理後台用）
 export async function getAllJournals(): Promise<HistoryJournal[]> {
   try {
     const q = query(

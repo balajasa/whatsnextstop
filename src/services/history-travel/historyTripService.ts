@@ -10,10 +10,7 @@ const COLLECTION_NAME = 'history_trips'
  * 提供從 Firebase Firestore 讀取旅程資料的功能
  */
 export class HistoryTripService {
-  /**
-   * 獲取所有歷史旅程資料
-   * @returns Promise<HistoryTrip[]>
-   */
+// 獲取所有歷史旅程資料
   static async fetchAllTrips(): Promise<HistoryTrip[]> {
     try {
       const tripsRef = collection(db, COLLECTION_NAME)
@@ -26,16 +23,12 @@ export class HistoryTripService {
       }))
 
       return trips
-    } catch (error) {
+    } catch {
       throw new Error('無法載入旅程資料，請檢查網路連線或重試')
     }
   }
 
-  /**
-   * 根據 ID 獲取單一旅程
-   * @param id - 旅程 ID
-   * @returns Promise<HistoryTrip | null>
-   */
+  // 根據 ID 獲取單一旅程
   static async fetchTripById(id: string): Promise<HistoryTrip | null> {
     try {
       const docRef = doc(db, COLLECTION_NAME, id)
@@ -55,11 +48,7 @@ export class HistoryTripService {
     }
   }
 
-  /**
-   * 根據年份獲取旅程
-   * @param year - 年份 (如: 2024)
-   * @returns Promise<HistoryTrip[]>
-   */
+  // 根據年份獲取旅程
   static async fetchTripsByYear(year: number): Promise<HistoryTrip[]> {
     try {
       const tripsRef = collection(db, COLLECTION_NAME)
@@ -86,11 +75,7 @@ export class HistoryTripService {
     }
   }
 
-  /**
-   * 獲取最近的 N 筆旅程
-   * @param limitCount - 限制筆數
-   * @returns Promise<HistoryTrip[]>
-   */
+  // 獲取最近的 N 筆旅程
   static async fetchRecentTrips(limitCount: number = 10): Promise<HistoryTrip[]> {
     try {
       const tripsRef = collection(db, COLLECTION_NAME)
@@ -109,10 +94,7 @@ export class HistoryTripService {
     }
   }
 
-  /**
-   * 獲取所有不重複的國家列表
-   * @returns Promise<string[]>
-   */
+  //  獲取所有不重複的國家列表
   static async fetchAllCountries(): Promise<string[]> {
     try {
       const trips = await this.fetchAllTrips()
@@ -130,10 +112,7 @@ export class HistoryTripService {
     }
   }
 
-  /**
-   * 獲取所有年份列表
-   * @returns Promise<number[]>
-   */
+  // 獲取所有年份列表
   static async fetchAllYears(): Promise<number[]> {
     try {
       const trips = await this.fetchAllTrips()

@@ -6,7 +6,7 @@
       <router-view />
     </main>
 
-    <Footer />
+    <SiteFooter />
     <BottomTab />
   </div>
 </template>
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import SiteHeader from '@/components/layout/SiteHeader.vue'
 import BottomTab from '@/components/layout/BottomTab.vue'
-import Footer from '@/components/layout/Footer.vue'
+import SiteFooter from '@/components/layout/SiteFooter.vue'
 </script>
 
 <style lang="sass" scoped>

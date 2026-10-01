@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, nextTick, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, nextTick, reactive, type ComponentPublicInstance } from 'vue'
 import { useHistoryTripStore } from '@/stores/useHistoryTripStore'
 import { storeToRefs } from 'pinia'
 import { event } from 'vue-gtag'
@@ -56,22 +56,19 @@ let scrollObserver: IntersectionObserver | null = null // 用於無限滾動
 let photoObserver: IntersectionObserver | null = null // 用於照片懶加載
 
 // 設置卡片 ref
-const setTripCardRef = (el: any, tripId: string) => {
+const setTripCardRef = (el: Element | ComponentPublicInstance | null, tripId: string) => {
   if (el && tripId) {
-    // Vue 3 中 el 可能是元件實例或 DOM 元素
-    const element = el.$el || el
+    const element = (el instanceof Element ? el : el.$el) as HTMLElement
     tripCardRefs.value.set(tripId, element)
   } else if (!el && tripId) {
-    // 當元素被銷毀時，清理 ref
     tripCardRefs.value.delete(tripId)
   }
 }
 
 // 設置照片懶加載
 const setupPhotoLazyLoading = async () => {
-  await nextTick() // 等待 DOM 更新
+  await nextTick()
 
-  // 清理舊的 observer
   if (photoObserver) {
     photoObserver.disconnect()
   }
@@ -80,14 +77,13 @@ const setupPhotoLazyLoading = async () => {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          // 找到對應的旅程 ID
           const tripElement = entry.target as HTMLElement
           const tripId = Array.from(tripCardRefs.value.entries())
-            .find(([_, element]) => element === tripElement)?.[0]
+            .find(([, element]) => element === tripElement)?.[0]
 
           if (tripId && !photoLoadingStates[tripId]) {
             photoLoadingStates[tripId] = true
-            // 停止觀察這個元素，因為照片已經開始載入
+
             photoObserver?.unobserve(entry.target)
           }
         }
@@ -107,14 +103,13 @@ const setupPhotoLazyLoading = async () => {
 
 // 設置無限滾動
 const setupInfiniteScroll = async () => {
-  await nextTick() // 等待 DOM 更新
+  await nextTick()
 
   if (!loadMoreTrigger.value) return
 
   scrollObserver = new IntersectionObserver(
     (entries) => {
       const entry = entries[0]
-      // 當觸發器進入視窗且還有更多資料時，載入更多
       if (entry.isIntersecting && hasMore.value && !loadingMore.value) {
         // GA4 追蹤：載入更多旅程
         event('load_more_trips', {
@@ -139,21 +134,18 @@ const setupInfiniteScroll = async () => {
   scrollObserver.observe(loadMoreTrigger.value)
 }
 
-// 載入失敗時重試
 const retry = async () => {
   await historyTripStore.loadPhotoTrips()
   await setupInfiniteScroll()
   await setupPhotoLazyLoading()
 }
 
-// 初始化載入資料
 onMounted(async () => {
   await historyTripStore.loadPhotoTrips()
   await setupInfiniteScroll()
   await setupPhotoLazyLoading()
 })
 
-// 清理
 onUnmounted(() => {
   if (scrollObserver) {
     scrollObserver.disconnect()

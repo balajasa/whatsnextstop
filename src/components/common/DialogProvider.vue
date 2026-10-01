@@ -32,7 +32,7 @@
 
           <component v-else-if="dialog.type === 'custom'" :is="getCustomComponent(dialog)"
             v-bind="getCustomProps(dialog)" :visible="dialog.visible"
-            @confirm="(result: any) => handleConfirm(dialog.id, result)" @cancel="handleCancel(dialog.id)"
+            @confirm="(result: unknown) => handleConfirm(dialog.id, result)" @cancel="handleCancel(dialog.id)"
             @close="handleClose(dialog.id)" />
 
         </div>
@@ -75,8 +75,8 @@ const getCancelText = (dialog: DialogInstance): string => {
 }
 
 const canCloseOnOverlay = (dialog: DialogInstance): boolean => {
-  const options = dialog.options as any
-  return options.closeOnOverlay !== false
+  // 三種對話框選項都有 closeOnOverlay
+  return dialog.options.closeOnOverlay !== false
 }
 
 const getCustomComponent = (dialog: DialogInstance) => {
@@ -85,7 +85,7 @@ const getCustomComponent = (dialog: DialogInstance) => {
 }
 
 
-const getCustomProps = (dialog: DialogInstance): Record<string, any> => {
+const getCustomProps = (dialog: DialogInstance): Record<string, unknown> => {
   const options = dialog.options as CustomDialogOptions
   return options.props || {}
 }

@@ -115,42 +115,6 @@ $large: 1280px
   left: 50%
   transform: translate(-50%, -50%)
 
-// -----------------------------------
-// 側邊欄專用 Mixins
-// -----------------------------------
-
-// 側邊欄覆蓋層
-@mixin sidebar-overlay
-  position: fixed
-  top: 0
-  left: 0
-  width: 100vw
-  height: 100vh
-  background: rgba(0, 0, 0, 0.3)
-  z-index: 1001
-  opacity: 0
-  visibility: hidden
-  transition: all 0.3s ease-in-out
-
-  &.active
-    opacity: 1
-    visibility: visible
-
-// 側邊欄基本樣式
-@mixin sidebar-base
-  position: fixed
-  top: 0
-  left: 0
-  height: 100vh
-  background: var(--bg-sidebar)
-  z-index: 1002
-  transform: translateX(-100%)
-  transition: transform 0.3s ease-in-out
-  overflow-y: auto
-
-  &.active
-    transform: translateX(0)
-
 // ===================================
 // 圖示相關 Mixins 和變數
 // ===================================

@@ -80,7 +80,7 @@ const colors: string[] = [
   '#CA6924'  // 琥珀 (KOHAKU) - 味噌湯
 ]
 
-const getWheelItemStyle = (index: number): Record<string, any> => {
+const getWheelItemStyle = (index: number): Record<string, string> => {
   const sectionAngle = 360 / wheelItems.value.length
   const startAngle = sectionAngle * index
   const endAngle = sectionAngle * (index + 1)

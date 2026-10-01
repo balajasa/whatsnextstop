@@ -8,6 +8,7 @@ import { storeToRefs } from 'pinia'
 import { countryTranslation } from '@/translation/composables/countryTranslation'
 import { getManualCoordinates, getCountryCoordinatesFromGeoJSON } from '@/translation/constants/mapCoordinates'
 import type { HistoryTrip } from '@/types/history-travel/travel-history'
+import type { FeatureCollection } from 'geojson'
 
 // WorldMapPin 類型定義
 export interface WorldMapPin {
@@ -28,7 +29,7 @@ export function useMapDataConverter() {
   const { getCountryInfo } = countryTranslation()
 
   // 載入 GeoJSON 世界地圖資料
-  const worldData = ref<any>(null)
+  const worldData = ref<FeatureCollection | null>(null)
 
   const loadWorldData = async () => {
     if (worldData.value) return
@@ -129,7 +130,7 @@ export function useMapDataConverter() {
   /**
    * 當 GeoJSON 地圖資料載入後，重新計算缺少的座標
    */
-  const updatePinsWithGeoJSON = (worldData: any): WorldMapPin[] => {
+  const updatePinsWithGeoJSON = (worldData: FeatureCollection | null): WorldMapPin[] => {
     if (!allTrips.value.length) return []
 
     const countryGroups: Record<string, HistoryTrip[]> = {}

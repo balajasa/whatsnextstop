@@ -2,7 +2,6 @@
   <article class="travel-photo-card" :class="`tape-${tapeIndex}`" :style="{ '--tilt': `${tilt}deg` }">
     <span class="tape" aria-hidden="true"></span>
 
-    <!-- 頂部：國旗 + 旅程名稱 -->
     <header class="card-header">
       <span class="country-flag" aria-hidden="true">{{ getCountryFlag(trip.destinations[0].country) }}</span>
       <h2 class="trip-title">{{ trip.title }}</h2>
@@ -10,36 +9,31 @@
 
     <!-- 照片區域 -->
     <div class="photo-section">
-      <!-- 載入中 -->
       <div v-if="isInitialLoading" class="photo-loading">
         <StateView type="loading" size="sm" message="載入照片中..." />
       </div>
 
-      <!-- 沒有照片時顯示國旗 -->
       <div v-else-if="hasNoPhotos" class="photo-placeholder">
         <span class="country-flag-large" aria-hidden="true">{{ getCountryFlag(trip.destinations[0].country) }}</span>
         <span class="no-photos-text">暫無照片</span>
       </div>
 
-      <!-- 有照片時顯示滑動區域 -->
       <div v-else class="photo-container">
-        <swiper ref="swiperRef" :slides-per-view="1" :space-between="0" :pagination="{
+        <swiper :slides-per-view="1" :space-between="0" :pagination="{
           clickable: true,
           dynamicBullets: false
-        }" :keyboard="{ enabled: true }" :modules="[Pagination, Keyboard]" @slide-change="onSlideChange"
-          class="photo-swiper">
+        }" :keyboard="{ enabled: true }" :modules="[Pagination, Keyboard]" @swiper="onSwiper"
+          @slide-change="onSlideChange" class="photo-swiper">
           <swiper-slide v-for="(photo, index) in displayedPhotos" :key="index" class="photo-slide">
             <div class="photo-img" :style="{ backgroundImage: `url(${photo})` }" role="img"
               :aria-label="`${trip.title} 第 ${index + 1} 張照片`"></div>
           </swiper-slide>
 
-          <!-- 載入更多指示器 -->
           <swiper-slide v-if="isLoadingMore" class="loading-slide">
             <StateView type="loading" size="sm" message="載入更多照片中..." />
           </swiper-slide>
         </swiper>
 
-        <!-- 左右切換按鈕 -->
         <button v-if="displayedPhotos.length > 1" type="button" class="nav-btn nav-btn--prev" aria-label="上一張"
           :disabled="currentSlide === 0" @click="goToPrevSlide">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -55,12 +49,10 @@
           </svg>
         </button>
 
-        <!-- 照片計數 -->
         <span class="photo-count">{{ currentSlide + 1 }}/{{ photos.length }}</span>
       </div>
     </div>
 
-    <!-- 底部：城市標籤 + 日期 -->
     <footer class="card-footer">
       <ul class="cities">
         <li v-for="city in getCities(trip)" :key="city" class="city-tag">{{ city }}</li>
@@ -71,20 +63,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, shallowRef, computed, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination, Keyboard } from 'swiper/modules'
+import type { Swiper as SwiperClass } from 'swiper/types'
 import { event } from 'vue-gtag'
 import { PhotoService } from '@/services/photos/photoService'
 import { countryTranslation } from '@/translation/composables/countryTranslation'
 import type { HistoryTrip } from '@/types/history-travel/travel-history'
 import StateView from '@/components/common/StateView.vue'
-
-// Swiper CSS
 import 'swiper/css'
 import 'swiper/css/pagination'
 
-// Props
 interface TravelPhotoCardProps {
   trip: HistoryTrip
   shouldLoadPhotos?: boolean // 是否應該載入照片，用於懶加載控制
@@ -92,14 +82,13 @@ interface TravelPhotoCardProps {
 
 const { trip, shouldLoadPhotos = false } = defineProps<TravelPhotoCardProps>()
 
-// Composables
 const { getCountryFlag } = countryTranslation()
 
-// 響應式資料
 const photos = ref<string[]>([])
 const displayedPhotos = ref<string[]>([])
 const currentSlide = ref(0)
-const swiperRef = ref<any>(null)
+
+const swiperInstance = shallowRef<SwiperClass | null>(null)
 const isLoadingMore = ref(false)
 const isInitialLoading = ref(true)
 const hasNoPhotos = ref(false)
@@ -111,12 +100,10 @@ const seed = computed(() =>
 const tilt = computed(() => ((seed.value % 5) - 2) * 0.4)
 const tapeIndex = computed(() => seed.value % 3)
 
-// 常數設定
 const INITIAL_LOAD_COUNT = 10
-const PRELOAD_TRIGGER_OFFSET = 3 // 距離末尾3張時開始預載
-const BATCH_SIZE = 5 // 每次預載5張
+const PRELOAD_TRIGGER_OFFSET = 3
+const BATCH_SIZE = 5
 
-// 載入照片
 const loadPhotos = async () => {
   try {
     isInitialLoading.value = true
@@ -134,7 +121,6 @@ const loadPhotos = async () => {
       hasNoPhotos.value = true
       displayedPhotos.value = []
     } else {
-      // 初始只顯示前10張
       displayedPhotos.value = validPhotoUrls.slice(0, INITIAL_LOAD_COUNT)
     }
 
@@ -146,7 +132,6 @@ const loadPhotos = async () => {
   }
 }
 
-// 智慧預載更多照片
 const preloadMorePhotos = async () => {
   if (isLoadingMore.value || displayedPhotos.value.length >= photos.value.length) {
     return
@@ -154,7 +139,6 @@ const preloadMorePhotos = async () => {
 
   isLoadingMore.value = true
 
-  // 模擬載入延遲，避免載入太快
   await new Promise(resolve => setTimeout(resolve, 500))
 
   const currentCount = displayedPhotos.value.length
@@ -163,10 +147,8 @@ const preloadMorePhotos = async () => {
   displayedPhotos.value = [...displayedPhotos.value, ...nextBatch]
   isLoadingMore.value = false
 
-  // console.log(`預載完成，目前顯示 ${displayedPhotos.value.length}/${photos.value.length} 張照片`)
 }
 
-// 檢查是否需要預載
 const checkPreload = () => {
   const remaining = displayedPhotos.value.length - currentSlide.value
   if (remaining <= PRELOAD_TRIGGER_OFFSET && !isLoadingMore.value) {
@@ -174,7 +156,6 @@ const checkPreload = () => {
   }
 }
 
-// 格式化日期範圍
 const formatDateRange = (trip: HistoryTrip): string => {
   const startDate = new Date(trip.date.startDate)
   const endDate = new Date(trip.date.endDate)
@@ -189,7 +170,6 @@ const formatDateRange = (trip: HistoryTrip): string => {
   const startStr = formatSingleDate(startDate)
   const endStr = formatSingleDate(endDate)
 
-  // 如果是同一天，只顯示一個日期
   if (startStr === endStr) {
     return startStr
   }
@@ -197,14 +177,16 @@ const formatDateRange = (trip: HistoryTrip): string => {
   return `${startStr} - ${endStr}`
 }
 
-// 取得城市列表
 const getCities = (trip: HistoryTrip): string[] => {
   const allCities = trip.destinations.flatMap(dest => dest.cities)
   return [...new Set(allCities)]
 }
 
-// 滑動切換事件
-const onSlideChange = (swiper: any) => {
+const onSwiper = (swiper: SwiperClass) => {
+  swiperInstance.value = swiper
+}
+
+const onSlideChange = (swiper: SwiperClass) => {
   currentSlide.value = swiper.activeIndex
 
   // GA4 追蹤：照片瀏覽
@@ -217,41 +199,21 @@ const onSlideChange = (swiper: any) => {
     device: window.innerWidth < 768 ? 'mobile' : 'desktop'
   })
 
-  // 檢查是否需要預載更多照片
   checkPreload()
 }
 
-// 取得 Swiper 實例
-const getSwiperInstance = () => {
-  if (!swiperRef.value) return null
-
-  // 嘗試不同的 Swiper 實例訪問方式
-  return swiperRef.value.$el?.swiper ||
-    swiperRef.value.swiper ||
-    swiperRef.value
-}
-
-// 切換到上一張
 const goToPrevSlide = () => {
-  const swiper = getSwiperInstance()
-  if (swiper && typeof swiper.slidePrev === 'function' && currentSlide.value > 0) {
-    swiper.slidePrev()
-  } else {
-    console.warn('Swiper slidePrev not available:', swiper)
+  if (swiperInstance.value && currentSlide.value > 0) {
+    swiperInstance.value.slidePrev()
   }
 }
 
-// 切換到下一張
 const goToNextSlide = () => {
-  const swiper = getSwiperInstance()
-  if (swiper && typeof swiper.slideNext === 'function' && currentSlide.value < displayedPhotos.value.length - 1) {
-    swiper.slideNext()
-  } else {
-    console.warn('Swiper slideNext not available:', swiper)
+  if (swiperInstance.value && currentSlide.value < displayedPhotos.value.length - 1) {
+    swiperInstance.value.slideNext()
   }
 }
 
-// 監聽是否應該載入照片
 watch(() => shouldLoadPhotos, (newValue) => {
   if (newValue && photos.value.length === 0) {
     loadPhotos()
@@ -370,7 +332,6 @@ watch(() => shouldLoadPhotos, (newValue) => {
   justify-content: center
   background: rgba($nb-paper, 0.95)
 
-// 左右切換（平板以上）
 .nav-btn
   display: none
 
