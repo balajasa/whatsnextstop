@@ -1,246 +1,58 @@
 // ===================================
 // _variables.sass
-// 旅遊足跡網站配色主題 + 佈局變數
+// 手帳主題配色 + 佈局變數
 // ===================================
 
-// 全域字型設定
-:root
-  font-family: 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif !important
-
-// -----------------------------------
-// 主要配色
-// -----------------------------------
-$primary-color: #4a5568 // 主色：藍灰色（Header、Footer、國家名稱）
-$primary-hover: #2d3748 // 主色 hover：深灰色
-$accent-color-1: #38b2ac // 輔助色1：青綠色（城市標籤）
-$accent-color-2: #e6a86b // 輔助色2：溫暖橘色（造訪次數、裝飾）
-
-// -----------------------------------
-// 背景色系
-// -----------------------------------
-$bg-primary: #f5f7fa // 主背景：淺藍白
-$bg-sidebar: #e8f2f1 // 側邊欄背景：淺青綠
-$bg-sidebar-desktop: rgba(232, 242, 241, 0.95) // 桌面版側邊欄（含透明度）
-$bg-card: #ffffff // 卡片背景：純白
-$bg-stats: #ffffff // 統計卡片背景：純白
-
-// -----------------------------------
-// 文字色系
-// -----------------------------------
-$text-primary: #2d3748 // 主文字：深灰
-$text-secondary: #4a5568 // 次要文字：藍灰
-$text-tertiary: #a0aec0 // 第三級文字：淺灰
-$text-muted: #718096 // 淡化文字：中灰
-$text-light: #a0aec0 // 淺色文字：淺灰
-$text-white: #ffffff // 白色文字
-
-// -----------------------------------
-// 邊框色系
-// -----------------------------------
-$border-primary: #c1d4d2 // 主邊框：淺青綠
-$border-light: #e2e8f0 // 淺色邊框：淺灰
-$border-muted: #f1f5f9 // 極淺邊框：極淺灰
-
-// -----------------------------------
-// 狀態色系
-// -----------------------------------
-$state-muted: #e2e8f0 // 淡化狀態：淺灰（造訪次數背景）
-$state-muted-text: #718096 // 淡化文字：中灰
-
-// -----------------------------------
-// 時間線色系
-// -----------------------------------
-$timeline-recent: #e6a86b // 最新：溫暖橘色
-$timeline-medium: #38b2ac // 中期：青綠色
-$timeline-old: #cbd5e0 // 較舊：淺灰色
-
-// -----------------------------------
-// 城市標籤漸層
-// -----------------------------------
-$city-gradient-start: #38b2ac // 漸層起始：青綠色
-$city-gradient-end: #319795 // 漸層結束：深青綠色
-
-// -----------------------------------
-// 陰影色系
-// -----------------------------------
-$shadow-light: rgba(74, 85, 104, 0.08) // 淺陰影
-$shadow-medium: rgba(74, 85, 104, 0.12) // 中陰影
-$shadow-strong: rgba(74, 85, 104, 0.15) // 深陰影
-$shadow-city: rgba(56, 178, 172, 0.3) // 城市標籤陰影
-$shadow-city-hover: rgba(56, 178, 172, 0.4) // 城市標籤hover陰影
-
-// -----------------------------------
-// 熱帶度假風配色
-// -----------------------------------
-$warm-primary: #7c2d12    // 深橘棕
-$warm-coral: #ea580c      // 鮮橘色
-$warm-gold: #fbbf24       // 陽光黃
-$warm-cream: #fefefe      // 奶白
-$warm-text: #1f2937       // 深灰文字
-$warm-text-light: #6b7280 // 淺灰文字
-$warm-border: #e5e7eb     // 淺邊框
-$warm-shadow: rgba(31, 41, 55, 0.1)
+// 注意：這個檔案會被自動注入到每個 Sass 檔，只能放變數，不要放會輸出 CSS 的規則
 
 // ===================================
-// 活力抹茶系配色
+// 手帳主題（2026 改版）
 // ===================================
-$matcha-bright: #91B500       // 亮抹茶綠
-$matcha-soft: #E8F5D0        // 很淺的抹茶背景
-$matcha-muted: #A8C233       // 中等抹茶綠
 
-$almond-cream: #FFE4B5       // 杏仁奶色
-$almond-soft: #FFF5E6        // 很淺的杏仁色
+// 字型
+$font-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif
+$font-display: 'LXGW WenKai TC', 'Noto Sans TC', 'PingFang TC', serif
 
-$caramel-orange: #D2691E     // 焦糖橘
-$caramel-soft: #F4E4D6       // 很淺的焦糖色
+// 基底
+$nb-paper: #FBF6EC          // 頁面底色：米白紙
+$nb-card: #FFFDF8           // 卡片底色
+$nb-ink: #3A332C            // 主文字
+$nb-muted: #6E6357          // 次要文字
+$nb-line: #E9DFCF           // 卡片邊框
+$nb-dash: #E3D5BF           // 虛線、分隔線
+$nb-dash-strong: #B8A98F    // 較深的虛線（倒數卡外框）
+$nb-footer: #F1E6D3         // 頁尾底色
+$nb-card-shadow: 0 4px 0 #EFE4D2   // 卡片底部厚紙陰影
+$nb-float-shadow: 0 12px 28px rgba(58, 51, 44, 0.14)  // 浮層陰影
 
-$warm-white: #FFF8F0         // 溫暖白
-$text-dark: #2D3748          // 深色文字
+// 強調色
+$nb-accent: #B9542B         // 主按鈕、重點數字（陶土橘，白字對比 ≥ 4.5）
+$nb-accent-hover: #8F3E1E
+$nb-tape-yellow: rgba(242, 201, 76, 0.55)   // 紙膠帶：黃
+$nb-tape-blue: rgba(143, 188, 219, 0.55)    // 紙膠帶：藍
+$nb-yellow: #F2C94C
 
-// ===================================
-// 日式攝影師中性配色系統
-// ===================================
-// 主要拍照應用配色
-$camera-neutral: #787C7B      // 鉛 (NAMARI) - 主介面中性灰
-$camera-pure: #FFFFFB         // 胡粉 (GOFUN) - 純白背景
-$camera-accent: #EC6D51       // 洗朱 (ARAISYU) - 強調色（按鈕）
-$camera-muted: #9B9B82        // 素鼠 (SUNEZUMI) - 輔助灰色
-$camera-text: #1C1C1C         // 墨 (SUMI) - 深色文字
-
-// 拍照應用文字色系
-$camera-text-primary: #1C1C1C           // 主文字：深墨色
-$camera-text-secondary: rgba(28, 28, 28, 0.8)  // 次要文字：80%透明度
-$camera-text-light: rgba(28, 28, 28, 0.6)      // 淺色文字：60%透明度
-$camera-text-muted: rgba(28, 28, 28, 0.4)      // 淡化文字：40%透明度
-$camera-text-white: #ffffff              // 白色文字
-
-// 拍照應用背景色系
-$camera-bg-primary: #FFFFFB              // 主背景：胡粉純白
-$camera-bg-secondary: rgba(255, 255, 251, 0.95)  // 次要背景：95%透明度
-$camera-bg-overlay: rgba(120, 124, 123, 0.8)     // 覆蓋層：中性灰80%
-$camera-bg-modal: rgba(0, 0, 0, 0.6)     // 模態背景：黑色60%
-
-// 拍照應用邊框色系
-$camera-border-primary: rgba(155, 155, 130, 0.3)   // 主邊框：素鼠30%
-$camera-border-light: rgba(155, 155, 130, 0.2)     // 淺邊框：素鼠20%
-$camera-border-muted: rgba(155, 155, 130, 0.1)     // 極淺邊框：素鼠10%
-$camera-border-focus: rgba(236, 109, 81, 0.5)      // 焦點邊框：洗朱50%
-
-// 拍照應用按鈕色系
-$camera-btn-primary: #EC6D51             // 主按鈕：洗朱
-$camera-btn-primary-hover: rgba(236, 109, 81, 0.9)  // 主按鈕hover：90%
-$camera-btn-primary-active: rgba(236, 109, 81, 0.8) // 主按鈕active：80%
-$camera-btn-secondary: #787C7B           // 次要按鈕：鉛
-$camera-btn-secondary-hover: rgba(120, 124, 123, 0.9)  // 次要按鈕hover
-$camera-btn-disabled: rgba(120, 124, 123, 0.4)     // 禁用按鈕：40%
-
-// 拍照應用陰影色系
-$camera-shadow-light: rgba(28, 28, 28, 0.1)   // 淺陰影
-$camera-shadow-medium: rgba(28, 28, 28, 0.15)  // 中陰影
-$camera-shadow-strong: rgba(28, 28, 28, 0.2)   // 深陰影
-$camera-shadow-accent: rgba(236, 109, 81, 0.3) // 強調色陰影
-
-// 拍照應用狀態色系
-$camera-success: #91B500                 // 成功：抹茶綠（與主應用呼應）
-$camera-success-bg: rgba(145, 181, 0, 0.1)     // 成功背景
-$camera-error: #D32F2F                   // 錯誤：紅色
-$camera-error-bg: rgba(211, 47, 47, 0.1)       // 錯誤背景
-$camera-warning: #F57C00                 // 警告：橘色
-$camera-warning-bg: rgba(245, 124, 0, 0.1)     // 警告背景
-
-// ===================================
-// 溫潤旅人系配色 - 書架專用
-// ===================================
-$traveler-cream: #FBFAF5      // 米白背景
-$traveler-walnut: #947A6D     // 胡桃色（書架）
-$traveler-coral: #FB966E      // 洗朱色（書背、標記）
-$traveler-brown: #595857      // 灰褐色（文字）
-$traveler-coral-light: #E3916E  // 淺洗朱色
-$traveler-walnut-light: #A58F86 // 淺胡桃色
-
-// 溫潤旅人系陰影
-$traveler-shadow-light: rgba(89, 88, 87, 0.15)
-$traveler-shadow-medium: rgba(89, 88, 87, 0.25)
-$traveler-shadow-strong: rgba(89, 88, 87, 0.35)
-$traveler-shadow-coral: rgba(251, 150, 110, 0.3)
-
-// ===================================
-// 日本傳統色系 - 美食轉輪專用
-// ===================================
-// 料理轉輪 8 色
-$jp-mizu: #89CDF1        // 水 - 海鮮鍋
-$jp-sakura: #FEEEED      // 桜 - 櫻花蝦
-$jp-moegi: #8FB069       // 萌黄 - 海苔湯
-$jp-kurenai: #DC143C     // 紅 - 辣炒年糕
-$jp-yamabuki: #E6B422    // 山吹 - 柑橘雞
-$jp-murasaki: #884898    // 紫 - 紫薯麵
-$jp-asagi: #4F94CD       // 浅葱 - 烤魚
-$jp-kohaku: #CA6924      // 琥珀 - 味噌湯
-
-// 美食轉輪主題色
-$foodwheel-primary: $jp-murasaki     // 主色：紫
-$foodwheel-accent: $jp-yamabuki      // 強調色：山吹
-$foodwheel-secondary: $jp-asagi      // 次要色：浅葱
-$foodwheel-danger: $jp-kurenai       // 危險色：紅
-
-// ===========================================
-// 現代浮世繪風 + 瑠璃藍調配色方案
-// ===========================================
-
-// 主要背景和文字色彩
-$spot-bg: #FFFFFB                    // 胡粉 (GOFUN) - 藝術家白
-$spot-text-primary: #17184B          // 鉄紺 (TETSU-KON) - 浮世繪藍
-$spot-text-secondary: #895B8A        // 古代紫 (KODAI-MURASAKI) - 雅致紫
-$spot-border: #C7B2DE                // 淡藤 (AWAFUJI) - 優雅淡紫
-
-// 國家頁籤色彩 (瑠璃藍調)
-$country-tab-border: #005CAF         // 瑠璃 (RURI) - 瑠璃寶石藍
-$country-tab-text: #1E3A5F           // 留紺 (TOME-KON) - 深邃藍
-$country-tab-hover: rgba(0, 92, 175, 0.05)  // 瑠璃色 5% 透明度
-$country-tab-active-bg: #005CAF      // 瑠璃色背景
-$country-tab-active-text: #FFFFFF    // 白色文字
-
-// 類別標籤色彩 (浮世繪風)
-$category-attraction: #C73E3A        // 紅 (BENI) - 浮世繪紅
-$category-food: #47885E              // 緑青 (ROKUSHOU) - 緑青色
-$category-hotel: #1E50A2             // 瑠璃 (RURI) - 瑠璃藍
-$category-shopping: #C38743          // 金茶 (KIN-CHA) - 金茶色
-$category-transport: #00A497         // 青緑 (AO-MIDORI) - 青緑色
-
-// 功能卡片色彩
-$spot-time-card: rgba(250, 218, 221, 0.35)   // 薄紅 (USUBENNI) 35% 透明度
-$spot-price-card: rgba(184, 210, 0, 0.2)     // 淡萌黃 (USUMOEGI) 20% 透明度
-$spot-notes-bg: #F8FCFE              // 白群 (BYAKUGUN) - 淡雅背景
-$spot-map-hover: #165E83             // 藍 (AI) - 懸停效果
-
-// 篩選區塊色彩
-$filter-bg: linear-gradient(135deg, #FFFFFB 0%, #F8FCFE 100%)  // 胡粉到白群漸層
-$filter-border: #C4B5FD              // 薄藤色邊框
-$search-input-border: #C7B2DE        // 淡藤邊框
-$search-input-focus: #005CAF         // 瑠璃色聚焦
-$clear-btn-bg: rgba(0, 92, 175, 0.1) // 瑠璃色 10% 透明度
-$clear-btn-text: #005CAF             // 瑠璃色文字
+// 分類主題色（導覽色點、頁面標題色條）
+$nb-go: #2F7DB0             // 要去哪裡
+$nb-go-soft: #E4EFF7
+$nb-go-strong: #1F5F8B
+$nb-footprint: #D26A3F      // 踏踏腳印
+$nb-footprint-soft: #F7E3D6
+$nb-footprint-strong: #8F3E1E
+$nb-fun: #C99A1E            // 小小樂趣
+$nb-fun-soft: #F8EDC9
+$nb-fun-strong: #6B520C
 
 // -----------------------------------
 // 佈局變數
 // -----------------------------------
 
 // Header
-$header-height: 50px
-$header-bg: $primary-color
-$header-text-color: $text-white
+$header-height: 56px            // 手機
+$header-height-desktop: 72px    // 平板以上
 
-// Footer
-$footer-height: 180px
-
-// 側邊欄
-$sidebar-width-mobile: 280px
-$sidebar-width-desktop: 300px
-$sidebar-bg-mobile: $bg-sidebar
-$sidebar-bg-desktop: $bg-sidebar-desktop
-
-// 覆蓋層
-$overlay-bg: rgba(0, 0, 0, 0.3)
+// 手機底部 tab
+$bottom-tab-height: 72px
 
 // 圓角
 $border-radius-sm: 4px
@@ -258,8 +70,5 @@ $spacing-2xl: 48px
 
 // Z-index 層級
 $z-header: 1001
+$z-bottom-tab: 1001
 $z-mapoverlay: 800
-$z-overlay: 998
-$z-modal: 990
-$z-sidebar: 1002
-$z-camera: 9999 // 拍照相機層級（最高）

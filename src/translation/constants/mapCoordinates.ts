@@ -1,3 +1,4 @@
+import type { Feature, FeatureCollection } from 'geojson'
 // ===================================
 // 地圖座標配置
 // ===================================
@@ -101,7 +102,7 @@ function calculatePolygonArea(coordinates: number[][]): number {
  * @param feature GeoJSON Feature 物件
  * @returns [lat, lng] 座標或 null (為了統一專案格式，緯度在前)
  */
-function calculateFeatureCentroid(feature: any): [number, number] | null {
+function calculateFeatureCentroid(feature: Feature): [number, number] | null {
   if (!feature || !feature.geometry) {
     return null
   }
@@ -143,7 +144,7 @@ function calculateFeatureCentroid(feature: any): [number, number] | null {
  */
 export const getCountryCoordinatesFromGeoJSON = (
   countryName: string,
-  worldData: any,
+  worldData: FeatureCollection | null,
 ): [number, number] | null => {
   if (!worldData || !worldData.features) {
     return null
@@ -159,7 +160,7 @@ export const getCountryCoordinatesFromGeoJSON = (
   const normalizedCountryName = countryName.toLowerCase().trim()
 
   // 在 GeoJSON 中查找對應的國家 Feature
-  const countryFeature = worldData.features.find((feature: any) => {
+  const countryFeature = worldData.features.find((feature) => {
     const featureName = (feature.properties?.name || feature.properties?.NAME || '').toLowerCase()
 
     // 完全匹配

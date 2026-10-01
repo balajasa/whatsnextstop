@@ -1,20 +1,19 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import HomePage from '../views/HomePage.vue'
 import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
 import DropBlock from '../views/games/DropBlock.vue'
-import Itinerary from '../views/itinerary/Itinerary.vue'
+import ItineraryPage from '../views/itinerary/ItineraryPage.vue'
 import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel-map/TravelMap.vue'
 import TravelGallery from '../views/history-travel/TravelGallery.vue'
-import TravelReview from '../views/history-travel/TravelReview.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
 import TripsPage from '../views/trips/TripsPage.vue'
 
 const routes = [
   {
     path: '/',
-    component: Home,
+    component: HomePage,
     children: [
       {
         path: '',
@@ -32,7 +31,7 @@ const routes = [
       {
         path: 'itinerary',
         name: 'Itinerary',
-        component: Itinerary,
+        component: ItineraryPage,
         meta: {
           title: '行程規劃',
           showBreadcrumb: true,
@@ -70,16 +69,6 @@ const routes = [
           title: '旅遊回憶',
           showBreadcrumb: true,
           breadcrumb: [{ text: '旅遊回憶' }],
-        },
-      },
-      {
-        path: 'travel-review',
-        name: 'TravelReview',
-        component: TravelReview,
-        meta: {
-          title: '旅程回顧',
-          showBreadcrumb: true,
-          breadcrumb: [{ text: '旅程回顧' }],
         },
       },
       {

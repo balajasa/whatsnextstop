@@ -1,4 +1,14 @@
 // index.sass - 主題全域樣式
+// 變數與 mixins 由 vite.config.js 的 additionalData 自動注入
 @use '@/styles/reset' as *
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
+
+// 全域字型設定
+// 內文：Noto Sans TC；標題：霞鶩文楷 TC（用 $font-display）
+:root
+  font-family: $font-body
+
+
+body
+  background: $nb-paper
+  color: $nb-ink
+  font-family: $font-body

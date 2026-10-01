@@ -1,94 +1,80 @@
 <template>
-  <div class="travel-photo-card">
-    <!-- 頂部資訊區 -->
-    <div class="card-header">
-      <div class="trip-info">
-        <div class="country-flag">{{ getCountryFlag(trip.destinations[0].country) }}</div>
-        <div class="trip-title">{{ trip.title }}</div>
-      </div>
-    </div>
+  <article class="travel-photo-card" :class="`tape-${tapeIndex}`" :style="{ '--tilt': `${tilt}deg` }">
+    <span class="tape" aria-hidden="true"></span>
 
-    <!-- 照片滑動區域 -->
+    <header class="card-header">
+      <span class="country-flag" aria-hidden="true">{{ getCountryFlag(trip.destinations[0].country) }}</span>
+      <h2 class="trip-title">{{ trip.title }}</h2>
+    </header>
+
+    <!-- 照片區域 -->
     <div class="photo-section">
-      <!-- 載入中狀態 -->
       <div v-if="isInitialLoading" class="photo-loading">
-        <div class="loading-placeholder">載入照片中...</div>
+        <StateView type="loading" size="sm" message="載入照片中..." />
       </div>
 
-      <!-- 沒有照片時顯示國旗 -->
       <div v-else-if="hasNoPhotos" class="photo-placeholder">
-        <div class="country-flag-large">{{ getCountryFlag(trip.destinations[0].country) }}</div>
-        <div class="no-photos-text">暫無照片</div>
+        <span class="country-flag-large" aria-hidden="true">{{ getCountryFlag(trip.destinations[0].country) }}</span>
+        <span class="no-photos-text">暫無照片</span>
       </div>
 
-      <!-- 有照片時顯示滑動區域 -->
       <div v-else class="photo-container">
-        <swiper ref="swiperRef" :slides-per-view="1" :space-between="0" :pagination="{
+        <swiper :slides-per-view="1" :space-between="0" :pagination="{
           clickable: true,
           dynamicBullets: false
-        }" :keyboard="{ enabled: true }" :modules="[Pagination, Keyboard]" @slide-change="onSlideChange"
-          class="photo-swiper">
+        }" :keyboard="{ enabled: true }" :modules="[Pagination, Keyboard]" @swiper="onSwiper"
+          @slide-change="onSlideChange" class="photo-swiper">
           <swiper-slide v-for="(photo, index) in displayedPhotos" :key="index" class="photo-slide">
-            <div class="photo-img" :style="{ backgroundImage: `url(${photo})` }"></div>
+            <div class="photo-img" :style="{ backgroundImage: `url(${photo})` }" role="img"
+              :aria-label="`${trip.title} 第 ${index + 1} 張照片`"></div>
           </swiper-slide>
 
-          <!-- 載入更多指示器 -->
           <swiper-slide v-if="isLoadingMore" class="loading-slide">
-            <div class="loading-more-indicator">
-              <div class="loading-spinner"></div>
-              <div class="loading-text">載入更多照片中...</div>
-            </div>
+            <StateView type="loading" size="sm" message="載入更多照片中..." />
           </swiper-slide>
         </swiper>
 
-        <!-- 左右切換按鈕 -->
-        <button v-if="displayedPhotos.length > 1" class="nav-btn nav-btn--prev" @click="goToPrevSlide"
-          :disabled="currentSlide === 0">
+        <button v-if="displayedPhotos.length > 1" type="button" class="nav-btn nav-btn--prev" aria-label="上一張"
+          :disabled="currentSlide === 0" @click="goToPrevSlide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+        </button>
+        <button v-if="displayedPhotos.length > 1" type="button" class="nav-btn nav-btn--next" aria-label="下一張"
+          :disabled="currentSlide === displayedPhotos.length - 1" @click="goToNextSlide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
         </button>
 
-        <button v-if="displayedPhotos.length > 1" class="nav-btn nav-btn--next" @click="goToNextSlide"
-          :disabled="currentSlide === displayedPhotos.length - 1">
-        </button>
+        <span class="photo-count">{{ currentSlide + 1 }}/{{ photos.length }}</span>
       </div>
     </div>
 
-    <!-- 底部資訊區 -->
-    <div class="card-footer">
-      <!-- 第一行：日期範圍 -->
-      <div class="date-range">
-        {{ formatDateRange(trip) }}
-      </div>
-
-      <!-- 城市標籤與照片計數 -->
-      <div class="footer-row">
-        <div class="cities">
-          <span v-for="city in getCities(trip)" :key="city" class="city-tag">
-            {{ city }}
-          </span>
-        </div>
-        <div v-if="!hasNoPhotos" class="photo-count">
-          {{ currentSlide + 1 }}/{{ photos.length }}
-          <span v-if="isLoadingMore" class="loading-indicator">⏳</span>
-        </div>
-      </div>
-    </div>
-  </div>
+    <footer class="card-footer">
+      <ul class="cities">
+        <li v-for="city in getCities(trip)" :key="city" class="city-tag">{{ city }}</li>
+      </ul>
+      <span class="date-range">{{ formatDateRange(trip) }}</span>
+    </footer>
+  </article>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, shallowRef, computed, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Pagination, Keyboard } from 'swiper/modules'
+import type { Swiper as SwiperClass } from 'swiper/types'
 import { event } from 'vue-gtag'
 import { PhotoService } from '@/services/photos/photoService'
 import { countryTranslation } from '@/translation/composables/countryTranslation'
 import type { HistoryTrip } from '@/types/history-travel/travel-history'
-
-// Swiper CSS
+import StateView from '@/components/common/StateView.vue'
 import 'swiper/css'
 import 'swiper/css/pagination'
 
-// Props
 interface TravelPhotoCardProps {
   trip: HistoryTrip
   shouldLoadPhotos?: boolean // 是否應該載入照片，用於懶加載控制
@@ -96,24 +82,28 @@ interface TravelPhotoCardProps {
 
 const { trip, shouldLoadPhotos = false } = defineProps<TravelPhotoCardProps>()
 
-// Composables
 const { getCountryFlag } = countryTranslation()
 
-// 響應式資料
 const photos = ref<string[]>([])
 const displayedPhotos = ref<string[]>([])
 const currentSlide = ref(0)
-const swiperRef = ref<any>(null)
+
+const swiperInstance = shallowRef<SwiperClass | null>(null)
 const isLoadingMore = ref(false)
 const isInitialLoading = ref(true)
 const hasNoPhotos = ref(false)
 
-// 常數設定
-const INITIAL_LOAD_COUNT = 10
-const PRELOAD_TRIGGER_OFFSET = 3 // 距離末尾3張時開始預載
-const BATCH_SIZE = 5 // 每次預載5張
+// 拍立得的歪斜角度與紙膠帶顏色：依旅程 id 固定，重新整理也不會亂跳
+const seed = computed(() =>
+  [...(trip.id ?? trip.title)].reduce((sum, char) => sum + char.charCodeAt(0), 0)
+)
+const tilt = computed(() => ((seed.value % 5) - 2) * 0.4)
+const tapeIndex = computed(() => seed.value % 3)
 
-// 載入照片
+const INITIAL_LOAD_COUNT = 10
+const PRELOAD_TRIGGER_OFFSET = 3
+const BATCH_SIZE = 5
+
 const loadPhotos = async () => {
   try {
     isInitialLoading.value = true
@@ -131,7 +121,6 @@ const loadPhotos = async () => {
       hasNoPhotos.value = true
       displayedPhotos.value = []
     } else {
-      // 初始只顯示前10張
       displayedPhotos.value = validPhotoUrls.slice(0, INITIAL_LOAD_COUNT)
     }
 
@@ -143,7 +132,6 @@ const loadPhotos = async () => {
   }
 }
 
-// 智慧預載更多照片
 const preloadMorePhotos = async () => {
   if (isLoadingMore.value || displayedPhotos.value.length >= photos.value.length) {
     return
@@ -151,7 +139,6 @@ const preloadMorePhotos = async () => {
 
   isLoadingMore.value = true
 
-  // 模擬載入延遲，避免載入太快
   await new Promise(resolve => setTimeout(resolve, 500))
 
   const currentCount = displayedPhotos.value.length
@@ -160,10 +147,8 @@ const preloadMorePhotos = async () => {
   displayedPhotos.value = [...displayedPhotos.value, ...nextBatch]
   isLoadingMore.value = false
 
-  // console.log(`預載完成，目前顯示 ${displayedPhotos.value.length}/${photos.value.length} 張照片`)
 }
 
-// 檢查是否需要預載
 const checkPreload = () => {
   const remaining = displayedPhotos.value.length - currentSlide.value
   if (remaining <= PRELOAD_TRIGGER_OFFSET && !isLoadingMore.value) {
@@ -171,7 +156,6 @@ const checkPreload = () => {
   }
 }
 
-// 格式化日期範圍
 const formatDateRange = (trip: HistoryTrip): string => {
   const startDate = new Date(trip.date.startDate)
   const endDate = new Date(trip.date.endDate)
@@ -186,7 +170,6 @@ const formatDateRange = (trip: HistoryTrip): string => {
   const startStr = formatSingleDate(startDate)
   const endStr = formatSingleDate(endDate)
 
-  // 如果是同一天，只顯示一個日期
   if (startStr === endStr) {
     return startStr
   }
@@ -194,14 +177,16 @@ const formatDateRange = (trip: HistoryTrip): string => {
   return `${startStr} - ${endStr}`
 }
 
-// 取得城市列表
 const getCities = (trip: HistoryTrip): string[] => {
   const allCities = trip.destinations.flatMap(dest => dest.cities)
   return [...new Set(allCities)]
 }
 
-// 滑動切換事件
-const onSlideChange = (swiper: any) => {
+const onSwiper = (swiper: SwiperClass) => {
+  swiperInstance.value = swiper
+}
+
+const onSlideChange = (swiper: SwiperClass) => {
   currentSlide.value = swiper.activeIndex
 
   // GA4 追蹤：照片瀏覽
@@ -214,41 +199,21 @@ const onSlideChange = (swiper: any) => {
     device: window.innerWidth < 768 ? 'mobile' : 'desktop'
   })
 
-  // 檢查是否需要預載更多照片
   checkPreload()
 }
 
-// 取得 Swiper 實例
-const getSwiperInstance = () => {
-  if (!swiperRef.value) return null
-
-  // 嘗試不同的 Swiper 實例訪問方式
-  return swiperRef.value.$el?.swiper ||
-    swiperRef.value.swiper ||
-    swiperRef.value
-}
-
-// 切換到上一張
 const goToPrevSlide = () => {
-  const swiper = getSwiperInstance()
-  if (swiper && typeof swiper.slidePrev === 'function' && currentSlide.value > 0) {
-    swiper.slidePrev()
-  } else {
-    console.warn('Swiper slidePrev not available:', swiper)
+  if (swiperInstance.value && currentSlide.value > 0) {
+    swiperInstance.value.slidePrev()
   }
 }
 
-// 切換到下一張
 const goToNextSlide = () => {
-  const swiper = getSwiperInstance()
-  if (swiper && typeof swiper.slideNext === 'function' && currentSlide.value < displayedPhotos.value.length - 1) {
-    swiper.slideNext()
-  } else {
-    console.warn('Swiper slideNext not available:', swiper)
+  if (swiperInstance.value && currentSlide.value < displayedPhotos.value.length - 1) {
+    swiperInstance.value.slideNext()
   }
 }
 
-// 監聽是否應該載入照片
 watch(() => shouldLoadPhotos, (newValue) => {
   if (newValue && photos.value.length === 0) {
     loadPhotos()
@@ -258,318 +223,206 @@ watch(() => shouldLoadPhotos, (newValue) => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
-// 主卡片容器
+// 拍立得卡片
 // ===================================
 .travel-photo-card
-  width: 100%
-  margin-bottom: $spacing-xl
-  background: white
-  border-radius: $border-radius-md
-  overflow: hidden
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)
-
+  position: relative
+  display: flex
+  flex-direction: column
+  gap: 12px
+  padding: 12px 12px 16px
+  border-radius: 6px
+  background: $nb-card
+  box-shadow: 0 6px 16px rgba(58, 51, 44, 0.12)
+  transform: rotate(calc(var(--tilt) * 0.5))
   @include tablet
-    margin-bottom: $spacing-xl
-    border-radius: $border-radius-xl
+    padding: 14px 14px 18px
+    transform: rotate(var(--tilt))
 
-  @include desktop
-    max-width: 600px
-    margin: 0 auto $spacing-xl
+.tape
+  position: absolute
+  top: -10px
+  left: 50%
+  z-index: 1
+  width: 80px
+  height: 22px
+  margin-left: -40px
+  transform: rotate(calc(var(--tilt) * -3))
+  pointer-events: none
+
+.tape-0 .tape
+  background: $nb-tape-yellow
+.tape-1 .tape
+  background: $nb-tape-blue
+.tape-2 .tape
+  background: rgba(240, 176, 140, 0.6)
 
 // ===================================
-// 頂部資訊區
+// 頂部
 // ===================================
 .card-header
-  padding: $spacing-sm $spacing-md
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05)
-
-  @include tablet
-    padding: 16px $spacing-lg
-
-.trip-info
   display: flex
   align-items: center
-  gap: $spacing-sm
+  gap: 8px
+  padding-top: 4px
 
 .country-flag
-  font-size: 24px
-
-  @include tablet
-    font-size: 28px
+  font-size: 20px
 
 .trip-title
-  flex: 1
-  font-size: 16px
-  font-weight: 600
-  color: $text-primary
-
+  margin: 0
+  font-family: $font-display
+  font-size: 19px
+  font-weight: 700
+  color: $nb-ink
   @include tablet
-    font-size: 20px
+    font-size: 21px
 
 // ===================================
-// 照片區域 (核心部分)
+// 照片區
 // ===================================
 .photo-section
   position: relative
-  aspect-ratio: 1
-  background: $bg-primary
-
-  @include tablet
-    aspect-ratio: 4/3
+  overflow: hidden
+  aspect-ratio: 4 / 3
+  border-radius: 4px
+  background: $nb-paper
 
 .photo-loading
-  @include flex-center
+  display: flex
+  align-items: center
+  justify-content: center
   height: 100%
-  color: $text-muted
 
-.loading-placeholder
-  font-size: 16px
-  text-align: center
-
-// 沒有照片時的國旗佔位符
 .photo-placeholder
-  @include flex-center
+  display: flex
   flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 8px
   height: 100%
-  background: linear-gradient(135deg, rgba(200, 200, 200, 0.6), rgba(180, 180, 180, 0.4))
-  backdrop-filter: blur(40px)
-  -webkit-backdrop-filter: blur(40px)
-  border: 1px solid rgba(255, 255, 255, 0.3)
+  background: repeating-linear-gradient(135deg, #F4ECDD 0 14px, #EFE5D2 14px 28px)
 
 .country-flag-large
   font-size: 48px
-  margin-bottom: $spacing-sm
-  opacity: 0.8
-
-  @include tablet
-    font-size: 60px
-    margin-bottom: $spacing-md
 
 .no-photos-text
   font-size: 14px
-  color: rgba(0, 0, 0, 0.7)
-  font-weight: 500
-  opacity: 0.8
+  color: $nb-muted
 
-  @include tablet
-    font-size: 16px
-
-.photo-container
-  position: relative
-  width: 100%
-  height: 100%
-
-.photo-swiper
-  width: 100%
-  height: 100%
-
-.photo-slide
+.photo-container,
+.photo-swiper,
+.photo-slide,
+.photo-img
   width: 100%
   height: 100%
 
 .photo-img
-  width: 100%
-  height: 100%
-  background-size: cover
   background-position: center
+  background-size: cover
   background-repeat: no-repeat
 
-// ===================================
-// 導航按鈕 (平板以上才顯示)
-// ===================================
+.loading-slide
+  display: flex
+  align-items: center
+  justify-content: center
+  background: rgba($nb-paper, 0.95)
+
 .nav-btn
-  display: none // 手機版隱藏
+  display: none
 
   @include tablet
-    display: block
     position: absolute
     top: 50%
-    transform: translateY(-50%)
     z-index: 10
-    width: 30px
-    height: 30px
+    display: flex
+    align-items: center
+    justify-content: center
+    width: 36px
+    height: 36px
+    margin-top: -18px
     border: none
     border-radius: 50%
-    background: rgba(255, 255, 255, 0.9)
+    background: rgba($nb-card, 0.88)
+    color: $nb-ink
     cursor: pointer
-    transition: all 0.2s ease
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1)
-    background-repeat: no-repeat
-    background-position: center
-    background-size: 18px 18px
+    transition: background-color 0.2s ease
 
-  &:hover
-    background-color: white
-    transform: translateY(-50%) scale(1.05)
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)
-
-  &:active
-    transform: translateY(-50%) scale(0.95)
+  &:hover:not(:disabled)
+    background: $nb-card
 
   &:disabled
-    opacity: 0.4
+    opacity: 0.35
     cursor: not-allowed
-    transform: translateY(-50%)
 
-    &:hover
-      background-color: rgba(255, 255, 255, 0.9)
-      transform: translateY(-50%)
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
 
 .nav-btn--prev
-  background-image: url('@/assets/img/icon/common/arrow_left_key.png')
-
-  @include tablet
-    left: $spacing-md
+  left: 8px
 
 .nav-btn--next
-  background-image: url('@/assets/img/icon/common/arrow_right_key.png')
+  right: 8px
 
-  @include tablet
-    right: $spacing-md
+// 照片計數
+.photo-count
+  position: absolute
+  right: 10px
+  bottom: 10px
+  z-index: 10
+  padding: 3px 10px
+  border-radius: 999px
+  background: rgba($nb-ink, 0.7)
+  color: $nb-card
+  font-size: 12px
 
-// ===================================
-// Swiper 分頁指示器客製化
-// ===================================
+// Swiper 分頁小圓點
 :deep(.swiper-pagination.swiper-pagination-bullets)
-  bottom: $spacing-sm
-  text-align: center
+  bottom: 12px
   z-index: 10
 
-  @include tablet
-    bottom: $spacing-md
-
   .swiper-pagination-bullet
-    width: 4px
-    height: 4px
-    background: rgba(255, 255, 255, 0.4)
+    width: 5px
+    height: 5px
+    margin: 0 3px
+    border-radius: 3px
+    background: rgba($nb-card, 0.6)
     opacity: 1
-    margin-left: 3px
-    margin-right: 3px
-    border-radius: 50%
-    transition: all 0.3s ease
-    cursor: pointer
-
-    @include tablet
-      width: 5px
-      height: 5px
-      margin-left: 4px
-      margin-right: 4px
-
-    &:hover
-      background: rgba(255, 255, 255, 0.7)
-      transform: scale(1.2)
+    transition: width 0.2s ease
 
   .swiper-pagination-bullet-active
-    background: white
-    transform: scale(1.3)
-
-    @include tablet
-      transform: scale(1.4)
-
-// 手機版小圓點更小
-// @include mobile-only
-//   :deep(.swiper-pagination.swiper-pagination-bullets)
-//     bottom: 4px
-
-//     .swiper-pagination-bullet
-//       width: 3px
-//       height: 3px
-//       margin-left: 2px
-//       margin-right: 2px
+    width: 16px
+    background: $nb-card
 
 // ===================================
-// 載入更多指示器
-// ===================================
-.loading-slide
-  @include flex-center
-  background: rgba($bg-primary, 0.95)
-
-.loading-more-indicator
-  text-align: center
-  padding: $spacing-xl
-
-.loading-spinner
-  width: 24px
-  height: 24px
-  border: 2px solid rgba($text-muted, 0.3)
-  border-top: 2px solid $accent-color-1
-  border-radius: 50%
-  animation: spin 1s linear infinite
-  margin: 0 auto $spacing-md
-
-.loading-text
-  font-size: 14px
-  color: $text-muted
-
-@keyframes spin
-  0%
-    transform: rotate(0deg)
-  100%
-    transform: rotate(360deg)
-
-.loading-indicator
-  font-size: 10px
-  margin-left: 4px
-
-// ===================================
-// 底部資訊區
+// 底部
 // ===================================
 .card-footer
-  padding: $spacing-md
   display: flex
-  flex-direction: column
-  gap: 6px
-
-  @include tablet
-    padding: $spacing-lg
-
-// 日期範圍顯示
-.date-range
-  font-size: 12px
-  font-weight: 600
-  color: $text-primary
-  letter-spacing: 0.3px
-
-  @include tablet
-    font-size: 14px
-
-// 城市標籤與照片計數
-.footer-row
-  display: flex
+  align-items: center
   justify-content: space-between
-  align-items: flex-start
-  gap: 6px
+  gap: 8px
 
 .cities
   display: flex
-  align-items: center
   flex-wrap: wrap
-  flex: 1
-  gap: 4px
+  gap: 6px
+  margin: 0
+  padding: 0
+  list-style: none
 
 .city-tag
-  font-size: 11px
-  color: $text-primary
-  font-weight: 500
-  background: rgba($accent-color-2, 0.1)
-  padding: 3px 6px
-  border-radius: $border-radius-sm
-  border: 1px solid rgba($accent-color-2, 0.2)
-
-  @include tablet
-    font-size: 13px
-    padding: 5px 10px
-
-.photo-count
+  padding: 4px 10px
+  border-radius: 999px
+  background: $nb-footprint-soft
+  color: $nb-footprint-strong
   font-size: 12px
-  color: $text-muted
-  white-space: nowrap
+  font-weight: 500
 
-  @include tablet
-    font-size: 14px
-
+.date-range
+  flex-shrink: 0
+  font-size: 13px
+  color: $nb-muted
 </style>

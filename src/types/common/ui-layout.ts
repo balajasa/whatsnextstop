@@ -1,26 +1,5 @@
 // types/ILayout.ts
 
-// home
-export interface SidebarRef {
-  isSidebarOpen: boolean
-  toggleSidebar: () => void
-  closeSidebar: () => void
-  resetSidebarState: () => void
-}
-
-// sidebar
-export interface SidebarProps {
-  isMobile?: boolean
-  headerHeight?: number
-}
-
-export interface SidebarItem {
-  name: string
-  icon: string
-  path: string
-  category?: string
-}
-
 // Breadcrumb
 export interface BreadcrumbItem {
   text: string

@@ -1,40 +1,29 @@
 <template>
   <div class="spots-page">
-    <!-- 麵包屑導航 -->
-    <BreadcrumbNav :manual-items="breadcrumbItems" :manual-show="true" />
+    <PageHeader :title="currentTrip?.name || '景點探索'" :subtitle="pageSubtitle" :breadcrumb-items="breadcrumbItems"
+      :show-breadcrumb="true" />
 
-    <!-- 搜尋和篩選區 -->
     <SpotsFilter v-model:search-keyword="searchKeyword" v-model:selected-country="selectedCountry"
       v-model:selected-category="selectedCategory" :countries="countries" :category-options="categoryOptions"
       :total-results="totalResults" :has-active-filters="hasActiveFilters" :trip-id="route.params.shortId as string"
       @clear-filters="clearFilters" />
 
-    <!-- 載入狀態 -->
-    <div v-if="loading" class="loading-section">
-      <div class="loading-spinner"></div>
-      <p>載入中...</p>
-    </div>
+    <StateView v-if="loading" type="loading" message="載入景點中..." />
 
-    <!-- 錯誤狀態 -->
-    <div v-if="error" class="error-section">
-      <div class="error-icon">⚠️</div>
-      <p class="error-message">{{ error }}</p>
-      <button @click="loadSpots" class="retry-btn">重試</button>
-    </div>
+    <StateView v-if="error" type="error" :message="error" @action="loadSpots" />
 
-    <!-- 景點列表 -->
     <div v-if="!loading && !error" class="spots-list">
-      <div v-if="filteredSpots.length === 0" class="empty-state">
-        <div class="empty-icon">🗺️</div>
-        <h3>沒有找到符合條件的景點</h3>
-        <p>試試調整搜尋條件或清除篩選</p>
-      </div>
+      <StateView v-if="filteredSpots.length === 0" type="empty" :title="hasActiveFilters ? '找不到符合的景點' : '這趟旅程還沒有景點'"
+        :message="hasActiveFilters ? '試試調整搜尋條件' : ''" :action-text="hasActiveFilters ? '清除篩選' : ''"
+        @action="clearFilters" />
 
       <div v-else class="spots-grid">
+        <div class="spots-list-head" aria-hidden="true">
+          <span>類別</span><span>景點</span><span>營業時間</span><span>票價</span><span></span><span></span>
+        </div>
         <SpotCard v-for="spot in paginatedSpots" :key="spot.id" :spot="spot" class="spot-item" />
       </div>
 
-      <!-- 分頁控制 -->
       <BasePagination :current-page="currentPage" :total-items="totalResults" :items-per-page="itemsPerPage"
         @update:current-page="currentPage = $event" @update:items-per-page="itemsPerPage = $event"
         @change="handlePaginationChange" />
@@ -48,7 +37,8 @@ import { useRoute } from 'vue-router'
 import { event } from 'vue-gtag'
 import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
 import { findTripByShortId } from '../../services/spots/tripsService'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
+import StateView from '@/components/common/StateView.vue'
 import SpotCard from './SpotCard.vue'
 import SpotsFilter from './SpotsFilter.vue'
 import BasePagination from '../../components/common/BasePagination.vue'
@@ -58,22 +48,18 @@ import type { BreadcrumbItem } from '../../types/common/ui-layout'
 
 const route = useRoute()
 
-// 響應式資料
 const spots = ref<Spot[]>([])
 const loading = ref(true)
 const error = ref('')
 const currentTrip = ref<Trip | null>(null)
 
-// 搜尋和篩選
 const searchKeyword = ref('')
 const selectedCountry = ref('')
 const selectedCategory = ref<SpotCategory | ''>('')
 
-// 分頁
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
-// 計算屬性
 const countries = computed(() => {
   const countrySet = new Set(spots.value.map(spot => spot.country))
   return Array.from(countrySet).sort()
@@ -86,7 +72,6 @@ const categoryOptions = computed(() => {
 const filteredSpots = computed(() => {
   let result = spots.value
 
-  // 關鍵字搜尋
   if (searchKeyword.value.trim()) {
     const keyword = searchKeyword.value.toLowerCase()
     result = result.filter(spot =>
@@ -97,12 +82,10 @@ const filteredSpots = computed(() => {
     )
   }
 
-  // 國家篩選
   if (selectedCountry.value) {
     result = result.filter(spot => spot.country === selectedCountry.value)
   }
 
-  // 類別篩選
   if (selectedCategory.value) {
     result = result.filter(spot => spot.category === selectedCategory.value)
   }
@@ -126,17 +109,16 @@ const hasActiveFilters = computed(() => {
     selectedCategory.value !== ''
 })
 
-// 動態麵包屑
+const pageSubtitle = computed(() => (spots.value.length > 0 ? `景點探索・共 ${spots.value.length} 個景點` : '景點探索'))
+
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   const items: BreadcrumbItem[] = [
     { text: '旅程列表', path: '/trips' }
   ]
 
   if (currentTrip.value) {
-    // 有具體旅程時，顯示旅程名稱
     items.push({ text: currentTrip.value.name })
   } else {
-    // 沒有具體旅程時，顯示通用標題
     items.push({ text: '景點探索' })
   }
 
@@ -149,26 +131,22 @@ const loadSpots = async () => {
     loading.value = true
     error.value = ''
 
-    // 檢查是否有路由參數（短 ID）
     const shortId = route.params.shortId as string
 
     if (shortId) {
-      // 通過短 ID 找到完整旅程資料
       const trip = await findTripByShortId(shortId)
       if (!trip) {
         throw new Error('找不到指定的旅程')
       }
 
       currentTrip.value = trip
-      // 載入特定旅程的景點
       spots.value = await getSpotsByTrip(trip.id)
     } else {
-      // 沒有路由參數，載入所有景點（向下相容）
       currentTrip.value = null
       spots.value = await getAllSpots()
     }
-  } catch (err: any) {
-    error.value = err.message || '載入景點資料失敗'
+  } catch (err) {
+    error.value = err instanceof Error && err.message ? err.message : '載入景點資料失敗'
   } finally {
     loading.value = false
   }
@@ -194,117 +172,62 @@ const handlePaginationChange = (page: number, pageSize: number) => {
 
   currentPage.value = page
   itemsPerPage.value = pageSize
-  // 滾動到頂部
+
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-// 監聽篩選條件變化，重設頁面
 watch([searchKeyword, selectedCountry, selectedCategory], () => {
   currentPage.value = 1
 })
 
-// 監聽路由變化，重新載入景點
 watch(() => route.params.shortId, () => {
   loadSpots()
 })
 
-// 生命週期
 onMounted(() => {
   loadSpots()
 })
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
-.spots-page
-  min-height: 100vh
-  background: $spot-bg
-  padding: 0 $spacing-lg $spacing-lg
-
-  @include tablet
-    padding: 0 $spacing-lg $spacing-xl
-
-  @include desktop
-    padding: 0 $spacing-xl $spacing-xl
-
-// SpotsFilter 間距
-:deep(.spots-filter)
-  margin-top: $spacing-lg
-
-// 載入和錯誤狀態
-.loading-section, .error-section
-  text-align: center
-  margin-top: $spacing-md
-  padding: $spacing-xl
-
-  @include tablet
-    margin-top: $spacing-lg
-    padding: $spacing-2xl
-
-.loading-spinner
-  width: 40px
-  height: 40px
-  border: 3px solid rgba($spot-text-primary, 0.1)
-  border-top: 3px solid $spot-text-primary
-  border-radius: 50%
-  animation: spin 1s linear infinite
-  margin: 0 auto $spacing-lg auto
-
-@keyframes spin
-  to
-    transform: rotate(360deg)
-
-.error-icon
-  font-size: 48px
-  margin-bottom: $spacing-lg
-
-.error-message
-  color: $spot-text-primary
-  margin-bottom: $spacing-lg
-
-.retry-btn
-  padding: $spacing-md $spacing-xl
-  background: $spot-text-primary
-  color: white
-  border: none
-  border-radius: $border-radius-md
-  cursor: pointer
-
-  &:hover
-    background: rgba($spot-text-primary, 0.9)
-
-// 景點列表
 .spots-list
-  max-width: 1400px
-  margin: $spacing-md auto 0
+  display: flex
+  flex-direction: column
+  gap: $spacing-lg
 
-.empty-state
-  text-align: center
-  padding: $spacing-xl
-
-  @include tablet
-    padding: $spacing-2xl
-
-  .empty-icon
-    font-size: 64px
-    margin-bottom: $spacing-lg
-
-  h3
-    color: $spot-text-primary
-    margin-bottom: $spacing-md
-
-  p
-    color: rgba($spot-text-primary, 0.6)
-
+// 手機、平板：卡片
 .spots-grid
   display: grid
-  grid-template-columns: 1fr
-  gap: $spacing-xl
-  // margin-bottom: $spacing-2xl
-
-  @include mobile-only
+  grid-template-columns: minmax(0, 1fr)
+  gap: $spacing-md
+  @include tablet
+    grid-template-columns: repeat(2, minmax(0, 1fr))
     gap: $spacing-lg
 
+  // 桌機：整個列表包成一張紙
+  @include desktop
+    display: block
+    overflow: hidden
+    border: 1px solid $nb-line
+    border-radius: 18px
+    background: $nb-card
+    box-shadow: $nb-card-shadow
+
+  // 最後一列不要底線
+  :deep(.spot-item:last-child .spot-row)
+    border-bottom: none
+
+// 表頭：欄位寬度要跟 SpotCardDesktop 一致
+.spots-list-head
+  display: none
+
+  @include desktop
+    display: grid
+    grid-template-columns: 88px minmax(0, 1fr) 180px 150px 96px 44px
+    gap: 16px
+    padding: 12px 20px
+    border-bottom: 2px solid $nb-line
+    font-size: 13px
+    letter-spacing: 1px
+    color: $nb-muted
 </style>

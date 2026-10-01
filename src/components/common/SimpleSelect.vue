@@ -145,18 +145,16 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-
 .simple-select
   position: relative
   width: 100%
 
 .select-display
   width: 100%
-  padding: $spacing-md
-  border: 1px solid $border-light
+  padding: 8px 12px
+  border: 1px solid $nb-line
   border-radius: $border-radius-md
-  background: $bg-card
+  background: $nb-card
   cursor: pointer
   display: flex
   justify-content: space-between
@@ -165,33 +163,33 @@ onUnmounted(() => {
   min-height: 20px
 
   &:hover:not(.disabled)
-    border-color: $primary-color
+    border-color: $nb-ink
 
   &.open
-    border-color: $primary-color
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.1)
+    border-color: $nb-ink
+    box-shadow: 0 0 0 3px rgba($nb-ink, 0.1)
     border-radius: $border-radius-md $border-radius-md 0 0
 
   &.disabled
     opacity: 0.6
     cursor: not-allowed
-    background: $bg-primary
+    background: $nb-paper
 
 .selected-text
-  color: $text-primary
+  color: $nb-ink
   font-size: 14px
   flex: 1
   text-align: left
 
   .simple-select .select-display.disabled &
-    color: $text-tertiary
+    color: $nb-muted
 
 .simple-select .select-display:not(.disabled) .selected-text:empty::before
   content: attr(data-placeholder)
-  color: $text-light
+  color: $nb-muted
 
 .dropdown-arrow
-  color: $text-secondary
+  color: $nb-muted
   font-size: 12px
   transition: transform 0.2s ease
   user-select: none
@@ -204,11 +202,11 @@ onUnmounted(() => {
   top: 100%
   left: 0
   right: 0
-  border: 1px solid $border-light
+  border: 1px solid $nb-line
   border-top: none
   border-radius: 0 0 $border-radius-md $border-radius-md
-  background: $bg-card
-  box-shadow: $shadow-medium
+  background: $nb-card
+  box-shadow: rgba(58, 51, 44, 0.14)
   max-height: 200px
   overflow-y: auto
   z-index: 1
@@ -217,8 +215,8 @@ onUnmounted(() => {
   padding: $spacing-md
   cursor: pointer
   transition: all 0.2s ease
-  color: $text-primary
-  border-bottom: 1px solid $border-light
+  color: $nb-ink
+  border-bottom: 1px solid $nb-line
   display: flex
   align-items: center
 
@@ -227,17 +225,17 @@ onUnmounted(() => {
 
   &:hover,
   &.highlighted
-    background: $bg-primary
-    color: $text-primary
+    background: $nb-paper
+    color: $nb-ink
 
   &.selected
-    background: rgba($primary-color, 0.1)
-    color: $primary-color
+    background: rgba($nb-ink, 0.1)
+    color: $nb-ink
     font-weight: 500
 
 .no-options
   padding: $spacing-md
-  color: $text-tertiary
+  color: $nb-muted
   text-align: center
   font-size: 13px
 </style>

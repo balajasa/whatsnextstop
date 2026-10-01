@@ -1,63 +1,59 @@
 <template>
-  <div class="spot-card-desktop">
-    <!-- 左側主要內容區域 -->
-    <div class="main-content">
-      <!-- 標題列 -->
-      <div class="title-section">
-        <div class="title-group">
-          <h3 class="spot-name">{{ spot.name }}</h3>
-          <span class="category-badge" :class="`category-${getCategoryClass}`">
-            {{ spot.category }}
-          </span>
-        </div>
-        <a v-if="formattedSpot.hasMap" :href="spot.googleMapUrl" target="_blank" class="map-link"
-          @click="handleMapClick" title="在 Google Maps 中開啟">
-        </a>
+  <article class="spot-row" :class="{ 'is-open': isExpanded }">
+    <!-- 整行可點擊展開（地圖連結除外） -->
+    <div class="spot-row__main" @click="hasDetail && toggleDescription()">
+      <span class="cat-chip" :class="`cat-${getCategoryClass}`">{{ spot.category }}</span>
+
+      <div class="spot-row__name">
+        <h3 class="spot-name">{{ spot.name }}</h3>
+        <span class="spot-location">{{ spot.region }}, {{ spot.country }}</span>
       </div>
 
-      <!-- 位置資訊 -->
-      <div class="location-section">
-        <div class="location-icon"></div>
-        <span class="location-text">{{ spot.region }}, {{ spot.country }}</span>
-      </div>
+      <span class="spot-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+        <span class="visually-hidden">營業時間</span>{{ formattedSpot.displayHours }}
+      </span>
 
-      <!-- 描述區域 -->
-      <div class="description-section" v-if="spot.description">
-        <p class="description-text" :class="{ 'expanded': isExpanded }">
-          {{ spot.description }}
-        </p>
-        <button v-if="isLongDescription" @click="toggleDescription" class="expand-btn">
-          {{ isExpanded ? '收合' : '展開' }}
-        </button>
-      </div>
+      <span class="spot-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z" />
+        </svg>
+        <span class="visually-hidden">票價</span>{{ formattedSpot.displayPrice }}
+      </span>
 
+      <a v-if="formattedSpot.hasMap" :href="spot.googleMapUrl" target="_blank" rel="noopener" class="map-btn"
+        :aria-label="`在 Google Maps 開啟${spot.name}`" @click.stop="handleMapClick">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+          <circle cx="12" cy="9.5" r="2.5" />
+        </svg>
+        地圖
+      </a>
+      <span v-else></span>
+
+      <button v-if="hasDetail" type="button" class="expand-btn" :aria-expanded="isExpanded"
+        :aria-controls="detailId" :aria-label="`${isExpanded ? '收合' : '展開'}${spot.name}的介紹`"
+        @click.stop="toggleDescription">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      <span v-else></span>
     </div>
 
-    <!-- 右側詳細資訊區域 -->
-    <div class="details-section">
-      <!-- 時間&價格卡片 -->
-      <div class="info-cards-grid">
-        <div class="square-card time-card">
-          <div class="square-icon square-icon-time"></div>
-          <div class="square-value">{{ formattedSpot.displayHours }}</div>
-        </div>
-
-        <div class="square-card price-card">
-          <div class="square-icon square-icon-price"></div>
-          <div class="square-value">{{ formattedSpot.displayPrice }}</div>
-        </div>
-      </div>
+    <!-- 展開：介紹 + 備註便條 -->
+    <div v-if="hasDetail" v-show="isExpanded" :id="detailId" class="spot-row__detail">
+      <p v-if="spot.description" class="spot-description">{{ spot.description }}</p>
+      <div v-if="spot.notes" class="memo">{{ spot.notes }}</div>
     </div>
-
-    <!-- Note區域 -->
-    <div class="notes-section">
-      <div class="notes-header">
-        <div class="notes-icon"></div>
-        <div class="notes-label">Note</div>
-      </div>
-      <div class="notes-text">{{ spot.notes || '' }}</div>
-    </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">
@@ -78,9 +74,10 @@ const isExpanded = ref(false)
 // 計算屬性
 const formattedSpot = computed(() => formatSpotForDisplay(props.spot))
 
-const isLongDescription = computed(() => {
-  return props.spot.description && props.spot.description.length > 150
-})
+// 有介紹或備註才能展開
+const hasDetail = computed(() => Boolean(props.spot.description || props.spot.notes))
+
+const detailId = computed(() => `spot-detail-${props.spot.id ?? props.spot.name}`)
 
 // 中文類別轉英文類別映射
 const getCategoryClass = computed(() => {
@@ -113,278 +110,155 @@ const handleMapClick = () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
+// 欄位寬度要跟 SpotsPage 的表頭一致
+.spot-row
+  --columns: 88px minmax(0, 1fr) 180px 150px 96px 44px
+  border-bottom: 2px dashed $nb-dash
 
-.spot-card-desktop
-  background: $spot-bg
-  border-radius: $border-radius-lg
-  padding: $spacing-lg
-  margin-bottom: 4px
-  border: 1px solid $spot-border
-  box-shadow: 0 4px 20px rgba(23, 24, 75, 0.1)
-  transition: all 0.3s ease
+  &.is-open
+    background: $nb-paper
+
+.spot-row__main
   display: grid
-  grid-template-columns: 1fr 240px
-  gap: $spacing-lg
+  grid-template-columns: var(--columns)
+  align-items: center
+  gap: 16px
+  padding: 14px 20px
+  cursor: pointer
 
-// 左側主要內容區域
-.main-content
+  &:hover
+    background: rgba($nb-paper, 0.6)
+
+.cat-chip
+  justify-self: start
+  padding: 4px 12px
+  border-radius: 999px
+  font-size: 13px
+  font-weight: 700
+
+@include nb-category-chips
+
+.spot-row__name
   display: flex
   flex-direction: column
-  gap: $spacing-sm
-
-// 標題區域
-.title-section
-  display: flex
-  justify-content: space-between
-  align-items: flex-start
-
-.title-group
-  display: flex
-  align-items: center
-  gap: $spacing-md
-  flex: 1
+  gap: 2px
+  min-width: 0
 
 .spot-name
-  font-size: 24px
-  font-weight: 600
-  color: $spot-text-primary
   margin: 0
-  line-height: 1.3
+  overflow: hidden
+  font-family: $font-display
+  font-size: 19px
+  font-weight: 700
+  color: $nb-ink
+  text-overflow: ellipsis
+  white-space: nowrap
 
-.category-badge
-  padding: 4px 8px
-  border-radius: $border-radius-sm
-  font-size: 12px
-  font-weight: 600
-  text-align: center
-  text-transform: uppercase
-  letter-spacing: 0.5px
-  color: white
+.spot-location
+  font-size: 13px
+  color: $nb-muted
+
+.spot-info
   display: flex
   align-items: center
+  gap: 6px
+  font-size: 14px
+  color: $nb-ink
+
+  svg
+    flex-shrink: 0
+    color: $nb-muted
+
+.map-btn
+  justify-self: start
+  display: inline-flex
+  align-items: center
   gap: 4px
+  min-height: 36px
+  padding: 0 12px
+  border: 1px solid $nb-line
+  border-radius: 999px
+  background: $nb-card
+  color: $nb-ink
+  font-size: 13px
+  text-decoration: none
 
-  &::before
-    content: ''
-    width: 14px
-    height: 14px
-    background-size: 14px 14px
-    background-repeat: no-repeat
-    background-position: center
+  &:hover
+    border-color: $nb-accent
+    color: $nb-accent
 
-// 浮世繪風類別標籤 - 實色背景 + 圖標
-.category-attraction
-  background: $category-attraction
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
 
-  &::before
-    background-image: url('@/assets/img/icon/category/monument.png')
-
-.category-food
-  background: $category-food
-
-  &::before
-    background-image: url('@/assets/img/icon/category/food.png')
-
-.category-hotel
-  background: $category-hotel
-
-  &::before
-    background-image: url('@/assets/img/icon/category/hotel.png')
-
-.category-shopping
-  background: $category-shopping
-
-  &::before
-    background-image: url('@/assets/img/icon/category/shopping.png')
-
-.category-transport
-  background: $category-transport
-
-  &::before
-    background-image: url('@/assets/img/icon/category/bus.png')
-
-.map-link
+.expand-btn
   display: flex
   align-items: center
   justify-content: center
   width: 40px
   height: 40px
-  border-radius: $border-radius-md
-  background-color: $spot-notes-bg
-  background-image: url('@/assets/img/icon/color/maps.png')
-  background-size: 20px 20px
-  background-repeat: no-repeat
-  background-position: center
-  border: 1px solid $spot-border
-  text-decoration: none
-  transition: all 0.2s ease
-  flex-shrink: 0
-
-  &:hover
-    background-color: rgba(0, 92, 175, 0.1)
-    border-color: $search-input-focus
-    box-shadow: 0 2px 8px rgba(0, 92, 175, 0.15)
-
-// 位置資訊
-.location-section
-  display: flex
-  align-items: center
-  padding-bottom: $spacing-sm
-  border-bottom: 1px solid $border-muted
-
-.location-icon
-  width: 16px
-  height: 16px
-  background-image: url('@/assets/img/icon/color/pin.png')
-  background-size: 16px 16px
-  background-repeat: no-repeat
-  background-position: center
-  margin-right: $spacing-sm
-  flex-shrink: 0
-
-.location-text
-  font-size: 16px
-  color: rgba(23, 24, 75, 0.7)
-
-// 描述區域
-.description-section
-  flex: 1
-  padding-left: 24px
-
-.description-text
-  font-size: 15px
-  color: rgba(23, 24, 75, 0.8)
-  line-height: 1.6
-  margin: 0 0 $spacing-sm 0
-  display: -webkit-box
-  -webkit-line-clamp: 3
-  -webkit-box-orient: vertical
-  overflow: hidden
-
-  &.expanded
-    display: block
-    -webkit-line-clamp: unset
-    overflow: visible
-
-.expand-btn
-  background: none
   border: none
-  color: $spot-text-primary
-  font-size: 13px
-  font-weight: 500
+  border-radius: 50%
+  background: transparent
+  color: $nb-muted
   cursor: pointer
-  padding: 0
-  text-decoration: underline
 
-  &:hover
-    color: rgba($spot-text-primary, 0.7)
+  svg
+    transition: transform 0.2s ease
 
-// 右側詳細資訊區域
-.details-section
+  &[aria-expanded="true"]
+    background: $nb-card
+    svg
+      transform: rotate(180deg)
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
+
+.spot-row__detail
   display: flex
-  flex-direction: column
-  gap: $spacing-lg
+  align-items: flex-start
+  gap: 24px
+  // 對齊名稱欄
+  padding: 0 20px 20px 124px
 
-// 正方形資訊卡片網格
-.info-cards-grid
-  display: grid
-  grid-template-columns: 1fr 1fr
-  gap: $spacing-sm
-
-.square-card
-  aspect-ratio: 1
-  border-radius: $border-radius-md
-  padding: $spacing-sm
-  display: flex
-  flex-direction: column
-  align-items: center
-  justify-content: center
-  text-align: center
-  transition: all 0.2s ease
-
-// 浮世繪風配色
-.time-card
-  background: $spot-time-card
-  border: 1px solid rgba(250, 218, 221, 0.6)
-
-.price-card
-  background: $spot-price-card
-  border: 1px solid rgba(184, 210, 0, 0.4)
-
-.square-icon
-  width: 24px
-  height: 24px
-  background-size: 24px 24px
-  background-repeat: no-repeat
-  background-position: center
-  margin-bottom: $spacing-xs
-  opacity: 0.9
-
-.square-icon-time
-  background-image: url('@/assets/img/icon/color/clock.png')
-
-.square-icon-price
-  background-image: url('@/assets/img/icon/color/ticket.png')
-
-.square-value
+.spot-description
+  flex: 1
+  margin: 0
   font-size: 14px
-  color: $spot-text-primary
-  font-weight: 600
-  line-height: 1.3
-  word-break: break-word
+  line-height: 1.8
+  color: $nb-ink
+  white-space: pre-line
 
-// 筆記區域
-.notes-section
-  background: $spot-notes-bg
-  border-radius: $border-radius-md
-  padding: 20px
-  border: 1px solid rgba(199, 178, 222, 0.3)
-  grid-column: 1 / -1  // 佔滿整個 grid 寬度
-  margin-top: $spacing-sm
-
-.notes-header
-  display: flex
-  align-items: center
-  gap: $spacing-sm
-  margin-bottom: $spacing-sm
-
-.notes-icon
-  width: 16px
-  height: 16px
-  background-image: url('@/assets/img/icon/color/chat.png')
-  background-size: 16px 16px
-  background-repeat: no-repeat
-  background-position: center
-
-.notes-label
-  font-size: 13px
-  color: $spot-text-primary
-  font-weight: 600
-  text-transform: uppercase
-  letter-spacing: 0.5px
-
-.notes-text
+// 黃色橫線便條
+.memo
+  position: relative
+  flex-shrink: 0
+  width: 300px
+  padding: 12px 14px 12px 16px
+  border-radius: 4px
+  background-color: #FFF8DC
+  background-image: repeating-linear-gradient(0deg, transparent 0 23px, #F0E3B8 23px 24px)
   font-size: 14px
-  color: $spot-text-secondary
-  line-height: 1.5
+  line-height: 24px
+  color: $nb-ink
+  white-space: pre-line
 
-// 響應式調整 - 較小的桌面螢幕
-@include tablet
-  .spot-card-desktop
-    grid-template-columns: 1fr 200px
-    gap: $spacing-md
-    padding: $spacing-md
+  &::before
+    content: ''
+    position: absolute
+    top: -8px
+    left: 14px
+    width: 56px
+    height: 16px
+    background: rgba(242, 201, 76, 0.6)
+    transform: rotate(-4deg)
 
-  .spot-name
-    font-size: 20px
-
-  .square-icon
-    width: 20px
-    height: 20px
-    background-size: 20px 20px
-
-  .square-value
-    font-size: 12px
+.visually-hidden
+  position: absolute
+  width: 1px
+  height: 1px
+  overflow: hidden
+  clip: rect(0 0 0 0)
+  white-space: nowrap
 </style>

@@ -1,5 +1,3 @@
-// src/composables/useDialog.ts
-
 import { reactive } from 'vue'
 import type {
   DialogInstance,
@@ -15,7 +13,7 @@ import type {
 // 全域狀態
 // ===================================
 
-/** 對話框狀態 */
+// 對話框狀態
 const dialogState: DialogState = reactive<DialogState>({
   dialogs: [],
   get hasOpenDialog(): boolean {
@@ -23,19 +21,19 @@ const dialogState: DialogState = reactive<DialogState>({
   }
 })
 
-/** 對話框 ID 計數器 */
+// 對話框 ID 計數器
 let dialogIdCounter = 0
 
 // ===================================
 // 工具函數
 // ===================================
 
-/** 生成唯一 ID */
+// 生成唯一 ID
 const generateDialogId = (): string => {
   return `dialog_${++dialogIdCounter}_${Date.now()}`
 }
 
-/** 創建對話框實例 */
+// 創建對話框實例
 const createDialogInstance = <T extends DialogResult>(
   type: DialogInstance['type'],
   options: DialogInstance['options']
@@ -43,7 +41,7 @@ const createDialogInstance = <T extends DialogResult>(
   const id = generateDialogId()
 
   let resolvePromise: (value: T) => void
-  let rejectPromise: (reason?: any) => void
+  let rejectPromise: (reason?: unknown) => void
 
   const promise = new Promise<T>((resolve, reject) => {
     resolvePromise = resolve
@@ -54,7 +52,7 @@ const createDialogInstance = <T extends DialogResult>(
     id,
     type,
     options,
-    resolve: resolvePromise!,
+    resolve: resolvePromise! as (value: DialogResult) => void,
     reject: rejectPromise!,
     visible: false,
     loading: false
@@ -63,7 +61,7 @@ const createDialogInstance = <T extends DialogResult>(
   return { instance, promise }
 }
 
-/** 移除對話框實例 */
+// 移除對話框實例
 const removeDialogInstance = (id: string): void => {
   const index = dialogState.dialogs.findIndex(dialog => dialog.id === id)
   if (index > -1) {
@@ -71,7 +69,7 @@ const removeDialogInstance = (id: string): void => {
   }
 }
 
-/** 尋找對話框實例 */
+// 尋找對話框實例
 const findDialogInstance = (id: string): DialogInstance | undefined => {
   return dialogState.dialogs.find(dialog => dialog.id === id)
 }
@@ -80,7 +78,7 @@ const findDialogInstance = (id: string): DialogInstance | undefined => {
 // 對話框操作
 // ===================================
 
-/** 顯示對話框 */
+// 顯示對話框
 const showDialog = async <T extends DialogResult>(
   type: DialogInstance['type'],
   options: DialogInstance['options']
@@ -110,15 +108,15 @@ const showDialog = async <T extends DialogResult>(
   return promise
 }
 
-/** 確認對話框操作 */
-const handleConfirm = (id: string, result?: any): void => {
+// 確認對話框操作
+const handleConfirm = (id: string, result?: unknown): void => {
   const instance = findDialogInstance(id)
   if (instance) {
     instance.resolve(result ?? true)
   }
 }
 
-/** 取消對話框操作 */
+// 取消對話框操作
 const handleCancel = (id: string): void => {
   const instance = findDialogInstance(id)
   if (instance) {
@@ -126,7 +124,7 @@ const handleCancel = (id: string): void => {
   }
 }
 
-/** 關閉對話框操作 */
+// 關閉對話框操作
 const handleClose = (id: string): void => {
   const instance = findDialogInstance(id)
   if (instance) {
@@ -134,7 +132,7 @@ const handleClose = (id: string): void => {
   }
 }
 
-/** 設置載入狀態 */
+// 設置載入狀態
 const setLoading = (id: string, loading: boolean): void => {
   const instance = findDialogInstance(id)
   if (instance) {
@@ -146,7 +144,7 @@ const setLoading = (id: string, loading: boolean): void => {
 // 對話框服務實作
 // ===================================
 
-/** 確認對話框 */
+// 確認對話框
 const confirm = async (options: ConfirmDialogOptions): Promise<boolean> => {
   const defaultOptions: ConfirmDialogOptions = {
     title: '確認',
@@ -161,7 +159,7 @@ const confirm = async (options: ConfirmDialogOptions): Promise<boolean> => {
   return await showDialog<boolean>('confirm', mergedOptions)
 }
 
-/** 警告對話框 */
+// 警告對話框
 const alert = async (options: AlertDialogOptions): Promise<void> => {
   const defaultOptions: Partial<AlertDialogOptions> = {
     title: '提示',
@@ -173,8 +171,8 @@ const alert = async (options: AlertDialogOptions): Promise<void> => {
   await showDialog<void>('alert', mergedOptions)
 }
 
-/** 自定義對話框 */
-const custom = async <T = any>(options: CustomDialogOptions): Promise<T> => {
+// 自定義對話框
+const custom = async <T = unknown>(options: CustomDialogOptions): Promise<T> => {
   const defaultOptions: Partial<CustomDialogOptions> = {
     closeOnOverlay: true
   }
@@ -183,14 +181,14 @@ const custom = async <T = any>(options: CustomDialogOptions): Promise<T> => {
   return await showDialog<T>('custom', mergedOptions)
 }
 
-/** 關閉所有對話框 */
+// 關閉所有對話框
 const closeAll = (): void => {
   dialogState.dialogs.forEach((dialog: DialogInstance) => {
     dialog.resolve(false)
   })
 }
 
-/** 關閉指定對話框 */
+// 關閉指定對話框
 const close = (id: string): void => {
   handleClose(id)
 }
@@ -211,10 +209,6 @@ const dialogService: DialogService = {
 // Composable 主函數
 // ===================================
 
-/**
- * 對話框服務 Hook
- * @returns 對話框服務和狀態
- */
 export const useDialog = () => {
   return {
     // 對話框服務方法
@@ -238,7 +232,7 @@ export const useDialog = () => {
 // 只讀狀態工具
 // ===================================
 
-/** 創建只讀響應式物件 */
+// 創建只讀響應式物件
 function readonly<T extends object>(obj: T): Readonly<T> {
   return new Proxy(obj, {
     set(): boolean {

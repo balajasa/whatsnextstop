@@ -2,11 +2,13 @@
 // 對話框系統型別定義
 // ===================================
 
+import type { Component } from 'vue'
+
 // 對話框類型
 export type DialogType = 'confirm' | 'alert' | 'custom'
 
 // 對話框結果
-export type DialogResult = boolean | any
+export type DialogResult = unknown
 
 // 確認對話框選項
 export interface ConfirmDialogOptions {
@@ -39,9 +41,9 @@ export interface AlertDialogOptions {
 // 自定義對話框選項
 export interface CustomDialogOptions {
   /** 要渲染的元件 */
-  component: any
+  component: Component
   /** 傳遞給元件的 props */
-  props?: Record<string, any>
+  props?: Record<string, unknown>
   /** 點擊遮罩是否關閉 */
   closeOnOverlay?: boolean
 }
@@ -57,7 +59,7 @@ export interface DialogInstance {
   /** Promise resolve 函數 */
   resolve: (value: DialogResult) => void
   /** Promise reject 函數 */
-  reject: (reason?: any) => void
+  reject: (reason?: unknown) => void
   /** 是否可見 */
   visible: boolean
   /** 載入狀態 */
@@ -79,7 +81,7 @@ export interface DialogService {
   /** 警告對話框 */
   alert(options: AlertDialogOptions): Promise<void>
   /** 自定義對話框 */
-  custom<T = any>(options: CustomDialogOptions): Promise<T>
+  custom<T = unknown>(options: CustomDialogOptions): Promise<T>
   /** 關閉所有對話框 */
   closeAll(): void
   /** 關閉指定對話框 */
@@ -89,7 +91,7 @@ export interface DialogService {
 // 對話框事件
 export interface DialogEvents {
   /** 確認事件 */
-  confirm: (id: string, result?: any) => void
+  confirm: (id: string, result?: unknown) => void
   /** 取消事件 */
   cancel: (id: string) => void
   /** 關閉事件 */
@@ -111,5 +113,5 @@ export type ExtractDialogResult<T extends DialogType> = T extends 'confirm'
   : T extends 'alert'
     ? void
     : T extends 'custom'
-      ? any
+      ? unknown
       : never

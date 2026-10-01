@@ -119,7 +119,6 @@ function getDefaultWeather(): WeatherData {
 async function fetchMultiCountryWeatherData(
   countries: string[],
   getCountryCoordinates: (country: string) => Promise<Coordinates>,
-  getCountryFlag: (country: string) => string,
 ): Promise<MultiCountryWeatherData | null> {
   try {
     // 並行載入所有國家的座標和天氣

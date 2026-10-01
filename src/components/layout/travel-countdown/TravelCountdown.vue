@@ -161,9 +161,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 主容器
 // ===================================
@@ -175,40 +172,33 @@ onUnmounted(() => {
   display: flex
   flex-direction: column
   gap: 40px
-
   @include tablet
     gap: 60px
 
 // 單一旅行卡片
 .travel-countdown-widget
-  border: 3px solid $primary-color
+  border: 2px solid $nb-ink
   border-radius: 20px
   padding: 12px
-  background: #fffef7
-  background-image: radial-gradient(circle at 30% 40%, rgba(255, 182, 193, 0.3) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(173, 216, 230, 0.3) 0%, transparent 50%)
-  box-shadow: 5px 5px 15px $shadow-medium
+  background: $nb-card
+  box-shadow: $nb-card-shadow
   position: relative
   transform: rotate(-0.3deg)
   height: 380px
   font-weight: 500
-  color: $primary-color
-
+  color: $nb-ink
   @include tablet
     padding: 15px
     height: auto
     min-height: 200px
-
   // 第二筆旅行的樣式變化
   &.second-travel
     transform: rotate(0.2deg)
-    border-color: $accent-color-1
-    background: #f8f9ff
-    background-image: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 40%)
-
+    border-color: $nb-go
     .widget-title
-      background: $accent-color-1
+      background: $nb-go-soft
+      color: $nb-go-strong
       transform: rotate(-1deg)
-
   // 手繪風格裝飾
   &::before
     content: ''
@@ -228,14 +218,15 @@ onUnmounted(() => {
   position: absolute
   top: -15px
   left: 20px
-  background: $accent-color-2
-  color: $text-white
+  background: $nb-yellow
+  color: $nb-ink
   padding: 8px 14px
-  border-radius: 15px
+  border-radius: 2px
   font-size: 18px
-  font-weight: 600
-  transform: rotate(2deg)
-  box-shadow: 2px 2px 8px $shadow-medium
+  font-weight: 700
+  letter-spacing: 1px
+  transform: rotate(-2deg)
+  box-shadow: 0 2px 0 rgba(58, 51, 44, 0.15)
   z-index: 10
 
 // ===================================
@@ -246,7 +237,6 @@ onUnmounted(() => {
   grid-template-columns: 7fr 3fr
   gap: 25px
   height: 100%
-
   @include mobile-only
     grid-template-columns: 1fr
     gap: 15px

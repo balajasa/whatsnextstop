@@ -1,35 +1,43 @@
 <template>
-  <div class="spots-filter">
-    <!-- 國家頁籤 -->
-    <div class="country-tabs">
-      <button @click="handleCountryChange('')" :class="['country-tab', { active: selectedCountry === '' }]">
-        全部國家
+  <section class="spots-filter" aria-label="篩選景點">
+    <div v-if="countries.length > 1 && countries.length <= MAX_COUNTRY_CHIPS" class="chip-row" role="group"
+      aria-label="國家">
+      <button type="button" class="chip" :class="{ 'is-active': selectedCountry === '' }"
+        :aria-pressed="selectedCountry === ''" @click="handleCountryChange('')">全部國家</button>
+      <button v-for="country in countries" :key="country" type="button" class="chip"
+        :class="{ 'is-active': selectedCountry === country }" :aria-pressed="selectedCountry === country"
+        :title="country" :aria-label="country" @click="handleCountryChange(country)">
+        {{ shortName(country) }}
       </button>
-      <button v-for="country in countries" :key="country" @click="handleCountryChange(country)"
-        :class="['country-tab', { active: selectedCountry === country }]">
-        {{ country }}
+    </div>
+    <label v-else-if="countries.length > MAX_COUNTRY_CHIPS" class="country-select">
+      <span class="country-select__label">國家</span>
+      <select :value="selectedCountry" @change="handleCountryChange(($event.target as HTMLSelectElement).value)">
+        <option value="">全部國家</option>
+        <option v-for="country in countries" :key="country" :value="country">{{ country }}</option>
+      </select>
+    </label>
+
+    <div class="chip-row" role="group" aria-label="類別">
+      <button type="button" class="chip" :class="{ 'is-active': selectedCategory === '' }"
+        :aria-pressed="selectedCategory === ''" @click="handleCategoryChange('')">全部類別</button>
+      <button v-for="option in chipCategoryOptions" :key="option.value" type="button" class="chip"
+        :class="[`cat-${categoryKey(option.value)}`, { 'is-active': selectedCategory === option.value }]"
+        :aria-pressed="selectedCategory === option.value" @click="handleCategoryChange(option.value)">
+        <span class="chip__dot" aria-hidden="true"></span>{{ option.label }}
       </button>
     </div>
 
-    <!-- 搜尋和篩選區 -->
-    <div class="search-filter-row">
-      <SimpleSelect :model-value="selectedCategory" @update:model-value="handleCategoryChange"
-        :options="selectCategoryOptions" placeholder="請選擇類別" class="category-select-wrapper" />
-
-      <SearchInput :model-value="searchKeyword" @update:model-value="handleSearch"
-        @search="handleSearch" placeholder="搜尋景點名稱、描述..." class="search-input-wrapper" />
-
-      <button @click="handleClearFilters" class="clear-btn">重設</button>
+    <div class="search-row">
+      <SearchInput :model-value="searchKeyword" @update:model-value="handleSearch" @search="handleSearch"
+        placeholder="搜尋景點名稱、描述..." />
+      <button type="button" class="reset-btn" @click="handleClearFilters">重設</button>
     </div>
 
-    <!-- 結果統計 -->
-    <div class="results-info">
-      <span class="results-count">
-        共有 {{ totalResults }} 個景點
-        <span v-if="hasActiveFilters" class="filter-indicator">（已套用篩選）</span>
-      </span>
-    </div>
-  </div>
+    <p class="results-info" aria-live="polite">
+      共有 {{ totalResults }} 個景點<span v-if="hasActiveFilters">（已套用篩選）</span>
+    </p>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -37,7 +45,6 @@ import { computed } from 'vue'
 import { event } from 'vue-gtag'
 import type { SpotCategory } from '../../types/spots/spots'
 import SearchInput from '../../components/common/SearchInput.vue'
-import SimpleSelect from '../../components/common/SimpleSelect.vue'
 
 interface Props {
   searchKeyword: string
@@ -59,14 +66,28 @@ const emit = defineEmits<{
   'clear-filters': []
 }>()
 
-// 轉換 categoryOptions 為 SimpleSelect 格式
-const selectCategoryOptions = computed(() => [
-  { value: '', label: '全部類別' },
-  ...props.categoryOptions.map(option => ({
-    value: option.value,
-    label: option.label
-  }))
-])
+// 國家標籤最多幾個，超過改成下拉選單
+const MAX_COUNTRY_CHIPS = 6
+// 國家名稱最多顯示幾個字
+const MAX_COUNTRY_NAME = 5
+
+const shortName = (name: string): string => {
+  const chars = [...name]
+  return chars.length > MAX_COUNTRY_NAME ? `${chars.slice(0, MAX_COUNTRY_NAME).join('')}…` : name
+}
+
+// 類別標籤
+const chipCategoryOptions = computed(() => props.categoryOptions.filter(option => option.value !== ''))
+
+// 類別對應的顏色 key
+const CATEGORY_KEYS: Record<string, string> = {
+  '景點': 'attraction',
+  '美食': 'food',
+  '住宿': 'hotel',
+  '購物': 'shopping',
+  '交通': 'transport'
+}
+const categoryKey = (value: string): string => CATEGORY_KEYS[value] ?? 'attraction'
 
 // 處理類別選擇
 const handleCategoryChange = (value: string) => {
@@ -122,133 +143,142 @@ const handleClearFilters = () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .spots-filter
-  max-width: 100%
-  margin: 0 auto $spacing-xl auto
-  background: $filter-bg
-  border-radius: $border-radius-lg
-  padding: $spacing-lg
-  border: 1px solid $search-input-border
-  box-shadow: 0 4px 20px rgba(23, 24, 75, 0.08)
-
-// 國家頁籤
-.country-tabs
   display: flex
-  gap: 4px
-  flex-wrap: wrap
-  justify-content: center
+  flex-direction: column
+  gap: 14px
   margin-bottom: $spacing-lg
-
+  padding: 16px
+  border: 1px solid $nb-line
+  border-radius: 18px
+  background: $nb-card
+  box-shadow: $nb-card-shadow
   @include tablet
-    gap: 12px
+    padding: 22px 24px
 
-.country-tab
-  flex: 1
-  min-width: 0
-  padding: $spacing-sm $spacing-xs
-  font-size: 12px
-  border: 1px solid $country-tab-border
-  background: white
-  color: $country-tab-text
-  border-radius: $border-radius-md
-  cursor: pointer
-  transition: all 0.3s ease
-  white-space: nowrap
-  font-weight: 500
-
-  @include tablet
-    flex: none
-    padding: $spacing-sm $spacing-md
-    font-size: 14px
-
-  &:hover
-    background: $country-tab-hover
-    border-color: $country-tab-border
-
-  &.active
-    background: $country-tab-active-bg
-    color: $country-tab-active-text
-    border-color: $country-tab-active-bg
-    box-shadow: 0 3px 12px rgba(0, 92, 175, 0.3)
-
-// 搜尋和篩選區
-.search-filter-row
+// 標籤列：手機橫向滑動（右側淡出），平板以上自動換行
+.chip-row
   display: flex
-  flex-direction: column  // 手機版預設垂直排列
-  align-items: stretch
-  gap: $spacing-sm
-  margin-bottom: 12px
+  gap: 8px
+  overflow-x: auto
+  margin: 0 -16px
+  padding: 0 16px
+  scrollbar-width: none
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent)
 
-  // 平板以上：水平排列
+  &::-webkit-scrollbar
+    display: none
+
   @include tablet
-    flex-direction: row
-    align-items: center
-    gap: $spacing-md
-    height: 50px
+    flex-wrap: wrap
+    overflow: visible
+    margin: 0
+    padding: 0
+    mask-image: none
 
-.search-input-wrapper
-  @include tablet
-    flex: 2
-
-  // 覆蓋 SearchInput 元件的高度和樣式
-  :deep(.search-input),
-  :deep(input)
-    height: 46px
-    border-color: $search-input-border
-
-    &:focus
-      border-color: $search-input-focus
-      box-shadow: 0 0 0 3px rgba(0, 92, 175, 0.1)
-
-.category-select-wrapper
-  @include tablet
-    flex: 1
-    min-width: 180px
-
-  // 覆蓋 SimpleSelect 元件的高度和樣式
-  :deep(.select-display),
-  :deep(.option)
-    height: 46px
-    border-color: $search-input-border
-
-  :deep(.select-display)
-    &:hover
-      border-color: $search-input-focus
-
-    &.is-open
-      border-color: $search-input-focus
-      box-shadow: 0 0 0 3px rgba(0, 92, 175, 0.1)
-
-.clear-btn
-  padding: $spacing-sm $spacing-lg
-  background: $clear-btn-bg
-  border: 1px solid $country-tab-border
-  border-radius: $border-radius-md
-  color: $clear-btn-text
+.chip
+  display: inline-flex
+  flex-shrink: 0
+  align-items: center
+  gap: 6px
+  min-height: 38px
+  padding: 0 14px
+  border: 1px solid $nb-line
+  border-radius: 999px
+  background: $nb-card
+  color: $nb-ink
+  font-size: 14px
+  white-space: nowrap
   cursor: pointer
-  transition: all 0.3s ease
-  height: 46px
-  min-width: 100px
-  font-weight: 500
+  transition: background-color 0.2s ease
+
+  &:hover:not(.is-active)
+    background: $nb-paper
+
+  &.is-active
+    border-color: $nb-ink
+    background: $nb-ink
+    color: $nb-card
+    font-weight: 700
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
+
+  @include tablet
+    padding: 0 16px
+
+.chip__dot
+  width: 8px
+  height: 8px
+  border-radius: 50%
+
+.cat-attraction .chip__dot
+  background: $nb-accent
+.cat-food .chip__dot
+  background: #3F6224
+.cat-hotel .chip__dot
+  background: $nb-go-strong
+.cat-shopping .chip__dot
+  background: #5B3F7A
+.cat-transport .chip__dot
+  background: $nb-fun-strong
+
+.chip.is-active .chip__dot
+  background: $nb-card
+
+// 國家下拉（超過 6 國時）
+.country-select
+  display: flex
+  align-items: center
+  gap: 10px
+  font-size: 14px
+  color: $nb-muted
+
+  select
+    min-height: 40px
+    padding: 0 36px 0 14px
+    border: 1.5px solid $nb-line
+    border-radius: 999px
+    background: $nb-card
+    color: $nb-ink
+    font: inherit
+    font-size: 15px
+    cursor: pointer
+
+    &:focus-visible
+      outline: 2px solid $nb-accent
+      outline-offset: 2px
+
+.search-row
+  display: flex
+  gap: 10px
+
+  // 搜尋框吃掉剩餘寬度，重設按鈕不被擠出去
+  :deep(.search-input)
+    flex: 1
+    min-width: 0
+
+.reset-btn
+  flex-shrink: 0
+  min-height: 46px
+  padding: 0 18px
+  border: 1.5px dashed #C9B89F
+  border-radius: 999px
+  background: transparent
+  color: $nb-ink
+  font-size: 14px
+  cursor: pointer
 
   &:hover
-    background: rgba(0, 92, 175, 0.15)
-    border-color: $country-tab-border
-    box-shadow: 0 2px 8px rgba(0, 92, 175, 0.2)
+    background: $nb-paper
 
-// 結果統計
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
+
 .results-info
-  text-align: center
-
-.results-count
-  font-size: 12px
-  color: $spot-text-primary
-  font-weight: 500
-
-.filter-indicator
-  color: $spot-text-secondary
-  font-style: italic
+  margin: 0
+  font-size: 13px
+  color: $nb-muted
 </style>

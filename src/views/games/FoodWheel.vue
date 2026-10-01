@@ -1,7 +1,6 @@
 <template>
-  <div class="foodwheel-container">
-    <!-- 麵包屑 -->
-    <BreadcrumbNav />
+  <div class="foodwheel-page">
+    <PageHeader subtitle="轉一下，讓豆豆幫你決定今天吃什麼" />
 
     <!-- 遊戲區域 -->
     <div class="game-wrapper">
@@ -52,7 +51,7 @@ import { ref } from 'vue'
 import { gsap } from 'gsap'
 import _ from 'lodash'
 import type { Ref } from 'vue'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 
 const wheelRef: Ref<HTMLElement | null> = ref(null)
 const pawAnimated: Ref<boolean> = ref(false)
@@ -69,18 +68,19 @@ const isSpinning: Ref<boolean> = ref(false)
 const newItem: Ref<string> = ref('')
 const result: Ref<string> = ref('')
 
+// 扇形配色：色鉛筆系，深色字都看得清楚
 const colors: string[] = [
-  '#89CDF1', // 水 (MIZU) - 海鮮鍋
-  '#FEEEED', // 桜 (SAKURA) - 櫻花蝦
-  '#8FB069', // 萌黄 (MOEGI) - 海苔湯
-  '#DC143C', // 紅 (KURENAI) - 辣炒年糕
-  '#E6B422', // 山吹 (YAMABUKI) - 柑橘雞
-  '#884898', // 紫 (MURASAKI) - 紫薯麵
-  '#4F94CD', // 浅葱 (ASAGI) - 烤魚
-  '#CA6924'  // 琥珀 (KOHAKU) - 味噌湯
+  '#8FBCDB', // 藍
+  '#F2C94C', // 黃
+  '#E9A07E', // 珊瑚橘
+  '#A9C47F', // 抹茶
+  '#D9B8E0', // 藤紫
+  '#F6E7B0', // 紙膠帶黃
+  '#7FB7AE', // 青磁
+  '#E8D9C0'  // 奶茶
 ]
 
-const getWheelItemStyle = (index: number): Record<string, any> => {
+const getWheelItemStyle = (index: number): Record<string, string> => {
   const sectionAngle = 360 / wheelItems.value.length
   const startAngle = sectionAngle * index
   const endAngle = sectionAngle * (index + 1)
@@ -214,29 +214,22 @@ const updateWheel = (): void => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 主容器
 // ===================================
-.foodwheel-container
-  min-height: 100vh
-  background: $bg-primary
-  padding: $spacing-md
-
 .game-wrapper
   max-width: 100%
   margin: 0 auto
-  // padding: $spacing-lg
-  border: 1px solid $border-light
-  border-radius: $border-radius-xl
-  background: $bg-card
-  box-shadow: 0 25px 50px $shadow-strong
+  padding: 8px
+  border: 1px solid $nb-line
+  border-radius: 18px
+  background: $nb-card
+  box-shadow: $nb-card-shadow
 
   @include tablet
     max-width: 800px
-    padding: $spacing-xl
+    padding: 14px
+    border-radius: 20px
 
   @include desktop
     max-width: 1200px
@@ -251,8 +244,8 @@ const updateWheel = (): void => {
   display: flex
   flex-direction: column
   // margin-top: $spacing-md
-  border-radius: $border-radius-lg
-  background: linear-gradient(135deg, $jp-mizu, $jp-moegi)
+  border-radius: 12px
+  background: $nb-paper
   overflow: hidden
 
   @include desktop
@@ -286,9 +279,7 @@ const updateWheel = (): void => {
 .control-panel
   overflow: hidden
   padding: $spacing-lg
-  background: rgba(255, 255, 255, 0.9)
-  border: 1px solid rgba(255, 255, 255, 0.2)
-  backdrop-filter: blur(10px)
+  background: $nb-card
   border-radius: 0
 
   @include tablet
@@ -328,15 +319,14 @@ const updateWheel = (): void => {
   overflow: hidden
   width: 100%
   height: 100%
-  border: 4px solid $jp-kohaku
+  border: 6px solid #C9B89F
   border-radius: 50%
-  background: $bg-card
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.9), 0 0 0 12px rgba(202, 105, 36, 0.2), inset 0 0 30px rgba(74, 85, 104, 0.05)
+  background: $nb-card
+  box-shadow: 0 6px 16px rgba($nb-ink, 0.18)
   transform: rotate(0deg)
 
   @include tablet
-    border: 6px solid $jp-kohaku
-    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.9), 0 0 0 16px rgba(202, 105, 36, 0.2), inset 0 0 40px rgba(74, 85, 104, 0.05)
+    border-width: 8px
 
 .wheel-center
   position: absolute
@@ -345,23 +335,22 @@ const updateWheel = (): void => {
   z-index: 10
   width: 20px
   height: 20px
-  border: 3px solid $bg-card
+  border: 3px solid #C9B89F
   border-radius: 50%
-  background: $jp-yamabuki
-  box-shadow: 0 4px 15px rgba(230, 180, 34, 0.4)
+  background: $nb-card
+  box-shadow: 0 2px 6px rgba($nb-ink, 0.2)
   transform: translate(-50%, -50%)
 
   @include tablet
     width: 30px
     height: 30px
-    border: 4px solid $bg-card
-    box-shadow: 0 6px 20px rgba(230, 180, 34, 0.4)
+    border-width: 4px
 
 .wheel-item
   display: flex
   align-items: center
   justify-content: center
-  color: $text-primary
+  color: $nb-ink
   font-weight: 500
 
   span
@@ -369,11 +358,9 @@ const updateWheel = (): void => {
     top: var(--text-y)
     left: var(--text-x)
     width: 65px
-    color: $text-primary
+    color: $nb-ink
+    font-weight: 700
     text-align: center
-    // text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8)
-    // letter-spacing: 0.5px
-    // font-weight: 600
     font-size: 14px
     line-height: 1.3
     transform: translate(-50%, -50%) rotate(var(--text-rotation))
@@ -435,14 +422,13 @@ const updateWheel = (): void => {
   overflow: hidden
   padding: $spacing-md $spacing-xl
   margin-top: 12px
-  // border: 3px solid #E65100
-  border-radius: $border-radius-md
-  background: #FF7043
-  box-shadow: 0 12px 35px rgba(230, 81, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(230, 81, 0, 0.8)
-  color: #FFFFFF
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3)
+  border: none
+  border-radius: 999px
+  background: $nb-accent
+  box-shadow: 0 4px 0 $nb-accent-hover
+  color: $nb-card
   letter-spacing: 1px
-  font-weight: 800
+  font-weight: 700
   font-size: 16px
   cursor: pointer
   transition: all 0.3s ease
@@ -452,19 +438,17 @@ const updateWheel = (): void => {
     font-size: 18px
 
   &:hover:not(:disabled)
-    background: #FF5722
-    border-color: #D84315
-    box-shadow: 0 18px 40px rgba(230, 81, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(216, 67, 21, 0.8)
-    transform: translateY(-3px)
+    background: $nb-accent-hover
+    transform: translateY(-2px)
 
-  &:active
-    background: #F4511E
+  &:active:not(:disabled)
+    box-shadow: 0 1px 0 $nb-accent-hover
+    transform: translateY(3px)
 
   &:disabled
-    background: #E5E5E5
-    border-color: #CCCCCC
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1)
-    color: #999999
+    background: $nb-dash
+    box-shadow: none
+    color: $nb-muted
     cursor: not-allowed
     transform: none
 
@@ -477,17 +461,15 @@ const updateWheel = (): void => {
   margin: $spacing-lg auto $spacing-xl
   padding: 16px
   width: 100%
-  // max-width: 400px
-  // min-height: 60px
-  border: 3px solid #8B4513
-  border-radius: 16px
-  background: $almond-soft
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(139, 69, 19, 0.1)
-  color: #2D1810
+  border: 2px dashed $nb-dash-strong
+  border-radius: 14px
+  background: $nb-card
+  box-shadow: $nb-float-shadow
+  color: $nb-ink
+  font-family: $font-display
   text-align: center
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8)
   letter-spacing: 0.5px
-  font-weight: 800
+  font-weight: 700
   font-size: 18px
 
   @include tablet
@@ -519,9 +501,9 @@ const updateWheel = (): void => {
   label
     display: block
     margin-bottom: $spacing-sm
-    color: $text-secondary
+    color: $nb-ink
     letter-spacing: 0.5px
-    font-weight: 500
+    font-weight: 700
     font-size: 16px
 
   input
@@ -529,23 +511,21 @@ const updateWheel = (): void => {
     margin-bottom: $spacing-md
     padding: 8px
     width: 100%
-    border: 2px solid $border-primary
-    border-radius: $border-radius-sm
-    background: rgba(255, 255, 255, 0.9)
-    color: $text-secondary
+    border: 1.5px solid $nb-dash
+    border-radius: 10px
+    background: $nb-card
+    color: $nb-ink
     font-weight: 400
     font-size: 15px
     transition: all 0.3s ease
-    backdrop-filter: blur(5px)
 
     &:focus
       outline: none
-      border-color: $jp-yamabuki
-      background: $bg-card
-      box-shadow: 0 0 0 3px rgba(230, 180, 34, 0.15)
+      border-color: $nb-fun
+      box-shadow: 0 0 0 3px rgba($nb-fun, 0.18)
 
     &::placeholder
-      color: $text-light
+      color: $nb-muted
 
 .items-list
   overflow-y: auto
@@ -555,7 +535,6 @@ const updateWheel = (): void => {
   @include desktop
     display: flex
     flex-direction: column
-    // grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
     gap: $spacing-md
     max-height: 468px
 
@@ -564,21 +543,18 @@ const updateWheel = (): void => {
   align-items: center
   margin-bottom: 12px
   padding: $spacing-md $spacing-lg
-  border: 2px solid rgba(230, 180, 34, 0.2)
-  border-radius: $border-radius-md
-  background: rgba(255, 255, 255, 0.8)
+  border: 1px solid $nb-line
+  border-radius: 12px
+  background: $nb-paper
   transition: all 0.3s ease
-  backdrop-filter: blur(5px)
 
   @include desktop
     margin-bottom: 0
     padding: 12px
 
   &:hover
-    border-color: rgba(230, 180, 34, 0.4)
-    background: $bg-card
-    box-shadow: 0 8px 25px rgba(230, 180, 34, 0.2)
-    // transform: translateY(-2px)
+    border-color: $nb-dash-strong
+    background: $nb-card
 
 .item-input
   flex: 1
@@ -586,69 +562,65 @@ const updateWheel = (): void => {
   margin-right: $spacing-md
   padding: $spacing-sm $spacing-md
   min-width: 0
-  border: 1px solid $border-primary
-  border-radius: $border-radius-sm
-  background: $bg-card
-  color: $text-secondary
+  border: 1px solid $nb-dash
+  border-radius: 8px
+  background: $nb-card
+  color: $nb-ink
   font-weight: 400
   font-size: 15px
   transition: all 0.3s ease
 
   &:focus
     outline: none
-    border-color: $jp-yamabuki
-    box-shadow: 0 0 0 2px rgba(230, 180, 34, 0.15)
+    border-color: $nb-fun
+    box-shadow: 0 0 0 2px rgba($nb-fun, 0.18)
 
 .delete-button
   flex-shrink: 0
   padding: $spacing-sm $spacing-md
   border: none
-  border-radius: $border-radius-sm
-  background: $jp-kurenai
-  color: $text-white
+  border-radius: 999px
+  background: $nb-footprint-soft
+  color: $nb-footprint-strong
   white-space: nowrap
   font-weight: 500
   font-size: 14px
   cursor: pointer
 
   &:hover
-    background: rgba(220, 20, 60, 0.9)
-    box-shadow: 0 6px 15px rgba(220, 20, 60, 0.3)
+    background: $nb-accent
+    color: $nb-card
 
 .add-button
   width: 100%
   padding: 8px
-  border: 2px solid rgba(230, 180, 34, 0.4)
-  border-radius: $border-radius-sm
-  background: rgba(230, 180, 34, 0.15)
-  color: $text-secondary
+  border: 1.5px dashed $nb-dash-strong
+  border-radius: 999px
+  background: transparent
+  color: $nb-ink
   letter-spacing: 0.5px
   font-weight: 500
   font-size: 16px
   cursor: pointer
   transition: all 0.3s ease
-  backdrop-filter: blur(5px)
 
   &:hover
-    border-color: rgba(230, 180, 34, 0.6)
-    background: rgba(230, 180, 34, 0.25)
-    box-shadow: 0 8px 25px rgba(230, 180, 34, 0.25)
+    border-style: solid
+    background: $nb-fun-soft
 
 .update-button
   margin-top: $spacing-lg
   padding: $spacing-md $spacing-xl
   width: 100%
   border: none
-  border-radius: $border-radius-md
-  background: $jp-murasaki
-  box-shadow: 0 10px 30px rgba(136, 72, 152, 0.3)
-  color: $text-white
+  border-radius: 999px
+  background: $nb-ink
+  color: $nb-card
   letter-spacing: 0.5px
-  font-weight: 600
+  font-weight: 700
   font-size: 17px
   cursor: pointer
 
   &:hover
-    background: rgba(136, 72, 152, 0.9)
-    box-shadow: 0 15px 35px rgba(136, 72, 152, 0.4)
+    background: #1F1A16
 </style>

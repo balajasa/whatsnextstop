@@ -1,68 +1,71 @@
 <template>
   <div class="trips-page">
-    <!-- 麵包屑 -->
-    <BreadcrumbNav />
+    <PageHeader subtitle="選一趟旅程，看看這次要去哪些景點" />
 
-    <!-- 載入狀態 -->
-    <div v-if="loading" class="loading-section">
-      <div class="loading-spinner"></div>
-      <p>載入旅程中...</p>
-    </div>
+    <StateView v-if="loading" type="loading" message="載入旅程中..." />
 
-    <!-- 錯誤狀態 -->
-    <div v-if="error" class="error-section">
-      <div class="error-icon">⚠️</div>
-      <p class="error-message">{{ error }}</p>
-      <button @click="loadTrips" class="retry-btn">重試</button>
-    </div>
+    <StateView v-if="error" type="error" :message="error" @action="loadTrips" />
 
-    <!-- 旅程列表 -->
-    <div v-if="!loading && !error" class="trips-list">
-      <div v-if="trips.length === 0" class="empty-state">
-        <div class="empty-icon">✈️</div>
-        <h3>暫無旅程資料</h3>
-        <p>還沒有建立任何旅程</p>
-      </div>
+    <template v-if="!loading && !error">
+      <StateView v-if="trips.length === 0" type="empty" title="還沒有旅程" message="下一趟旅程還在規劃中" />
 
-      <div v-else class="trips-grid">
-        <div v-for="trip in trips" :key="trip.id" class="trip-card" @click="navigateToTripSpots(trip)">
-          <div class="trip-header">
-            <h3 class="trip-name">{{ trip.name }}</h3>
-          </div>
-          <div class="trip-body">
-            <div class="trip-duration">
-              {{ formatTripDuration(trip) }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <ul v-else class="trips-grid">
+        <li v-for="trip in trips" :key="trip.id">
+          <button type="button" class="ticket" @click="navigateToTripSpots(trip)">
+            <span class="ticket__top">
+              <span class="ticket__meta">
+                <span v-if="trip.id === upcomingTripId" class="ticket__badge">即將出發</span>
+                <span v-else class="ticket__year">{{ getYear(trip) }}</span>
+                <svg class="ticket__pin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+                  <circle cx="12" cy="9.5" r="2.5" />
+                </svg>
+              </span>
+              <span class="ticket__name">{{ trip.name }}</span>
+            </span>
+            <span class="ticket__perforation" aria-hidden="true"></span>
+            <span class="ticket__bottom">
+              <span class="ticket__info">
+                <span class="ticket__date">{{ formatTripDuration(trip) }}</span>
+                <span v-if="getDays(trip)" class="ticket__days">{{ getDays(trip) }} 天</span>
+              </span>
+              <span class="ticket__go" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </span>
+          </button>
+        </li>
+      </ul>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { event } from 'vue-gtag'
 import { getAllTripsWithShortId, generateTripSpotsUrl } from '../../services/spots/tripsService'
 import type { TripWithShortId } from '../../services/spots/tripsService'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
+import StateView from '@/components/common/StateView.vue'
 
 const router = useRouter()
 
-// 響應式資料
 const trips = ref<TripWithShortId[]>([])
 const loading = ref(true)
 const error = ref('')
 
-// 方法
 const loadTrips = async () => {
   try {
     loading.value = true
     error.value = ''
     trips.value = await getAllTripsWithShortId()
-  } catch (err: any) {
-    error.value = err.message || '載入旅程列表失敗'
+  } catch (err) {
+    error.value = err instanceof Error && err.message ? err.message : '載入旅程列表失敗'
   } finally {
     loading.value = false
   }
@@ -97,148 +100,173 @@ const formatDate = (dateStr: string): string => {
 }
 
 const formatTripDuration = (trip: TripWithShortId): string => {
-  // 如果有 startDate 和 endDate 欄位
   if (trip.startDate && trip.endDate) {
     return `${formatDate(trip.startDate)} - ${formatDate(trip.endDate)}`
   }
 
-  // 只有開始日期
   if (trip.startDate) {
     return `${formatDate(trip.startDate)} - 結束日期未定`
   }
 
-  // 都沒有的話，顯示規劃狀態
   return "日期尚未決定"
 }
 
-// 生命週期
+const getDays = (trip: TripWithShortId): number | null => {
+  if (!trip.startDate || !trip.endDate) return null
+  const start = new Date(trip.startDate).getTime()
+  const end = new Date(trip.endDate).getTime()
+  if (Number.isNaN(start) || Number.isNaN(end) || end < start) return null
+  return Math.round((end - start) / 86400000) + 1
+}
+
+const getYear = (trip: TripWithShortId): string => {
+  if (!trip.startDate) return '日期未定'
+  const year = new Date(trip.startDate).getFullYear()
+  return Number.isNaN(year) ? '日期未定' : String(year)
+}
+
+const upcomingTripId = computed(() => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const upcoming = trips.value
+    .filter((trip) => trip.startDate && new Date(trip.startDate) >= today)
+    .sort((a, b) => new Date(a.startDate!).getTime() - new Date(b.startDate!).getTime())
+  return upcoming[0]?.id ?? null
+})
+
 onMounted(() => {
   loadTrips()
 })
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
-.trips-page
-  min-height: 100vh
-  padding: 0 $spacing-lg $spacing-lg
-
-  @include tablet
-    padding: 0 $spacing-lg $spacing-xl
-
-  @include desktop
-    padding: 0 $spacing-xl $spacing-xl
-
-// 載入和錯誤狀態
-.loading-section, .error-section
-  text-align: center
-  margin-top: $spacing-lg
-  padding: $spacing-xl
-
-  @include tablet
-    margin-top: $spacing-lg
-    padding: $spacing-2xl
-
-.loading-spinner
-  width: 40px
-  height: 40px
-  border: 3px solid rgba($spot-text-primary, 0.1)
-  border-top: 3px solid $spot-text-primary
-  border-radius: 50%
-  animation: spin 1s linear infinite
-  margin: 0 auto $spacing-lg auto
-
-@keyframes spin
-  to
-    transform: rotate(360deg)
-
-.error-icon
-  font-size: 48px
-  margin-bottom: $spacing-lg
-
-.error-message
-  color: $spot-text-primary
-  margin-bottom: $spacing-lg
-
-.retry-btn
-  padding: $spacing-md $spacing-xl
-  background: $spot-text-primary
-  color: white
-  border: none
-  border-radius: $border-radius-md
-  cursor: pointer
-
-  &:hover
-    background: rgba($spot-text-primary, 0.9)
-
-// 旅程列表
-.trips-list
-  max-width: 1200px
-  margin: 24px auto
-
-.empty-state
-  text-align: center
-  padding: $spacing-xl
-
-  @include tablet
-    padding: $spacing-2xl
-
-  .empty-icon
-    font-size: 64px
-    margin-bottom: $spacing-lg
-
-  h3
-    color: $spot-text-primary
-    margin-bottom: $spacing-md
-
-  p
-    color: rgba($spot-text-primary, 0.6)
-
 .trips-grid
   display: grid
   grid-template-columns: 1fr
-  gap: $spacing-lg
-
-  // 平板以上：多欄佈局
-  @media (min-width: 768px)
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr))
-    gap: $spacing-xl
-
-// 旅程卡片
-.trip-card
-  background: white
-  border-radius: 12px
-  padding: $spacing-lg
-  cursor: pointer
-  transition: all 0.2s ease
-  border: 1px solid $border-light
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)
-
-  // 平板以上：較大 padding
-  @media (min-width: 768px)
-    padding: $spacing-xl
-
-
-.trip-header
-  margin-bottom: $spacing-md
-
-.trip-name
-  font-size: 1.3rem
-  font-weight: 600
-  color: $text-primary
+  gap: $spacing-md
   margin: 0
-  line-height: 1.3
+  padding: 8px 0 0
+  list-style: none
+  @include tablet
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: 28px 24px
+  @include desktop
+    grid-template-columns: repeat(3, minmax(0, 1fr))
 
-.trip-duration
-  font-size: 0.9rem
-  color: $text-secondary
+// 票根卡片
+.ticket
+  --notch: 16px
+  position: relative
+  display: flex
+  flex-direction: column
+  width: 100%
+  padding: 0
+  border: 1px solid $nb-line
+  border-radius: 16px
+  background: $nb-card
+  box-shadow: $nb-card-shadow
+  color: $nb-ink
+  text-align: left
+  cursor: pointer
+  transition: transform 0.2s ease
+
+  &:hover
+    transform: translateY(-3px) rotate(-0.4deg)
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 3px
+
+.ticket__top
+  display: flex
+  flex-direction: column
+  gap: 10px
+  padding: 18px 20px 14px
+  @include tablet
+    padding: 22px 24px 18px
+
+.ticket__meta
   display: flex
   align-items: center
+  justify-content: space-between
+
+.ticket__badge
+  padding: 4px 10px
+  border-radius: 999px
+  background: $nb-yellow
+  font-size: 12px
+  font-weight: 700
+
+.ticket__year
+  font-size: 12px
+  letter-spacing: 2px
+  color: $nb-muted
+
+.ticket__pin
+  color: $nb-go
+
+.ticket__name
+  font-family: $font-display
+  font-size: 22px
+  font-weight: 700
+  line-height: 1.3
+  @include tablet
+    font-size: 26px
+
+// 撕線與兩側缺口
+.ticket__perforation
+  position: relative
+  margin: 0 14px
+  border-top: 2px dashed #D9CBB3
+
+  &::before, &::after
+    content: ''
+    position: absolute
+    top: calc(var(--notch) / -2 - 1px)
+    width: var(--notch)
+    height: var(--notch)
+    border-radius: 50%
+    background: $nb-paper
 
   &::before
-    content: "📅"
-    margin-right: $spacing-xs
+    left: calc(-14px - var(--notch) / 2 - 1px)
+    border-right: 1px solid $nb-line
 
+  &::after
+    right: calc(-14px - var(--notch) / 2 - 1px)
+    border-left: 1px solid $nb-line
+
+.ticket__bottom
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 12px
+  padding: 14px 20px 16px
+  @include tablet
+    padding: 16px 24px 20px
+
+.ticket__info
+  display: flex
+  flex-direction: column
+  gap: 4px
+
+.ticket__date
+  font-size: 14px
+  color: $nb-muted
+
+.ticket__days
+  font-size: 15px
+  font-weight: 700
+  color: $nb-go-strong
+
+.ticket__go
+  display: flex
+  flex-shrink: 0
+  align-items: center
+  justify-content: center
+  width: 40px
+  height: 40px
+  border-radius: 50%
+  background: $nb-go-soft
+  color: $nb-go-strong
 </style>

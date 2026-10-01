@@ -1,9 +1,8 @@
 // ===================================
-// src/services/lobby-banner/lobbyBannerService.ts
 // 前台 Lobby Banner 服務層
 // ===================================
 
-import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
+import { collection, getDocs, query, where, orderBy, type Timestamp } from 'firebase/firestore'
 import { db } from '@/firebase'
 
 // ============================
@@ -17,8 +16,8 @@ export interface LobbyBanner {
   link: string
   order: number
   isActive: boolean
-  createdAt: any
-  updatedAt: any
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 const COLLECTION_NAME = 'lobby_banner'
@@ -27,9 +26,7 @@ const COLLECTION_NAME = 'lobby_banner'
 // API 函數
 // ============================
 
-/**
- * 取得所有啟用中的 Lobby Banner（依順序排列）
- */
+// 取得所有啟用中的 Lobby Banner（依順序排列）
 export const getActiveLobbyBanners = async (): Promise<LobbyBanner[]> => {
   try {
     const q = query(

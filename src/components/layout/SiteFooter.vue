@@ -9,16 +9,20 @@
 
 <style lang="sass" scoped>
 .site-footer
+  display: none
   width: 100%
-  background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%)
-  color: #ffffff
+  background: $nb-footer
+  color: $nb-muted
+
+  @include tablet
+    display: block
 
 .copy-section
   display: flex
   align-items: center
   flex-direction: column
   justify-content: center
-  padding: 10px 0
-  font-size: 10px
+  padding: 16px 0
+  font-size: 12px
   gap: 2px
 </style>
