@@ -1,7 +1,6 @@
 <template>
   <div class="travel-gallery">
-    <!-- 麵包屑導航 -->
-    <BreadcrumbNav />
+    <PageHeader subtitle="每一趟旅程，都貼進這本相簿裡" />
 
     <!-- 載入狀態 -->
     <StateView v-if="loading" type="loading" message="載入旅程中..." class="state-block" />
@@ -37,7 +36,7 @@ import { onMounted, onUnmounted, ref, nextTick, reactive } from 'vue'
 import { useHistoryTripStore } from '@/stores/useHistoryTripStore'
 import { storeToRefs } from 'pinia'
 import { event } from 'vue-gtag'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import StateView from '@/components/common/StateView.vue'
 import TravelPhotoCard from '../history-travel/TravelPhotoCard.vue'
 
@@ -172,37 +171,23 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 主容器
-// ===================================
-.travel-gallery
-  min-height: 100vh
-  background: $bg-primary
-  padding: 0 $spacing-lg $spacing-lg
-
-  @include tablet
-    padding: 0 $spacing-lg $spacing-xl
-
-  @include desktop
-    padding: 0 $spacing-xl $spacing-xl
-
-// ===================================
-// 載入、錯誤狀態
-// ===================================
-.state-block
-  margin-top: $spacing-lg
-
-// ===================================
-// 卡片容器
+// 拍立得牆：手機 1 欄、平板 2 欄、桌機 3 欄
 // ===================================
 .cards-container
-  max-width: 800px
-  margin: $spacing-md auto
-
+  display: grid
+  grid-template-columns: minmax(0, 1fr)
+  gap: 36px 24px
+  padding-top: 12px
+  @include tablet
+    grid-template-columns: repeat(2, minmax(0, 1fr))
+    gap: 44px 28px
   @include desktop
-    max-width: 900px
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+    gap: 48px 32px
 
-  @include large-desktop
-    max-width: 1000px
+  // 載入更多、已顯示全部、空狀態、捲動觸發器都佔滿整排
+  > :not(.gallery-card)
+    grid-column: 1 / -1
 
 // 已載入全部：兩側虛線
 .all-loaded-container

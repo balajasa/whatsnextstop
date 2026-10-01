@@ -1,14 +1,13 @@
 <template>
-  <div class="search-input" :class="{ focused: isFocused }">
-    <!-- 搜尋圖標 -->
-    <div class="search-icon">
-      <div class="icon-search"></div>
-    </div>
-
-    <!-- 輸入框 -->
-    <input ref="inputRef" type="text" class="input-field" :placeholder="placeholder" v-model="inputValue"
-      @input="handleInput" @focus="handleFocus" @blur="handleBlur" />
-  </div>
+  <label class="search-input" :class="{ focused: isFocused }">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
+    <input ref="inputRef" type="search" class="input-field" :placeholder="placeholder" :aria-label="placeholder"
+      v-model="inputValue" @input="handleInput" @focus="handleFocus" @blur="handleBlur" />
+  </label>
 </template>
 
 <script setup lang="ts">
@@ -80,63 +79,42 @@ watch(() => props.modelValue, (newValue) => {
 @use '@/styles/variables' as *
 
 .search-input
-  position: relative
   display: flex
   align-items: center
+  gap: 10px
   width: 100%
-  background: $bg-card
-  border: 1px solid $border-light
-  border-radius: $border-radius-md
-  transition: all 0.2s ease
-  overflow: hidden
+  min-height: 46px
+  padding: 0 16px
+  border: 1.5px solid $nb-line
+  border-radius: 999px
+  background: $nb-paper
+  color: $nb-muted
+  cursor: text
+  transition: border-color 0.2s ease, box-shadow 0.2s ease
 
   &:hover
-    border-color: rgba($primary-color, 0.3)
+    border-color: $nb-dash-strong
 
   &.focused
-    border-color: $primary-color
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.1)
+    border-color: $nb-accent
+    box-shadow: 0 0 0 3px rgba($nb-accent, 0.15)
 
 .search-icon
-  display: flex
-  align-items: center
-  justify-content: center
-  padding: 0 $spacing-md
-  color: $text-secondary
-
-.icon-search
-  width: 18px
-  height: 18px
-  background-image: url('@/assets/img/icon/common/search.png')
-  background-size: contain
-  background-repeat: no-repeat
-  background-position: center
-  opacity: 0.7
-  transition: opacity 0.2s ease
-
-.search-input.focused .icon-search
-  opacity: 1
+  flex-shrink: 0
 
 .input-field
   flex: 1
-  padding: $spacing-md 0
+  min-width: 0
+  padding: 0
   border: none
   outline: none
   background: transparent
-  font-size: 14px
-  color: $text-primary
-  line-height: 1.4
+  color: $nb-ink
+  font-size: 16px // 16px 以上，iOS Safari 才不會自動放大
 
   &::placeholder
-    color: $text-light
+    color: $nb-muted
 
-
-// 響應式設計
-@media (max-width: 480px)
-  .search-input
-    .search-icon
-      padding: $spacing-xs
-
-  .input-field
-    font-size: 16px // 防止 iOS Safari 縮放
+  @media (min-width: 768px)
+    font-size: 14px
 </style>

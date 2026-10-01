@@ -27,9 +27,12 @@ import Footer from '@/components/layout/Footer.vue'
   display: flex
   flex-direction: column
 
-// 主內容區域
+// 主內容區域：寬度與左右留白跟 Header 一致
 .main-container
   flex: 1
+  width: 100%
+  max-width: 1376px
+  margin: 0 auto
   padding: $spacing-md
   padding-bottom: $spacing-xl
 

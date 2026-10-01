@@ -9,6 +9,9 @@
  */
 export const HAS_ITINERARY = false
 
+// 行程表頁的 Canva 內嵌網址，留空就顯示「下一趟旅程」
+export const ITINERARY_CANVA_URL = ''
+
 export interface SectionConfig {
   type: 'info' | 'daily'
   id: string
@@ -31,5 +34,5 @@ export const ITINERARY_SECTIONS: SectionConfig[] = [
   { type: 'daily', id: 'day6', day: 6, name: '第6天', pages: ['page13'] }
 ]
 
-/** 每日行程區塊 */
+// 每日行程區塊
 export const DAILY_SECTIONS = ITINERARY_SECTIONS.filter((section) => section.type === 'daily')

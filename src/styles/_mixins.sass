@@ -1,3 +1,5 @@
+@use '@/styles/variables' as *
+
 // ===================================
 // _mixins.sass
 // 響應式 Mixins 和工具函式
@@ -195,3 +197,24 @@ $order-icons: ('up': 'arrow_up', 'down': 'arrow_down')
     transform: rotate(0deg)
   to
     transform: rotate(360deg)
+
+// -----------------------------------
+// 景點類別標籤顏色（.cat-attraction 等）
+// -----------------------------------
+@mixin nb-category-chips
+  .cat-attraction
+    background: $nb-footprint-soft
+    color: $nb-footprint-strong
+  .cat-food
+    background: #E6F0DD
+    color: #3F6224
+  .cat-hotel
+    background: $nb-go-soft
+    color: $nb-go-strong
+  .cat-shopping
+    background: #EEE6F5
+    color: #5B3F7A
+  .cat-transport
+    background: $nb-fun-soft
+    color: $nb-fun-strong
+

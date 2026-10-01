@@ -1,64 +1,74 @@
 <template>
-  <div class="itinerary-detail-container">
-    <!-- 麵包屑 -->
-    <BreadcrumbNav />
+  <div class="itinerary-detail-page">
+    <PageHeader />
 
-    <!-- 沒有行程時的 Coming Soon 頁面 -->
-    <StateView v-if="!hasItinerary" type="empty" title="下一趟旅程" message="正在擲飛鏢決定中..." class="state-block" />
+    <!-- 沒有行程 -->
+    <StateView v-if="!hasItinerary" type="empty" title="下一趟旅程" message="正在擲飛鏢決定中..." />
 
-    <!-- 有行程時的完整頁面 -->
+    <!-- 有行程 -->
     <template v-else>
-      <!-- 浮動導航目錄 -->
-      <nav class="itinerary-detail-floating-nav" :class="{ 'itinerary-detail-nav-hidden': !showNav }">
-        <div class="itinerary-detail-nav-toggle" @click="toggleNav">
-          <span class="itinerary-detail-nav-icon">📋</span>
-        </div>
-        <div class="itinerary-detail-nav-menu" v-show="navOpen">
-          <div class="itinerary-detail-nav-section">
-            <h4>📋 行程資訊</h4>
-            <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`"
-              @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
-              {{ section.name }}
-            </a>
-          </div>
-          <div class="itinerary-detail-nav-section">
-            <h4>📅 每日行程</h4>
-            <a v-for="section in dailySections" :key="section.id" :href="`#${section.id}`"
-              @click="scrollToSection(section.id)" :class="{ 'itinerary-detail-active': activeSection === section.id }">
-              {{ section.name }}
-            </a>
-          </div>
-        </div>
+      <!-- 手機／平板：橫向章節列，捲動時黏在 Header 下方 -->
+      <nav class="chapter-bar" aria-label="章節">
+        <a v-for="section in allSections" :key="section.id" :ref="(el) => setChipRef(section.id, el)"
+          :href="`#${section.id}`" class="chapter-chip" :class="{ 'is-active': activeSection === section.id }"
+          :aria-current="activeSection === section.id ? 'true' : undefined" @click.prevent="scrollToSection(section.id)">
+          {{ getShortLabel(section) }}
+        </a>
       </nav>
 
-      <!-- 主要內容區域 -->
-      <div class="itinerary-detail-schedule-content">
-        <!-- 所有區域統一渲染 -->
-        <section v-for="section in allSections" :key="section.id" :id="section.id"
-          :class="`itinerary-detail-schedule-section ${getSectionClass(section)}`">
-          <div class="itinerary-detail-section-container">
-            <!-- 顯示圖片 -->
-            <div v-for="(image, index) in generateImages(section)" :key="index"
-              class="itinerary-detail-image-container">
-              <img :src="image.src" :alt="image.alt" class="itinerary-detail-schedule-image" />
-            </div>
+      <div class="detail-layout">
+        <!-- 桌機：左側目錄 -->
+        <nav class="toc" aria-label="行程目錄">
+          <div class="toc__group-title">行程資訊</div>
+          <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`" class="toc__item"
+            :class="{ 'is-active': activeSection === section.id }"
+            :aria-current="activeSection === section.id ? 'true' : undefined"
+            @click.prevent="scrollToSection(section.id)">
+            {{ section.name }}
+          </a>
+          <div class="toc__divider" aria-hidden="true"></div>
+          <div class="toc__group-title">每日行程</div>
+          <div class="toc__days">
+            <a v-for="section in dailySections" :key="section.id" :href="`#${section.id}`" class="toc__item"
+              :class="{ 'is-active': activeSection === section.id }"
+              :aria-current="activeSection === section.id ? 'true' : undefined"
+              @click.prevent="scrollToSection(section.id)">
+              {{ getShortLabel(section) }}
+            </a>
           </div>
-        </section>
+        </nav>
+
+        <!-- 各區塊：紙膠帶標籤 + 圖片 -->
+        <div class="sections">
+          <section v-for="(section, index) in allSections" :key="section.id" :id="section.id"
+            class="detail-section" :aria-labelledby="`${section.id}-label`">
+            <h2 :id="`${section.id}-label`" class="detail-section__label" :class="`tape-${index % 4}`">
+              {{ section.name }}
+            </h2>
+            <div class="detail-section__frame">
+              <img v-for="(image, imageIndex) in generateImages(section)" :key="imageIndex" :src="image.src"
+                :alt="image.alt" class="detail-section__image" />
+            </div>
+          </section>
+        </div>
       </div>
 
       <!-- 回到頂部按鈕 -->
-      <button class="itinerary-detail-back-to-top" @click="scrollToTop" v-show="showBackToTop">
-        ↑
+      <button v-show="showBackToTop" type="button" class="back-to-top" aria-label="回到頂部" @click="scrollToTop">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 19V5M6 11l6-6 6 6" />
+        </svg>
       </button>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Ref } from 'vue'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import StateView from '@/components/common/StateView.vue'
 import { HAS_ITINERARY, ITINERARY_SECTIONS, type SectionConfig } from '@/constants/itinerary'
 
@@ -68,8 +78,6 @@ const route = useRoute()
 const hasItinerary = HAS_ITINERARY
 
 // 響應式數據
-const showNav: Ref<boolean> = ref(true)
-const navOpen: Ref<boolean> = ref(false)
 const showBackToTop: Ref<boolean> = ref(false)
 const activeSection: Ref<string> = ref('cover')
 
@@ -101,27 +109,19 @@ const generateImages = (section: SectionConfig) => {
   }))
 }
 
-// 獲取區域樣式類別
-const getSectionClass = (section: SectionConfig): string => {
-  const classMap: { [key: string]: string } = {
-    'cover': 'cover-section',
-    'flight': 'flight-section',
-    'packing': 'packing-section',
-    'map': 'map-section',
-    'overview': 'overview-section'
-  }
+// 章節列、目錄用的短標籤：每日行程顯示 Day N
+const getShortLabel = (section: SectionConfig): string =>
+  section.type === 'daily' ? `Day ${section.day}` : section.name
 
-  if (section.type === 'daily') {
-    return 'itinerary-detail-daily-section'
-  }
-
-  return classMap[section.id] || ''
+// 章節列：目前區塊的標籤自動捲到看得見的位置
+const chipRefs = new Map<string, HTMLElement>()
+const setChipRef = (id: string, el: unknown): void => {
+  if (el instanceof HTMLElement) chipRefs.set(id, el)
+  else chipRefs.delete(id)
 }
-
-// 切換導航顯示
-const toggleNav = (): void => {
-  navOpen.value = !navOpen.value
-}
+watch(activeSection, (id) => {
+  chipRefs.get(id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+})
 
 // 滾動到指定區域
 const scrollToSection = (sectionId: string): void => {
@@ -132,7 +132,6 @@ const scrollToSection = (sectionId: string): void => {
       block: 'start'
     })
   }
-  navOpen.value = false // 關閉導航選單
 }
 
 // 滾動到頂部
@@ -150,24 +149,23 @@ const handleScroll = (): void => {
   // 控制返回頂部按鈕顯示
   showBackToTop.value = scrollY > 300
 
-  // 控制導航顯示/隱藏
-  showNav.value = scrollY < 100 || navOpen.value
-
   // 更新當前活動區域
   updateActiveSection()
 }
 
 // 更新當前活動區域
 const updateActiveSection = (): void => {
-  const scrollPos = window.scrollY + 100
+  // 扣掉黏在上方的 Header（與手機的章節列）
+  const offset = window.innerWidth >= 1024 ? 120 : 160
 
   for (let i = allSectionIds.value.length - 1; i >= 0; i--) {
     const section = document.getElementById(allSectionIds.value[i])
-    if (section && section.offsetTop <= scrollPos) {
+    if (section && section.getBoundingClientRect().top <= offset) {
       activeSection.value = allSectionIds.value[i]
-      break
+      return
     }
   }
+  activeSection.value = allSectionIds.value[0] ?? ''
 }
 
 // 處理路由中的錨點
@@ -200,365 +198,206 @@ onUnmounted(() => {
 @use '@/styles/mixins' as *
 
 // ===================================
-// 主容器
+// 手機／平板：橫向章節列
 // ===================================
-.itinerary-detail-container
-  width: 100%
-  min-height: 100vh
-  background: $bg-primary
+.chapter-bar
+  position: sticky
+  top: $header-height
+  z-index: $z-header - 1
+  display: flex
+  gap: 8px
+  overflow-x: auto
+  margin: 0 (-$spacing-md) $spacing-lg
+  padding: 10px $spacing-md
+  border-bottom: 1px solid $nb-line
+  background: rgba($nb-paper, 0.96)
+  scrollbar-width: none
+  // 右側淡出，提示可以往右滑
+  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent)
+
+  &::-webkit-scrollbar
+    display: none
 
   @include tablet
-    max-width: 700px
-    margin: 0 auto
+    top: $header-height-desktop
+    margin: 0 (-$spacing-lg) $spacing-lg
+    padding: 10px $spacing-lg
 
   @include desktop
-    max-width: 800px
+    display: none
 
-  @include large-desktop
-    max-width: 900px
+.chapter-chip
+  flex-shrink: 0
+  display: inline-flex
+  align-items: center
+  min-height: 38px
+  padding: 0 16px
+  border: 1px solid $nb-line
+  border-radius: 999px
+  background: $nb-card
+  color: $nb-ink
+  font-size: 14px
+  text-decoration: none
+  white-space: nowrap
+
+  &.is-active
+    border-color: $nb-ink
+    background: $nb-ink
+    color: $nb-card
+    font-weight: 700
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
 
 // ===================================
-// 沒有行程時
+// 版面：桌機左側目錄 + 右側內容
 // ===================================
-.state-block
-  margin: $spacing-lg auto
+.detail-layout
+  @include desktop
+    display: grid
+    grid-template-columns: 240px minmax(0, 1fr)
+    gap: 32px
+    align-items: start
+
+.toc
+  display: none
+
+  @include desktop
+    position: sticky
+    top: calc(#{$header-height-desktop} + 24px)
+    display: flex
+    flex-direction: column
+    gap: 4px
+    padding: 18px 12px
+    border: 1px solid $nb-line
+    border-radius: 16px
+    background: $nb-card
+    box-shadow: $nb-card-shadow
+
+.toc__group-title
+  padding: 0 14px 6px
+  font-size: 13px
+  letter-spacing: 2px
+  color: $nb-muted
+
+.toc__divider
+  margin: 10px 14px
+  border-top: 2px dashed $nb-dash
+
+.toc__days
+  display: grid
+  grid-template-columns: repeat(2, minmax(0, 1fr))
+  gap: 4px
+
+.toc__item
+  padding: 10px 14px
+  border-radius: 10px
+  color: $nb-ink
+  font-size: 15px
+  text-decoration: none
+
+  &:hover
+    background: $nb-paper
+
+  &.is-active
+    background: $nb-go-soft
+    color: $nb-go-strong
+    font-weight: 700
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
 
 // ===================================
-// 主要內容區域
+// 各區塊
 // ===================================
-.itinerary-detail-schedule-content
-  width: 100%
-  padding: 0 $spacing-sm $spacing-lg
-
+.sections
+  display: flex
+  flex-direction: column
+  gap: 28px
+  max-width: 880px
   @include tablet
-    padding: 0 $spacing-md $spacing-xl
+    gap: 36px
 
-  @include desktop
-    padding: 0 $spacing-lg $spacing-2xl
-
-  @include large-desktop
-    padding: 0 $spacing-xl $spacing-2xl
-
-// ===================================
-// 內容區塊
-// ===================================
-.itinerary-detail-schedule-section
-  margin-bottom: $spacing-lg
-
+.detail-section
+  display: flex
+  flex-direction: column
+  gap: 10px
+  // 點目錄跳轉時，標題不會被 Header／章節列蓋住
+  scroll-margin-top: calc(#{$header-height} + 72px)
   @include tablet
-    margin-bottom: $spacing-xl
-
+    scroll-margin-top: calc(#{$header-height-desktop} + 72px)
   @include desktop
-    margin-bottom: $spacing-2xl
+    scroll-margin-top: calc(#{$header-height-desktop} + 24px)
 
-  &:last-child
-    margin-bottom: 0
-
-.itinerary-detail-section-container
-  width: 100%
-
-// ===================================
-// 圖片容器
-// ===================================
-.itinerary-detail-image-container
-  overflow: hidden
-  margin-bottom: $spacing-md
-  border-radius: $border-radius-md
-  background: $bg-card
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
-
+// 紙膠帶標籤
+.detail-section__label
+  align-self: flex-start
+  margin: 0
+  padding: 3px 14px
+  font-size: 15px
+  font-weight: 700
+  color: $nb-ink
+  transform: rotate(-2deg)
   @include tablet
-    margin-bottom: $spacing-lg
-    border-radius: $border-radius-lg
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12)
+    font-size: 16px
 
-  @include desktop
-    margin-bottom: $spacing-xl
-    border-radius: $border-radius-xl
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15)
+.tape-0
+  background: $nb-tape-blue
+.tape-1
+  background: rgba(242, 201, 76, 0.6)
+.tape-2
+  background: rgba(240, 176, 140, 0.6)
+.tape-3
+  background: rgba(170, 200, 140, 0.6)
 
-  &:last-child
-    margin-bottom: 0
+.detail-section__frame
+  display: flex
+  flex-direction: column
+  gap: 10px
+  padding: 10px
+  border: 1px solid $nb-line
+  border-radius: 14px
+  background: $nb-card
+  box-shadow: $nb-card-shadow
+  @include tablet
+    gap: 16px
+    padding: 16px
+    border-radius: 16px
 
-.itinerary-detail-schedule-image
+.detail-section__image
   display: block
   width: 100%
   height: auto
-  transition: transform 0.3s ease
-
-  &:hover
-    @include tablet
-      transform: scale(1.02)
+  border-radius: 8px
 
 // ===================================
-// 浮動導航
+// 回到頂部
 // ===================================
-.itinerary-detail-floating-nav
+.back-to-top
   position: fixed
-  top: 50%
-  right: $spacing-sm
-  z-index: 100
-  transition: all 0.3s ease-in-out
-  transform: translateY(-50%)
-
-  @include tablet
-    right: $spacing-md
-
-  @include desktop
-    right: $spacing-lg
-
-  @include large-desktop
-    right: calc((100vw - 900px) / 2 + #{$spacing-lg})
-
-  // 隱藏狀態
-  &.itinerary-detail-nav-hidden
-    opacity: 0
-    transform: translateY(-50%) translateX(80px)
-    pointer-events: none
-
-    @include tablet
-      transform: translateY(-50%) translateX(100px)
-
-// 導航切換按鈕
-.itinerary-detail-nav-toggle
-  @include flex-center
-  width: 40px
-  height: 40px
-  border-radius: 50%
-  background: $primary-color
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2)
-  color: $text-white
-  cursor: pointer
-  transition: all 0.2s ease
-
-  @include tablet
-    width: 48px
-    height: 48px
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25)
-
-  @include desktop
-    width: 52px
-    height: 52px
-
-  &:hover
-    @include tablet
-      background: rgba(45, 55, 72, 1)
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3)
-      transform: scale(1.1)
-
-.itinerary-detail-nav-icon
-  font-size: 16px
-
-  @include tablet
-    font-size: 20px
-
-  @include desktop
-    font-size: 22px
-
-// 導航選單
-.itinerary-detail-nav-menu
-  position: absolute
-  top: 50%
-  right: 100%
-  margin-right: $spacing-xs
-  padding: $spacing-sm
-  min-width: 160px
-  border: 1px solid $border-light
-  border-radius: $border-radius-md
-  background: $bg-card
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2)
-  transform: translateY(-50%)
-
-  @include tablet
-    margin-right: $spacing-sm
-    padding: $spacing-md
-    min-width: 200px
-    border-radius: $border-radius-lg
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25)
-
-  @include desktop
-    padding: $spacing-lg
-    min-width: 220px
-
-  // 小箭頭指向切換按鈕
-  &::after
-    position: absolute
-    top: 50%
-    right: -8px
-    transform: translateY(-50%)
-    width: 0
-    height: 0
-    border-top: 6px solid transparent
-    border-bottom: 6px solid transparent
-    border-left: 8px solid $bg-card
-    content: ''
-
-    @include tablet
-      right: -10px
-      border-top: 8px solid transparent
-      border-bottom: 8px solid transparent
-      border-left: 10px solid $bg-card
-
-.itinerary-detail-nav-section
-  margin-bottom: $spacing-sm
-
-  @include tablet
-    margin-bottom: $spacing-md
-
-  &:last-child
-    margin-bottom: 0
-
-  h4
-    margin-bottom: $spacing-xs
-    padding-bottom: $spacing-xs
-    border-bottom: 1px solid $border-light
-    color: $text-secondary
-    font-weight: 600
-    font-size: 12px
-
-    @include tablet
-      margin-bottom: $spacing-sm
-      font-size: 14px
-
-    @include desktop
-      font-size: 15px
-
-  a
-    display: block
-    padding: $spacing-xs
-    border-radius: $border-radius-sm
-    color: $text-muted
-    text-decoration: none
-    font-size: 12px
-    transition: all 0.2s ease
-
-    @include tablet
-      padding: $spacing-xs $spacing-sm
-      font-size: 14px
-
-    @include desktop
-      padding: $spacing-sm
-      font-size: 15px
-
-    &:hover
-      background: rgba(56, 178, 172, 0.1)
-      color: $accent-color-1
-
-      @include tablet
-        transform: translateX(4px)
-
-    &.itinerary-detail-active
-      background: rgba(230, 168, 107, 0.1)
-      color: $accent-color-2
-      font-weight: 500
-
-// ===================================
-// 回到頂部按鈕
-// ===================================
-.itinerary-detail-back-to-top
-  @include flex-center
-  position: fixed
-  right: $spacing-sm
+  right: $spacing-md
   // 手機要避開底部 tab
   bottom: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom) + #{$spacing-md})
   z-index: 99
-  width: 40px
-  height: 40px
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 48px
+  height: 48px
   border: none
   border-radius: 50%
-  background: $accent-color-2
-  color: $text-white
-  font-weight: bold
-  font-size: 16px
+  background: $nb-ink
+  color: $nb-card
+  box-shadow: 0 6px 16px rgba(58, 51, 44, 0.25)
   cursor: pointer
-  transition: all 0.3s ease
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 3px
 
   @include tablet
-    right: $spacing-md
-    bottom: $spacing-lg
-    width: 48px
-    height: 48px
-    font-size: 18px
-
-  @include desktop
     right: $spacing-lg
-    bottom: $spacing-xl
-    width: 52px
-    height: 52px
-    font-size: 20px
-
-  @include large-desktop
-    right: calc((100vw - 900px) / 2 + #{$spacing-lg})
-
-  &:hover
-    @include tablet
-      background: rgba(212, 148, 27, 1)
-      box-shadow: 0 8px 25px rgba(230, 168, 107, 0.6)
-      transform: translateY(-4px) scale(1.1)
-
-  &:active
-    transform: translateY(-2px) scale(1.05)
-
-    @include tablet
-      transform: translateY(-2px) scale(1.05)
-
-// ===================================
-// 特殊區塊樣式
-// ===================================
-
-// 封面區塊
-.cover-section
-  .itinerary-detail-image-container
-    position: relative
-
-    &::after
-      position: absolute
-      top: 0
-      right: 0
-      bottom: 0
-      left: 0
-      background: linear-gradient(45deg, transparent 70%, rgba(56, 178, 172, 0.1))
-      content: ''
-      pointer-events: none
-
-// 航班資訊區塊
-.flight-section
-  .itinerary-detail-image-container
-    border-left: 2px solid $accent-color-1
-
-    @include tablet
-      border-left: 4px solid $accent-color-1
-
-// 必帶物品區塊
-.packing-section
-  .itinerary-detail-image-container
-    border-left: 2px solid $accent-color-2
-
-    @include tablet
-      border-left: 4px solid $accent-color-2
-
-// 地圖區塊
-.map-section
-  .itinerary-detail-image-container
-    border-left: 2px solid $primary-color
-
-    @include tablet
-      border-left: 4px solid $primary-color
-
-// 總覽區塊
-.overview-section
-  .itinerary-detail-image-container
-    border-left: 2px solid $timeline-recent
-
-    @include tablet
-      border-left: 4px solid $timeline-recent
-
-// 每日行程區塊
-.itinerary-detail-daily-section
-  .itinerary-detail-image-container
-    position: relative
-    border-left: 2px solid $city-gradient-start
-
-    @include tablet
-      border-left: 4px solid $city-gradient-start
+    bottom: $spacing-lg
 </style>

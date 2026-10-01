@@ -1,7 +1,7 @@
 <template>
   <div class="spots-page">
-    <!-- 麵包屑導航 -->
-    <BreadcrumbNav :manual-items="breadcrumbItems" :manual-show="true" />
+    <PageHeader :title="currentTrip?.name || '景點探索'" :subtitle="pageSubtitle" :breadcrumb-items="breadcrumbItems"
+      :show-breadcrumb="true" />
 
     <!-- 搜尋和篩選區 -->
     <SpotsFilter v-model:search-keyword="searchKeyword" v-model:selected-country="selectedCountry"
@@ -10,10 +10,10 @@
       @clear-filters="clearFilters" />
 
     <!-- 載入狀態 -->
-    <StateView v-if="loading" type="loading" message="載入景點中..." class="state-block" />
+    <StateView v-if="loading" type="loading" message="載入景點中..." />
 
     <!-- 錯誤狀態 -->
-    <StateView v-if="error" type="error" :message="error" class="state-block" @action="loadSpots" />
+    <StateView v-if="error" type="error" :message="error" @action="loadSpots" />
 
     <!-- 景點列表 -->
     <div v-if="!loading && !error" class="spots-list">
@@ -23,7 +23,11 @@
         :message="hasActiveFilters ? '試試調整搜尋條件' : ''" :action-text="hasActiveFilters ? '清除篩選' : ''"
         @action="clearFilters" />
 
+      <!-- 桌機：列表（含表頭）；手機、平板：卡片 -->
       <div v-else class="spots-grid">
+        <div class="spots-list-head" aria-hidden="true">
+          <span>類別</span><span>景點</span><span>營業時間</span><span>票價</span><span></span><span></span>
+        </div>
         <SpotCard v-for="spot in paginatedSpots" :key="spot.id" :spot="spot" class="spot-item" />
       </div>
 
@@ -41,7 +45,7 @@ import { useRoute } from 'vue-router'
 import { event } from 'vue-gtag'
 import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
 import { findTripByShortId } from '../../services/spots/tripsService'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import StateView from '@/components/common/StateView.vue'
 import SpotCard from './SpotCard.vue'
 import SpotsFilter from './SpotsFilter.vue'
@@ -119,6 +123,9 @@ const hasActiveFilters = computed(() => {
     selectedCountry.value !== '' ||
     selectedCategory.value !== ''
 })
+
+// 頁首副標：景點總數（不受篩選影響）
+const pageSubtitle = computed(() => (spots.value.length > 0 ? `景點探索・共 ${spots.value.length} 個景點` : '景點探索'))
 
 // 動態麵包屑
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
@@ -212,37 +219,44 @@ onMounted(() => {
 @use '@/styles/variables' as *
 @use '@/styles/mixins' as *
 
-.spots-page
-  min-height: 100vh
-  background: $spot-bg
-  padding: 0 $spacing-lg $spacing-lg
-
-  @include tablet
-    padding: 0 $spacing-lg $spacing-xl
-
-  @include desktop
-    padding: 0 $spacing-xl $spacing-xl
-
-// SpotsFilter 間距
-:deep(.spots-filter)
-  margin-top: $spacing-lg
-
-// 載入和錯誤狀態
-.state-block
-  margin-top: $spacing-lg
-
-// 景點列表
 .spots-list
-  max-width: 1400px
-  margin: $spacing-md auto 0
+  display: flex
+  flex-direction: column
+  gap: $spacing-lg
 
+// 手機、平板：卡片
 .spots-grid
   display: grid
-  grid-template-columns: 1fr
-  gap: $spacing-xl
-  // margin-bottom: $spacing-2xl
-
-  @include mobile-only
+  grid-template-columns: minmax(0, 1fr)
+  gap: $spacing-md
+  @include tablet
+    grid-template-columns: repeat(2, minmax(0, 1fr))
     gap: $spacing-lg
 
+  // 桌機：整個列表包成一張紙
+  @include desktop
+    display: block
+    overflow: hidden
+    border: 1px solid $nb-line
+    border-radius: 18px
+    background: $nb-card
+    box-shadow: $nb-card-shadow
+
+  // 最後一列不要底線
+  :deep(.spot-item:last-child .spot-row)
+    border-bottom: none
+
+// 表頭：欄位寬度要跟 SpotCardDesktop 一致
+.spots-list-head
+  display: none
+
+  @include desktop
+    display: grid
+    grid-template-columns: 88px minmax(0, 1fr) 180px 150px 96px 44px
+    gap: 16px
+    padding: 12px 20px
+    border-bottom: 2px solid $nb-line
+    font-size: 13px
+    letter-spacing: 1px
+    color: $nb-muted
 </style>
