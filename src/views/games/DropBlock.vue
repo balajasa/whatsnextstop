@@ -1,55 +1,57 @@
 <template>
   <div class="game-wrapper">
-    <!-- 麵包屑 -->
-    <BreadcrumbNav />
+    <PageHeader subtitle="按兩下，看看天上會掉下什麼任務" />
 
-    <div class="game-container">
-      <!-- A區小方塊 (body石頭) -->
-      <div v-if="gameState.taskA" :class="[
-        'cube',
-        'cube-a',
-        { dropping: gameState.aDropping, expanded: gameState.aExpanded }
-      ]" :style="{
-        backgroundImage: `url(${getStoneImage('body')})`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center'
-      }" />
+    <div class="game-frame">
+      <span class="game-frame__tape" aria-hidden="true"></span>
+      <div class="game-container">
+        <!-- A區小方塊 (body石頭) -->
+        <div v-if="gameState.taskA" :class="[
+          'cube',
+          'cube-a',
+          { dropping: gameState.aDropping, expanded: gameState.aExpanded }
+        ]" :style="{
+          backgroundImage: `url(${getStoneImage('body')})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }" />
 
-      <!-- B區小方塊 (head石頭) -->
-      <div v-if="gameState.taskB" :class="[
-        'cube',
-        'cube-b',
-        { dropping: gameState.bDropping, expanded: gameState.bExpanded }
-      ]" :style="{
-        backgroundImage: `url(${getStoneImage('head')})`,
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center'
-      }" />
+        <!-- B區小方塊 (head石頭) -->
+        <div v-if="gameState.taskB" :class="[
+          'cube',
+          'cube-b',
+          { dropping: gameState.bDropping, expanded: gameState.bExpanded }
+        ]" :style="{
+          backgroundImage: `url(${getStoneImage('head')})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }" />
 
-      <!-- A區地圖 -->
-      <div v-if="gameState.aExpanded"
-        :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]">
-        <div class="overlay-text">{{ gameState.taskA }}</div>
-      </div>
+        <!-- A區地圖 -->
+        <div v-if="gameState.aExpanded"
+          :class="['map-result', 'map-a', { show: gameState.aShowMap, merging: gameState.merging }]">
+          <div class="overlay-text">{{ gameState.taskA }}</div>
+        </div>
 
-      <!-- B區地圖 -->
-      <div v-if="gameState.bExpanded"
-        :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]">
-        <div class="overlay-text">{{ gameState.taskB }}</div>
-      </div>
+        <!-- B區地圖 -->
+        <div v-if="gameState.bExpanded"
+          :class="['map-result', 'map-b', { show: gameState.bShowMap, merging: gameState.merging }]">
+          <div class="overlay-text">{{ gameState.taskB }}</div>
+        </div>
 
-      <!-- 最終完整地圖 -->
-      <div v-if="gameState.showFinalMap" :class="['final-map', { show: gameState.finalMapShow }]">
-        <div class="result-map">
-          <!-- 關閉按鈕和文字覆蓋層都在 result-map 內部 -->
-          <button @click="closeFinalMap" class="close-btn">✕</button>
+        <!-- 最終完整地圖 -->
+        <div v-if="gameState.showFinalMap" :class="['final-map', { show: gameState.finalMapShow }]">
+          <div class="result-map">
+            <!-- 關閉按鈕和文字覆蓋層都在 result-map 內部 -->
+            <button @click="closeFinalMap" class="close-btn">✕</button>
 
-          <div class="overlay-text">
-            <div class="task-item">{{ gameState.taskA }}</div>
-            <div class="task-item">＋</div>
-            <div class="task-item">{{ gameState.taskB }}</div>
+            <div class="overlay-text">
+              <div class="task-item">{{ gameState.taskA }}</div>
+              <div class="task-item">＋</div>
+              <div class="task-item">{{ gameState.taskB }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -68,14 +70,14 @@
         📜 查看任務結果
       </button>
 
-      <button @click="reset" class="btn btn-primary">重新開始</button>
+      <button @click="reset" class="btn btn-secondary">重新開始</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, nextTick, ref } from 'vue'
-import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import taskConfig from '../../constants/taskConfig.json'
 import type { GameState } from '../../types/games/drop-block-game'
 // 圖片預載
@@ -194,29 +196,53 @@ defineExpose({
 // 主容器
 // ===================================
 .game-wrapper
-  // min-height: calc(100vh - 100px)
-  background: $bg-primary
-  padding: $spacing-md
+  display: flex
+  flex-direction: column
 
+// 紙框（跟旅行地圖一樣）
+.game-frame
+  position: relative
+  align-self: center
+  width: 100%
+  margin-bottom: $spacing-lg
+  padding: 8px
+  border: 1px solid $nb-line
+  border-radius: 18px
+  background: $nb-card
+  box-shadow: $nb-card-shadow
   @include tablet
-    padding: $spacing-lg
+    width: auto
+    padding: 14px
+    border-radius: 20px
+    margin-bottom: $spacing-xl
 
-  @include desktop
-    padding: $spacing-xl $spacing-2xl
+.game-frame__tape
+  position: absolute
+  top: -11px
+  left: 40px
+  z-index: 2
+  width: 90px
+  height: 24px
+  background: $nb-tape-blue
+  transform: rotate(-4deg)
+  pointer-events: none
+  @include tablet
+    width: 110px
+    height: 28px
 
 // ===================================
 // 提示訊息
 // ===================================
 .info
-  color: $text-secondary
+  color: $nb-muted
   text-align: center
   margin-bottom: $spacing-md
   font-size: 14px
   font-weight: 500
-  background: $bg-card
+  background: $nb-card
   padding: $spacing-sm $spacing-md
   border-radius: $border-radius-md
-  box-shadow: 0 4px 12px $shadow-light
+  box-shadow: $nb-card-shadow
 
   @include tablet
     font-size: 16px
@@ -235,26 +261,22 @@ defineExpose({
   width: 100%
   max-width: none
   aspect-ratio: 4/3
-  margin: 0 auto $spacing-lg
+  margin: 0 auto
   background-image: url('@/assets/img/bg/game_bg.jpg')
   background-size: cover
   background-position: center
   background-repeat: no-repeat
-  border-radius: $border-radius-md
+  border-radius: 12px
   position: relative
-  border: 2px solid $border-primary
-  box-shadow: 0 8px 32px $shadow-medium
+  overflow: hidden
 
   @include tablet
     width: 85vw
     max-width: 600px
-    border-radius: $border-radius-lg
-    margin-bottom: $spacing-xl
 
   @include desktop
     width: 75vw
     max-width: 800px
-    margin-bottom: $spacing-2xl
 
   @include large-desktop
     width: 60vw
@@ -341,7 +363,7 @@ defineExpose({
     transform: translate(-50%, -50%)
     font-weight: 600
     text-align: center
-    color: $text-primary
+    color: $nb-ink
     min-width: 110px
     width: 100%
     font-size: 14px
@@ -419,7 +441,7 @@ defineExpose({
     transform: translate(-50%, -50%)
     border-radius: $border-radius-md
     text-align: center
-    color: $text-primary
+    color: $nb-ink
     max-width: 100%
 
     .task-item
@@ -438,12 +460,12 @@ defineExpose({
   height: 30px
   border: none
   border-radius: 50%
-  background: $accent-color-2
-  color: $text-white
+  background: $nb-ink
+  color: $nb-card
   font-size: 14px
   font-weight: bold
   cursor: pointer
-  box-shadow: 0 4px 12px rgba(230, 168, 107, 0.4)
+  box-shadow: 0 2px 6px rgba($nb-ink, 0.3)
   @include flex-center
 
   @include tablet
@@ -506,12 +528,11 @@ defineExpose({
 .btn
   padding: $spacing-md
   border: none
-  border-radius: $border-radius-md
+  border-radius: 999px
   font-size: 14px
-  font-weight: 500
+  font-weight: 700
   cursor: pointer
   transition: all 0.3s ease
-  @include card-hover
   min-height: 48px
   max-height: 48px
   display: flex
@@ -535,27 +556,27 @@ defineExpose({
     max-height: 56px
 
   &.btn-primary
-    background: $accent-color-2
-    color: $text-white
+    background: $nb-accent
+    color: $nb-card
     margin-top: 6px
-    box-shadow: 0 4px 12px rgba(230, 168, 107, 0.3)
 
     &:hover:not(:disabled)
-      background: #d4941b
-      box-shadow: 0 8px 25px rgba(230, 168, 107, 0.4)
-      transform: translateY(-2px) scale(1.02)
-
-    &:active
-      transform: translateY(0) scale(1)
+      background: $nb-accent-hover
+      transform: translateY(-2px)
 
     &:disabled
-      background: $state-muted
-      color: $text-muted
+      background: $nb-dash
+      color: $nb-muted
       cursor: not-allowed
       transform: none
-      box-shadow: 0 2px 8px $shadow-light
 
-      &:hover
-        transform: none
-        box-shadow: 0 2px 8px $shadow-light
+  &.btn-secondary
+    margin-top: 6px
+    border: 1.5px dashed $nb-dash-strong
+    background: transparent
+    color: $nb-ink
+
+    &:hover
+      border-style: solid
+      background: $nb-card
 </style>

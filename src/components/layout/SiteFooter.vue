@@ -12,14 +12,14 @@
 @use '@/styles/mixins' as *
 
 .site-footer
+  // 手機不顯示（底部已有導覽列），平板以上才出現
+  display: none
   width: 100%
   background: $nb-footer
   color: $nb-muted
-  // 手機：留出底部 tab 的空間
-  margin-bottom: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom))
 
   @include tablet
-    margin-bottom: 0
+    display: block
 
 .copy-section
   display: flex

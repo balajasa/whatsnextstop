@@ -9,12 +9,17 @@
           <div v-if="tripError" class="map-error">
             <StateView type="error" title="地圖載不出來" :message="tripError" @action="loadTrips" />
           </div>
+          <div v-else-if="mapError" class="map-error">
+            <StateView type="error" title="地圖載不出來" :message="mapError" @action="retryMap" />
+          </div>
 
           <template v-else>
-            <WorldMap :visited-countries="visitedCountries" :pins="mapPins" :tile-api-key="cartoApiKey"
-              @pin-click="handlePinClick" />
+            <WorldMap :key="mapKey" :visited-countries="visitedCountries" :pins="mapPins"
+              :tile-api-key="cartoApiKey" :colors="MAP_COLORS" :pin-colors="MAP_PIN_COLORS"
+              :selected-pin-id="selectedPin?.country ?? null" :show-loading="false"
+              @pin-click="handlePinClick" @ready="mapReady = true" @load-error="handleMapError" />
 
-            <div v-if="tripLoading" class="map-overlay map-overlay--loading">
+            <div v-if="tripLoading || !mapReady" class="map-overlay map-overlay--loading">
               <StateView type="loading" message="載入足跡中..." />
             </div>
             <div v-else-if="hasLoaded && visitedCountries.length === 0" class="map-overlay">
@@ -43,6 +48,7 @@ import InfoPanel from './InfoPanel.vue'
 import { useMapDataConverter } from '@/composables/useMapDataConverter'
 import { useHistoryTripStore } from '@/stores/useHistoryTripStore'
 import type { ProcessedPin } from '../../types/travel-map/travel-map'
+import { MAP_COLORS, MAP_PIN_COLORS } from '@/constants/map'
 
 const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY
 
@@ -56,6 +62,23 @@ const loadTrips = async () => {
   hasLoaded.value = true
 }
 const { visitedCountries, mapPins } = useMapDataConverter()
+
+// 地圖本身（smeargle WorldMap）的載入狀態
+const mapReady = ref(false)
+const mapError = ref('')
+const mapKey = ref(0)
+
+const handleMapError = (err: Error) => {
+  console.error('世界地圖載入失敗:', err)
+  mapError.value = '地圖資料出了點狀況，再試一次看看'
+}
+
+// 重新掛載 WorldMap
+const retryMap = () => {
+  mapError.value = ''
+  mapReady.value = false
+  mapKey.value++
+}
 
 // InfoPanel 狀態管理
 const selectedPin = ref<ProcessedPin | null>(null)

@@ -26,6 +26,11 @@ import SiteFooter from '@/components/layout/SiteFooter.vue'
   background: $nb-paper
   display: flex
   flex-direction: column
+  // 手機：留出底部 tab 的空間（原本由 footer 撐開，footer 隱藏後改在這裡）
+  padding-bottom: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom))
+
+  @include tablet
+    padding-bottom: 0
 
 // 主內容區域：寬度與左右留白跟 Header 一致
 .main-container

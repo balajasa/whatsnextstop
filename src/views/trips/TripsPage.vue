@@ -1,6 +1,6 @@
 <template>
   <div class="trips-page">
-    <PageHeader subtitle="點一趟旅程，看看這次要去哪些景點" />
+    <PageHeader subtitle="選一趟旅程，看看這次要去哪些景點" />
 
     <StateView v-if="loading" type="loading" message="載入旅程中..." />
 
