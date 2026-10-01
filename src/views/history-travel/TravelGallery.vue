@@ -159,9 +159,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 拍立得牆：手機 1 欄、平板 2 欄、桌機 3 欄
 // ===================================

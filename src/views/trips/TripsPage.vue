@@ -140,9 +140,6 @@ onMounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .trips-grid
   display: grid
   grid-template-columns: 1fr

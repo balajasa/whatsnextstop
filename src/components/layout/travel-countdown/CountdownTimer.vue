@@ -14,7 +14,6 @@
       </div>
     </div>
 
-    <!-- 顯示完整倒數數字 -->
     <div v-if="countdownData" class="countdown-numbers">
       <div class="number-group">
         <div v-for="(digit, digitIndex) in getCountdownDigits()" :key="`day-${digitIndex}`" class="countdown-digit"
@@ -31,7 +30,6 @@
       </div>
     </div>
 
-    <!-- 載入中 -->
     <div v-else class="countdown-loading">
       <div class="loading-text">計算中...</div>
     </div>
@@ -43,26 +41,15 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { FrontendTravelConfig } from '../../../services/next-travel/nextTravelService'
 import { countryTranslation } from '../../../translation/composables/countryTranslation'
 
-// 初始化 countryTranslation
 const { getCountryFlag } = countryTranslation()
 
-// ===================================
-// Props
-// ===================================
 const props = defineProps<{
   travelData: FrontendTravelConfig
   index: number
 }>()
 
-// ===================================
-// 響應式資料
-// ===================================
 const currentTime = ref(new Date())
 let timer: number | null = null
-
-// ===================================
-// 計算屬性
-// ===================================
 
 // 計算這個旅行的倒數資料
 const countdownData = computed(() => {
@@ -71,7 +58,6 @@ const countdownData = computed(() => {
   const trip = new Date(props.travelData.tripDate)
   const diffMs = trip.getTime() - now.getTime()
 
-  // 如果已經過期，回傳零值
   if (diffMs <= 0) {
     return {
       days: 0,
@@ -120,9 +106,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 左側：倒數區域
 // ===================================

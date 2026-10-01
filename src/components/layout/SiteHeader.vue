@@ -96,9 +96,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .site-header
   position: sticky
   top: 0
@@ -144,7 +141,6 @@ onUnmounted(() => {
   @include tablet
     font-size: 24px
 
-// 頂部導覽（手機隱藏）
 .top-nav
   display: none
   @include tablet
@@ -175,7 +171,6 @@ onUnmounted(() => {
   &:focus-visible
     outline: 2px solid $nb-accent
     outline-offset: 2px
-  // 首頁（無子項目）的 active：深色膠囊
   &.is-active:not(button)
     background: $nb-ink
     color: $nb-card

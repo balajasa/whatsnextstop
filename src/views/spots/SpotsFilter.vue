@@ -143,9 +143,6 @@ const handleClearFilters = () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .spots-filter
   display: flex
   flex-direction: column

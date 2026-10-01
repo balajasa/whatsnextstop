@@ -104,9 +104,6 @@ const handleMapClick = () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .spot-card
   display: flex
   flex-direction: column

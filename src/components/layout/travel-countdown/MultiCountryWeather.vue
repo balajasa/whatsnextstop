@@ -162,9 +162,6 @@ const checkImageExists = (code: string) => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 右側：天氣區域
 // ===================================

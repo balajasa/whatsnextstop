@@ -108,9 +108,6 @@ const handleClose = () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 面板：手機從底部滑上來，平板以上固定在地圖左側
 // ===================================

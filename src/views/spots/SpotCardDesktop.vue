@@ -110,9 +110,6 @@ const handleMapClick = () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // 欄位寬度要跟 SpotsPage 的表頭一致
 .spot-row
   --columns: 88px minmax(0, 1fr) 180px 150px 96px 44px

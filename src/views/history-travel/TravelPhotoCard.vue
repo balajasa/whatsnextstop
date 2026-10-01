@@ -223,9 +223,6 @@ watch(() => shouldLoadPhotos, (newValue) => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 拍立得卡片
 // ===================================

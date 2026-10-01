@@ -145,8 +145,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-
 .simple-select
   position: relative
   width: 100%

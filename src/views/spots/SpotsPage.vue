@@ -190,9 +190,6 @@ onMounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .spots-list
   display: flex
   flex-direction: column

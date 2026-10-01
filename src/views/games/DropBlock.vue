@@ -189,9 +189,6 @@ defineExpose({
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 主容器
 // ===================================

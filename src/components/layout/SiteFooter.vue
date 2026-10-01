@@ -8,11 +8,7 @@
 </template>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .site-footer
-  // 手機不顯示（底部已有導覽列），平板以上才出現
   display: none
   width: 100%
   background: $nb-footer

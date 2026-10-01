@@ -196,9 +196,6 @@ const navigateToDay = (day: number): void => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // ===================================
 // 主要內容包裝
 // ===================================

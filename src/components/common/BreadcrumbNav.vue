@@ -70,9 +70,6 @@ const handleBreadcrumbClick = (item: { text: string; path: string; isHome?: bool
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .breadcrumb-container
   display: flex
   flex-wrap: wrap

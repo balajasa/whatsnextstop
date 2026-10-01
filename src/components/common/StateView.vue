@@ -56,9 +56,6 @@ const defaultTitle = computed(() => (props.type === 'error' ? '哎呀，載入�
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .state-view
   position: relative
   display: flex

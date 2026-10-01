@@ -92,9 +92,6 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeydown))
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // 平板以上不顯示（改用頂部導覽）
 .bottom-tab-root
   @include tablet

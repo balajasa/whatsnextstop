@@ -135,9 +135,6 @@ onMounted(async () => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .world-map
   position: relative
 

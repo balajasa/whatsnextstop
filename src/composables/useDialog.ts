@@ -1,5 +1,3 @@
-// src/composables/useDialog.ts
-
 import { reactive } from 'vue'
 import type {
   DialogInstance,

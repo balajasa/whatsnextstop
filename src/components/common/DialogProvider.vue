@@ -118,9 +118,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .dialog-provider
   position: fixed
   top: 0
@@ -143,7 +140,7 @@ onUnmounted(() => {
   left: 0
   width: 100vw
   height: 100vh
-  background: $overlay-bg
+  background: rgba($nb-ink, 0.4)
   @include flex-center
   padding: $spacing-md
   animation: fadeIn 0.2s ease-out
@@ -175,21 +172,21 @@ onUnmounted(() => {
     transform: scale(1)
 
 .dialog-box
-  background: $bg-card
-  border: 1px solid $border-light
-  border-radius: $border-radius-lg
-  box-shadow: 0 4px 20px $shadow-strong
+  background: $nb-card
+  border: 1px solid $nb-line
+  border-radius: 18px
+  box-shadow: $nb-float-shadow
   overflow: hidden
 
   @include mobile-only
-    border-radius: $border-radius-md
+    border-radius: 14px
 
 .dialog-title
   padding: $spacing-lg $spacing-lg 0 $spacing-lg
   font-size: 1.25rem
-  font-weight: 600
-  color: $primary-color
-  border-bottom: 1px solid $border-light
+  font-family: $font-display
+  font-weight: 700
+  color: $nb-ink
 
   @include tablet
     font-size: 1.375rem
@@ -202,8 +199,8 @@ onUnmounted(() => {
     padding: $spacing-xl
 
 .dialog-message
-  color: $text-primary
-  line-height: 1.5
+  color: $nb-ink
+  line-height: 1.6
   font-size: 1rem
 
 .dialog-actions
@@ -211,7 +208,7 @@ onUnmounted(() => {
   gap: $spacing-sm
   padding: $spacing-md $spacing-lg $spacing-lg $spacing-lg
   justify-content: flex-end
-  border-top: 1px solid $border-light
+  border-top: 2px dashed $nb-dash
 
   @include tablet
     gap: $spacing-md
@@ -222,10 +219,10 @@ onUnmounted(() => {
 
 .dialog-btn
   padding: $spacing-sm $spacing-md
-  border: 1px solid transparent
-  border-radius: $border-radius-md
+  border: 1.5px solid transparent
+  border-radius: 999px
   font-size: 0.875rem
-  font-weight: 500
+  font-weight: 700
   cursor: pointer
   transition: all 0.2s ease
   min-width: 80px
@@ -245,19 +242,19 @@ onUnmounted(() => {
   // 取消按鈕樣式
   &--cancel
     background: transparent
-    border-color: $border-primary
-    color: $text-secondary
+    border-color: $nb-dash-strong
+    border-style: dashed
+    color: $nb-ink
 
     &:hover:not(:disabled)
-      background: rgba(74, 85, 104, 0.1)
-      border-color: $primary-color
-      color: $primary-color
+      border-style: solid
+      background: $nb-paper
 
   // 確認按鈕樣式
   &--confirm
-    background: $accent-color-1
-    color: $text-white
+    background: $nb-accent
+    color: $nb-card
 
     &:hover:not(:disabled)
-      background: rgba(56, 178, 172, 0.8)
+      background: $nb-accent-hover
 </style>

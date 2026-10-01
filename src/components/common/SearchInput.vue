@@ -76,8 +76,6 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-
 .search-input
   display: flex
   align-items: center

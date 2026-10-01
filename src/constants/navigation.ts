@@ -43,7 +43,7 @@ export const NAV_CATEGORIES: NavCategory[] = [
       { name: '旅行地圖', path: '/travelmap' },
       { name: '我的足跡', path: '/travel-gallery' },
     ],
-    matches: ['/travelmap', '/travel-gallery', '/travel-review'],
+    matches: ['/travelmap', '/travel-gallery'],
   },
   {
     key: 'fun',

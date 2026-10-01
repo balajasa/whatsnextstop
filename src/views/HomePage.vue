@@ -18,15 +18,11 @@ import SiteFooter from '@/components/layout/SiteFooter.vue'
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .home
   min-height: 100vh
   background: $nb-paper
   display: flex
   flex-direction: column
-  // 手機：留出底部 tab 的空間（原本由 footer 撐開，footer 隱藏後改在這裡）
   padding-bottom: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom))
 
   @include tablet

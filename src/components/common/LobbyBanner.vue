@@ -117,9 +117,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .lobby-banner
   position: relative
   overflow: hidden

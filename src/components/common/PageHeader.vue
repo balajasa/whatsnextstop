@@ -42,9 +42,6 @@ const accentKey = computed(() => findActiveCategory(route.path) ?? 'go')
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .page-header
   display: flex
   flex-direction: column

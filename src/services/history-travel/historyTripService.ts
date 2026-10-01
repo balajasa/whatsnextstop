@@ -1,4 +1,3 @@
-// services/history-travel/historyTripService.ts
 import { collection, getDocs, doc, getDoc, query, orderBy, where, limit } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { HistoryTrip } from '@/types/history-travel/travel-history'

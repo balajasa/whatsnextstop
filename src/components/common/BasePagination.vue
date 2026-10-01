@@ -160,9 +160,6 @@ watch(() => props.itemsPerPage, (newSize) => {
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 .pagination
   display: flex
   justify-content: center

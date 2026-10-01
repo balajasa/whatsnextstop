@@ -27,9 +27,6 @@ const canvaUrl = ITINERARY_CANVA_URL
 </script>
 
 <style lang="sass" scoped>
-@use '@/styles/variables' as *
-@use '@/styles/mixins' as *
-
 // 紙框
 .canva-frame
   position: relative
