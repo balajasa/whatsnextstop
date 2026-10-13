@@ -5,10 +5,14 @@
 import { collection, getDocs, query, orderBy, where } from 'firebase/firestore'
 import { db } from '../../firebase'
 
+// 旅程國家（舊資料是純字串，新資料是物件；active 為 false 代表後台隱藏）
+export type TripCountry = string | { name: string; active?: boolean }
+
 // 旅程介面定義
 export interface Trip {
   id: string
   name: string
+  countries?: TripCountry[]
   startDate?: string // 旅行開始日期
   endDate?: string // 旅行結束日期
   createdAt: string // 系統建立時間
@@ -117,6 +121,15 @@ export async function getTripById(tripId: string): Promise<Trip | null> {
     console.error(`取得旅程 ${tripId} 失敗:`, error)
     throw error
   }
+}
+
+/**
+ * 取得旅程設定的國家名稱（排除後台隱藏的），維持後台的順序
+ */
+export function getTripCountryNames(trip: Trip): string[] {
+  return (trip.countries ?? [])
+    .filter(country => typeof country === 'string' || country.active !== false)
+    .map(country => (typeof country === 'string' ? country : country.name))
 }
 
 /**

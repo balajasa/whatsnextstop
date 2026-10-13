@@ -13,18 +13,14 @@
     <StateView v-if="error" type="error" :message="error" @action="loadSpots" />
 
     <div v-if="!loading && !error" class="spots-list">
-      <StateView v-if="filteredSpots.length === 0" type="empty" :title="hasActiveFilters ? '找不到符合的景點' : '這趟旅程還沒有景點'"
-        :message="hasActiveFilters ? '試試調整搜尋條件' : ''" :action-text="hasActiveFilters ? '清除篩選' : ''"
-        @action="clearFilters" />
-
-      <div v-else class="spots-grid">
+      <div v-if="filteredSpots.length > 0" class="spots-grid">
         <div class="spots-list-head" aria-hidden="true">
           <span>類別</span><span>景點</span><span>營業時間</span><span>票價</span><span></span><span></span>
         </div>
         <SpotCard v-for="spot in paginatedSpots" :key="spot.id" :spot="spot" class="spot-item" />
       </div>
 
-      <BasePagination :current-page="currentPage" :total-items="totalResults" :items-per-page="itemsPerPage"
+      <BasePagination v-if="filteredSpots.length > 0" :current-page="currentPage" :total-items="totalResults" :items-per-page="itemsPerPage"
         @update:current-page="currentPage = $event" @update:items-per-page="itemsPerPage = $event"
         @change="handlePaginationChange" />
     </div>
@@ -36,7 +32,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { event } from 'vue-gtag'
 import { getAllSpots, getSpotsByTrip, CATEGORY_OPTIONS } from '../../services/spots/spotsService'
-import { findTripByShortId } from '../../services/spots/tripsService'
+import { findTripByShortId, getTripCountryNames } from '../../services/spots/tripsService'
 import PageHeader from '@/components/common/PageHeader.vue'
 import StateView from '@/components/common/StateView.vue'
 import SpotCard from './SpotCard.vue'
@@ -60,9 +56,19 @@ const selectedCategory = ref<SpotCategory | ''>('')
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
+// 國家標籤：以旅程設定的國家為主（照後台順序，沒有景點也顯示）
+// 景點上有、但旅程沒設定的國家補在後面，避免景點篩不到
 const countries = computed(() => {
-  const countrySet = new Set(spots.value.map(spot => spot.country))
-  return Array.from(countrySet).sort()
+  const spotCountries = Array.from(new Set(spots.value.map(spot => spot.country)))
+  if (!currentTrip.value) return spotCountries.sort()
+
+  const tripCountries = getTripCountryNames(currentTrip.value)
+  // 後台隱藏的國家不要補回來
+  const hiddenCountries = (currentTrip.value.countries ?? [])
+    .filter(country => typeof country !== 'string' && country.active === false)
+    .map(country => (typeof country === 'string' ? country : country.name))
+  const extra = spotCountries.filter(country => !tripCountries.includes(country) && !hiddenCountries.includes(country))
+  return [...tripCountries, ...extra]
 })
 
 const categoryOptions = computed(() => {
