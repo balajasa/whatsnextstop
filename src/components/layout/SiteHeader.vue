@@ -97,11 +97,14 @@ onUnmounted(() => {
 
 <style lang="sass" scoped>
 .site-header
+  display: none
   position: sticky
   top: 0
   z-index: $z-header
   border-bottom: 2px dashed $nb-dash
   background: $nb-card
+  @include tablet
+    display: block
 
 .site-header__inner
   display: flex
