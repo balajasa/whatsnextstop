@@ -9,14 +9,31 @@ import { db } from '../../firebase'
 
 const COLLECTION_NAME = 'pelipper'
 
-export type PelipperTripSummary = Pick<Trip, 'id' | 'title' | 'startDate' | 'endDate'>
+export type PelipperTripSummary = Pick<Trip, 'id' | 'title' | 'startDate' | 'endDate'> & {
+  /** 行程地點、路線城市的國家代碼（不重複），首頁飛機窗用來判斷是不是北歐 */
+  countries: string[]
+}
+
+const collectCountries = (data: Partial<Trip>): string[] => {
+  const codes = [
+    ...(data.places ?? []).map((place) => place.country),
+    ...(data.routeMap?.cities ?? []).map((city) => city.country),
+  ]
+  return [...new Set(codes.filter(Boolean))]
+}
 
 export async function getSiteTrips(): Promise<PelipperTripSummary[]> {
   const snapshot = await getDocs(query(collection(db, COLLECTION_NAME), where('showOnSite', '==', true)))
   return snapshot.docs
     .map((doc) => {
       const data = doc.data() as Partial<Trip>
-      return { id: doc.id, title: data.title ?? '', startDate: data.startDate ?? '', endDate: data.endDate ?? '' }
+      return {
+        id: doc.id,
+        title: data.title ?? '',
+        startDate: data.startDate ?? '',
+        endDate: data.endDate ?? '',
+        countries: collectCountries(data),
+      }
     })
     .sort((a, b) => b.startDate.localeCompare(a.startDate))
 }

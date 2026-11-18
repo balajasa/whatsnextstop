@@ -4,8 +4,11 @@
       <!-- Banner 輪播區域 -->
       <LobbyBanner />
 
-      <!-- 有行程：行程手冊 + 每日行程 -->
-      <template v-if="hasItinerary">
+      <!-- 後台打開「前台顯示」的行程：飛機窗 -->
+      <TripWindowCard v-if="siteTrip" :trip="siteTrip" />
+
+      <!-- 舊的 Canva 行程（HAS_ITINERARY）：行程手冊 + 每日行程 -->
+      <template v-else-if="hasItinerary">
         <section class="home-block" aria-labelledby="handbook-title">
           <div class="block-head">
             <span class="block-bar" aria-hidden="true"></span>
@@ -43,8 +46,8 @@
         </section>
       </template>
 
-      <!-- 沒行程：貓咪空狀態卡 -->
-      <section v-else class="empty-trip-card" aria-label="下一趟行程">
+      <!-- 沒行程：貓咪空狀態卡（讀完行程才決定，避免先閃貓咪） -->
+      <section v-else-if="siteTripLoaded" class="empty-trip-card" aria-label="下一趟行程">
         <span class="tape tape--yellow" aria-hidden="true"></span>
         <span class="tape tape--blue" aria-hidden="true"></span>
         <img src="@/assets/img/sym/cat_travel.png" alt="背著背包的虎斑貓" class="empty-trip-card__cat" />
@@ -75,13 +78,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { event } from 'vue-gtag'
 import type { Ref } from 'vue'
 import TravelCountdown from '@/components/layout/travel-countdown/TravelCountdown.vue'
 import LobbyBanner from '@/components/common/LobbyBanner.vue'
+import TripWindowCard from '@/components/home/TripWindowCard.vue'
 import { DAILY_SECTIONS, HAS_ITINERARY } from '@/constants/itinerary'
+import { getSiteTrips, type PelipperTripSummary } from '@/services/pelipper/pelipperService'
 
 // 定義類型接口
 interface MainCard {
@@ -105,6 +110,21 @@ const router = useRouter()
 
 // 行程開關
 const hasItinerary = HAS_ITINERARY
+
+// 後台打開「前台顯示」的行程；好幾趟都開時取開始日期最新的（getSiteTrips 已排好）
+const siteTrip = ref<PelipperTripSummary | null>(null)
+const siteTripLoaded = ref(false)
+
+onMounted(async () => {
+  try {
+    siteTrip.value = (await getSiteTrips())[0] ?? null
+  } catch (error) {
+    // 讀不到就照原本的顯示（舊行程或貓咪）
+    console.error('讀取首頁行程失敗', error)
+  } finally {
+    siteTripLoaded.value = true
+  }
+})
 
 // 主要功能卡片數據
 const mainCards: Ref<MainCard[]> = ref([
