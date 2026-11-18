@@ -28,10 +28,8 @@ export const NAV_CATEGORIES: NavCategory[] = [
     key: 'go',
     name: '要去哪裡',
     icon: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
-    items: [
-      { name: '行程表', path: '/itinerary' },
-      { name: '旅程列表', path: '/trips' },
-    ],
+    // 只剩旅程列表，直接點進去（詳細行程、景點頁也算在這一區）
+    path: '/trips',
     matches: ['/itinerary', '/trips'],
   },
   {

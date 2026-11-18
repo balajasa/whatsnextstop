@@ -113,7 +113,7 @@ const showBackToTop = ref(false)
 const activeSection = ref('')
 
 const breadcrumbItems = computed<BreadcrumbItem[] | null>(() =>
-  outline.value ? [{ text: '行程規劃', path: '/itinerary' }, { text: outline.value.title }] : null
+  outline.value ? [{ text: '旅程列表', path: '/trips' }, { text: outline.value.title }] : null
 )
 
 // 桌機目錄：行程資訊

@@ -3,7 +3,6 @@ import HomePage from '../views/HomePage.vue'
 import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
 import DropBlock from '../views/games/DropBlock.vue'
-import ItineraryPage from '../views/itinerary/ItineraryPage.vue'
 import TravelMap from '../views/travel-map/TravelMap.vue'
 import TravelGallery from '../views/history-travel/TravelGallery.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
@@ -27,15 +26,10 @@ const routes = [
           showBreadcrumb: false,
         },
       },
+      // 行程表合併進旅程列表；舊網址轉過去（ItineraryPage.vue 的 Canva 內嵌先留著沒接路由）
       {
         path: 'itinerary',
-        name: 'Itinerary',
-        component: ItineraryPage,
-        meta: {
-          title: '行程規劃',
-          showBreadcrumb: true,
-          breadcrumb: [{ text: '行程規劃' }],
-        },
+        redirect: '/trips',
       },
       {
         path: 'itinerary/:tripId',
@@ -46,7 +40,7 @@ const routes = [
           title: '詳細行程',
           showBreadcrumb: true,
           breadcrumb: [
-            { text: '行程規劃', path: '/itinerary' },
+            { text: '旅程列表', path: '/trips' },
             { text: '詳細行程' },
           ],
         },
