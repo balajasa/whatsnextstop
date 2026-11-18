@@ -122,26 +122,28 @@ const trackClick = (): void => {
   @include desktop
     gap: 46px
 
+// 行程名稱用方正的黑體（跟旅程列表的桌曆一樣），黑體看起來比手寫字大，字級跟著調小一點
 .trip-title
   margin: 0
   font-weight: 700
-  font-size: 21px
-  font-family: $font-display
-  line-height: 1.3
+  font-size: 20px
+  font-family: $font-body
+  line-height: 1.35
+  letter-spacing: 0.5px
   text-wrap: balance
   @include tablet
-    font-size: 28px
+    font-size: 26px
   @include desktop
-    font-size: 34px
+    font-size: 30px
 
 .trip-sub
   color: $nb-muted
-  font-size: 15px
-  font-family: $font-display
+  font-size: 14px
+  font-family: $font-body
   @include tablet
-    font-size: 18px
+    font-size: 16px
   @include desktop
-    font-size: 20px
+    font-size: 17px
 
 .trip-meta
   color: $nb-muted
