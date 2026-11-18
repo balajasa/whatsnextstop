@@ -28,7 +28,6 @@
             <span class="ticket__bottom">
               <span class="ticket__info">
                 <span class="ticket__date">{{ formatTripDuration(trip) }}</span>
-                <span v-if="getDays(trip)" class="ticket__days">{{ getDays(trip) }} 天</span>
               </span>
               <span class="ticket__go" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -109,14 +108,6 @@ const formatTripDuration = (trip: TripWithShortId): string => {
   }
 
   return "日期尚未決定"
-}
-
-const getDays = (trip: TripWithShortId): number | null => {
-  if (!trip.startDate || !trip.endDate) return null
-  const start = new Date(trip.startDate).getTime()
-  const end = new Date(trip.endDate).getTime()
-  if (Number.isNaN(start) || Number.isNaN(end) || end < start) return null
-  return Math.round((end - start) / 86400000) + 1
 }
 
 const getYear = (trip: TripWithShortId): string => {
@@ -253,11 +244,6 @@ onMounted(() => {
 .ticket__date
   font-size: 14px
   color: $nb-muted
-
-.ticket__days
-  font-size: 15px
-  font-weight: 700
-  color: $nb-go-strong
 
 .ticket__go
   display: flex

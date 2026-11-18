@@ -4,7 +4,6 @@ import MainContent from '../components/layout/MainContent.vue'
 import FoodWheel from '../views/games/FoodWheel.vue'
 import DropBlock from '../views/games/DropBlock.vue'
 import ItineraryPage from '../views/itinerary/ItineraryPage.vue'
-import ItineraryDetail from '../views/itinerary/ItineraryDetail.vue'
 import TravelMap from '../views/travel-map/TravelMap.vue'
 import TravelGallery from '../views/history-travel/TravelGallery.vue'
 import SpotsPage from '../views/spots/SpotsPage.vue'
@@ -39,9 +38,10 @@ const routes = [
         },
       },
       {
-        path: 'itinerary-detail',
+        path: 'itinerary/:tripId',
         name: 'ItineraryDetail',
-        component: ItineraryDetail,
+        component: () => import('../views/itinerary/ItineraryDetail.vue'),
+        props: true,
         meta: {
           title: '詳細行程',
           showBreadcrumb: true,

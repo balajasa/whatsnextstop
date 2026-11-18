@@ -1,261 +1,263 @@
 <template>
   <div class="itinerary-detail-page">
-    <PageHeader />
+    <!-- 只放麵包屑，不放大標題 -->
+    <BreadcrumbNav class="detail-header" :manual-items="breadcrumbItems" />
 
-    <!-- 沒有行程 -->
-    <StateView v-if="!hasItinerary" type="empty" title="下一趟旅程" message="正在擲飛鏢決定中..." />
-
-    <!-- 有行程 -->
-    <template v-else>
-      <!-- 手機／平板：橫向章節列，捲動時黏在 Header 下方 -->
-      <nav class="chapter-bar" aria-label="章節">
-        <a v-for="section in allSections" :key="section.id" :ref="(el) => setChipRef(section.id, el)"
-          :href="`#${section.id}`" class="chapter-chip" :class="{ 'is-active': activeSection === section.id }"
-          :aria-current="activeSection === section.id ? 'true' : undefined" @click.prevent="scrollToSection(section.id)">
-          {{ getShortLabel(section) }}
+    <div class="detail-layout" :class="{ 'has-toc': outline }">
+      <!-- 桌機：左側目錄 -->
+      <nav v-if="outline" class="toc" aria-label="行程目錄">
+        <div class="toc__group-title">行程資訊</div>
+        <a v-for="item in infoItems" :key="item.id" :href="`#${item.id}`" class="toc__item"
+          :class="{ 'is-active': activeSection === item.id }"
+          :aria-current="activeSection === item.id ? 'true' : undefined" @click.prevent="scrollToSection(item.id)">
+          {{ item.label }}
         </a>
-      </nav>
-
-      <div class="detail-layout">
-        <!-- 桌機：左側目錄 -->
-        <nav class="toc" aria-label="行程目錄">
-          <div class="toc__group-title">行程資訊</div>
-          <a v-for="section in infoSections" :key="section.id" :href="`#${section.id}`" class="toc__item"
-            :class="{ 'is-active': activeSection === section.id }"
-            :aria-current="activeSection === section.id ? 'true' : undefined"
-            @click.prevent="scrollToSection(section.id)">
-            {{ section.name }}
-          </a>
+        <template v-if="dayItems.length">
           <div class="toc__divider" aria-hidden="true"></div>
           <div class="toc__group-title">每日行程</div>
           <div class="toc__days">
-            <a v-for="section in dailySections" :key="section.id" :href="`#${section.id}`" class="toc__item"
-              :class="{ 'is-active': activeSection === section.id }"
-              :aria-current="activeSection === section.id ? 'true' : undefined"
-              @click.prevent="scrollToSection(section.id)">
-              {{ getShortLabel(section) }}
+            <a v-for="item in dayItems" :key="item.id" :href="`#${item.id}`" class="toc__item"
+              :class="{ 'is-active': activeSection === item.id }"
+              :aria-current="activeSection === item.id ? 'true' : undefined" @click.prevent="scrollToSection(item.id)">
+              {{ item.label }}
             </a>
           </div>
-        </nav>
+        </template>
+      </nav>
 
-        <!-- 各區塊：紙膠帶標籤 + 圖片 -->
-        <div class="sections">
-          <section v-for="(section, index) in allSections" :key="section.id" :id="section.id"
-            class="detail-section" :aria-labelledby="`${section.id}-label`">
-            <h2 :id="`${section.id}-label`" class="detail-section__label" :class="`tape-${index % 4}`">
-              {{ section.name }}
-            </h2>
-            <div class="detail-section__frame">
-              <img v-for="(image, imageIndex) in generateImages(section)" :key="imageIndex" :src="image.src"
-                :alt="image.alt" class="detail-section__image" />
-            </div>
-          </section>
-        </div>
+      <!-- 行程內容：pelipper 套件（載入中、找不到、Coming Soon 也由它顯示） -->
+      <div class="trip-content">
+        <PelipperTrip :trip-id="tripId" :is-visible="isVisible" @loaded="onLoaded" />
       </div>
+    </div>
 
-      <!-- 回到頂部按鈕 -->
-      <button v-show="showBackToTop" type="button" class="back-to-top" aria-label="回到頂部" @click="scrollToTop">
+    <!-- 手機／平板：懸浮目錄，平常在回到頂部的位置，回到頂部出現時往上疊一格 -->
+    <!-- 區塊照頁面順序，每日行程的天數排成方格接在下面（5 欄），不用在選單裡捲 -->
+    <template v-if="outline">
+      <div v-if="menuOpen" class="float-menu-backdrop" aria-hidden="true" @click="closeMenu"></div>
+      <nav v-show="menuOpen" id="float-menu" ref="menuPanel" class="float-menu" :class="{ 'is-raised': showBackToTop }"
+        aria-label="章節">
+        <template v-for="section in outline.sections" :key="section.id">
+          <a :href="`#${section.id}`" class="float-menu__item" :class="{ 'is-active': isSectionActive(section) }"
+            :aria-current="isSectionActive(section) ? 'true' : undefined" @click.prevent="jumpFromMenu(section.id)">
+            {{ section.name }}
+          </a>
+          <div v-if="section.type === 'daily' && dayItems.length" class="float-menu__days">
+            <a v-for="day in dayItems" :key="day.id" :href="`#${day.id}`" class="float-menu__day"
+              :class="{ 'is-active': activeSection === day.id }"
+              :aria-current="activeSection === day.id ? 'true' : undefined" :aria-label="`${day.label}，${day.date}`"
+              @click.prevent="jumpFromMenu(day.id)">
+              <span class="float-menu__day-number">D{{ day.dayNumber }}</span>
+              <span class="float-menu__day-date">{{ day.date }}</span>
+            </a>
+          </div>
+        </template>
+      </nav>
+      <button ref="menuButton" type="button" class="float-menu-button"
+        :class="{ 'is-raised': showBackToTop, 'is-open': menuOpen }" :aria-expanded="menuOpen"
+        aria-controls="float-menu" :aria-label="menuOpen ? '關閉目錄' : '開啟目錄'" @click="toggleMenu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 19V5M6 11l6-6 6 6" />
+          <path v-if="menuOpen" d="M6 6l12 12M18 6L6 18" />
+          <path v-else d="M4 7h16M4 12h16M4 17h10" />
         </svg>
       </button>
     </template>
+
+    <!-- 回到頂部按鈕 -->
+    <button v-show="showBackToTop" type="button" class="back-to-top" aria-label="回到頂部" @click="scrollToTop">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5M6 11l6-6 6 6" />
+      </svg>
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
-import type { Ref } from 'vue'
-import PageHeader from '@/components/common/PageHeader.vue'
-import StateView from '@/components/common/StateView.vue'
-import { HAS_ITINERARY, ITINERARY_SECTIONS, type SectionConfig } from '@/constants/itinerary'
+import { PelipperTrip, setFirestore, type Trip, type TripOutline } from '@pelipper/pelipper'
+import '@pelipper/pelipper/style.css'
+import BreadcrumbNav from '@/components/common/BreadcrumbNav.vue'
+import { db } from '@/firebase'
+import type { BreadcrumbItem } from '@/types/common/ui-layout'
+
+// pelipper 用前台的 Firestore
+setFirestore(db)
+
+const props = defineProps<{ tripId: string }>()
 
 const route = useRoute()
 
-// 行程開關
-const hasItinerary = HAS_ITINERARY
+// 前台只顯示後台打開「前台顯示」的行程，其他顯示 Coming Soon
+const isVisible = (trip: Trip): boolean => trip.showOnSite === true
 
-// 響應式數據
-const showBackToTop: Ref<boolean> = ref(false)
-const activeSection: Ref<string> = ref('cover')
+interface MenuItem {
+  id: string
+  label: string
+}
 
-// 統一區域配置
-const allSections: Ref<SectionConfig[]> = ref(ITINERARY_SECTIONS)
+interface DayItem extends MenuItem {
+  dayNumber: number
+  date: string
+}
 
-// 計算屬性：行程資訊區域
-const infoSections = computed(() =>
-  allSections.value.filter(section => section.type === 'info')
+const shortDate = (date: string): string => {
+  const [, month, day] = date.split('-')
+  return month && day ? `${Number(month)}/${Number(day)}` : date
+}
+
+const outline = ref<TripOutline | null>(null)
+const showBackToTop = ref(false)
+const activeSection = ref('')
+
+const breadcrumbItems = computed<BreadcrumbItem[] | null>(() =>
+  outline.value ? [{ text: '行程規劃', path: '/itinerary' }, { text: outline.value.title }] : null
 )
 
-// 計算屬性：每日行程區域
-const dailySections = computed(() =>
-  allSections.value.filter(section => section.type === 'daily')
+// 桌機目錄：行程資訊
+const infoItems = computed<MenuItem[]>(() =>
+  (outline.value?.sections ?? [])
+    .filter((section) => section.type !== 'daily')
+    .map((section) => ({ id: section.id, label: section.name }))
 )
 
-// 計算屬性：所有區域ID供滾動檢測使用
-const allSectionIds = computed(() =>
-  allSections.value.map(section => section.id)
-)
-
-// 動態生成圖片配置
-const generateImages = (section: SectionConfig) => {
-  return section.pages.map((filename, index) => ({
-    src: new URL(`../../assets/img/itinerary/${filename}.jpg`, import.meta.url).href,
-    alt: section.pages.length > 1
-      ? `${section.name} - 第${index + 1}頁`
-      : section.name
+const dayItems = computed<DayItem[]>(() =>
+  (outline.value?.days ?? []).map((day) => ({
+    id: day.anchor,
+    label: `Day ${day.dayNumber}`,
+    dayNumber: day.dayNumber,
+    date: shortDate(day.date),
   }))
+)
+
+const pageItems = computed<MenuItem[]>(() =>
+  (outline.value?.sections ?? []).flatMap((section) =>
+    section.type === 'daily' && dayItems.value.length ? dayItems.value : [{ id: section.id, label: section.name }]
+  )
+)
+
+const isSectionActive = (section: TripOutline['sections'][number]): boolean =>
+  activeSection.value === section.id ||
+  (section.type === 'daily' && dayItems.value.some((day) => day.id === activeSection.value))
+
+// 手機／平板的目錄選單
+const menuOpen = ref(false)
+const menuPanel = ref<HTMLElement | null>(null)
+const menuButton = ref<HTMLButtonElement | null>(null)
+
+const openMenu = async (): Promise<void> => {
+  menuOpen.value = true
+  await nextTick()
+  // 選單比螢幕高時，先捲到目前所在的那一項
+  menuPanel.value?.querySelector<HTMLElement>('.is-active')?.scrollIntoView({ block: 'nearest' })
+  menuPanel.value?.querySelector<HTMLElement>('a')?.focus({ preventScroll: true })
 }
 
-// 章節列、目錄用的短標籤：每日行程顯示 Day N
-const getShortLabel = (section: SectionConfig): string =>
-  section.type === 'daily' ? `Day ${section.day}` : section.name
-
-// 章節列：目前區塊的標籤自動捲到看得見的位置
-const chipRefs = new Map<string, HTMLElement>()
-const setChipRef = (id: string, el: unknown): void => {
-  if (el instanceof HTMLElement) chipRefs.set(id, el)
-  else chipRefs.delete(id)
+const closeMenu = (): void => {
+  menuOpen.value = false
 }
-watch(activeSection, (id) => {
-  chipRefs.get(id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-})
 
-// 滾動到指定區域
+const toggleMenu = (): void => {
+  if (menuOpen.value) closeMenu()
+  else openMenu()
+}
+
+const jumpFromMenu = (sectionId: string): void => {
+  closeMenu()
+  scrollToSection(sectionId)
+}
+
+// Esc 關掉選單，焦點回到按鈕
+const handleKeydown = (event: KeyboardEvent): void => {
+  if (event.key !== 'Escape' || !menuOpen.value) return
+  closeMenu()
+  menuButton.value?.focus()
+}
+
+// 上方被蓋住的高度：Header（手機 56、平板以上 72）＋一點留白
+const scrollOffset = (): number => (window.innerWidth >= 768 ? 72 : 56) + 16
+
 const scrollToSection = (sectionId: string): void => {
   const element = document.getElementById(sectionId)
-  if (element) {
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    })
-  }
+  if (!element) return
+  const top = element.getBoundingClientRect().top + window.scrollY - scrollOffset()
+  window.scrollTo({ top, behavior: 'smooth' })
 }
 
-// 滾動到頂部
 const scrollToTop = (): void => {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-// 處理滾動事件
-const handleScroll = (): void => {
-  const scrollY = window.scrollY
-
-  // 控制返回頂部按鈕顯示
-  showBackToTop.value = scrollY > 300
-
-  // 更新當前活動區域
-  updateActiveSection()
-}
-
-// 更新當前活動區域
+// 更新目前所在的區塊：最後一個已經捲到上方的
 const updateActiveSection = (): void => {
-  // 扣掉黏在上方的 Header（與手機的章節列）
-  const offset = window.innerWidth >= 1024 ? 120 : 160
-
-  for (let i = allSectionIds.value.length - 1; i >= 0; i--) {
-    const section = document.getElementById(allSectionIds.value[i])
-    if (section && section.getBoundingClientRect().top <= offset) {
-      activeSection.value = allSectionIds.value[i]
+  const threshold = scrollOffset() + 8
+  const items = pageItems.value
+  for (let i = items.length - 1; i >= 0; i--) {
+    const section = document.getElementById(items[i].id)
+    if (section && section.getBoundingClientRect().top <= threshold) {
+      activeSection.value = items[i].id
       return
     }
   }
-  activeSection.value = allSectionIds.value[0] ?? ''
+  activeSection.value = items[0]?.id ?? ''
 }
 
-// 處理路由中的錨點
-const handleRouteHash = (): void => {
+const handleScroll = (): void => {
+  showBackToTop.value = window.scrollY > 300
+  if (outline.value) updateActiveSection()
+}
+
+const onLoaded = async (loaded: TripOutline | null): Promise<void> => {
+  outline.value = loaded
+  if (!loaded) return
+  await nextTick()
+  updateActiveSection()
   if (route.hash) {
-    const sectionId = route.hash.substring(1) // 移除 # 符號
-    setTimeout(() => {
-      scrollToSection(sectionId)
-    }, 100)
+    const sectionId = route.hash.substring(1)
+    setTimeout(() => scrollToSection(sectionId), 100)
   }
 }
 
-// 在元件載入時執行
+// 換行程時先收起舊的目錄，等新的大綱
+watch(() => props.tripId, () => {
+  outline.value = null
+  activeSection.value = ''
+  closeMenu()
+})
+
 onMounted(() => {
-  if (hasItinerary) {
-    window.addEventListener('scroll', handleScroll)
-    handleRouteHash() // 處理錨點跳轉
-  }
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
-  if (hasItinerary) {
-    window.removeEventListener('scroll', handleScroll)
-  }
+  window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
 <style lang="sass" scoped>
 // ===================================
-// 手機／平板：橫向章節列
-// ===================================
-.chapter-bar
-  position: sticky
-  top: $header-height
-  z-index: $z-header - 1
-  display: flex
-  gap: 8px
-  overflow-x: auto
-  margin: 0 (-$spacing-md) $spacing-lg
-  padding: 10px $spacing-md
-  border-bottom: 1px solid $nb-line
-  background: rgba($nb-paper, 0.96)
-  scrollbar-width: none
-  // 右側淡出，提示可以往右滑
-  mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent)
-
-  &::-webkit-scrollbar
-    display: none
-
+// 頁首：只有麵包屑
+.detail-header
+  margin-bottom: $spacing-lg
   @include tablet
-    top: $header-height-desktop
-    margin: 0 (-$spacing-lg) $spacing-lg
-    padding: 10px $spacing-lg
-
-  @include desktop
-    display: none
-
-.chapter-chip
-  flex-shrink: 0
-  display: inline-flex
-  align-items: center
-  min-height: 38px
-  padding: 0 16px
-  border: 1px solid $nb-line
-  border-radius: 999px
-  background: $nb-card
-  color: $nb-ink
-  font-size: 14px
-  text-decoration: none
-  white-space: nowrap
-
-  &.is-active
-    border-color: $nb-ink
-    background: $nb-ink
-    color: $nb-card
-    font-weight: 700
-
-  &:focus-visible
-    outline: 2px solid $nb-accent
-    outline-offset: 2px
+    margin-bottom: 28px
 
 // ===================================
 // 版面：桌機左側目錄 + 右側內容
 // ===================================
-.detail-layout
+.detail-layout.has-toc
   @include desktop
     display: grid
     grid-template-columns: 240px minmax(0, 1fr)
     gap: 32px
     align-items: start
+
+.trip-content
+  min-width: 0
 
 .toc
   display: none
@@ -266,6 +268,9 @@ onUnmounted(() => {
     display: flex
     flex-direction: column
     gap: 4px
+    max-height: calc(100vh - #{$header-height-desktop} - 48px)
+    overflow-y: auto
+    overscroll-behavior: contain
     padding: 18px 12px
     border: 1px solid $nb-line
     border-radius: 16px
@@ -309,65 +314,10 @@ onUnmounted(() => {
 // ===================================
 // 各區塊
 // ===================================
-.sections
-  display: flex
-  flex-direction: column
-  gap: 28px
-  max-width: 880px
+.itinerary-detail-page
+  --float-base: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom) + #{$spacing-md})
   @include tablet
-    gap: 36px
-
-.detail-section
-  display: flex
-  flex-direction: column
-  gap: 10px
-  // 點目錄跳轉時，標題不會被 Header／章節列蓋住
-  scroll-margin-top: calc(#{$header-height} + 72px)
-  @include tablet
-    scroll-margin-top: calc(#{$header-height-desktop} + 72px)
-  @include desktop
-    scroll-margin-top: calc(#{$header-height-desktop} + 24px)
-
-// 紙膠帶標籤
-.detail-section__label
-  align-self: flex-start
-  margin: 0
-  padding: 3px 14px
-  font-size: 15px
-  font-weight: 700
-  color: $nb-ink
-  transform: rotate(-2deg)
-  @include tablet
-    font-size: 16px
-
-.tape-0
-  background: $nb-tape-blue
-.tape-1
-  background: rgba(242, 201, 76, 0.6)
-.tape-2
-  background: rgba(240, 176, 140, 0.6)
-.tape-3
-  background: rgba(170, 200, 140, 0.6)
-
-.detail-section__frame
-  display: flex
-  flex-direction: column
-  gap: 10px
-  padding: 10px
-  border: 1px solid $nb-line
-  border-radius: 14px
-  background: $nb-card
-  box-shadow: $nb-card-shadow
-  @include tablet
-    gap: 16px
-    padding: 16px
-    border-radius: 16px
-
-.detail-section__image
-  display: block
-  width: 100%
-  height: auto
-  border-radius: 8px
+    --float-base: #{$spacing-lg}
 
 // ===================================
 // 回到頂部
@@ -375,8 +325,7 @@ onUnmounted(() => {
 .back-to-top
   position: fixed
   right: $spacing-md
-  // 手機要避開底部 tab
-  bottom: calc(#{$bottom-tab-height} + env(safe-area-inset-bottom) + #{$spacing-md})
+  bottom: var(--float-base)
   z-index: 99
   display: flex
   align-items: center
@@ -396,5 +345,140 @@ onUnmounted(() => {
 
   @include tablet
     right: $spacing-lg
-    bottom: $spacing-lg
+
+// ===================================
+// 手機／平板：懸浮目錄
+// ===================================
+$float-step: 60px
+
+.float-menu-button
+  position: fixed
+  right: $spacing-md
+  bottom: var(--float-base)
+  z-index: 101
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 48px
+  height: 48px
+  border: 1.5px solid $nb-ink
+  border-radius: 50%
+  background: $nb-card
+  color: $nb-ink
+  box-shadow: 0 6px 16px rgba(58, 51, 44, 0.2)
+  cursor: pointer
+  transition: bottom 0.2s
+
+  &.is-raised
+    bottom: calc(var(--float-base) + #{$float-step})
+
+  &.is-open
+    background: $nb-ink
+    color: $nb-card
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 3px
+
+  @include tablet
+    right: $spacing-lg
+
+  @include desktop
+    display: none
+
+.float-menu-backdrop
+  position: fixed
+  inset: 0
+  z-index: 100
+  background: rgba($nb-ink, 0.12)
+
+  @include desktop
+    display: none
+
+.float-menu
+  position: fixed
+  right: $spacing-md
+  bottom: calc(var(--float-base) + #{$float-step})
+  z-index: 101
+  display: flex
+  flex-direction: column
+  gap: 2px
+  width: min(300px, calc(100vw - #{$spacing-md * 2}))
+  max-height: calc(100vh - var(--float-base) - #{$float-step * 2})
+  overflow-y: auto
+  overscroll-behavior: contain
+  padding: 10px
+  border: 1px solid $nb-line
+  border-radius: 16px
+  background: $nb-card
+  box-shadow: $nb-float-shadow
+
+  &.is-raised
+    bottom: calc(var(--float-base) + #{$float-step * 2})
+    max-height: calc(100vh - var(--float-base) - #{$float-step * 3})
+
+  @include tablet
+    right: $spacing-lg
+
+  @include desktop
+    display: none !important
+
+.float-menu__item
+  display: flex
+  align-items: center
+  min-height: 44px
+  padding: 0 14px
+  border-radius: 10px
+  color: $nb-ink
+  font-size: 15px
+  text-decoration: none
+
+  &.is-active
+    background: $nb-go-soft
+    color: $nb-go-strong
+    font-weight: 700
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
+
+.float-menu__days
+  display: grid
+  grid-template-columns: repeat(5, minmax(0, 1fr))
+  gap: 6px
+  padding: 4px 4px 2px
+
+.float-menu__day
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  min-height: 44px
+  border: 1px solid $nb-line
+  border-radius: 10px
+  background: $nb-paper
+  color: $nb-ink
+  text-decoration: none
+
+  &.is-active
+    border-color: $nb-go
+    background: $nb-go-soft
+    color: $nb-go-strong
+
+  &:focus-visible
+    outline: 2px solid $nb-accent
+    outline-offset: 2px
+
+.float-menu__day-number
+  font-size: 13px
+  font-weight: 700
+  line-height: 1.2
+
+.float-menu__day-date
+  font-size: 10px
+  font-variant-numeric: tabular-nums
+  color: $nb-muted
+
+  .is-active &
+    color: inherit
 </style>

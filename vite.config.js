@@ -23,13 +23,13 @@ export default defineConfig({
     }
   },
   resolve: {
+    dedupe: ['vue', 'firebase'],
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
   css: {
     preprocessorOptions: {
-      // 每個 Sass 檔（含 .vue 的 lang="sass"）自動引入變數與 mixins，不用再手動 @use
       sass: {
         additionalData: `@use '@/styles/variables' as *\n@use '@/styles/mixins' as *\n`,
       },
