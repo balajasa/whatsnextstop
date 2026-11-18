@@ -49,8 +49,44 @@ function getWeatherInfo(weatherCode: number): { code: string; description: strin
   return WEATHER_CODE_MAP[weatherCode] || { code: 'mostly-sunny', description: '未知天氣' }
 }
 
-// 呼叫 Open-Meteo API 取得天氣資料 (使用 Axios)
+// 天氣快取：30 分鐘內同一個地點不再打 API（少打幾次，也少遇到 API 偶爾卡住的時候）
+// 只存成功的結果；失敗的下次重新整理再試
+const WEATHER_CACHE_PREFIX = 'travel_weather_'
+const WEATHER_CACHE_EXPIRY = 30 * 60 * 1000 // 30 分鐘
+
+// 同一個地點的 key：座標取到小數兩位（約 1 公里），避免浮點數差一點就對不上
+const weatherCacheKey = ({ lat, lon }: Coordinates): string =>
+  `${WEATHER_CACHE_PREFIX}${Number(lat).toFixed(2)},${Number(lon).toFixed(2)}`
+
+function getCachedWeather(coordinates: Coordinates): WeatherData | null {
+  try {
+    const cached = localStorage.getItem(weatherCacheKey(coordinates))
+    if (!cached) return null
+    const data = JSON.parse(cached)
+    if (Date.now() - data.timestamp > WEATHER_CACHE_EXPIRY) {
+      localStorage.removeItem(weatherCacheKey(coordinates))
+      return null
+    }
+    return data.weather
+  } catch {
+    // 讀不到快取（無痕模式、資料壞掉）就當沒有，直接打 API
+    return null
+  }
+}
+
+function setCachedWeather(coordinates: Coordinates, weather: WeatherData): void {
+  try {
+    localStorage.setItem(weatherCacheKey(coordinates), JSON.stringify({ weather, timestamp: Date.now() }))
+  } catch {
+    // 存不進去也沒關係，下次再打 API
+  }
+}
+
+// 呼叫 Open-Meteo API 取得天氣資料 (使用 Axios)；30 分鐘內有快取就直接用
 async function fetchWeatherData(coordinates: Coordinates): Promise<WeatherData | null> {
+  const cached = getCachedWeather(coordinates)
+  if (cached) return cached
+
   try {
     const { lat, lon } = coordinates
     const url = `https://api.open-meteo.com/v1/forecast`
@@ -76,13 +112,15 @@ async function fetchWeatherData(coordinates: Coordinates): Promise<WeatherData |
 
     const weatherInfo = getWeatherInfo(current.weather_code)
 
-    return {
+    const weather: WeatherData = {
       temperature: Math.round(current.temperature_2m),
       weatherCode: current.weather_code,
       code: weatherInfo.code,
       description: weatherInfo.description,
       isDay: current.is_day === 1,
     }
+    setCachedWeather(coordinates, weather)
+    return weather
   } catch (error) {
     // 靜默錯誤處理 - 不拋出異常
     if (axios.isAxiosError(error)) {
